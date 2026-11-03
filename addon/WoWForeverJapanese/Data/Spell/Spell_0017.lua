@@ -153,7 +153,7 @@ WFJ.Data.add("spell", {
   [17355] = { nil, "$N2秒ごとにマナを$N1得ます。", nil, 0xe575a7ec, "mu" },
   [17359] = { "術者の足元に体力 $N1のMana Tide Totemを$N2秒間召喚します。トーテムは$N5ヤード以内のグループメンバーのマナを$N4秒ごとに$N3回復します。", nil, 0x76f4de7f, nil, "um" },
   [17360] = { nil, "$N2秒ごとにマナを$N1得ます。", nil, 0xe575a7ec, "mu" },
-  [17364] = { "瞬時に通常の武器ダメージで攻撃し、$D1の間、次のLightning Bolt、Chain Lightning、Earth Shockで対象に与えるダメージを$N1%増やします。", "Shamanの次のLightning Bolt、Chain Lightning、Earth Shockから受けるダメージが$N1%増加します。", 0xb3f73f14, 0xfe4e91f3, "uu" },
+  [17364] = { "瞬時に武器ダメージの$N1%で攻撃し、$D1の間、次のLightning Bolt、Chain Lightning、Earth Shockで対象に与えるダメージを$N2%増やします。", "Shamanの次のLightning Bolt、Chain Lightning、Earth Shockから受けるダメージが$N1%増加します。", 0x6839826a, 0xfe4e91f3, "uu" },
   [17366] = { "近くの敵にFireダメージを与えます。", nil, 0x209abb75, nil, "um" },
   [17367] = { "魔法の呪文と効果によるダメージと回復量を最大$N1増加させます。", nil, 0x76cbff0e, nil, "um" },
   [17368] = { "SpectralとGhostly Citizensを解放するために使用します。", nil, 0x4ae2f9c3, nil, "um" },
