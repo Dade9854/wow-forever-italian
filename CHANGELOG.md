@@ -9,6 +9,8 @@ an old setting stops working). A release moves those lines under its version num
 
 ## Unreleased
 
+## 0.7.0 - 2026-11-03
+
 ### Added
 - Japanese for the text Forever build 1.60.1.70755 adds: the Violet Flames campfire spells and the Pouch of Violet Dust from the launch celebration, Camping, Emerald Stasis, Poised and Shank, and the new spell auras.
 
