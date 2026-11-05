@@ -1,0 +1,1 @@
+{"id": 92454, "field": "title", "ja": "Benvenuti!", "status": "trusted", "checks": [], "provenance": {"class": "machine", "model": "claude-opus-5-5", "source": "draft-elw-title-sg1@2026-11-05", "imported": "2026-11-05"}, "english": {"hash": "d6adcb4f46b1266f", "src": "wdb@1.60.1.70532"}, "reasons": [], "conflicts": []}
