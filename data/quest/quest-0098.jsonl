@@ -1,0 +1,1 @@
+{"id": 98386, "field": "title", "ja": "L'Alther's Mill", "status": "trusted", "checks": ["names"], "provenance": {"class": "machine", "model": "claude-opus-5-5", "source": "draft-rr-title-sg1@2026-11-05", "imported": "2026-11-05"}, "english": {"hash": "e7ba8f994c0a63f9", "src": "wdb@1.60.1.70532"}, "reasons": [], "conflicts": []}

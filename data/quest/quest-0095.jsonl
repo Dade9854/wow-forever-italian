@@ -1,0 +1,1 @@
+{"id": 95999, "field": "progress", "ja": "Cos'hai lì, {race}?", "status": "trusted", "checks": [], "provenance": {"class": "machine", "model": "claude-opus-5-5", "source": "draft-rr-progress-sg1@2026-11-05", "imported": "2026-11-05"}, "english": {"hash": "46dc827db4279234", "src": "forever-vo@025070f"}, "reasons": [], "conflicts": []}
