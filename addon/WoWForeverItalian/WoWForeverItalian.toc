@@ -45,6 +45,7 @@ Data\Gossip\Gossip_25.lua
 Data\Gossip\Gossip_46.lua
 Data\Gossip\Gossip_48.lua
 Data\Gossip\Gossip_4c.lua
+Data\Gossip\Gossip_51.lua
 Data\Gossip\Gossip_52.lua
 Data\Gossip\Gossip_60.lua
 Data\Gossip\Gossip_6b.lua
@@ -56,8 +57,10 @@ Data\Gossip\Gossip_a4.lua
 Data\Gossip\Gossip_ad.lua
 Data\Gossip\Gossip_b9.lua
 Data\Gossip\Gossip_bc.lua
+Data\Gossip\Gossip_c8.lua
 Data\Gossip\Gossip_ce.lua
 Data\Gossip\Gossip_e8.lua
+Data\Gossip\Gossip_ee.lua
 Data\Gossip\Gossip_f6.lua
 # >>>
 Core\Lookup.lua
