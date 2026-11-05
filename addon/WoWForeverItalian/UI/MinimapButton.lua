@@ -25,7 +25,7 @@ MinimapButton.DEFAULT_ANGLE = 225 -- lower left of the rim, clear of the zoom bu
 MinimapButton.SIZE = 31
 MinimapButton.DRAG_GRACE = 0.25 -- seconds after a drag in which a click is the drag's own mouse-up
 MinimapButton.RIM = 10 -- beyond the minimap's radius
--- the TOC's IconTexture: the addon's own 字 medallion (Media/icon.tga)
+-- the TOC's IconTexture: the addon's own IT medallion with the Italian tricolour (Media/icon.tga)
 MinimapButton.ICON = "Interface\\AddOns\\WoWForeverItalian\\Media\\icon"
 MinimapButton.button = nil
 MinimapButton.db = nil
