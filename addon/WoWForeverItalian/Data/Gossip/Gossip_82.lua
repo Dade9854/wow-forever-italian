@@ -2,4 +2,5 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["8260098fe9800923"] = { "Poni i bracciali sopra il braciere e versi le ultime gocce della pozione di Brine nella fiamma. Le gocce crepitano a contatto con la fiamma e cominci a recitare le semplici parole che Islen ti ha insegnato....", "." },
+  ["82beecccc4ec9ce9"] = { "Se vuoi guarire dalla 'ite', dovrai impegnarti di più, {name}. Dove sono i reagenti per la cura?", "." },
 })
