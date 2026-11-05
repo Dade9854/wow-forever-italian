@@ -8,7 +8,7 @@ go about it.
 **Translation fixes.** The best way is from inside the game: click the 字 minimap button (or type `/wfi fix`),
 pick the line, say what is wrong, and paste the report into a
 [translation report](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml).
-A check reads the report and comments within a minute. If your own Japanese ships, you are credited in
+A check reads the report and comments within a minute. If your own Italian ships, you are credited in
 `ATTRIBUTION.md` under the name you give (the issue and the credit are public).
 
 **Code changes.** Open an issue first and describe what you want to change and why. Pull requests without an
@@ -53,7 +53,7 @@ The Makefile uses `.venv` automatically. The Lua rocks (busted, luacheck, luacov
 | `make test` | pytest over the pipeline, busted over the addon logic, and a parse of every addon Lua file |
 | `make lint` | ruff, luacheck, the layering and no-English-in-the-addon gates, and `wfi public-check` |
 | `make validate` | the data gate: schema, provenance, key collisions, regenerate-and-diff |
-| `make coverage` | how much of the game ships in Japanese, written to `docs/operations/coverage.md` |
+| `make coverage` | how much of the game ships in Italian, written to `docs/operations/coverage.md` |
 | `make coverage-py` / `make coverage-lua` | test coverage of the pipeline and of the addon logic |
 | `make data` | rebuild `data/` from the pinned inputs, then check and generate (needs the inputs, see local setup) |
 | `make package` | build and check a release zip locally; nothing is uploaded |
@@ -83,11 +83,6 @@ Every line in `data/` says where it came from: `human` (a person's translation),
 of one), or `machine` (drafted by a model), plus who or what produced it and a hash of the English it was made
 from. Machine text never replaces a human translation unless a ruling on that line says so, and `make validate`
 checks it. If you change data by hand, add a `correction` with your name as the translator.
-
-The Japanese voice is made from the shipped Japanese on the maintainer's computer, and a check fails while a voiced
-line's audio does not match its text. If your pull request changes a line the voice reads (a quest's offer,
-progress or turn-in, an NPC greeting, a book page), that check fails on it: that is expected. The maintainer
-remakes the audio on your branch before it merges.
 
 ## Pull requests
 

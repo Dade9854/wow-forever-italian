@@ -11,7 +11,6 @@ def test_or_later_declared(root):
     ).read_text(encoding="utf-8")
 
 
-def test_font_and_license_shipped(root):
-    fonts = root / "addon" / "WoWForeverItalian" / "Fonts"
-    assert (fonts / "ipagui.ttf").stat().st_size > 1_000_000
-    assert "IPA" in (fonts / "IPA_Font_License_Agreement_v1.0.txt").read_text(encoding="utf-8")[:200]
+def test_no_font_is_bundled(root):
+    """Italian is written in the client's own fonts: the addon bundles no font (the original's IPA face is gone)."""
+    assert not (root / "addon" / "WoWForeverItalian" / "Fonts").exists()

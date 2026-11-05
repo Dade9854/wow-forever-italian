@@ -19,12 +19,12 @@ EN = "Look to the Stars"
 WDB = "wdb@1.60.1.70009"
 HUMAN = {"class": "human", "translator": "Tammy", "source": "cqjt@3446c82", "imported": "2026-09-13"}
 MACHINE = {"class": "machine", "model": "drafter-1", "source": "draft-q-sg6@2026-09-18", "imported": "2026-09-18"}
-SHIPPED = {175: ("星座を求めて", HUMAN), 176: ("星座を探せ", MACHINE), 177: ("星々を求め", HUMAN), 178: ("星を仰げ", MACHINE)}
+SHIPPED = {175: ("porta", HUMAN), 176: ("scudo", MACHINE), 177: ("frase", HUMAN), 178: ("sole", MACHINE)}
 DATE, MODEL = "2026-09-28", "model-test"
 W = {
-    "星を見よ": [["星", "ほし", "星", "ほし", "star"], ["見よ", "みよ", "見る", "みる", "look (at)"]],
-    "星を探せ": [["星", "ほし", "星", "ほし", "stars"], ["探せ", "さがせ", "探す", "さがす", "look for"]],
-    "星を求めよ": [["星", "ほし", "星", "ほし", "stars"], ["求めよ", "もとめよ", "求める", "もとめる", "seek"]],
+    "sale": [["lettera", "fiume", "lettera", "fiume", "star"], ["vino", "sale", "fumo", "testo", "look (at)"]],
+    "porta": [["lettera", "fiume", "lettera", "fiume", "stars"], ["sale", "parola", "carro", "lupo", "look for"]],
+    "nave": [["lettera", "fiume", "lettera", "fiume", "stars"], ["albero", "lupo", "porta", "campo", "seek"]],
 }
 
 
@@ -60,20 +60,17 @@ def _body(fixes, credit="Kaori"):
 
 
 FIXES = [
-    _fix(175, "awkward", ja="星を見よ", note="stiff"),
+    _fix(175, "awkward", ja="sale", note="stiff"),
     _fix(176, "wrong"),
     _fix(177, "typo"),
     _fix(178, "other"),
     F.Fix("quest", 175, "objectives", "0" * 16, "wrong"),  # no such line
 ]
 DECISIONS = [
-    {"type": "quest", "id": 175, "field": "title", "decision": "use", "ja": "星を見よ", "note": "Reads naturally.",
-     "words": W["星を見よ"]},
-    {"type": "quest", "id": 176, "field": "title", "decision": "rewrite", "ja": "星を探せ", "note": "Stars, not constellations.",
-     "words": W["星を探せ"]},
-    {"type": "quest", "id": 177, "field": "title", "decision": "rewrite", "ja": "星を求めよ", "note": "Imperative, like the English.",
-     "words": W["星を求めよ"]},
-    {"type": "quest", "id": 178, "field": "title", "decision": "keep", "note": "仰げ is the right register for a quest title."},
+    {"type": "quest", "id": 175, "field": "title", "decision": "use", "ja": "sale", "note": "Reads naturally."},
+    {"type": "quest", "id": 176, "field": "title", "decision": "rewrite", "ja": "porta", "note": "Stars, not constellations."},
+    {"type": "quest", "id": 177, "field": "title", "decision": "rewrite", "ja": "nave", "note": "Imperative, like the English."},
+    {"type": "quest", "id": 178, "field": "title", "decision": "keep", "note": "vento is the right register for a quest title."},
 ]
 
 
@@ -105,7 +102,7 @@ def test_credit_names_carry_no_markup(capsys):
     assert cmd.clean_credit("[Official site](https://phish.example)") == "Official sitehttpsphish.example"
     assert cmd.clean_credit("<img src=x onerror=1>") == "img srcx onerror1"
     assert cmd.clean_credit("@maintainer") == "maintainer"
-    assert cmd.clean_credit("かおり\u200b\u202eevil") == "かおりevil"  # zero-width and bidi controls go
+    assert cmd.clean_credit("giorno \u200b\u202eevil") == "giorno evil"  # zero-width and bidi controls go
     assert cmd.clean_credit("Kao_ri-2.0  x") == "Kao_ri-2.0 x"
     assert len(cmd.clean_credit("a" * 99)) == cmd.CREDIT_MAX
 
@@ -180,17 +177,16 @@ def test_intake_again_after_apply_still_finds_the_lines_this_report_changed(repo
     assert cmd.intake(repo, 12, _body(FIXES), "gh-user", None, True) == 0
     triage = [json.loads(x) for x in (folder / "triage.jsonl").read_text().splitlines()]
     assert [t["id"] for t in triage] == [175, 176, 177, 178]
-    assert {t["id"]: t["ja"] for t in triage}[176] == "星を探せ"
+    assert {t["id"]: t["ja"] for t in triage}[176] == "porta"
     # a changed decision on a line this report already rewrote applies over its own correction
     rows = [dict(r) for r in DECISIONS]
-    rows[2] = dict(rows[2], ja="星を探し求めよ", words=[["星", "ほし", "星", "ほし", "stars"],
-                                                  ["探し求めよ", "さがしもとめよ", "探し求める", "さがしもとめる", "seek out"]])
+    rows[2] = dict(rows[2], ja="mare")
     _decide(folder, rows)
     assert cmd.apply(repo, 12, MODEL, DATE, "maintainer", False) == 0
     line = _line(repo, 177)
-    assert line["ja"] == "星を探し求めよ" and line["provenance"]["report"] == 12
+    assert line["ja"] == "mare" and line["provenance"]["report"] == 12
     # the report's first correction is kept as a variant, ruled out (the store orders variants itself)
-    first = [v for v in line["conflicts"] if v["ja"] == "星を求めよ"]
+    first = [v for v in line["conflicts"] if v["ja"] == "nave"]
     assert first and first[0]["ruling"]["ruling"] == "reject"
 
 
@@ -200,7 +196,7 @@ def test_intake_triages_and_skips(repo):
     skipped = [json.loads(x) for x in (folder / "skipped.jsonl").read_text().splitlines()]
     assert [t["id"] for t in triage] == [175, 176, 177, 178]
     t = triage[0]
-    assert (t["en"], t["ja"], t["class"], t["suggestion"], t["credit"]) == (EN, "星座を求めて", "human", "星を見よ", "Kaori")
+    assert (t["en"], t["ja"], t["class"], t["suggestion"], t["credit"]) == (EN, "porta", "human", "sale", "Kaori")
     assert skipped == [{"n": 5, "type": "quest", "id": 175, "field": "objectives", "reason": "wrong", "skip": F.NO_LINE}]
     assert json.loads((folder / "meta.json").read_text())["credit"] == "Kaori"
     assert cmd.intake(repo, 12, _body(FIXES), "", None, False) == 1  # an existing triage is not overwritten
@@ -216,17 +212,17 @@ def test_apply_writes_each_decision_with_its_provenance(repo):
     _decide(folder, DECISIONS)
     assert cmd.apply(repo, 12, MODEL, DATE, "maintainer", False) == 0
     used = _line(repo, 175)
-    assert used["ja"] == "星を見よ" and used["status"] == "trusted"
+    assert used["ja"] == "sale" and used["status"] == "trusted"
     assert used["provenance"] == {
         "class": "correction", "translator": "Kaori", "source": f"correction@{DATE}", "imported": DATE,
         "corrects": "cqjt@3446c82", "note": used["provenance"]["note"], "report": 12}
-    assert used["conflicts"][0]["ja"] == "星座を求めて"  # the person's line is kept as a variant
+    assert used["conflicts"][0]["ja"] == "porta"  # the person's line is kept as a variant
     machine = _line(repo, 176)
-    assert machine["ja"] == "星を探せ" and machine["conflicts"] == []
+    assert machine["ja"] == "porta" and machine["conflicts"] == []
     assert machine["provenance"] == {"class": "machine", "model": MODEL, "source": f"report-12-sg9@{DATE}",
                                      "imported": DATE, "report": 12}
     keep = _line(repo, 178)
-    assert keep["ja"] == "星を仰げ" and keep["provenance"] == MACHINE
+    assert keep["ja"] == "sole" and keep["provenance"] == MACHINE
 
 
 def test_a_rewrite_of_a_persons_line_is_a_correction_never_a_machine_variant(repo):
@@ -235,27 +231,22 @@ def test_a_rewrite_of_a_persons_line_is_a_correction_never_a_machine_variant(rep
     _decide(folder, DECISIONS)
     cmd.apply(repo, 12, MODEL, DATE, "maintainer", False)
     line = _line(repo, 177)
-    assert line["ja"] == "星を求めよ" and line["provenance"]["class"] == "correction"
+    assert line["ja"] == "nave" and line["provenance"]["class"] == "correction"
     assert line["provenance"]["translator"] == "Tammy" and line["provenance"]["model"] == MODEL
     assert line["provenance"]["report"] == 12
     assert all(v["provenance"]["class"] != "machine" for v in line["conflicts"])
 
 
-def test_apply_writes_the_readings_attribution_and_reply(repo):
+def test_apply_writes_the_attribution_and_reply(repo):
     folder = _intake(repo)
     _decide(folder, DECISIONS)
     cmd.apply(repo, 12, MODEL, DATE, "maintainer", False)
-    recs = {r["id"]: r for r in Store(repo / "reading").load("quest")}
-    assert set(recs) == {175, 176, 177}
-    for id_, ja in ((175, "星を見よ"), (176, "星を探せ"), (177, "星を求めよ")):
-        assert recs[id_]["ja_hash"] == ja_hash(ja) and recs[id_]["words"] == W[ja]
-        assert recs[id_]["provenance"]["source"] == "readings@report-12"
     attribution = (repo.parent / "ATTRIBUTION.md").read_text()
     assert "## Correctors" in attribution and "- Kaori: #12\n" in attribution
     assert "Tammy: #" not in attribution  # a model rewrite credits no corrector
     reply = (folder / "reply.md").read_text()
     for part in ("| 1 | quest 175 · title | **Changed**: your Japanese ships.", "| 2 | quest 176 · title | **Changed**: rewritten.",
-                 "| 4 | quest 178 · title | **Kept**: 仰げ", "| 5 | quest 175 · objectives | **Skipped**"):
+                 "| 4 | quest 178 · title | **Kept**: vento", "| 5 | quest 175 · objectives | **Skipped**"):
         assert part in reply, part
 
 
@@ -293,13 +284,12 @@ def _edit(i, **kw):
     (DECISIONS + [{"type": "quest", "id": 9, "field": "title", "decision": "keep", "note": "x"}], "not a triaged fix"),
     (_edit(0, decision="maybe"), "decision must be one of"),
     (_edit(1, decision="use"), "`use` on a fix with no Japanese"),
-    (_edit(3, ja="星"), "`keep` carries no ja"),
-    (_edit(1, ja=None, words=None), "needs the new ja"),
+    (_edit(3, ja="lettera"), "`keep` carries no ja"),
+    (_edit(1, ja=None), "needs the new ja"),
     (_edit(2, note=""), "every decision carries a note"),
-    (_edit(1, ja="星座を探せ /Us" + "ers/someone/notes"), "the ja cannot go into the public data (home path)"),
-    (_edit(2, words=None), "words: words must be a non-empty list"),
-    (_edit(2, words=[["月", "つき", "月", "つき", "moon"]]), "not found in the Japanese"),
-    (_edit(1, ja="星座を探せ", words=[["星座", "せいざ", "星座", "せいざ", "constellation"]]), "already ships"),
+    (_edit(1, ja="scudo /Us" + "ers/someone/notes"), "the ja cannot go into the public data (home path)"),
+    (_edit(2, words=[["carro", "albero"]]), "a row carries no words"),
+    (_edit(1, ja="scudo"), "already ships"),
     (_edit(0, extra=1), "unexpected keys"),
 ])
 def test_a_wrong_decisions_file_writes_nothing(repo, rows, message, capsys):
@@ -312,7 +302,7 @@ def test_a_wrong_decisions_file_writes_nothing(repo, rows, message, capsys):
 
 
 def test_check_summary_good_stale_and_broken(repo):
-    body = _body([_fix(175, "awkward", ja="星を見よ"), F.Fix("quest", 176, "title", "1" * 16, "wrong")])
+    body = _body([_fix(175, "awkward", ja="sale"), F.Fix("quest", 176, "title", "1" * 16, "wrong")])
     ok, text = cmd.summary(body, repo)
     assert ok and "**Report read: 2 fix(es)**" in text
     assert "| 1 | quest `175` · title | awkward / unnatural | yes | ready |" in text
@@ -338,9 +328,3 @@ def test_cli_registers_report(root):
     assert VERBS["report"][1] is cmd.run
     assert Path(root / "Makefile").read_text().count("wfi report ") >= 2
 
-
-def test_which_lines_take_words():
-    assert cmd.needs_words("quest", "星を見よ") and cmd.needs_words("ui", "報酬")
-    assert not cmd.needs_words("item", "布の切れ端")  # no readings for tooltips
-    assert not cmd.needs_words("gossip", "|cffffd100星|rを見よ")  # an escape: the word box refuses it
-    assert not cmd.needs_words("book", "<html><body><p>手紙</p></body></html>")

@@ -72,14 +72,14 @@ local function remember(key, value)
   memo[key] = value
 end
 
--- Off by default: the English this addon needs is the English the original project collects (data/english is synced
--- from it); a player who wants to help turns it on.
+-- Off by default: the English this addon needs is the English the original project collects (the pipeline's English
+-- store is synced from it); a player who wants to help turns it on.
 WFI.Settings.define{ id = "collector.enabled", kind = "boolean", default = false,
-  label = "Record English for future translations", ja = "今後の翻訳のために英語テキストを記録する" }
+  label = "Record English for future translations", ja = "Registra il testo inglese per le traduzioni future" }
 -- the once-a-day chat line that unsent English is waiting (Core/CollectorRemind)
 WFI.Settings.define{ id = "collector.remind", kind = "boolean", default = true,
   label = "Remind me when collected English is waiting to be sent",
-  ja = "集めた英語が送信待ちのときに知らせる" }
+  ja = "Avvisami quando c'è inglese raccolto da inviare" }
 
 -- ── Text ───────────────────────────────────────────────────────────────────
 

@@ -17,7 +17,7 @@ PROV = provenance(
 
 def test_committed_repo_validates(root, plan_report):
     planned, report = plan_report
-    assert validate.validate(root / "data", root / ADDON, None, planned, report["meaning_numbers"]) == []
+    assert validate.validate(root / "data", root / ADDON, None, planned) == []
 
 
 def test_hand_edit_of_a_shard_or_the_toc_block_fails(root, tmp_path, planned):
@@ -26,7 +26,7 @@ def test_hand_edit_of_a_shard_or_the_toc_block_fails(root, tmp_path, planned):
     shard = addon / "Data/Quest/Quest_0000.lua"
     shard.write_text(
         shard.read_text(encoding="utf-8").replace(
-            "Koboldキャンプの掃討", "Koboldキャンプの片付け", 1
+            "Uccidi 10 Kobold Vermin", "Uccidi 11 Kobold Vermin", 1
         ),
         encoding="utf-8",
     )
@@ -91,9 +91,9 @@ def test_schema_rule_flags_invalid_lines(tmp_path):
 
 
 def test_schema_rule_reports_duplicate_lines(tmp_path):
-    a = _q(1, "title", "甲", "trusted", "d311f9a5c36057a2")
+    a = _q(1, "title", "pane", "trusted", "d311f9a5c36057a2")
     en = [english_line(1, "title", "X", "d311f9a5c36057a2", "pfquest@7786596")]
-    data = _tree(tmp_path, [a, dict(a, ja="乙")], en)
+    data = _tree(tmp_path, [a, dict(a, ja="luna")], en)
     problems = validate.rule_schema(data, Store(data), Store(data, english=True))
     assert "quest 1/title: duplicate line" in problems
 
@@ -101,8 +101,8 @@ def test_schema_rule_reports_duplicate_lines(tmp_path):
 def test_mixed_english_versions_are_a_validate_problem(root, tmp_path):
     en = [english_line(1, "title", "X", "d311f9a5c36057a2", "pfquest@7786596")]
     lines = [
-        _q(1, "title", "一", "trusted", "d311f9a5c36057a2"),
-        _q(2, "title", "二", "trusted", "d311f9a5c36057a2"),
+        _q(1, "title", "fumo", "trusted", "d311f9a5c36057a2"),
+        _q(2, "title", "vino", "trusted", "d311f9a5c36057a2"),
     ]
     lines[1]["english"]["src"] = "pfquest@0000000"
     data = _tree(tmp_path, lines, en)
@@ -124,8 +124,8 @@ def test_a_stale_line_keeps_its_old_version_without_failing_generate(root, tmp_p
     version (sticky baseline). That is history, not a mixed store: regenerate passes and Meta pins the new one."""
     en = [english_line(1, "title", "X", "d311f9a5c36057a2", "pfquest@1111111")]
     lines = [
-        _q(1, "title", "一", "trusted", "d311f9a5c36057a2"),
-        _q(2, "title", "二", "stale", "0123456789abcdef"),
+        _q(1, "title", "fumo", "trusted", "d311f9a5c36057a2"),
+        _q(2, "title", "vino", "stale", "0123456789abcdef"),
     ]
     lines[0]["english"]["src"] = "pfquest@1111111"
     lines[1]["english"]["src"] = "pfquest@0000000"
@@ -152,8 +152,8 @@ def test_provenance_rule_against_a_git_base(tmp_path):
     _tree(
         repo,
         [
-            _q(1, "title", "人", "trusted", "d311f9a5c36057a2"),
-            _q(2, "title", "二", "trusted", "d311f9a5c36057a2"),
+            _q(1, "title", "lupo", "trusted", "d311f9a5c36057a2"),
+            _q(2, "title", "vino", "trusted", "d311f9a5c36057a2"),
         ],
         [en],
     )
@@ -173,8 +173,8 @@ def test_provenance_rule_against_a_git_base(tmp_path):
         cwd=repo,
         check=True,
     )
-    machine = _q(1, "title", "機", "trusted", "d311f9a5c36057a2", cls="machine")
-    corrected = _q(2, "title", "訂正", "trusted", "d311f9a5c36057a2")
+    machine = _q(1, "title", "sale", "trusted", "d311f9a5c36057a2", cls="machine")
+    corrected = _q(2, "title", "luna", "trusted", "d311f9a5c36057a2")
     corrected["provenance"] = provenance(
         "correction", "review@2026-09", "2026-09-13", translator="r", origins=["x#1"]
     )
@@ -190,7 +190,7 @@ def test_the_git_base_skips_the_voice_records(tmp_path):
     (repo / "data" / "voice").mkdir(parents=True)
     subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True)
     (repo / "data" / "voice" / "audio.jsonl").write_text('{"key": "1-description"}\n', encoding="utf-8")
-    _tree(repo, [_q(1, "title", "人", "trusted", "d311f9a5c36057a2")], [])
+    _tree(repo, [_q(1, "title", "lupo", "trusted", "d311f9a5c36057a2")], [])
     subprocess.run(["git", "add", "-A"], cwd=repo, check=True)
     subprocess.run(
         ["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "base"], cwd=repo, check=True
@@ -215,13 +215,13 @@ def test_referential_rule(tmp_path):
     en = [english_line(1, "title", "X", "d311f9a5c36057a2", "pfquest@7786596")]
     lines = [
         _q(
-            1, "title", "一", "trusted", "0000000000000000"
+            1, "title", "fumo", "trusted", "0000000000000000"
         ),  # trusted but not the current hash
         _q(
-            1, "objectives", "二", "stale", "d311f9a5c36057a2"
+            1, "objectives", "vino", "stale", "d311f9a5c36057a2"
         ),  # stale but equal to current (title-only scope → joined)
         _q(
-            2, "title", "三", "trusted", "d311f9a5c36057a2"
+            2, "title", "giorno", "trusted", "d311f9a5c36057a2"
         ),  # no English scope for id 2
     ]
     data = _tree(tmp_path, lines, en)
@@ -232,8 +232,8 @@ def test_referential_rule(tmp_path):
     )
     assert any("quest 2/title: shipped but no English scope" in p for p in problems)
     ok = [
-        _q(1, "title", "一", "trusted", "d311f9a5c36057a2"),
-        _q(1, "objectives", "二", "stale", "0000000000000000"),
+        _q(1, "title", "fumo", "trusted", "d311f9a5c36057a2"),
+        _q(1, "objectives", "vino", "stale", "0000000000000000"),
     ]
     data = _tree(tmp_path, ok, en)
     assert validate.rule_referential(Store(data), Store(data, english=True)) == []
@@ -286,12 +286,12 @@ def test_objective_rule_spans_objective_and_area_rows(tmp_path, capsys):
     passes, and the shipped counts of both types are printed."""
     d = tmp_path / "data"
     d.mkdir()
-    Store(d).save("objective", [_fingerprinted(1, "Towerに印をつける", "Tower Marked"),
-                                _fingerprinted(2, "Drullを救出する", "Rescue Drull")])
-    Store(d).save("area", [_fingerprinted(1, "Towerを示す", "Tower Marked"),   # same id as objective 1: no clash
-                           _fingerprinted(7, "Drullを救出する", "Rescue Drull"),  # same Japanese: fine
-                           _fingerprinted(8, "鉱山を偵察する", "Scout the mine"),
-                           _fingerprinted(9, "鉱山を調べる", "Scout the mine")])
+    Store(d).save("objective", [_fingerprinted(1, "ecco Tower voce", "Tower Marked"),
+                                _fingerprinted(2, "ecco Drull bosco", "Rescue Drull")])
+    Store(d).save("area", [_fingerprinted(1, "ecco Tower sole", "Tower Marked"),   # same id as objective 1: no clash
+                           _fingerprinted(7, "ecco Drull bosco", "Rescue Drull"),  # same Japanese: fine
+                           _fingerprinted(8, "luna", "Scout the mine"),
+                           _fingerprinted(9, "acqua", "Scout the mine")])
     assert sorted(validate.rule_objective(Store(d))) == [  # listed in fingerprint order; compared as a set
         "objective ambiguous: area 1, objective 1 share one English fingerprint with different Japanese",
         "objective ambiguous: area 8, area 9 share one English fingerprint with different Japanese",
@@ -303,7 +303,7 @@ def test_objective_rule_groups_by_the_32_bit_fingerprint_the_addon_indexes(tmp_p
     """Two different English hashes sharing their first 32 bits are one addon fingerprint."""
     d = tmp_path / "data"
     d.mkdir()
-    a, b = _fingerprinted(1, "甲", "A"), _fingerprinted(2, "乙", "B")
+    a, b = _fingerprinted(1, "pane", "A"), _fingerprinted(2, "luna", "B")
     a["english"]["hash"], b["english"]["hash"] = "0123456789abcdef", "01234567ffffffff"
     Store(d).save("objective", [a])
     Store(d).save("area", [b])

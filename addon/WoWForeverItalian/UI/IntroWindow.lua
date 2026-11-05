@@ -17,7 +17,7 @@ local TOP, BOTTOM, PAD = INSET_TOP + 4, INSET_BOTTOM + 4, 12
 local LINE, BLOCK = 7, 14 -- between lines in a block; above and below the rule between the two blocks
 local HEAD = 10 -- under a block's opening line
 local KEY = "|cffffd200%s|r" -- the reveal key's name, in the gold the client uses for key names
-local BULLETS = { ja = "・", en = "• " }
+local BULLETS = { ja = "• ", en = "• " }
 local BUTTON = 22
 
 IntroWindow.frame = nil

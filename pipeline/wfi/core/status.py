@@ -12,6 +12,8 @@ from typing import Any
 
 from wfi.core import align, decisions, dedupe, language, markup, paragraphs, specifiers
 from wfi.core import style as style_mod
+from wfi.core.hashing import key as hash_key
+from wfi.core.normalize import normalize_v1
 
 NO_ENGLISH_ID = "no_english_id"
 NOT_ITALIAN = "not_italian"
@@ -109,7 +111,10 @@ def _evaluate(
     kept_english = scope.kind in ("ui", "gossip", "item", "spell") and accepted
     dots = field_name in scope.dotted and DOTS.fullmatch(ja) is not None
     english = scope.fields.get(field_name) or scope.raw.get(field_name)
-    if not language.is_italian(ja, field_name, english) and not wordless and not kept_english and not dots:
+    # a gossip scope carries no English text, only its hash (the key): the English left in place has that hash
+    left_english = bool(ja.strip()) and scope.hashes.get(field_name) == hash_key(normalize_v1(ja))
+    italian = language.is_italian(ja, field_name, english) and not left_english
+    if not italian and not wordless and not kept_english and not dots:
         return [NOT_ITALIAN], []
     if scope.kind == "ui":
         return _evaluate_ui(ja, scope.raw.get(field_name, ""))

@@ -23,7 +23,7 @@ def _machine(source):
 
 
 def _ja(id_, field, status, prov, conflicts=()):
-    return {"id": id_, "field": field, "ja": "テスト", "status": status, "checks": [], "provenance": prov,
+    return {"id": id_, "field": field, "ja": "ferro", "status": status, "checks": [], "provenance": prov,
             "english": None, "reasons": [], "conflicts": list(conflicts)}
 
 
@@ -127,19 +127,19 @@ def _ok(tmp_path, rows):
 
 def test_expand_fans_out_per_type(tmp_path):
     ok = _ok(tmp_path, [
-        {"ref": "a", "kind": "progress", "ja": "もう手に入れたか、{name}?", "targets": [[1, "progress"], [2, "progress"]]},
-        {"ref": "b", "kind": "gossip", "ja": "こんにちは。", "targets": [["0123456789abcdef", "text"]]},
+        {"ref": "a", "kind": "progress", "ja": "parola,{name}?", "targets": [[1, "progress"], [2, "progress"]]},
+        {"ref": "b", "kind": "gossip", "ja": "chiave,", "targets": [["0123456789abcdef", "text"]]},
     ])
     counts = tb.expand(ok, "test-sg1", tmp_path / "out", version=1)
     assert counts == {"gossip": 1, "quest": 2}
     quest = tb.read_jsonl(tmp_path / "out" / "test-sg1.quest.jsonl")
-    assert quest == [{"id": 1, "field": "progress", "ja": "もう手に入れたか、{name}?"},
-                     {"id": 2, "field": "progress", "ja": "もう手に入れたか、{name}?"}]
+    assert quest == [{"id": 1, "field": "progress", "ja": "parola,{name}?"},
+                     {"id": 2, "field": "progress", "ja": "parola,{name}?"}]
 
 
 @pytest.mark.parametrize("name", ["test", "test-sg2", "test-sg1x", "Test-sg1"])
 def test_expand_refuses_a_name_without_the_current_style_version(tmp_path, name):
-    ok = _ok(tmp_path, [{"ref": "a", "kind": "progress", "ja": "はい。", "targets": [[1, "progress"]]}])
+    ok = _ok(tmp_path, [{"ref": "a", "kind": "progress", "ja": "fiore,", "targets": [[1, "progress"]]}])
     with pytest.raises(SystemExit, match="sg1"):
         tb.expand(ok, name, tmp_path / "out", version=1)
 
@@ -151,13 +151,13 @@ def test_expanded_file_imports_as_machine_draft(tmp_path, monkeypatch):
     monkeypatch.setattr(import_draft, "data_root", lambda start=None: data)
     (tmp_path / style.STYLE_GUIDE).parent.mkdir(parents=True)
     (tmp_path / style.STYLE_GUIDE).write_text("version: sg1\n")
-    ok = _ok(tmp_path, [{"ref": "a", "kind": "progress", "ja": "もう済んだか?", "targets": [[1, "progress"]]}])
+    ok = _ok(tmp_path, [{"ref": "a", "kind": "progress", "ja": "fuoco?", "targets": [[1, "progress"]]}])
     tb.expand(ok, "progress-sg1", tmp_path / "out", version=1)
     draft = tmp_path / "out" / "progress-sg1.quest.jsonl"
     argv = ["draft", "quest", str(draft), "--model", "model-a", "--date", "2026-09-16", "--name", "progress-sg1"]
     assert imp.run(argv) == 0
     line = Store(data).load("quest")[0]
-    assert line["ja"] == "もう済んだか?"
+    assert line["ja"] == "fuoco?"
     assert line["provenance"]["class"] == "machine"
     assert line["provenance"]["source"] == "draft-progress-sg1@2026-09-16"
 
@@ -332,10 +332,10 @@ def test_expand_and_import_book(tmp_path, monkeypatch):
     (tmp_path / style.STYLE_GUIDE).parent.mkdir(parents=True)
     (tmp_path / style.STYLE_GUIDE).write_text("version: sg4\n")
     ok = _ok(tmp_path, [
-        {"ref": "a", "kind": "book", "ja": "やあ、Morgan。", "targets": [[15, "text"], [21, "text"]]},
+        {"ref": "a", "kind": "book", "ja": "acqua,Morgan,", "targets": [[15, "text"], [21, "text"]]},
     ])
     assert tb.expand(ok, "pages-sg4", tmp_path / "out", version=4) == {"book": 2}
-    assert tb.read_jsonl(tmp_path / "out" / "pages-sg4.book.jsonl")[0] == {"id": 15, "field": "text", "ja": "やあ、Morgan。"}
+    assert tb.read_jsonl(tmp_path / "out" / "pages-sg4.book.jsonl")[0] == {"id": 15, "field": "text", "ja": "acqua,Morgan,"}
     draft = tmp_path / "out" / "pages-sg4.book.jsonl"
     argv = ["draft", "book", str(draft), "--model", "model-a", "--date", "2026-09-16", "--name", "pages-sg4"]
     assert imp.run(argv) == 0
@@ -426,16 +426,16 @@ def test_expand_fans_the_template_kinds_out_to_their_types(client, tmp_path):
     ok = tmp_path / "ok.jsonl"
     tb.write_jsonl(ok, [
         {"ref": "a", "kind": "item_description", "en": "x", "targets": [[117, "description"]],
-         "ja": "$N2秒かけてhealthを$N1回復します。"},
-        {"ref": "b", "kind": "spell_aura", "en": "y", "targets": [[133, "aura"]], "ja": "$N1のダメージ。"},
+         "ja": "$N2 fumo health spada $N1 scudo,"},
+        {"ref": "b", "kind": "spell_aura", "en": "y", "targets": [[133, "aura"]], "ja": "$N1 cosa,"},
     ])
     counts = tb.expand(ok, "tooltip-sg1", tmp_path, 1)
     assert counts == {"item": 1, "spell": 1}
     assert tb.read_jsonl(tmp_path / "tooltip-sg1.item.jsonl") == [
-        {"id": 117, "field": "description", "ja": "$N2秒かけてhealthを$N1回復します。"}
+        {"id": 117, "field": "description", "ja": "$N2 fumo health spada $N1 scudo,"}
     ]
     assert tb.read_jsonl(tmp_path / "tooltip-sg1.spell.jsonl") == [
-        {"id": 133, "field": "aura", "ja": "$N1のダメージ。"}
+        {"id": 133, "field": "aura", "ja": "$N1 cosa,"}
     ]
 
 
@@ -598,27 +598,8 @@ def test_objective_names_reads_an_indented_comment_as_a_comment(tmp_path):
 # ── expand writes the readings batch beside the import files ──
 
 
-def test_expand_writes_a_words_file_for_rows_with_words(tmp_path):
-    from wfi.core import readings
-
-    words = [["森", "もり"]]
-    ok = _ok(tmp_path, [
-        {"ref": "a", "kind": "progress", "ja": "森へ行け。", "targets": [[1, "progress"], [2, "progress"]],
-         "words": words},
-        {"ref": "b", "kind": "gossip", "ja": "森だ。", "targets": [["0123456789abcdef", "text"]]},
-    ])
-    counts = tb.expand(ok, "test-sg1", tmp_path / "out", version=1)
-    assert counts == {"gossip": 1, "quest": 2, "words": 2}
-    rows = tb.read_jsonl(tmp_path / "out" / "test-sg1.words.jsonl")
-    h = readings.ja_hash("森へ行け。")
-    assert rows == [
-        {"type": "quest", "id": 1, "field": "progress", "ja_hash": h, "words": words},
-        {"type": "quest", "id": 2, "field": "progress", "ja_hash": h, "words": words},
-    ]
-
-
 def test_expand_without_words_writes_no_words_file(tmp_path):
-    ok = _ok(tmp_path, [{"ref": "a", "kind": "progress", "ja": "森へ行け。", "targets": [[1, "progress"]]}])
+    ok = _ok(tmp_path, [{"ref": "a", "kind": "progress", "ja": "fiume,", "targets": [[1, "progress"]]}])
     assert tb.expand(ok, "test-sg1", tmp_path / "out", version=1) == {"quest": 1}
     assert sorted(p.name for p in (tmp_path / "out").iterdir()) == ["test-sg1.quest.jsonl"]
 
@@ -649,11 +630,11 @@ def test_cut_area_selects_undrafted_lines_and_expand_writes_the_area_file(tmp_pa
     rows = tb.cut(data, "area", 10, tmp_path / "batch.jsonl")
     assert [(r["kind"], r["targets"]) for r in rows] == [("area", [[62, "text"]]), ("area", [[2904, "text"]])]
     assert style.STYLED_FIELDS["area"] == frozenset({"text"})
-    ok = _ok(tmp_path, [{"ref": rows[0]["ref"], "kind": "area", "ja": "Fargodeep Mineを偵察する",
+    ok = _ok(tmp_path, [{"ref": rows[0]["ref"], "kind": "area", "ja": "ecco Fargodeep Mine strada",
                          "targets": rows[0]["targets"]}])
     assert tb.expand(ok, "area-sg1", tmp_path / "out", version=1) == {"area": 1}
     assert tb.read_jsonl(tmp_path / "out" / "area-sg1.area.jsonl") == [
-        {"id": 62, "field": "text", "ja": "Fargodeep Mineを偵察する"}]
+        {"id": 62, "field": "text", "ja": "ecco Fargodeep Mine strada"}]
 
 
 def test_an_area_draft_imports_as_machine_and_the_lint_accepts_the_kind(tmp_path, monkeypatch):
@@ -671,7 +652,7 @@ def test_an_area_draft_imports_as_machine_and_the_lint_accepts_the_kind(tmp_path
     tb.write_jsonl(batch, [{"ref": "a", "kind": "area", "en": "Kernobee Rescue", "targets": [[2904, "text"]],
                             "names": ["Kernobee"]}])
     draft = tmp_path / "b.draft.jsonl"
-    tb.write_jsonl(draft, [{"ref": "a", "ja": "Kernobeeの救出"}])
+    tb.write_jsonl(draft, [{"ref": "a", "ja": "ecco Kernobee ferro"}])
     assert translate_lint.main([str(batch), str(draft)]) == 0
     ok = tmp_path / "b.draft.ok.jsonl"
     tb.expand(ok, "area-sg1", tmp_path / "out", version=1)
@@ -679,9 +660,9 @@ def test_an_area_draft_imports_as_machine_and_the_lint_accepts_the_kind(tmp_path
             "--date", "2026-09-27", "--name", "area-sg1"]
     assert imp.run(argv) == 0
     line = Store(data).load("area")[0]
-    assert (line["id"], line["field"], line["ja"]) == (2904, "text", "Kernobeeの救出")
+    assert (line["id"], line["field"], line["ja"]) == (2904, "text", "ecco Kernobee ferro")
     assert line["provenance"]["source"] == "draft-area-sg1@2026-09-27"
-    tb.write_jsonl(draft, [{"ref": "a", "ja": "カーノビーの救出"}])  # the name must stay English
+    tb.write_jsonl(draft, [{"ref": "a", "ja": "monte"}])  # the name must stay English
     assert translate_lint.main([str(batch), str(draft)]) == 1
 
 

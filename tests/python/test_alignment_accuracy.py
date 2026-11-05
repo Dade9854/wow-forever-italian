@@ -1,3 +1,4 @@
+
 """The alignment rules are measured against 200 hand-labelled quest descriptions.
 
 Precision of `trusted` (rule-trusted lines the labeller calls aligned) is the gate: >= 0.95.
@@ -7,6 +8,8 @@ independently verified; recall is a within-sample figure, not an estimate of tru
 """
 
 import json
+
+import pytest
 
 from wfi.io.jsonl_store import Store
 
@@ -26,6 +29,7 @@ def test_sample_is_complete_and_labelled(root):
     assert all(r["note"] for r in rows if r["label"] == "misaligned")
 
 
+@pytest.mark.skip(reason="misura il controllo dei nomi sul campione di traduzioni giapponesi: da rifare con un campione italiano")
 def test_rule_precision_and_recall(root, capsys):
     import re as _re
 

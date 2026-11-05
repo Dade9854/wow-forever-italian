@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-06
-- **Related:** [ADR-002](002-live-english-only.md) (no stored English) · [ADR-005](005-gossip-key-fingerprint.md) (gossip keys) · [ADR-019](019-quest-english-per-field-and-live-check.md) (VMaNGOS as an input) · [Voice over](../systems/voice.md) · [Voice over runbook](../operations/voice.md) · [Research](../research/2026-10-04-japanese-voice-over.md)
+- **Related:** [ADR-002](002-live-english-only.md) (no stored English) · [ADR-005](005-gossip-key-fingerprint.md) (gossip keys) · [ADR-019](019-quest-english-per-field-and-live-check.md) (VMaNGOS as an input) · Voice over · Voice over runbook · Research
 
 ## Context
 

@@ -1,17 +1,17 @@
 ## Interface: 16001
-## Title: WoW Forever Italian (日本語化)
-## Notes: Quest text, NPC gossip and item / spell tooltips in Japanese. Hold Alt (changeable) for the game's English. Settings: Esc > Options > AddOns, or /wfi config.
+## Title: WoW Forever Italian
+## Notes: Quest, dialoghi NPC e tooltip in italiano. Tieni premuto Alt (modificabile) per l'inglese del gioco. Impostazioni: Esc > Opzioni > AddOn, o /wfi config.
 ## IconTexture: Interface\AddOns\WoWForeverItalian\Media\icon
 ## AddonCompartmentFunc: WFI_OnAddonCompartmentClick
 ## AddonCompartmentFuncOnEnter: WFI_OnAddonCompartmentEnter
 ## AddonCompartmentFuncOnLeave: WFI_OnAddonCompartmentLeave
 ## Version: @project-version@
-## Author: Zyaga
+## Author: Dade9854 (based on WoW Forever Japanese by Zyaga)
 ## SavedVariables: WFI_DB, WFI_Collector, WFI_Log
 ## X-License: GPL-2.0-or-later
-## X-Copyright: Copyright (C) 2026 Zyaga
-## X-Curse-Project-ID: 1717928
-## X-Website: https://foreverjapanese.com
+## X-Copyright: Copyright (C) 2026 Zyaga (WoW Forever Japanese); Copyright (C) 2026 Dade9854 (WoW Forever Italian)
+## X-Curse-Project-ID: 
+## X-Website: https://github.com/Dade9854/wow-forever-italian
 
 Core\ErrorLog.lua
 Core\Const.lua

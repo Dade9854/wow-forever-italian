@@ -37,8 +37,10 @@ def test_item_starts_reads_both_tables(tmp_path: Path):
 
 def test_the_counts_land_in_the_readme_tables_and_the_curseforge_lines():
     c = {"quest": 1000, "gossip": 2, "book": 3, "letter": 4, "item": 5, "spell": 6, "ui": 7}
-    readme = "x\n\n## What it translates\n\n| old |\n\n## Install\n\n### 翻訳の量\n\n| 古い |\n\n### インストール\n"
+    readme = "x\n\n### Quanto è tradotto\n\n| vecchio |\n\n## Altro\n\n## What it translates\n\n| old |\n\nfine\n"
     out = counts.apply_readme(readme, c)
-    assert "| Quests | 1,000 |" in out and "| 手紙 | 4 ページ |" in out and "old" not in out and "古い" not in out
-    cf = counts.apply_curseforge("In numbers: old\n数で見ると: 古い\n", c)
-    assert "**2** NPC dialogue lines" in cf and "**3** book pages" in cf and "UI **7**" in cf
+    assert "| Quests | 1,000 |" in out and "| Pagine di lettere | 4 |" in out and "| Dialoghi degli NPC | 2 righe |" in out
+    assert "old" not in out and "vecchio" not in out
+    cf = counts.apply_curseforge("x\nIn cifre: vecchio\nIn numbers: old\n", c)
+    assert "**2** NPC dialogue lines" in cf and "**3** book pages" in cf and "**7** UI" in cf
+    assert "dialoghi degli NPC **2** righe" in cf and "interfaccia **7**" in cf

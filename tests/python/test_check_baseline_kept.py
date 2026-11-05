@@ -19,7 +19,7 @@ def _scopes(tmp_path, en=None):
 
 
 def _line(english):
-    ln = entry(254, "title", "土掘り", prov=PROV)
+    ln = entry(254, "title", "ferro", prov=PROV)
     ln["english"] = english
     return ln
 
@@ -55,11 +55,11 @@ def test_no_english_id_variants_go_in_one_order_whatever_the_history(tmp_path):
     """An incremental check (machine promoted earlier) and a rebuild (human first) store the same line."""
     machine = {"class": "machine", "model": "m", "source": "draft-x-sg4@2026-09-20", "imported": "2026-09-20"}
     human_first = _line(None)
-    human_first["conflicts"] = [{"ja": "機械訳", "provenance": machine}]
-    machine_first = entry(254, "title", "機械訳", prov=machine)
+    human_first["conflicts"] = [{"ja": "giorno", "provenance": machine}]
+    machine_first = entry(254, "title", "giorno", prov=machine)
     machine_first["english"] = None
-    machine_first["conflicts"] = [{"ja": "土掘り", "provenance": PROV}]
+    machine_first["conflicts"] = [{"ja": "ferro", "provenance": PROV}]
     a = check_type([human_first], _scopes(tmp_path), set())[0]
     b = check_type([machine_first], _scopes(tmp_path), set())[0]
     assert a == b
-    assert a["ja"] == "土掘り" and a["provenance"]["class"] == "human"
+    assert a["ja"] == "ferro" and a["provenance"]["class"] == "human"

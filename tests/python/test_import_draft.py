@@ -72,24 +72,24 @@ def test_the_four_merges_and_their_counts(data, tmp_path, capsys):
     Store(data).save(
         "quest",
         [
-            _line(1, "title", "同じ題", HUMAN),
-            _line(2, "title", "人の題", HUMAN),
-            _line(3, "title", "訂正の題", CORRECTION),
+            _line(1, "title", "voce", HUMAN),
+            _line(2, "title", "strada", HUMAN),
+            _line(3, "title", "bosco", CORRECTION),
         ],
     )
     first = _draft(tmp_path, [
-        {"id": 1, "field": "title", "ja": "同じ題"},  # identical to the human text → unchanged
-        {"id": 2, "field": "title", "ja": "機械の題"},  # beside a human line → appended variant
-        {"id": 3, "field": "title", "ja": "機械の訂正題"},  # beside a correction → appended variant
-        {"id": 4, "field": "title", "ja": "新しい題"},  # absent → added
+        {"id": 1, "field": "title", "ja": "voce"},  # identical to the human text → unchanged
+        {"id": 2, "field": "title", "ja": "neve"},  # beside a human line → appended variant
+        {"id": 3, "field": "title", "ja": "pietra"},  # beside a correction → appended variant
+        {"id": 4, "field": "title", "ja": "ferro"},  # absent → added
     ])
     assert _run(first) == 0
     out = capsys.readouterr().out
     assert "added 1 · unchanged 1 · replaced 0 · appended 2" in out
     by = _by(data)
     assert by[(1, "title")]["provenance"] == HUMAN and by[(1, "title")]["conflicts"] == []
-    assert by[(2, "title")]["ja"] == "人の題" and by[(2, "title")]["provenance"] == HUMAN
-    assert by[(3, "title")]["ja"] == "訂正の題" and by[(3, "title")]["provenance"] == CORRECTION
+    assert by[(2, "title")]["ja"] == "strada" and by[(2, "title")]["provenance"] == HUMAN
+    assert by[(3, "title")]["ja"] == "bosco" and by[(3, "title")]["provenance"] == CORRECTION
     added = by[(4, "title")]
     assert added["status"] == "pending"
     assert added["provenance"] == {
@@ -102,19 +102,19 @@ def test_the_four_merges_and_their_counts(data, tmp_path, capsys):
 
     # a newer draft with the same name replaces the model's own variants, still never the human ones
     second = _draft(tmp_path, [
-        {"id": 2, "field": "title", "ja": "直した機械の題"},
-        {"id": 4, "field": "title", "ja": "直した新しい題"},
+        {"id": 2, "field": "title", "ja": "vino"},
+        {"id": 4, "field": "title", "ja": "bosco"},
     ], name="second.jsonl")
     assert _run(second, date="2026-09-20") == 0
     assert "added 0 · unchanged 0 · replaced 2 · appended 0" in capsys.readouterr().out
     by = _by(data)
     assert by[(2, "title")]["provenance"] == HUMAN
-    assert [c["ja"] for c in by[(2, "title")]["conflicts"]] == ["直した機械の題"]
+    assert [c["ja"] for c in by[(2, "title")]["conflicts"]] == ["vino"]
     assert by[(2, "title")]["conflicts"][0]["provenance"]["source"] == "draft-quest-sg3@2026-09-20"
-    assert by[(4, "title")]["ja"] == "直した新しい題"
+    assert by[(4, "title")]["ja"] == "bosco"
 
     # a draft under another name is another model pass: appended, the first stays
-    third = _draft(tmp_path, [{"id": 4, "field": "title", "ja": "別の下書き"}], name="third.jsonl")
+    third = _draft(tmp_path, [{"id": 4, "field": "title", "ja": "campo"}], name="third.jsonl")
     assert _run(third, name="audit-sg3", critic=None) == 0
     by = _by(data)
     assert [c["provenance"]["source"] for c in by[(4, "title")]["conflicts"]] == ["draft-audit-sg3@2026-09-14"]
@@ -124,14 +124,14 @@ def test_the_four_merges_and_their_counts(data, tmp_path, capsys):
 def test_replacing_a_draft_drops_the_ruling_that_judged_the_old_text(data, tmp_path, capsys):
     _styled(tmp_path)
     # an `accept` on a draft beside a human line must not carry over to new, unreviewed text
-    ruled = {"ja": "機械の題", "provenance": {"class": "machine", "model": "m", "source": "draft-quest-sg3@2026-09-14",
+    ruled = {"ja": "neve", "provenance": {"class": "machine", "model": "m", "source": "draft-quest-sg3@2026-09-14",
                                             "imported": "2026-09-14"},
              "ruling": {"ruling": "accept", "by": "maintainer", "date": "2026-09-15"}}
-    Store(data).save("quest", [_line(2, "title", "人の題", HUMAN, conflicts=[ruled])])
-    assert _run(_draft(tmp_path, [{"id": 2, "field": "title", "ja": "新しい機械の題"}]), date="2026-09-20") == 0
+    Store(data).save("quest", [_line(2, "title", "strada", HUMAN, conflicts=[ruled])])
+    assert _run(_draft(tmp_path, [{"id": 2, "field": "title", "ja": "acqua"}]), date="2026-09-20") == 0
     assert "replaced 1 · appended 0 · rulings dropped 1" in capsys.readouterr().out
     variant = _by(data)[(2, "title")]["conflicts"][0]
-    assert variant["ja"] == "新しい機械の題"
+    assert variant["ja"] == "acqua"
     assert "ruling" not in variant
     assert _by(data)[(2, "title")]["provenance"] == HUMAN
 
@@ -141,15 +141,15 @@ def test_replacing_a_draft_drops_the_ruling_that_judged_the_old_text(data, tmp_p
     [
         ([{"id": 1, "field": "title"}], "quest", "exactly {id, field, ja}"),
         ([{"id": 1, "field": "title", "ja": " "}], "quest", "non-empty"),
-        ([{"id": 1, "field": "nope", "ja": "題"}], "quest", "field 'nope'"),
-        ([{"id": "1", "field": "title", "ja": "題"}], "quest", "must be an integer"),
-        ([{"id": 1, "field": "title", "ja": "題"}, {"id": 1, "field": "title", "ja": "題2"}], "quest", "duplicate"),
-        ([{"id": 1, "field": "title", "ja": "題"}], "questz", "unknown type"),
+        ([{"id": 1, "field": "nope", "ja": "notte"}], "quest", "field 'nope'"),
+        ([{"id": "1", "field": "title", "ja": "notte"}], "quest", "must be an integer"),
+        ([{"id": 1, "field": "title", "ja": "notte"}, {"id": 1, "field": "title", "ja": "notte 2"}], "quest", "duplicate"),
+        ([{"id": 1, "field": "title", "ja": "notte"}], "questz", "unknown type"),
     ],
 )
 def test_invalid_drafts_are_refused_and_nothing_is_written(data, tmp_path, capsys, rows, type_, needle):
     _styled(tmp_path)
-    Store(data).save("quest", [_line(9, "title", "人の題", HUMAN)])
+    Store(data).save("quest", [_line(9, "title", "strada", HUMAN)])
     before = {p: p.read_bytes() for p in (data / "quest").glob("*.jsonl")}
     assert _run(_draft(tmp_path, rows), type_=type_) == 1
     assert needle in capsys.readouterr().err
@@ -157,10 +157,10 @@ def test_invalid_drafts_are_refused_and_nothing_is_written(data, tmp_path, capsy
 
 
 @pytest.mark.parametrize(("type_", "row"), [
-    ("quest", {"id": 1, "field": "progress", "ja": "もう済んだか?"}),
-    ("quest", {"id": 1, "field": "completion", "ja": "よくやった。"}),
-    ("gossip", {"id": "0123456789abcdef", "field": "text", "ja": "こんにちは。"}),
-    ("book", {"id": 15, "field": "text", "ja": "こんにちは、Morgan。"}),
+    ("quest", {"id": 1, "field": "progress", "ja": "fuoco?"}),
+    ("quest", {"id": 1, "field": "completion", "ja": "fuoco,"}),
+    ("gossip", {"id": "0123456789abcdef", "field": "text", "ja": "chiave,"}),
+    ("book", {"id": 15, "field": "text", "ja": "chiave,Morgan,"}),
 ])
 def test_server_only_text_is_imported_only_under_the_current_style_version(data, tmp_path, capsys, type_, row):
     # ADR-023: the version is checked at import too, not only when translate_batch writes the file
@@ -177,7 +177,7 @@ def test_server_only_text_is_imported_only_under_the_current_style_version(data,
 
 
 def test_a_bad_name_is_refused(data, tmp_path, capsys):
-    assert _run(_draft(tmp_path, [{"id": 1, "field": "title", "ja": "題"}]), name="Bad Name") == 1
+    assert _run(_draft(tmp_path, [{"id": 1, "field": "title", "ja": "notte"}]), name="Bad Name") == 1
     assert "--name" in capsys.readouterr().err
 
 
@@ -189,8 +189,8 @@ UI_MACHINE = {"class": "machine", "model": "m", "source": "draft-ui-first@2026-0
 
 
 def _ui_store(d: Path, english_ids=("A", "B", "C")) -> None:
-    stale = {**_line("A", "text", "旧", UI_MACHINE), "status": "stale", "english": dict(UI_OLD)}
-    other = {**_line("B", "text", "別", UI_MACHINE), "english": dict(UI_OLD)}
+    stale = {**_line("A", "text", "pane", UI_MACHINE), "status": "stale", "english": dict(UI_OLD)}
+    other = {**_line("B", "text", "albero", UI_MACHINE), "english": dict(UI_OLD)}
     Store(d).save("ui", [stale, other])
     Store(d, english=True).save(
         "ui", [{"id": i, "field": "text", "en": i, "hash": UI_NOW["hash"], "src": UI_NOW["src"]} for i in english_ids]
@@ -204,7 +204,7 @@ def _run_ui(file: Path, reverify: bool, name="ui-second"):
 
 def test_reverify_records_the_current_english_on_every_named_line(data, tmp_path, capsys):
     _ui_store(data)
-    rows = [{"id": "A", "field": "text", "ja": "旧"}, {"id": "C", "field": "text", "ja": "新"}]  # unchanged · added
+    rows = [{"id": "A", "field": "text", "ja": "pane"}, {"id": "C", "field": "text", "ja": "strada"}]  # unchanged · added
     assert _run_ui(_draft(tmp_path, rows), reverify=True) == 0
     by = _by(data, "ui")
     assert by[("A", "text")]["english"] == UI_NOW  # a stale line keeps its Japanese and is judged fresh next check
@@ -216,7 +216,7 @@ def test_reverify_records_the_current_english_on_every_named_line(data, tmp_path
 
 def test_without_reverify_the_english_is_untouched(data, tmp_path, capsys):
     _ui_store(data)
-    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "旧"}]), reverify=False) == 0
+    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "pane"}]), reverify=False) == 0
     assert _by(data, "ui")[("A", "text")]["english"] == UI_OLD
     assert "re-verified" not in capsys.readouterr().out
 
@@ -224,7 +224,7 @@ def test_without_reverify_the_english_is_untouched(data, tmp_path, capsys):
 def test_reverify_refuses_a_row_with_no_english_and_writes_nothing(data, tmp_path, capsys):
     _ui_store(data, english_ids=("A",))
     before = Store(data).load("ui")
-    rows = [{"id": "A", "field": "text", "ja": "旧"}, {"id": "Z", "field": "text", "ja": "無"}]
+    rows = [{"id": "A", "field": "text", "ja": "pane"}, {"id": "Z", "field": "text", "ja": "cosa"}]
     assert _run_ui(_draft(tmp_path, rows), reverify=True) == 1
     assert "no English" in capsys.readouterr().err
     assert Store(data).load("ui") == before
@@ -233,7 +233,7 @@ def test_reverify_refuses_a_row_with_no_english_and_writes_nothing(data, tmp_pat
 def test_reverify_refuses_a_type_it_does_not_list(data, tmp_path, capsys):
     # gossip is keyed by its English hash, so a rewording is a new key, never a stale line
     _styled(tmp_path)
-    argv = ["draft", "gossip", str(_draft(tmp_path, [{"id": "0123456789abcdef", "field": "text", "ja": "話"}])),
+    argv = ["draft", "gossip", str(_draft(tmp_path, [{"id": "0123456789abcdef", "field": "text", "ja": "erba"}])),
             "--model", "m", "--date", "2026-09-19", "--name", "gossip-sg3", "--reverify"]
     assert imp.run(argv) == 1
     assert "only, not 'gossip'" in capsys.readouterr().err
@@ -242,9 +242,9 @@ def test_reverify_refuses_a_type_it_does_not_list(data, tmp_path, capsys):
 def test_reverify_refuses_a_line_with_a_hand_written_variant(data, tmp_path, capsys):
     _ui_store(data)
     lines = Store(data).load("ui")
-    lines[0]["conflicts"].append({"ja": "人", "provenance": dict(HUMAN)})
+    lines[0]["conflicts"].append({"ja": "lupo", "provenance": dict(HUMAN)})
     Store(data).save("ui", lines)
-    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "旧"}]), reverify=True) == 1
+    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "pane"}]), reverify=True) == 1
     assert "hand-written" in capsys.readouterr().err
 
 
@@ -271,7 +271,7 @@ def _checked(d: Path, type_: str) -> dict:
 
 
 def _stale_quest(d: Path, conflicts=()) -> None:
-    line = {**_line(7, "objectives", "失われた地図を見つける。", Q_MACHINE, conflicts), "status": "stale",
+    line = {**_line(7, "objectives", "libro,", Q_MACHINE, conflicts), "status": "stale",
             "english": {"hash": _h(Q_OLD), "src": "wdb@1.60.1.69913"}}
     Store(d).save("quest", [line])
     Store(d, english=True).save(
@@ -281,7 +281,7 @@ def _stale_quest(d: Path, conflicts=()) -> None:
 
 def _run_quest(tmp_path: Path, reverify: bool) -> int:
     _styled(tmp_path)
-    rows = [{"id": 7, "field": "objectives", "ja": "失われた海図を見つける。"}]
+    rows = [{"id": 7, "field": "objectives", "ja": "spada,"}]
     argv = ["draft", "quest", str(_draft(tmp_path, rows)), "--model", "m", "--date", "2026-09-26", "--name", "q-sg3"]
     return imp.run(argv + (["--reverify"] if reverify else []))
 
@@ -291,7 +291,7 @@ def test_reverify_judges_a_redrafted_stale_quest_line_fresh(data, tmp_path):
     assert _run_quest(tmp_path, reverify=True) == 0
     out = _checked(data, "quest")
     assert out["english"] == {"hash": _h(Q_NOW), "src": "wdb@1.60.1.70009"}
-    assert out["status"] == "trusted" and out["ja"] == "失われた海図を見つける。"
+    assert out["status"] == "trusted" and out["ja"] == "spada,"
 
 
 def test_without_reverify_a_redrafted_stale_quest_line_stays_stale(data, tmp_path):
@@ -301,13 +301,13 @@ def test_without_reverify_a_redrafted_stale_quest_line_stays_stale(data, tmp_pat
 
 
 def test_reverify_allows_a_line_whose_hand_written_variants_are_all_ruled_reject(data, tmp_path):
-    _stale_quest(data, conflicts=[{"ja": "人の訳", "provenance": dict(HUMAN), "ruling": dict(REJECT)}])
+    _stale_quest(data, conflicts=[{"ja": "pane", "provenance": dict(HUMAN), "ruling": dict(REJECT)}])
     assert _run_quest(tmp_path, reverify=True) == 0
     assert _checked(data, "quest")["english"]["hash"] == _h(Q_NOW)
 
 
 def test_reverify_refuses_a_hand_written_variant_not_ruled_reject(data, tmp_path, capsys):
-    _stale_quest(data, conflicts=[{"ja": "人の訳", "provenance": dict(HUMAN)}])
+    _stale_quest(data, conflicts=[{"ja": "pane", "provenance": dict(HUMAN)}])
     before = Store(data).load("quest")
     assert _run_quest(tmp_path, reverify=True) == 1
     assert "not ruled reject" in capsys.readouterr().err
@@ -332,7 +332,7 @@ def test_reverify_refuses_a_row_that_loses_to_a_variant_ruled_accept(data, tmp_p
 def _sg_ui_store(d: Path, ruling: dict | None = None) -> None:
     # the line ships an older draft whose name carries a style version; the English has moved since
     old = {**UI_MACHINE, "source": "draft-ui-first-sg12@2026-09-14"}
-    line = {**_line("A", "text", "体力が7.5増加", old), "status": "stale", "english": dict(UI_OLD)}
+    line = {**_line("A", "text", "fiore 7.5 frase", old), "status": "stale", "english": dict(UI_OLD)}
     if ruling:
         line["ruling"] = ruling
     Store(d).save("ui", [line])
@@ -344,21 +344,21 @@ def test_reverify_refuses_a_row_ranked_below_an_older_draft(data, tmp_path, caps
     # the new English would ship the old number as checked against it; the import stops and writes nothing
     _sg_ui_store(data)
     before = Store(data).load("ui")
-    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "体力が2増加"}]), reverify=True) == 1
+    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "fiore 2 frase"}]), reverify=True) == 1
     assert "rank below another variant (A/text)" in capsys.readouterr().err
     assert Store(data).load("ui") == before
 
 
 def test_reverify_stamps_a_redraft_once_the_older_draft_is_ruled_reject(data, tmp_path):
     _sg_ui_store(data, {"ruling": "reject", "by": "maintainer", "date": "2026-10-30", "note": "old English"})
-    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "体力が2増加"}]), reverify=True) == 0
+    assert _run_ui(_draft(tmp_path, [{"id": "A", "field": "text", "ja": "fiore 2 frase"}]), reverify=True) == 0
     assert _by(data, "ui")[("A", "text")]["english"] == UI_NOW
 
 SPELL_TEXT_OLD, SPELL_TEXT = "Heals the target for $s1.", "Heals a friendly target for $s1."
 
 
 def _spell(d: Path, with_description: bool) -> None:
-    line = {**_line(139, "description", "対象を$N1回復する。", Q_MACHINE), "status": "stale",
+    line = {**_line(139, "description", "chiave $N1 libro,", Q_MACHINE), "status": "stale",
             "english": {"hash": _h(SPELL_TEXT_OLD), "src": "db2@1.60.1.69913"}}
     Store(d).save("spell", [line])
     en = [{"id": 139, "field": "name", "en": "Renew", "hash": _h("Renew"), "src": FOREVER}]
@@ -368,7 +368,7 @@ def _spell(d: Path, with_description: bool) -> None:
 
 
 def _run_spell(tmp_path: Path) -> int:
-    rows = [{"id": 139, "field": "description", "ja": "味方を$N1回復する。"}]
+    rows = [{"id": 139, "field": "description", "ja": "porta $N1 libro,"}]
     argv = ["draft", "spell", str(_draft(tmp_path, rows)), "--model", "m", "--date", "2026-09-26", "--name", "s-sg3"]
     return imp.run(argv + ["--reverify"])
 

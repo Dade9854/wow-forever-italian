@@ -13,28 +13,28 @@ AL = load_allowlist("Health  # stat\nMana  # stat\nHorde  # faction\n")
 
 
 def test_latin_names_multiword_and_allowlist():
-    ja = "Silverwind RefugeにいるSenani Thunderheartは、Sharptalon's Clawを見た。Healthを回復。{name}!"
+    ja = "ecco Silverwind Refuge scudo Senani Thunderheart vento,Sharptalon's Claw porta,Health lupo,{name}!"
     assert latin_names(ja, AL) == ["Silverwind Refuge", "Senani Thunderheart", "Sharptalon's Claw"]
-    assert latin_names("Hordeの兵士", AL) == []
-    assert latin_names("Mk2 の ab cd", AL) == []  # < 3 letters after digits; short runs dropped
+    assert latin_names("ecco Horde lupo", AL) == []
+    assert latin_names("ecco Mk2 lupo ab cd", AL) == []  # < 3 letters after digits; short runs dropped
 
 
 def test_check_names_quest_scope_and_word_fallback():
     scope = (
         "Bring Sharptalon's Claw to Senani Thunderheart at Splintertree Post, Ashenvale. Sharptalon's Claw"
     )
-    checked, missing = check_names("Silverwind RefugeにいるSenani Thunderheart", scope, AL)
+    checked, missing = check_names("ecco Silverwind Refuge scudo Senani Thunderheart", scope, AL)
     assert checked == ["Silverwind Refuge", "Senani Thunderheart"] and missing == ["Silverwind Refuge"]
     # a multi-word join that the English writes in another order still passes word by word
-    checked, missing = check_names("Post Splintertreeへ", scope, AL)
+    checked, missing = check_names("ecco Post Splintertree lettera", scope, AL)
     assert missing == []
 
 
 def test_numbers_fold_and_ignore_glued_digits():
-    assert numbers("Kobold Verminを１０匹殺し、Mk2を3つ") == {"10": 1, "3": 1}
-    checked, missing = check_numbers("6つのバルコニー", "a room with six balconies")
+    assert numbers("ecco Kobold Vermin spada １０ giorno,Mk2 spada 3 lupo") == {"10": 1, "3": 1}
+    checked, missing = check_numbers("6 luna", "a room with six balconies")
     assert checked == ["6"] and missing == []
-    checked, missing = check_numbers("Kobold Verminを8匹", "Kill 10 Kobold Vermin")
+    checked, missing = check_numbers("ecco Kobold Vermin spada 8 fuoco", "Kill 10 Kobold Vermin")
     assert missing == ["8"]
 
 
@@ -92,8 +92,8 @@ def test_the_countable_codes_are_counted_rather_than_refused():
 
 
 def test_fill_indices_reads_the_placeholders_in_order():
-    assert align.fill_indices("$N2秒かけて体力を$N1回復します。") == [2, 1]
-    assert align.fill_indices("体力を61回復します。") == []
+    assert align.fill_indices("$N2 oro $N1 scudo,") == [2, 1]
+    assert align.fill_indices("frase 61 scudo,") == []
     assert align.fill_indices(None) == []
     assert align.fill_indices("$N10") == [10]
 
@@ -114,8 +114,8 @@ def test_a_duration_is_also_a_value_slot():
     """`$N` indexes every number in reading order, the duration's included; `$D` indexes only durations."""
     assert align.value_slots("Restores $o1 health over $d.") == 2
     assert align.duration_slots("Restores $o1 health over $d.") == 1
-    assert align.duration_indices("$D1かけて$N1回復。") == [1]
-    assert align.duration_indices("体力を61回復します。") == []
+    assert align.duration_indices("$D1 ferro $N1 fiume,") == [1]
+    assert align.duration_indices("frase 61 scudo,") == []
     assert align.duration_indices(None) == []
 
 
@@ -141,7 +141,7 @@ def test_a_named_variable_is_a_value_slot():
 def test_an_english_ordinal_is_the_number_it_reads_as():
     """"Only 40th level or higher" reads as 40 on screen, so a Japanese `40` is not invented."""
     assert align.numbers("Only 40th level or higher players", english=True)["40"] == 1
-    assert align.check_numbers("レベル40以上", "Only 40th level or higher players")[1] == []
+    assert align.check_numbers("scudo 40 libro", "Only 40th level or higher players")[1] == []
     assert align.numbers("Only 40th level", english=False)["40"] == 0  # the Japanese side is unchanged
 
 
@@ -158,17 +158,17 @@ def test_slots_read_the_live_line_the_way_the_addon_does():
 
 def test_slot_problems_need_the_placeholder_that_points_at_the_slot():
     en = "Restores $o1 health over $d."
-    assert align.slot_problems(en, "$D1かけて体力を$N1回復します。") == []
+    assert align.slot_problems(en, "$D1 sole $N1 scudo,") == []
     # a bare count would pass this: two placeholders for two codes, but $o1 dropped and $d shown as a bare number
-    assert align.slot_problems(en, "$D1かけて体力を$N2回復します。") == ["slot_missing:N1", "duration_as_value:N2"]
-    assert align.slot_problems(en, "$N2秒かけて体力を$N1回復します。") == ["duration_as_value:N2", "duration_missing:D1"]
+    assert align.slot_problems(en, "$D1 sole $N2 scudo,") == ["slot_missing:N1", "duration_as_value:N2"]
+    assert align.slot_problems(en, "$N2 oro $N1 scudo,") == ["duration_as_value:N2", "duration_missing:D1"]
     # the written "5 sec" is duration 1, so the `$d` is duration 2
     en = "Regenerate $s1 health every 5 sec for $d."
-    assert align.slot_problems(en, "$D2の間、5秒ごとに体力を$N1回復します。") == []
-    assert align.slot_problems(en, "$D1の間、5秒ごとに体力を$N1回復します。") == ["duration_missing:D2"]
+    assert align.slot_problems(en, "$D2 neve,5 scudo $N1 scudo,") == []
+    assert align.slot_problems(en, "$D1 neve,5 scudo $N1 scudo,") == ["duration_missing:D2"]
     # a literal may be written out; a counter is carried as the code
-    assert align.slot_problems("Kill 7 Nightsabers.", "Nightsaberを7体倒す。") == []
-    assert align.slot_problems("Slay $1997w Wolves.", "Wolfを$1997w体倒す。") == []
+    assert align.slot_problems("Kill 7 Nightsabers.", "ecco Nightsaber spada 7 parola,") == []
+    assert align.slot_problems("Slay $1997w Wolves.", "ecco Wolf spada $1997w parola,") == []
     assert align.slot_problems("Absorbs $s1$?a1[ more][].", "x") is None
 
 
@@ -228,7 +228,7 @@ def test_a_conditional_whose_branches_read_the_same_counts_as_one_branch():
     assert [(s.kind, s.duration) for s in align.slots(shield)] == [("sum", False), ("code", True), ("code", True)]
     assert align.duration_slots(shield) == 2
     # the in-game line: the duration is written as `$N2` with its unit, and neither `$D` is there
-    assert align.slot_problems(shield, "$N2のダメージを吸収します。$N1秒間持続します。") == [
+    assert align.slot_problems(shield, "$N2 frase,$N1 chiave,") == [
         "duration_as_value:N2", "duration_missing:D1", "duration_missing:D2",
     ]
     # a range in one branch against one value in the other: one value either way
@@ -247,7 +247,7 @@ def test_a_number_written_into_a_branch_is_a_value_the_client_fills():
     either: it is a code slot, not a literal."""
     s = align.slots("Each jump reduces the damage by $?a415096[20%][30%].  Affects $x1 total targets.")
     assert [x.kind for x in s] == ["code", "code"]
-    assert align.slot_problems("Reduces by $?a1[20%][30%].", "20%減少します。") == ["slot_missing:N1"]
+    assert align.slot_problems("Reduces by $?a1[20%][30%].", "20% nave,") == ["slot_missing:N1"]
 
 
 def test_branches_that_differ_in_words_stay_uncountable():
@@ -296,7 +296,7 @@ def test_a_multi_line_head_is_a_tail_too():
     head = "Allows you to ride basic ground mounts that require a riding skill of 75.\r\n\r\nKnown abilities:"
     assert align.split_tail(riding) == (head, True)
     assert align.value_slots(riding) == 1
-    assert align.tail_problems(riding, "乗れるようになります。\r\n\r\n習得済み：$T") == []
+    assert align.tail_problems(riding, "lupo,\r\n\r\n voce:$T") == []
 
 
 def test_only_a_trailing_chain_with_a_head_is_peeled():
@@ -313,13 +313,13 @@ def test_only_a_trailing_chain_with_a_head_is_peeled():
 
 
 def test_the_japanese_carries_the_tail_as_one_trailing_marker():
-    ok = "次の言語に堪能です：$T"
+    ok = "parola:$T"
     assert align.tail_problems(_LANGUAGES, ok) == []
-    assert align.tail_problems(_LANGUAGES, "次の言語に堪能です：") == ["tail_missing"]
-    assert align.tail_problems("Deals $s1 damage.", "$N1のダメージ。$T") == ["tail_unexpected"]
-    assert align.tail_problems(_LANGUAGES, "$T次の言語に堪能です：") == ["tail_misplaced"]
-    assert align.tail_problems(_LANGUAGES, "次の言語：$T$T") == ["tail_misplaced"]
+    assert align.tail_problems(_LANGUAGES, "parola:") == ["tail_missing"]
+    assert align.tail_problems("Deals $s1 damage.", "$N1 cosa,$T") == ["tail_unexpected"]
+    assert align.tail_problems(_LANGUAGES, "$T parola:") == ["tail_misplaced"]
+    assert align.tail_problems(_LANGUAGES, "acqua:$T$T") == ["tail_misplaced"]
     assert align.tail_problems(_LANGUAGES, "$T") == ["tail_empty"]  # no head translated at all
     # a chain element written out by the drafter (altered, dropped or added) is refused
-    assert "tail_chain" in align.tail_problems(_LANGUAGES, "次の言語：$?s668[\r\n$@spellname668][]")
-    assert "tail_chain" in align.tail_problems(_LANGUAGES, "次の言語：$@spellname668$T")
+    assert "tail_chain" in align.tail_problems(_LANGUAGES, "acqua:$?s668[\r\n$@spellname668][]")
+    assert "tail_chain" in align.tail_problems(_LANGUAGES, "acqua:$@spellname668$T")

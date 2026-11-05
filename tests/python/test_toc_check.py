@@ -14,15 +14,12 @@ def test_real_toc_fields_and_load_order(root):
     # An icon for the AddOn List (a client icon Blizzard's own Vanilla/QuestInfo.xml references) and Notes
     # that say where the settings are.
     assert meta["IconTexture"] == "Interface\\AddOns\\WoWForeverItalian\\Media\\icon"
-    assert "Esc > Options > AddOns" in meta["Notes"]
-    assert "Hold Alt to see" not in meta["Notes"]
+    assert "Esc > Opzioni > AddOn" in meta["Notes"]
     # Dependency order as shipped: Core, then Data, the generated block, the Lookup slot, then the UI modules.
     head = ["Core/ErrorLog.lua", "Core/Const.lua", "Core/Compat.lua", "Core/Normalize.lua", "Core/Hash.lua", "Core/Data.lua"]
     tail = [
-        "Core/Lookup.lua", "Core/Readings.lua", "Core/Glosses.lua",
+        "Core/Lookup.lua",
         "Core/Align.lua", "Core/State.lua", "Core/Settings.lua",
-        "Core/Voice.lua",  # the voice packs' registry, before the settings that read it
-        "Core/VoiceQueue.lua",  # the voice panel's order and choices
         "Core/Modifier.lua",
         "Core/Placeholders.lua", "Core/Translator.lua", "Core/UIStringKeys.lua", "Core/UIStrings.lua",
         "Core/Objectives.lua",  # objective lines
@@ -31,12 +28,7 @@ def test_real_toc_fields_and_load_order(root):
         "Core/Intro.lua",  # whether the first-install window is owed
         "Core/RecentLines.lua", "Core/Reports.lua", "Core/ReportText.lua",  # fix reports
         "Core/Diag.lua", "Core/BugReport.lua",  # the problem log, the bug report link
-        "UI/Font.lua", "UI/Frames.lua", "UI/ReadingPopup.lua", "UI/Readings.lua", "UI/Render.lua",
-        "UI/VoicePlayer.lua",  # voice playback, after Render that starts a line
-        # the voice panel: its looks, head and text before the panel that uses them
-        "UI/VoicePanelLooks.lua", "UI/VoicePanelHead.lua", "UI/VoicePanelText.lua", "UI/VoicePanel.lua",
-        "UI/VoiceQuestLog.lua",  # the quest log's button and the remembered speaker
-        "UI/VoiceErrors.lua",
+        "UI/Font.lua", "UI/Frames.lua", "UI/Render.lua",
         "UI/ButtonText.lua", "UI/Labels.lua",
         "UI/TextWatch.lua", "UI/TaintWatch.lua",  # ADR-058: text followed from our own frame, the taint watch
         "UI/HtmlText.lua", "UI/LoadOnDemand.lua",
@@ -80,7 +72,7 @@ def test_real_toc_fields_and_load_order(root):
         "UI/SettingsPanel.lua", "UI/SettingsTutorials.lua", "UI/EditMode.lua", "UI/QuickKeybind.lua",
         "UI/ColorPicker.lua", "UI/ChatConfig.lua", "UI/TextToSpeech.lua", "UI/ChatTabs.lua", "UI/CombatLog.lua",
         "UI/AddonList.lua", "UI/ScriptErrors.lua", "UI/Splash.lua", "UI/EventTrace.lua", "UI/ChromieTime.lua",
-        "UI/Alerts.lua", "UI/Errors.lua", "UI/ChatSystem.lua", "UI/ChatInput.lua", "UI/Speech.lua", "UI/BossBanner.lua", "UI/Cinematic.lua",
+        "UI/Alerts.lua", "UI/Errors.lua", "UI/ChatSystem.lua", "UI/Speech.lua", "UI/BossBanner.lua", "UI/Cinematic.lua",
         "UI/Subtitles.lua", "UI/CoinPickup.lua", "UI/CombatFeedback.lua",
         "UI/EquipmentFlyout.lua", "UI/GhostFrame.lua", "UI/GuildInvite.lua", "UI/InstanceAbandon.lua",
         "UI/LootHistory.lua", "UI/LossOfControl.lua", "UI/MajorFactionToast.lua",

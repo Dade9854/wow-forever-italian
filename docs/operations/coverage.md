@@ -1,26 +1,26 @@
-# Coverage: how much of the game ships in Japanese
+# Coverage: how much of the game ships in Italian
 
-> **Generated** by `make coverage` (`pipeline/wfi/dev/coverage.py`) on 2026-11-04 at commit `161264dd`.
+> **Generated** by `make coverage` (`pipeline/wfi/dev/coverage.py`) on 2026-11-05 at commit `e1f6fc83`.
 > Do not edit by hand: every pull request that changes `data/` re-runs it. Measured from
 > the English the Forever client serves, every line of it; a line that is only a
 > name, a placeholder quest or a picture-only page counts as done (nothing to translate).
 
 ## Translation
 
-| Surface | English lines | Ship Japanese | Nothing to translate | Done | Not yet |
+| Surface | English lines | Ship Italian | Nothing to translate | Done | Not yet |
 |---|---|---|---|---|---|
-| Quest text | 20,557 | 20,452 | 105 | 100.0% | 0 |
-| NPC dialogue (gossip, speech) | 10,965 | 10,965 | 0 | 100.0% | 0 |
-| Book / letter pages | 1,257 | 1,205 | 52 | 100.0% | 0 |
-| Quest objective lines | 440 | 402 | 38 | 100.0% | 0 |
-| Exploration / event objectives | 223 | 221 | 2 | 100.0% | 0 |
-| Item descriptions | 10,299 | 8,765 | 0 | 85.1% | 1,534 |
-| Spell tooltips + auras | 25,913 | 25,842 | 1 | 99.7% | 70 |
-| Interface strings | 16,431 | 16,431 | 0 | 100.0% | 0 |
-| **All** | **86,085** | | | **98.1%** | **1,604** |
+| Quest text | 20,557 | 88 | 105 | 0.9% | 20,364 |
+| NPC dialogue (gossip, speech) | 10,965 | 0 | 0 | 0.0% | 10,965 |
+| Book / letter pages | 1,257 | 0 | 80 | 6.4% | 1,177 |
+| Quest objective lines | 440 | 0 | 38 | 8.6% | 402 |
+| Exploration / event objectives | 223 | 0 | 2 | 0.9% | 221 |
+| Item descriptions | 10,299 | 0 | 0 | 0.0% | 10,299 |
+| Spell tooltips + auras | 25,913 | 0 | 1 | 0.0% | 25,912 |
+| Interface strings | 16,431 | 0 | 1,045 | 6.4% | 15,386 |
+| **All** | **86,085** | | | **1.6%** | **84,726** |
 
 Lines shipped as their English under a maintainer ruling (`ruling: accept`, for names, classes,
-professions, internal strings): quest 331, gossip 81, item 893, spell 293, ui 313.
+professions, internal strings): .
 
 ### Nothing to translate (counted as done)
 
@@ -30,23 +30,33 @@ professions, internal strings): quest 331, gossip 81, item 893, spell 293, ui 31
 | Exploration / event objectives | name only (`pipeline/area_names.txt`) | 2 |
 | Quest text | placeholder quest (never shown) | 100 |
 | Quest text | a bare label: a name or a one-word placeholder (ships as the English) | 5 |
-| Book / letter pages | Missing Text / picture-only page | 49 |
+| Book / letter pages | Missing Text / picture-only page | 54 |
+| Book / letter pages | a bare label: names and numbers only (ships as the English) | 24 |
 | Book / letter pages | picture-only or cipher page | 2 |
-| Book / letter pages | a bare label: names and numbers only (ships as the English) | 1 |
 | Spell tooltips + auras | a template that prints nothing (`$@null`) | 1 |
+| Interface strings | a client-table row its family's key list leaves out (a name or developer row, ADR-042) | 1,029 |
+| Interface strings | left out with its reason in `pipeline/ui_exclusions.txt` | 16 |
 
 ### What is not done yet
 
 | Surface | Why | Lines |
 |---|---|---|
-| Item descriptions | no Japanese yet: no text from the Forever tables on this build yet (English still from Classic Era); rechecked at each re-pull | 1,533 |
+| Quest text | no Japanese yet | 20,364 |
+| NPC dialogue (gossip, speech) | no Japanese yet | 10,965 |
+| Book / letter pages | no Japanese yet | 1,177 |
+| Quest objective lines | no Japanese yet | 402 |
+| Exploration / event objectives | no Japanese yet | 221 |
+| Item descriptions | no Japanese yet | 8,279 |
+| Item descriptions | no Japanese yet: no text from the Forever tables on this build yet (English still from Classic Era); rechecked at each re-pull | 2,019 |
 | Item descriptions | no Japanese yet: the template has too many optional parts for one translation | 1 |
+| Spell tooltips + auras | no Japanese yet | 25,839 |
 | Spell tooltips + auras | no Japanese yet: the template includes a spell the Forever tables do not hold | 34 |
-| Spell tooltips + auras | no Japanese yet: no text from the Forever tables on this build yet (English still from Classic Era); rechecked at each re-pull | 23 |
+| Spell tooltips + auras | no Japanese yet: no text from the Forever tables on this build yet (English still from Classic Era); rechecked at each re-pull | 26 |
 | Spell tooltips + auras | no Japanese yet: the template has too many optional parts for one translation | 8 |
 | Spell tooltips + auras | no Japanese yet: the template names the aura's caster, which only the game knows | 2 |
 | Spell tooltips + auras | no Japanese yet: the template includes an aura without saying which spell's | 2 |
 | Spell tooltips + auras | no Japanese yet: the template does not say how many values it prints | 1 |
+| Interface strings | no Japanese yet | 15,386 |
 
 ### Interface lines left English, by reason
 
@@ -354,44 +364,3 @@ Lines are non-empty values; a server cache counts the records this install holds
 | `zoneintromusictable.f0` | internal | 54 | music names |
 | `zonelight.f0` | internal | 24 | light names |
 | `zonemusic.f0` | internal | 164 | music names |
-
-## Word cards (readings with meanings)
-
-| Type | Lines that can carry a word list | With one | Done | Stale | Words | With a meaning |
-|---|---|---|---|---|---|---|
-| quest | 19,121 | 19,121 | 100.0% | 184 | 305,174 | 100.0% |
-| gossip | 10,837 | 10,837 | 100.0% | 0 | 103,831 | 100.0% |
-| ui | 15,611 | 15,611 | 100.0% | 0 | 48,351 | 100.0% |
-| book | 1,167 | 1,167 | 100.0% | 0 | 39,619 | 100.0% |
-
-Item, spell, objective and area text take no word cards; HTML book pages
-and lines holding a `|` escape are not counted.
-
-## Voice
-
-Lines the voice reads, from `data/voice/` and the audio record `data/voice/audio.jsonl`.
-In step: the recorded file was made from the Japanese that ships now, in the speaker's cast
-voice. A line several differently cast speakers say has a file per voice, so files can
-outnumber lines.
-
-| Kind | Lines | Files | In step | Stale | Not made | Read by the narrator |
-|---|---|---|---|---|---|---|
-| Quest offer | 4,329 | 4,398 | 4,398 | 0 | 0 | 901 |
-| Quest progress | 2,936 | 2,960 | 2,960 | 0 | 0 | 89 |
-| Quest turn-in | 4,061 | 4,086 | 4,086 | 0 | 0 | 173 |
-| NPC talk (greetings, gossip, quest text keyed by its English) | 2,077 | 2,822 | 2,822 | 0 | 0 | 15 |
-| Book and letter pages | 1,102 | 1,102 | 1,102 | 0 | 0 | 1,039 |
-| The character's error lines (one file per race and sex) | 50 | 900 | 900 | 0 | 0 | 0 |
-
-Lines that play another line's file (a female wording of a gossip line, or a quest's text Forever repeats under another id): 1.
-
-### Silent lines
-
-Shipped Japanese the voice does not read, by reason.
-
-| Why | Lines |
-|---|---|
-| NPC speech in chat, or other NPC text no voiced window shows (from VMaNGOS) | 8,855 |
-| HTML book page (keeps the client's layout) | 38 |
-| Collected in game with no known speaker | 21 |
-| A quest log line (the completion text the tracker shows) | 11 |

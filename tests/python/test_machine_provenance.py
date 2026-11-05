@@ -43,14 +43,14 @@ def _line(ja, prov, conflicts=(), field="title", id_=2):
 
 
 def test_machine_provenance_needs_a_model():
-    assert validate_line("quest", _line("爪", MACHINE)) == []
+    assert validate_line("quest", _line("parola", MACHINE)) == []
     no_critic = {k: v for k, v in MACHINE.items() if k != "critic"}
-    assert validate_line("quest", _line("爪", no_critic)) == []
+    assert validate_line("quest", _line("parola", no_critic)) == []
     no_model = {k: v for k, v in MACHINE.items() if k != "model"}
-    assert any("needs model" in p for p in validate_line("quest", _line("爪", no_model)))
+    assert any("needs model" in p for p in validate_line("quest", _line("parola", no_model)))
     blank_critic = dict(MACHINE, critic="")
-    assert any("critic" in p for p in validate_line("quest", _line("爪", blank_critic)))
-    inside = _line("爪", HUMAN, conflicts=[{"ja": "爪2", "provenance": no_model}])
+    assert any("critic" in p for p in validate_line("quest", _line("parola", blank_critic)))
+    inside = _line("parola", HUMAN, conflicts=[{"ja": "parola 2", "provenance": no_model}])
     assert any("needs model" in p for p in validate_line("quest", inside))
 
 
@@ -66,40 +66,40 @@ SCOPE = Scope(
 
 
 def test_human_beats_machine_when_both_pass():
-    line = _line("Sharptalonの鉤爪", MACHINE, conflicts=[{"ja": "Sharptalonの爪", "provenance": HUMAN}])
+    line = _line("ecco Sharptalon parola", MACHINE, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": HUMAN}])
     d = decide(line, SCOPE, set(), "d311f9a5c36057a2")
     assert (d.status, d.winner) == ("trusted", 1)
 
 
 def test_correction_beats_machine():
-    line = _line("Sharptalonの鉤爪", MACHINE, conflicts=[{"ja": "Sharptalonの爪", "provenance": CORRECTION}])
+    line = _line("ecco Sharptalon parola", MACHINE, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": CORRECTION}])
     assert decide(line, SCOPE, set(), "d311f9a5c36057a2").winner == 1
 
 
 def test_machine_does_not_replace_a_failing_human_without_a_ruling():
     # the human variant fails alignment (a name the English does not have); the machine draft passes
-    line = _line("Thistle boreの鉤爪", HUMAN, conflicts=[{"ja": "Sharptalonの鉤爪", "provenance": MACHINE}])
+    line = _line("ecco Thistle bore parola", HUMAN, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": MACHINE}])
     d = decide(line, SCOPE, set(), "d311f9a5c36057a2")
     assert d.status == "rejected"
     assert d.winner == 0
-    assert d.reasons == ["alignment_failed:Thistle", "alignment_failed:bore"]  # the human's own reasons
+    assert d.reasons == ["alignment_failed:Thistle"]  # the human's own reasons (a lower-case "bore" is no name)
 
 
 def test_an_accept_ruling_lets_the_machine_variant_win():
-    ruled = {"ja": "Sharptalonの鉤爪", "provenance": MACHINE, "ruling": ACCEPT}
-    line = _line("Thistle boreの鉤爪", HUMAN, conflicts=[ruled])
+    ruled = {"ja": "ecco Sharptalon parola", "provenance": MACHINE, "ruling": ACCEPT}
+    line = _line("ecco Thistle bore parola", HUMAN, conflicts=[ruled])
     d = decide(line, SCOPE, set(), "d311f9a5c36057a2")
     assert (d.status, d.winner) == ("trusted", 1)
 
 
 def test_machine_alone_ships_by_the_rules():
-    d = decide(_line("Sharptalonの鉤爪", MACHINE), SCOPE, set(), "d311f9a5c36057a2")
+    d = decide(_line("ecco Sharptalon parola", MACHINE), SCOPE, set(), "d311f9a5c36057a2")
     assert d.status == "trusted"
 
 
 def test_a_newer_machine_variant_ranks_with_other_machine_text_by_the_rules():
     other = dict(MACHINE, source="draft-quest@2026-10-01")
-    line = _line("Sharptalonの鉤爪", MACHINE, conflicts=[{"ja": "Thistle boreの鉤爪", "provenance": other}])
+    line = _line("ecco Sharptalon parola", MACHINE, conflicts=[{"ja": "ecco Thistle bore parola", "provenance": other}])
     assert decide(line, SCOPE, set(), "d311f9a5c36057a2").winner == 0  # the only passing variant
 
 
@@ -109,7 +109,7 @@ SG3 = dict(MACHINE, source="draft-progress-sg3@2026-09-15", imported="2026-09-15
 
 
 def test_the_newer_style_version_wins_between_two_passing_machine_drafts():
-    line = _line("Sharptalonの爪", SG2, conflicts=[{"ja": "Sharptalonの鉤爪", "provenance": SG3}])
+    line = _line("ecco Sharptalon parola", SG2, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": SG3}])
     d = decide(line, SCOPE, set(), "d311f9a5c36057a2")
     assert (d.status, d.winner) == ("trusted", 1) and "tiebreak" in d.checks
 
@@ -117,23 +117,23 @@ def test_the_newer_style_version_wins_between_two_passing_machine_drafts():
 def test_the_style_version_ranks_before_the_import_date():
     older_sg3 = dict(SG3, source="draft-progress-sg3@2026-09-14", imported="2026-09-14")
     newer_sg2 = dict(SG2, source="draft-progress-sg2@2026-09-16", imported="2026-09-16")
-    line = _line("Sharptalonの爪", newer_sg2, conflicts=[{"ja": "Sharptalonの鉤爪", "provenance": older_sg3}])
+    line = _line("ecco Sharptalon parola", newer_sg2, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": older_sg3}])
     assert decide(line, SCOPE, set(), "d311f9a5c36057a2").winner == 1
 
 
 def test_a_source_without_a_style_version_counts_as_zero():
     unnamed = dict(MACHINE, source="draft-quest@2026-09-16", imported="2026-09-16")
-    line = _line("Sharptalonの爪", unnamed, conflicts=[{"ja": "Sharptalonの鉤爪", "provenance": SG2}])
+    line = _line("ecco Sharptalon parola", unnamed, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": SG2}])
     assert decide(line, SCOPE, set(), "d311f9a5c36057a2").winner == 1
-    same = _line("Sharptalonの爪", unnamed, conflicts=[{"ja": "Sharptalonの鉤爪", "provenance": dict(
+    same = _line("ecco Sharptalon parola", unnamed, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": dict(
         MACHINE, source="draft-quest@2026-09-14", imported="2026-09-14")}])
     assert decide(same, SCOPE, set(), "d311f9a5c36057a2").winner == 0  # both 0: the newer import wins
 
 
 def test_hand_written_text_still_beats_the_newest_style_version():
-    line = _line("Sharptalonの鉤爪", SG3, conflicts=[{"ja": "Sharptalonの爪", "provenance": HUMAN}])
+    line = _line("ecco Sharptalon parola", SG3, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": HUMAN}])
     assert decide(line, SCOPE, set(), "d311f9a5c36057a2").winner == 1
-    fixed = _line("Sharptalonの鉤爪", SG3, conflicts=[{"ja": "Sharptalonの爪", "provenance": CORRECTION}])
+    fixed = _line("ecco Sharptalon parola", SG3, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": CORRECTION}])
     assert decide(fixed, SCOPE, set(), "d311f9a5c36057a2").winner == 1
 
 
@@ -171,16 +171,16 @@ def test_machine_drafts_are_carried_and_the_rebuild_is_byte_stable(bench, capsys
     data, ns = bench
     assert imp.run_predecessor(ns) == 0
     by = _by(data)
-    by[(2, "title")]["conflicts"].append({"ja": "機械の題", "provenance": dict(MACHINE)})
+    by[(2, "title")]["conflicts"].append({"ja": "parola", "provenance": dict(MACHINE)})
     by[(2, "objectives")]["conflicts"].append({"ja": by[(2, "objectives")]["ja"], "provenance": dict(MACHINE)})
-    by[(90003, "title")] = _line("機械だけの題", MACHINE, id_=90003)
+    by[(90003, "title")] = _line("parola", MACHINE, id_=90003)
     Store(data).save("quest", by.values())
     capsys.readouterr()
 
     assert imp.run_predecessor(ns) == 0
     out = capsys.readouterr().out
     after = _by(data)
-    kept = [c for c in after[(2, "title")]["conflicts"] if c["ja"] == "機械の題"]
+    kept = [c for c in after[(2, "title")]["conflicts"] if c["ja"] == "parola"]
     assert kept and kept[0]["provenance"] == MACHINE
     assert after[(90003, "title")]["provenance"] == MACHINE  # an id the inputs never produce keeps the draft
     # a draft identical to the rebuilt imported text adds nothing: counted redundant, not duplicated
@@ -194,8 +194,8 @@ def test_machine_drafts_are_carried_and_the_rebuild_is_byte_stable(bench, capsys
 
 def test_an_import_identical_to_a_machine_draft_stays_its_own_variant():
     col = imp.Collector()
-    col.seed([_line("機械の題", MACHINE)])
-    col.add(2, "title", "機械の題", HUMAN, "cqjt@3446c82#1")
+    col.seed([_line("parola", MACHINE)])
+    col.add(2, "title", "parola", HUMAN, "cqjt@3446c82#1")
     line = col.lines[(2, "title")]
     assert line["provenance"] == MACHINE  # no origin appended to the model's variant
     assert [c["provenance"]["class"] for c in line["conflicts"]] == ["human"]
@@ -224,9 +224,9 @@ def test_validate_flags_human_or_correction_turned_machine(tmp_path):
     repo = tmp_path / "repo"
     repo.mkdir()
     subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True)
-    _write(repo, [_line("人", HUMAN, id_=1), _line("訂", CORRECTION, id_=2), _line("機", MACHINE, id_=3)])
+    _write(repo, [_line("parola", HUMAN, id_=1), _line("parola", CORRECTION, id_=2), _line("parola", MACHINE, id_=3)])
     _commit(repo, "base")
-    _write(repo, [_line("機", MACHINE, id_=1), _line("機", MACHINE, id_=2), _line("訂", CORRECTION, id_=3)])
+    _write(repo, [_line("parola", MACHINE, id_=1), _line("parola", MACHINE, id_=2), _line("parola", CORRECTION, id_=3)])
     problems = validate.rule_provenance(repo / "data", Store(repo / "data"), "HEAD")
     assert problems == [
         "provenance: quest 1/title was human at HEAD, now machine",
@@ -240,12 +240,12 @@ def test_validate_flags_human_or_correction_turned_machine(tmp_path):
 def test_a_rejected_human_variant_does_not_ship_and_does_not_bar_the_machine_draft():
     # a person ruled the human text out; the machine draft is the only candidate left
     rejected = {"ruling": "reject", "by": "maintainer", "date": "2026-09-15"}
-    line = dict(_line("Sharptalonの爪", HUMAN, conflicts=[{"ja": "Sharptalonの鉤爪", "provenance": MACHINE}]),
+    line = dict(_line("ecco Sharptalon parola", HUMAN, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": MACHINE}]),
                 ruling=rejected)
     d = decide(line, SCOPE, set(), "d311f9a5c36057a2")
     assert (d.status, d.winner) == ("trusted", 1)
     # a reject ruling is permanent: a lone ruled variant never ships, even though it passes
-    lone = dict(_line("Sharptalonの爪", HUMAN), ruling=rejected)
+    lone = dict(_line("ecco Sharptalon parola", HUMAN), ruling=rejected)
     d = decide(lone, SCOPE, set(), "d311f9a5c36057a2")
     assert (d.status, d.reasons, d.winner) == ("rejected", ["ruled_reject"], 0)
 
@@ -253,7 +253,7 @@ def test_a_rejected_human_variant_does_not_ship_and_does_not_bar_the_machine_dra
 def test_the_newer_machine_draft_wins_a_tie_between_drafts():
     # a later batch under another name must not un-ship the line as a duplicate_conflict
     later = dict(MACHINE, source="draft-audit@2026-10-01", imported="2026-10-01")
-    line = _line("Sharptalonの鉤爪", MACHINE, conflicts=[{"ja": "Sharptalonの爪", "provenance": later}])
+    line = _line("ecco Sharptalon parola", MACHINE, conflicts=[{"ja": "ecco Sharptalon parola", "provenance": later}])
     d = decide(line, SCOPE, set(), "d311f9a5c36057a2")
     assert (d.status, d.winner) == ("trusted", 1)
 
@@ -263,8 +263,8 @@ def test_validate_accepts_a_machine_line_that_won_by_an_accept_ruling(tmp_path):
     repo = tmp_path / "repo"
     repo.mkdir()
     subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True)
-    _write(repo, [_line("人", HUMAN, id_=1)])
+    _write(repo, [_line("parola", HUMAN, id_=1)])
     _commit(repo, "base")
-    accepted = dict(_line("機", MACHINE, id_=1), ruling={"ruling": "accept", "by": "maintainer", "date": "2026-09-15"})
+    accepted = dict(_line("parola", MACHINE, id_=1), ruling={"ruling": "accept", "by": "maintainer", "date": "2026-09-15"})
     _write(repo, [accepted])
     assert validate.rule_provenance(repo / "data", Store(repo / "data"), "HEAD") == []

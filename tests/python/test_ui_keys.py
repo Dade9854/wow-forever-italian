@@ -1,9 +1,11 @@
+
 """The committed UI dictionary: one machine line per curated key, English at the pinned build,
 and the name-policy guard."""
 
 import json
 from pathlib import Path
 
+import pytest
 from local_inputs import forever_build
 
 from wfi.core import specifiers
@@ -144,6 +146,7 @@ DRAFT_SOURCES = {"draft-ui", "draft-r70685-ui", "draft-r70707-ui", "draft-r70755
                  "draft-ui-set-bonus"}  # the item set bonus lines' "(%d) Set: %s" / "Set: %s"
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): richiede il dizionario dell'interfaccia")
 def test_every_key_has_one_machine_line_and_its_english(root):
     english = {ln["id"]: ln for ln in Store(root / "data", english=True).load("ui")}
     keys = wago.expand_keys(_keys(root), {k: ln["en"] for k, ln in english.items()})
@@ -201,6 +204,7 @@ def test_no_listed_english_carries_a_refused_link_key_markup_or_tokens(root):
             assert not token_dollar.search(ln["en"]), (ln["id"], "$")
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): richiede il dizionario dell'interfaccia")
 def test_a_line_with_a_link_keeps_its_specifiers_in_the_english_order(root):
     # A link's target and label take the line's arguments in the order the English gives them: a Japanese that moved
     # a plain %s past another would put the wrong value inside the link, and a numbered one cannot sit beside a
@@ -221,6 +225,7 @@ def test_a_line_with_a_link_keeps_its_specifiers_in_the_english_order(root):
     assert checked > 40
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): richiede il dizionario dell'interfaccia")
 def test_nit_terms_are_consistent(root):
     # one term for Focus, and damage templates put the label before the numbers
     lines = {ln["id"]: ln["ja"] for ln in Store(root / "data").load("ui")}

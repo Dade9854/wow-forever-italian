@@ -148,7 +148,7 @@ def test_shape_names_and_literals_tell_variants_apart():
     assert _pairs(FIRE_WARD) == []
     signs = "Add this sign to your $?pc923[Orcish Tradeskill Sign][Dwarven Tradeskill Sign] toy for $d."
     assert _pairs(signs) == []
-    assert _pairs(signs, ["Orcish Tradeskill Signのおもちゃ。$D1。", "Dwarven Tradeskill Signのおもちゃ。$D1。"]) == []
+    assert _pairs(signs, ["il giocattolo Orcish Tradeskill Sign. $D1.", "il giocattolo Dwarven Tradeskill Sign. $D1."]) == []
     assert _pairs("gain $?$PL<24[6]?$PL<38[11][16] Stamina for $d.") == []
 
 

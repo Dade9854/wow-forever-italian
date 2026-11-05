@@ -6,9 +6,9 @@ Italian and English share their letters, so the script cannot tell them apart. T
 2. A title-like field (a quest title, an objective's label) may be only a name, which renders identically to
    the English: it passes.
 3. Prose (`PROSE_FIELDS`) is not Italian when it is the English itself (compared after folding case and
-   whitespace), or when it reads as English: at least `ENGLISH_MIN` English function words, and more of them
-   than Italian ones (names kept in English letters bring the odd "the" or "of" into an Italian line, so one
-   or two never decide).
+   whitespace), when it holds no letter at all (only dots, marks or tokens), or when it reads as English: at
+   least `ENGLISH_MIN` English function words, and more of them than Italian ones (names kept in English
+   letters bring the odd "the" or "of" into an Italian line, so one or two never decide).
 
 Pure: no disk.
 """
@@ -38,6 +38,11 @@ _ENGLISH = (
 ENGLISH_WORDS = frozenset(_ENGLISH.split())
 ENGLISH_MIN = 3
 _WORD = re.compile(r"[a-zàèéìíîòóùú]+")
+_LETTER = re.compile(r"[A-Za-zÀ-ÿ]")
+# A name kept in English letters that holds function words ("Head of the Captain of the Guard", "Brotherhood
+# of the Light"): capitalised words joined by English connectors. Its "of" and "the" are the name's.
+_CAP = r"[A-Z][A-Za-z'’\-]*"
+_NAME_SPAN = re.compile(rf"{_CAP}(?:\s+(?:(?:of|the|and|in|on|at|for|to|from)\s+)+{_CAP})+")
 _SPACE = re.compile(r"(?:\s|\$[Bb])+")  # a `$B` break in stored English is a line break
 
 
@@ -50,8 +55,8 @@ def _fold(text: str) -> str:
 
 
 def word_counts(text: str) -> tuple[int, int]:
-    """(Italian function words, English function words) in `text`."""
-    words = _WORD.findall(text.casefold())
+    """(Italian function words, English function words) in `text`, names kept in English set aside."""
+    words = _WORD.findall(_NAME_SPAN.sub(" ", text).casefold())
     return sum(w in ITALIAN_WORDS for w in words), sum(w in ENGLISH_WORDS for w in words)
 
 
@@ -75,5 +80,7 @@ def is_italian(text: str, field: str, english: str | None = None) -> bool:
     if field not in PROSE_FIELDS:
         return True
     if english is not None and _fold(text) == _fold(english):
+        return False
+    if not _LETTER.search(text):  # only dots, marks or tokens: nothing was translated
         return False
     return not reads_english(text)

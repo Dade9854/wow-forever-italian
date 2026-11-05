@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Contributing
+  - name: Contributing / Contribuire
     url: https://github.com/Dade9854/wow-forever-italian/blob/main/CONTRIBUTING.md
     about: Code changes start with an issue. Read this first.
-  - name: Security problem / セキュリティ上の問題
+  - name: Security problem / Problema di sicurezza
     url: https://github.com/Dade9854/wow-forever-italian/security/advisories/new
-    about: Report it in private, not in a public issue. / 公開の Issue ではなく、非公開で報告してください。
+    about: Report it in private, not in a public issue. / Segnalalo in privato, non in una issue pubblica.

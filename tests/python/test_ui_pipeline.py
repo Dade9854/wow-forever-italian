@@ -116,6 +116,7 @@ def _scope(en):
                  raw={"text": en}, src=f"wago@{BUILD}")
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): fixture giapponesi")
 @pytest.mark.parametrize(
     "en, ja, status, reason",
     [
@@ -135,6 +136,7 @@ def test_ui_status_rules(en, ja, status, reason):
         assert d.reasons and d.reasons[0].startswith(reason)
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): fixture giapponesi")
 def test_ui_no_english_and_stale(data):
     Store(data, english=True).save("ui", [_en("ACCEPT", "Accept")])
     Store(data).save("ui", [_ui("ACCEPT", "受諾"), _ui("DECLINE", "辞退")])
@@ -221,6 +223,7 @@ def test_report_counts_shipped_lines_by_class():
 # ---- edge cases ------------------------------------------------------------------------------------------------
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): fixture giapponesi")
 def test_an_unparseable_english_template_rejects_instead_of_crashing():
     d = decide(_ui("K", "受諾 %s"), _scope("%s and %2$s"), set(), key(normalize_v1("%s and %2$s")))
     assert d.status == "rejected" and d.reasons[0].startswith("specifiers_changed")

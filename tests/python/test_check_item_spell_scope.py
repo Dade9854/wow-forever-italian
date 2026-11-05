@@ -12,7 +12,7 @@ WAGO = "wago@1.15.9.69722"
 PROV = provenance("human", "ctjt@84db736", "2026-09-13", translator="WoWJapanizer")
 NAME = "Tough Jerky"
 TEMPLATE = "Restores $o1 health over $d.  Must remain seated while eating."
-JA = "18秒間でhealthを61回復。回復中は\n座っている必要があります。"
+JA = "18 porta health spada 61 fiume, vino \n parola,"
 
 
 def _en(id_, field, en):
@@ -70,7 +70,7 @@ def test_a_rename_never_makes_a_name_baselined_line_stale(tmp_path):
 def test_a_rejected_line_stays_rejected_whatever_its_english(tmp_path):
     store = Store(tmp_path, english=True)
     store.save("item", [_en(117, "name", NAME), _en(117, "description", TEMPLATE)])
-    line = entry(117, "description", "English text, not Japanese", prov=PROV)
+    line = entry(117, "description", "This is the English text that was left in place of the Italian", prov=PROV)
     line["english"] = {"hash": "0" * 16, "src": WAGO}
     out = check_type([line], build_scopes(store, "item"), set())[0]
     assert out["status"] == "rejected"
@@ -109,7 +109,7 @@ def test_area_english_is_its_own_scope_and_never_joins_the_quest_scope(tmp_path)
 
 
 MACHINE = {"class": "machine", "model": "m", "source": "draft-tooltip-x-sg9@2026-09-19", "imported": "2026-09-19"}
-REDRAFT = "$D1かけてhealthを$N1回復します。食事中は座っている必要があります。"
+REDRAFT = "$D1 ferro health spada $N1 scudo, albero,"
 REJECT = {"ruling": "reject", "by": "maintainer", "date": "2026-09-19", "note": "baked number"}
 
 
@@ -146,7 +146,7 @@ def test_a_hand_written_variant_taking_over_keeps_the_stale_baseline(tmp_path):
     store = Store(tmp_path, english=True)
     store.save("item", [_en(117, "name", NAME), _en(117, "description", TEMPLATE)])
     line = entry(117, "description", REDRAFT, prov=MACHINE)
-    line["conflicts"] = [{"ja": "$D1かけてhealthを$N1回復。", "provenance": provenance(
+    line["conflicts"] = [{"ja": "$D1 ferro health spada $N1 fiume,", "provenance": provenance(
         "correction", "corrections@x", "2026-09-19", translator="a reviewer")}]
     line["status"], line["english"] = "stale", {"hash": old, "src": WAGO}
     out = check_type([line], build_scopes(store, "item"), set())[0]
@@ -187,7 +187,7 @@ def test_a_name_list_tail_after_a_multi_line_head_records_no_includes(tmp_path):
     en = "Allows you to ride.\r\n\r\nKnown abilities:$?s824[\r\n$@spellname824][]$?s825[\r\n$@spellname825][]"
     store = Store(tmp_path, english=True)
     store.save("spell", [_en(33388, "description", en), _en(824, "name", "Apprentice Riding")])
-    line = entry(33388, "description", "乗れます。\n\n習得済み：$T", prov=PROV)
+    line = entry(33388, "description", "pane,\n\n voce:$T", prov=PROV)
     line["status"], line["english"] = "unaligned", {"hash": key(normalize_v1(en)), "src": WAGO}
     out = check_type([line], build_scopes(store, "spell"), set(), Included(store))[0]
     assert out["status"] == "unaligned" and "includes" not in out["english"]

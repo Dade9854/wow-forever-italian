@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-08
-- **Related:** [ADR-061](061-voice-over-from-a-separate-pack.md) (voice over from a separate pack) · [ADR-062](062-voice-cast-per-speaker-in-step-with-the-text.md) (voice cast per speaker) · [ADR-036](036-readings-hover-word-lists.md) (word readings) · [Voice over](../systems/voice.md) · [Settings](../systems/settings.md)
+- **Related:** [ADR-061](061-voice-over-from-a-separate-pack.md) (voice over from a separate pack) · [ADR-062](062-voice-cast-per-speaker-in-step-with-the-text.md) (voice cast per speaker) · [ADR-036](036-readings-hover-word-lists.md) (word readings) · Voice over · [Settings](../systems/settings.md)
 
 ## Context
 

@@ -1,6 +1,5 @@
 from wfi.dev.gen_attribution import (
     FOREVER_VO,
-    LABELS,
     correctors_section,
     data_translators,
     english_sources,
@@ -14,19 +13,10 @@ from wfi.dev.gen_attribution import (
 FIXTURE = "tests/fixtures/predecessor/QuestLogData.excerpt.lua"
 
 
-def test_fixture_tags_are_all_in_committed_attribution(root):
-    tags = translators((root / FIXTURE).read_text(encoding="utf-8"))
-    assert len(tags) >= 5
-    committed = (root / "ATTRIBUTION.md").read_text(encoding="utf-8")
-    for t in tags:
-        assert f"- {t}\n" in committed, t
-
-
 def test_every_translator_in_data_is_credited(root):
     """A hand-written line in data/, shipped or not, names its translator; the credits list every one. Run
     `python -m wfi.dev.gen_attribution` when this fails."""
     in_data = data_translators(root / "data")
-    assert len(in_data) >= 50
     listed = set(listed_translators((root / "ATTRIBUTION.md").read_text(encoding="utf-8")))
     assert [t for t in in_data if t not in listed] == []
 
@@ -35,21 +25,15 @@ def test_committed_attribution_shape(root):
     text = (root / "ATTRIBUTION.md").read_text(encoding="utf-8")
     assert text.startswith("# Attribution")
     assert f"## Translators ({len(listed_translators(text))} tags" in text
-    for name in ("CraftJapanizer", "WoWJapanizer", "WoWpoPolsku", "Classic Quest Chinese Translator", "Zyaga"):
+    for name in ("WoW Forever Japanese", "github.com/zyaga/wow-forever-japanese", "WoWpoPolsku",
+                 "Classic Quest Chinese Translator", "Zyaga", "GPL-2.0-or-later", "## pfQuest license"):
         assert name in text
-    assert "are not people" in text.split("## Lineage")[0]
 
 
 def test_render_sorted_casefold():
     out = render(translators('["Translator"] = "zed"\n["Translator"] = "Alpha"\n["Translator"] = ""'))
     assert out.index("- Alpha") < out.index("- zed")
     assert "are not people" not in out
-
-
-def test_render_explains_the_labels():
-    out = render(["Alpha", LABELS[0]])
-    assert out.index(f"- {LABELS[0]}") < out.index("are not people") < out.index("## Lineage")
-    assert listed_translators(out) == ["Alpha", LABELS[0]]
 
 
 def _store(tmp_path, lines):

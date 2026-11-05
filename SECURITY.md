@@ -25,14 +25,16 @@ A wrong translation is not a security problem: use the
 
 Fixes go into the next release. Only the latest release is supported.
 
-## 日本語
+## Italiano
 
-セキュリティ上の問題は、公開の Issue ではなく非公開で報告してください。GitHub のリポジトリの **Security** タブを開き、
-**Report a vulnerability** を選びます。返信はそこで行い、修正版が公開されるまで報告は非公開のままです。
+Per un problema di sicurezza non aprire una issue pubblica: segnalalo in privato. Apri la scheda **Security** del
+repository su GitHub e scegli **Report a vulnerability**. La risposta arriva lì, e la segnalazione resta privata
+finché non esce una correzione.
 
-報告には、アドオンのバージョン（`/wfi version`）、クライアントのビルド、起きたこと、再現手順を書いてください。
+Nella segnalazione scrivi la versione dell'addon (`/wfi version`), la build del client, cosa succede e i passi per
+riprodurlo.
 
-翻訳の誤りはセキュリティの問題ではありません。
-[翻訳の報告フォーム](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml)をご利用ください。
+Una traduzione sbagliata non è un problema di sicurezza: usa il
+[modulo di segnalazione della traduzione](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml).
 
-修正は次のリリースに入ります。サポート対象は最新のリリースのみです。
+Le correzioni entrano nella versione successiva. È supportata solo l'ultima versione.

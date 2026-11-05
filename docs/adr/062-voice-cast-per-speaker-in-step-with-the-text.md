@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-08
-- **Related:** [ADR-061](061-voice-over-from-a-separate-pack.md) (voice over from a separate pack) · [ADR-054](054-quest-text-keyed-by-its-english.md) (quest text keyed by its English) · [ADR-046](046-one-action-release.md) (one-action release) · [Voice over](../systems/voice.md) · [Voice over runbook](../operations/voice.md) · [Voice casting research](../research/2026-10-06-voice-casting.md)
+- **Related:** [ADR-061](061-voice-over-from-a-separate-pack.md) (voice over from a separate pack) · [ADR-054](054-quest-text-keyed-by-its-english.md) (quest text keyed by its English) · [ADR-046](046-one-action-release.md) (one-action release) · Voice over · Voice over runbook · Voice casting research
 
 ## Context
 

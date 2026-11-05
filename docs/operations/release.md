@@ -4,7 +4,7 @@
 
 ## Goal
 
-A release is one action: start the **Release** workflow on `main`. The run checks everything, then releases what changed. The addon, when `## Unreleased` has lines: it writes the changelog, tags, builds and checks the zip, and publishes it to CurseForge and to a GitHub release. Then the voice packs whose audio changed, to their CurseForge projects and one voice GitHub release ([Voice over → Releasing the voice](voice.md#releasing-the-voice)). No local tools, no hand-made tags, no second pull request.
+A release is one action: start the **Release** workflow on `main`. The run checks everything, then releases what changed. The addon, when `## Unreleased` has lines: it writes the changelog, tags, builds and checks the zip, and publishes it to CurseForge and to a GitHub release. Then the voice packs whose audio changed, to their CurseForge projects and one voice GitHub release (Voice over → Releasing the voice). No local tools, no hand-made tags, no second pull request.
 
 ## One-time setup
 
@@ -154,4 +154,4 @@ Create a new token on the CurseForge author site, replace the value of the `CF_A
 - [Testing strategy](../testing/strategy.md) (what CI and the release gates check)
 - [Pipeline](../systems/pipeline.md) (`wfi release`, `wfi package-check`)
 - [`CHANGELOG.md`](../../CHANGELOG.md)
-- [Voice over → Releasing the voice](voice.md#releasing-the-voice) (the voice packs, released from the maintainer's computer)
+- Voice over → Releasing the voice (the voice packs, released from the maintainer's computer)

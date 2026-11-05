@@ -1,4 +1,4 @@
-"""How much ships in Japanese, as the README and the CurseForge description show it.
+"""How much ships in Italian, as the README and the CurseForge description show it.
 
 `make coverage` writes these counts into README.md (both languages) and docs/curseforge.md, and
 tests/python/test_counts.py fails when either is out of date. Quests, NPC lines, items, spells and UI are
@@ -20,15 +20,15 @@ LETTER_PAGES = Path("pipeline/letter_pages.txt")
 README = Path("README.md")
 CURSEFORGE = Path("docs/curseforge.md")
 
-# (key, English label, Japanese label, Japanese unit)
+# (key, English label, Italian label, Italian unit)
 ROWS = (
-    ("quest", "Quests", "クエスト", ""),
-    ("gossip", "NPC dialogue lines", "NPC の会話", " 行"),
-    ("book", "Book pages", "本", " ページ"),
-    ("letter", "Letter pages", "手紙", " ページ"),
-    ("item", "Item tooltips", "アイテムのツールチップ", ""),
-    ("spell", "Spell tooltips", "呪文のツールチップ", ""),
-    ("ui", "UI", "UI", ""),
+    ("quest", "Quests", "Quest", ""),
+    ("gossip", "NPC dialogue lines", "Dialoghi degli NPC", " righe"),
+    ("book", "Book pages", "Pagine di libri", ""),
+    ("letter", "Letter pages", "Pagine di lettere", ""),
+    ("item", "Item tooltips", "Tooltip degli oggetti", ""),
+    ("spell", "Spell tooltips", "Tooltip delle spell", ""),
+    ("ui", "UI", "Interfaccia", ""),
 )
 
 _COUNTS = re.compile(r"counts = \{([^}]*)\}")
@@ -60,15 +60,15 @@ def _inline(label: str) -> str:
 
 
 def readme_tables(c: dict[str, int]) -> tuple[str, str]:
-    en = "| | In Japanese |\n|---|---|\n" + "".join(f"| {e} | {_n(c[k])} |\n" for k, e, _, _ in ROWS)
-    ja = "| | 日本語化済み |\n|---|---|\n" + "".join(f"| {j} | {_n(c[k])}{u} |\n" for k, _, j, u in ROWS)
-    return en, ja
+    en = "| | In Italian |\n|---|---|\n" + "".join(f"| {e} | {_n(c[k])} |\n" for k, e, _, _ in ROWS)
+    it = "| | In italiano |\n|---|---|\n" + "".join(f"| {j} | {_n(c[k])}{u} |\n" for k, _, j, u in ROWS)
+    return en, it
 
 
 def curseforge_lines(c: dict[str, int]) -> tuple[str, str]:
     en = "In numbers: " + ", ".join(f"**{_n(c[k])}** {_inline(e)}" for k, e, _, _ in ROWS) + "."
-    ja = "数で見ると: " + "、".join(f"{j} **{_n(c[k])}**{u}" for k, _, j, u in ROWS) + "。"
-    return en, ja
+    it = "In cifre: " + ", ".join(f"{j[0].lower() + j[1:]} **{_n(c[k])}**{u}" for k, _, j, u in ROWS) + "."
+    return en, it
 
 
 def _table_after(text: str, heading: str, table: str) -> str:
@@ -82,13 +82,13 @@ def _line(text: str, prefix: str, line: str) -> str:
 
 
 def apply_readme(text: str, c: dict[str, int]) -> str:
-    en, ja = readme_tables(c)
-    return _table_after(_table_after(text, "## What it translates", en), "### 翻訳の量", ja)
+    en, it = readme_tables(c)
+    return _table_after(_table_after(text, "### Quanto è tradotto", it), "## What it translates", en)
 
 
 def apply_curseforge(text: str, c: dict[str, int]) -> str:
-    en, ja = curseforge_lines(c)
-    return _line(_line(text, "In numbers: ", en), "数で見ると: ", ja)
+    en, it = curseforge_lines(c)
+    return _line(_line(text, "In cifre: ", it), "In numbers: ", en)
 
 
 def write(repo: Path) -> list[Path]:

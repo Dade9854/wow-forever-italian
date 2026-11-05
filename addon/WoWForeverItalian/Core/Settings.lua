@@ -172,32 +172,34 @@ local function notToggleKey(v)
   return true
 end
 
--- `ja`: the settings page shows it under the English `label` (addon interface copy, not game text).
+-- `ja`: the Italian the settings page shows with the English `label` (addon interface copy, not game text).
 Settings.define{ id = "enabled", kind = "boolean", default = true, label = "Enable translation",
-  ja = "翻訳を有効にする", apply = function(v) WFI.State.setEnabled(v) end }
+  ja = "Attiva la traduzione", apply = function(v) WFI.State.setEnabled(v) end }
 Settings.define{ id = "modifier", kind = "key", default = "alt", label = "Hold to show English",
-  ja = "押している間は英語で表示", normalize = function(v) return WFI.Modifier.normalize(v) end,
+  ja = "Tieni premuto per vedere l'inglese", normalize = function(v) return WFI.Modifier.normalize(v) end,
   check = notToggleKey, apply = function(v) WFI.Modifier.setKey(v) end } -- ADR-018
 Settings.define{ id = "area.quests", kind = "boolean", default = true, group = "areas",
-  label = "Quest windows & log", ja = "クエストウィンドウとログ", apply = area("quests") }
+  label = "Quest windows & log", ja = "Finestre e registro delle quest", apply = area("quests") }
 Settings.define{ id = "area.gossip", kind = "boolean", default = true, group = "areas",
-  label = "NPC talk", ja = "NPCの会話", apply = area("gossip") }
+  label = "NPC talk", ja = "Dialoghi degli NPC", apply = area("gossip") }
 Settings.define{ id = "area.itemTooltips", kind = "boolean", default = true, group = "areas",
-  label = "Item tooltips", ja = "アイテムのツールチップ", apply = area("items") }
+  label = "Item tooltips", ja = "Tooltip degli oggetti", apply = area("items") }
 Settings.define{ id = "area.spellTooltips", kind = "boolean", default = true, group = "areas",
-  label = "Spell tooltips", ja = "呪文のツールチップ", apply = area("spells") }
+  label = "Spell tooltips", ja = "Tooltip delle spell", apply = area("spells") }
 Settings.define{ id = "area.interface", kind = "boolean", default = true, group = "areas",
   label = "Interface text (buttons, headers, tooltip lines)",
-  ja = "インターフェースの文字（ボタン・見出し・ツールチップの行）", apply = area("ui") }
+  ja = "Testi dell'interfaccia (pulsanti, intestazioni, righe dei tooltip)", apply = area("ui") }
 Settings.define{ id = "area.books", kind = "boolean", default = true, group = "areas",
-  label = "Books & letters", ja = "本と手紙", apply = area("books") } -- the item text window
+  label = "Books & letters", ja = "Libri e lettere", apply = area("books") } -- the item text window
 Settings.define{ id = "marker.stale", kind = "boolean", default = true,
-  label = "Mark translations whose English changed", ja = "英語の原文が変わった翻訳に印を付ける", apply = markers }
--- On by default: a refused or absent translation says so instead of passing as untouched English.
-Settings.define{ id = "marker.missing", kind = "boolean", default = true,
-  label = "Mark untranslated text", ja = "未翻訳のテキストに印を付ける", apply = markers }
+  label = "Mark translations whose English changed", ja = "Segna le traduzioni il cui inglese è cambiato",
+  apply = markers }
+-- Off by default while most of the game is still untranslated: on, every line without a translation says so
+-- instead of passing as untouched English (a way to see what is covered).
+Settings.define{ id = "marker.missing", kind = "boolean", default = false,
+  label = "Mark untranslated text", ja = "Segna i testi non tradotti", apply = markers }
 -- The fix-report minimap button, on by default. UI/MinimapButton
 -- listens for the State event; its right-click menu's "Hide this button" turns this off.
 Settings.define{ id = "minimapButton", kind = "boolean", default = true,
-  label = "Show the minimap button (report a line)", ja = "ミニマップにボタンを表示（翻訳の報告）",
+  label = "Show the minimap button (report a line)", ja = "Mostra il pulsante sulla minimappa (segnala una riga)",
   apply = function(v) WFI.State.fire("minimapButton", v) end }

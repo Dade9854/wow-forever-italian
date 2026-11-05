@@ -24,7 +24,7 @@ def _h(en):
 
 
 def _store(d, prov=HUMAN, status="stale", en=NEW):
-    line = {"id": 175, "field": "title", "ja": "星座を求めて", "status": status, "checks": [], "provenance": dict(prov),
+    line = {"id": 175, "field": "title", "ja": "porta", "status": status, "checks": [], "provenance": dict(prov),
             "english": {"hash": _h(OLD), "src": "wdb@1.15.9.69722"}, "reasons": [], "conflicts": []}
     Store(d).save("quest", [line])
     Store(d, english=True).save("quest", [{"id": 175, "field": "title", "en": en, "hash": _h(en), "src": WDB}] if en else [])
@@ -44,26 +44,26 @@ def test_keep_restamps_the_baseline_and_the_line_is_fresh(tmp_path):
     _store(tmp_path)
     lines, c = _apply(tmp_path, [{"type": "quest", "id": 175, "field": "title", "decision": "keep", "note": "case"}])
     assert c["keep"] == 1 and lines[0]["english"] == {"hash": _h(NEW), "src": WDB}
-    assert lines[0]["ja"] == "星座を求めて" and lines[0]["provenance"] == HUMAN and lines[0]["conflicts"] == []
+    assert lines[0]["ja"] == "porta" and lines[0]["provenance"] == HUMAN and lines[0]["conflicts"] == []
     assert _checked(tmp_path, lines)["status"] == "trusted"
 
 
 def test_correct_adds_a_correction_over_the_persons_line(tmp_path):
     _store(tmp_path)
-    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "星を見よ", "note": "reworded"}
+    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "sale", "note": "reworded"}
     lines, c = _apply(tmp_path, [row])
     line = lines[0]
-    assert c["correct"] == 1 and line["ja"] == "星を見よ"
+    assert c["correct"] == 1 and line["ja"] == "sale"
     assert line["provenance"]["class"] == "correction" and line["provenance"]["translator"] == "Tammy"
     assert line["provenance"]["corrects"] == "cqjt@3446c82" and line["provenance"]["source"] == "correction@2026-09-25"
-    assert line["conflicts"][0]["ja"] == "星座を求めて" and "ruling" not in line["conflicts"][0]  # the person's text kept
+    assert line["conflicts"][0]["ja"] == "porta" and "ruling" not in line["conflicts"][0]  # the person's text kept
     out = _checked(tmp_path, lines)
-    assert out["status"] == "trusted" and out["ja"] == "星を見よ"
+    assert out["status"] == "trusted" and out["ja"] == "sale"
 
 
 def test_an_earlier_correction_is_superseded_and_the_new_one_names_its_layer(tmp_path):
     _store(tmp_path, prov=EARLIER)
-    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "星を見よ", "note": "reworded"}
+    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "sale", "note": "reworded"}
     lines, c = _apply(tmp_path, [row])
     assert c["superseded"] == 1 and lines[0]["provenance"]["corrects"] == "cqjt@3446c82"
     assert lines[0]["conflicts"][0]["ruling"]["ruling"] == "reject"
@@ -101,7 +101,7 @@ def test_a_row_decided_twice_is_refused(tmp_path):
 
 def test_a_second_run_leaves_applied_rows_as_they_are(tmp_path):
     _store(tmp_path)
-    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "星を見よ", "note": "reworded"}
+    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "sale", "note": "reworded"}
     lines, c = _apply(tmp_path, [row])
     Store(tmp_path).save("quest", lines)
     again, c2 = _apply(tmp_path, [row])  # before `make check`: the line still says stale
@@ -115,23 +115,23 @@ def test_a_second_run_leaves_applied_rows_as_they_are(tmp_path):
 @pytest.mark.parametrize("status", ["trusted", "unaligned", "stale"])
 def test_audit_corrects_any_shipped_hand_written_line(tmp_path, status):
     _store(tmp_path, status=status)
-    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "星を見よ", "note": "typo"}
+    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "sale", "note": "typo"}
     lines, c = _apply(tmp_path, [row], "audit")
     line = lines[0]
-    assert c["correct"] == 1 and line["ja"] == "星を見よ" and line["provenance"]["class"] == "correction"
+    assert c["correct"] == 1 and line["ja"] == "sale" and line["provenance"]["class"] == "correction"
     assert line["provenance"]["note"].startswith("Typo") and "audit" in line["provenance"]["note"]
-    assert line["conflicts"][0]["ja"] == "星座を求めて"
+    assert line["conflicts"][0]["ja"] == "porta"
 
 
 def test_audit_redraft_rules_every_hand_written_variant_reject(tmp_path):
     _store(tmp_path, prov=EARLIER, status="trusted")
     lines = Store(tmp_path).load("quest")
-    lines[0]["conflicts"] = [{"ja": "星座", "provenance": dict(HUMAN)}]
+    lines[0]["conflicts"] = [{"ja": "pane", "provenance": dict(HUMAN)}]
     Store(tmp_path).save("quest", lines)
     row = {"type": "quest", "id": 175, "field": "title", "decision": "redraft", "note": "another quest's text"}
     lines, c = _apply(tmp_path, [row], "audit")
     line = lines[0]
-    assert c["redraft"] == 1 and line["ja"] == "星座を求めて"  # the text stays; the ruling stops it shipping
+    assert c["redraft"] == 1 and line["ja"] == "porta"  # the text stays; the ruling stops it shipping
     for v in (line, line["conflicts"][0]):
         assert v["ruling"]["ruling"] == "reject" and v["ruling"]["note"].startswith("Another quest's text")
     assert _checked(tmp_path, lines)["status"] == "rejected"
@@ -176,7 +176,7 @@ def test_templates_scope_corrects_a_shipped_line_and_names_its_scope(tmp_path):
     """The baked numbers of a hand-written line on an included / branching template are rewritten as a
     correction, under the templates scope: any shipped line, like the audit, its notes naming the scope."""
     _store(tmp_path, status="unaligned")
-    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "星を見よ", "note": "$N1"}
+    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "sale", "note": "$N1"}
     lines, c = _apply(tmp_path, [row], scope="templates")
     assert c["correct"] == 1 and lines[0]["provenance"]["note"].startswith("$N1")
     assert "placeholders" in lines[0]["provenance"]["note"]
@@ -184,7 +184,7 @@ def test_templates_scope_corrects_a_shipped_line_and_names_its_scope(tmp_path):
 
 def test_stat_words_scope_corrects_a_shipped_line_and_names_its_reason(tmp_path):
     _store(tmp_path, status="trusted", en=OLD)
-    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "星を見よ",
+    row = {"type": "quest", "id": 175, "field": "title", "decision": "correct", "ja": "sale",
            "note": "Stat words written with the interface's Japanese"}
     lines, c = _apply(tmp_path, [row], scope="stat-words")
     assert c["correct"] == 1 and lines[0]["provenance"]["class"] == "correction"

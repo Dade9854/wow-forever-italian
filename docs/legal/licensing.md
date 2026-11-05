@@ -11,14 +11,12 @@ countries.
 ## Project license: GPL-2.0-or-later
 
 Everything written for this project (the addon's Lua, the Python pipeline, tests, CI, and the generated data) is
-**GPL-2.0-or-later**. The earlier Classic addons and the Chinese intermediates the Japanese passed through were
-GPLv2, so one GPL-compatible license for the whole repository is the simple choice. `LICENSE` is the verbatim GNU
+**GPL-2.0-or-later**, the license of the project it is forked from (below). `LICENSE` is the verbatim GNU
 GPL v2 text; the "or later" grant is the declaration in `pipeline/pyproject.toml`, the TOC
 (`## X-License: GPL-2.0-or-later`) and `README.md`.
 
 Contributions come in under the same license (inbound = outbound). There is no CLA.
 
-The bundled font is the one exception (below).
 
 ## English game text
 
@@ -51,35 +49,29 @@ repository holds text lines only, plus four small test files cut from the client
 `tests/fixtures/wdb`, `tests/fixtures/wdb-forever`). No game program, art, sound or archive is redistributed, and
 the addon itself ships no English game text.
 
-## Japanese translations
+## Code: a fork of WoW Forever Japanese
 
-The human translations were written for **WoWJapanizer**, **QuestJapanizer** and **CraftJapanizer_Quest**. All
-three are published on CurseForge under the BSD License (the three-clause template); their notice is reproduced in
-[`ATTRIBUTION.md`](../../ATTRIBUTION.md) as the license requires. The text reached this project through the
-predecessor addons and their Chinese intermediates (**Classic Quest Chinese Translator** and **Tooltips
-Translator - Chinese**, GPLv2), and through QuestJapanizer's own release. This repository holds no code from any
-of those addons; only the Japanese text passed through them, under the BSD notice. The label `questjapanizer-wiki`
-marks lines the QuestJapanizer and CraftJapanizer_Quest releases carried with no translator's tag of their own;
-they come from those same releases. The QuestJapanizer wiki site itself was never fetched.
+The addon's Lua, the Python pipeline, the tests and the CI come from **WoW Forever Japanese** by Zyaga
+(<https://github.com/zyaga/wow-forever-japanese>), GPL-2.0-or-later, and are redistributed and modified here under
+that license. `ATTRIBUTION.md` keeps its notices and the earlier GPLv2 Classic addons it descends from. The
+English text in `data/english/` (above) is the text that project extracted.
 
-Every line in `data/` records who wrote it (`provenance.translator`), so credit follows each line. Translators
-are credited by the tags they used, with no suggestion that they endorse this project. `ATTRIBUTION.md` lists
-every tag in `data/`, shipped or not (`python -m wfi.dev.gen_attribution` writes the list, and a test fails when
-a tag is missing).
+## Italian translations
 
-Machine-drafted lines are marked `machine` in their provenance, with the model that drafted them.
+This repository holds none of the original project's Japanese translations (they were written for WoWJapanizer,
+QuestJapanizer and CraftJapanizer_Quest under the BSD License, and remain in the git history this fork keeps,
+with their notice). The Italian is this project's own: machine drafts marked `machine` in their provenance with
+the model that drafted them, and, later, hand-written lines, which record their translator.
 
-Players whose corrections ship through a fix report are credited by the name they chose in `ATTRIBUTION.md`; the
-report form says so before they send it.
+Every line in `data/` records who or what wrote it, so credit follows each line. `ATTRIBUTION.md` lists every
+translator tag in `data/` (`python -m wfi.dev.gen_attribution` writes the list, and a test fails when a tag is
+missing). Players whose corrections ship through a fix report are credited by the name they chose in
+`ATTRIBUTION.md`; the report form says so before they send it.
 
-## Font: IPA UI Gothic
+## Fonts
 
-`addon/WoWForeverItalian/Fonts/ipagui.ttf` is **IPA UI Gothic**, redistributed **unmodified under the IPA Font
-License Agreement v1.0**. The license requires its text to travel with the font and the original file name to be
-kept, which is why the file is `ipagui.ttf`. The official Japanese text is
-`Fonts/IPA_Font_License_Agreement_v1.0.txt`; `Fonts/README.txt` points to the English translation at
-<https://moji.or.jp/ipafont/license/>. The font is the one part of the shipped folder outside GPL-2.0-or-later.
-Subsetting it would make a "derived program" under the IPA terms and would need its own decision.
+The addon bundles no font: Italian is written in the game client's own fonts, which already hold its accented
+letters.
 
 ## References
 

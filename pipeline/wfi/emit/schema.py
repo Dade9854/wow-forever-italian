@@ -60,8 +60,6 @@ FILE_PREFIX = {
     "gossip": "Gossip",
     "book": "Book",
     "ui": "UI",
-    "reading": "Reading",  # whole-word readings, Reading_<type>_<shard>.lua (not a translation type)
-    "gloss": "Gloss",  # the word popup's meanings, Gloss_<NNNN>.lua (not a translation type)
 }
 # Generated types in TOC load order: numeric-id shards, the keyed types, then the UI strings.
 # An English source that may legitimately hold SEVERAL versions at once, because more than one client

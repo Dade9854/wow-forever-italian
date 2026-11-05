@@ -13,8 +13,8 @@ EN_RAW = (
     "thin the boar and saber populations so that nature's harmony will be preserved."
 )
 EN_NORM = EN_RAW.replace("$B$B", " ").replace("$N", "Reyn").replace("$c", "druid")
-JA_CUT = "御機嫌よう、{name}。私はConservator Ilthalaine。Shadowglenでの私の仕事は、自然の均衡を保つことなんだ。"
-JA_FULL = JA_CUT + "\n\n今年の春は酷く雨が多かった。\n\n不幸なことに、NightsaberとThistle Boarが増えすぎた。若き{class}よ。"
+JA_CUT = "notte,{name}, fiume Conservator Ilthalaine,Shadowglen fuoco, vento,"
+JA_FULL = JA_CUT + "\n\n libro,\n\n testo,Nightsaber lupo Thistle Boar vento, frase {class} lupo,"
 
 
 def scope():
@@ -55,12 +55,12 @@ def test_single_paragraph_english_is_never_length_checked():
     sc = scope()
     sc.raw["description"] = "Kill 10 Kobold Vermin."
     sc.fields["description"] = "Kill 10 Kobold Vermin."
-    d = decide(line("Kobold Verminを10匹倒せ。"), sc, set(), "h1")
+    d = decide(line("ecco Kobold Vermin spada 10 pietra,"), sc, set(), "h1")
     assert d.status == "trusted" and "length" not in d.checks
 
 
 def test_title_is_not_length_checked():
-    d = decide(line("自然界のバランス", field="title"), scope(), set(), "h2")
+    d = decide(line("scudo", field="title"), scope(), set(), "h2")
     assert d.status == "trusted" and "length" not in d.checks
 
 
@@ -73,7 +73,7 @@ def test_complete_variant_wins_over_truncated_without_a_ruling():
 def test_two_complete_variants_are_settled_by_source_priority():
     az = {"class": "human", "translator": "Az", "source": "qjp@0.5.8", "imported": "2026-09-13"}
     tammy = {"class": "human", "translator": "Tammy", "source": "cjq@2012031300", "imported": "2026-09-13"}
-    other = JA_FULL + " 少し違う。"
+    other = JA_FULL + "fiume,"
     d = decide(line(JA_FULL, translator="Tammy", conflicts=[{"ja": other, "provenance": az}]), scope(), set(), "h1")
     assert d.status == "trusted" and d.winner == 0 and "tiebreak" in d.checks
     # the newer source wins even when it is the conflict variant
@@ -86,7 +86,7 @@ def test_two_complete_variants_are_settled_by_source_priority():
 
 def test_same_source_tie_stays_a_conflict():
     b = {"class": "human", "translator": "B", "source": "cqjt@3446c82", "imported": "2026-09-13"}
-    d = decide(line(JA_FULL, translator="A", conflicts=[{"ja": JA_FULL + " 少し違う。", "provenance": b}]), scope(), set(), "h1")
+    d = decide(line(JA_FULL, translator="A", conflicts=[{"ja": JA_FULL + "fiume,", "provenance": b}]), scope(), set(), "h1")
     assert d.status == "rejected" and d.reasons == ["duplicate_conflict"]
 
 
@@ -138,7 +138,7 @@ def test_relabelled_layer_one_paragraph_is_truncated_regardless_of_length():
 
 def test_tiebreak_is_not_recorded_when_a_ruling_decided():
     az = {"class": "human", "translator": "Az", "source": "qjp@0.5.8", "imported": "2026-09-13"}
-    other = JA_FULL + " 少し違う。"
+    other = JA_FULL + "fiume,"
     ln = line(JA_FULL, translator="Tammy", conflicts=[{"ja": other, "provenance": az, "ruling": {"ruling": "accept"}}])
     d = decide(ln, scope(), set(), "h1")
     assert d.winner == 1 and "tiebreak" not in d.checks

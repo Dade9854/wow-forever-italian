@@ -1,5 +1,5 @@
-name: Send collected English / 収集した英語の送付
-description: Send the English text your game recorded, so it can be translated. / ゲームが記録した英語のテキストを送って、翻訳に役立てます。
+name: Send collected English / Invio dell'inglese raccolto
+description: Send the English text your game recorded, so it can be translated. / Invia il testo inglese registrato dal gioco, perché possa essere tradotto.
 title: "Collected English"
 labels: ["collector-send"]
 body:
@@ -18,36 +18,34 @@ body:
         and the addon version. It saves your class and race, because some game lines change depending on
         them. It holds **no character name, account, realm, location, chat
         or time data.** Wording that depends on your character's gender ("sir" / "madam") is kept as your game
-        shows it. A zipped saved file also holds the addon's settings, the names and titles of quest NPCs you met (for the
-        voice panel, with the voice installed) and its problem log (`WFI_Log`: times, Lua memory, and the names of game
+        shows it. A zipped saved file also holds the addon's settings and its problem log (`WFI_Log`: times, Lua memory, and the names of game
         functions and frames that failed). This issue is public.
 
-        ありがとうございます。このフォームはゲームから開きます。設定の「英語テキスト収集」ページで「英語を送る」をクリックするか
-        `/wfi collector send` と入力し、ウィンドウの手順に従ってください。下の欄はリンクで入力されるか、ウィンドウの文字列を貼り付けます。
-        長すぎて貼り付けられないとウィンドウに表示された場合は、
-        `World of Warcraft\<クライアントのフォルダ>\WTF\Account\<アカウント>\SavedVariables\` にある
-        **WoWForeverItalian.lua** を zip にして、代わりに欄へドラッグしてください。送信したら、ゲーム内で「送信しました」をクリックします。
-        1 分以内に自動チェックが欄を読み取り、ここにコメントします。
+        Grazie. Apri questo modulo dal gioco: nella pagina **Raccolta testi inglesi** delle impostazioni clicca
+        **Invia l'inglese** (o scrivi `/wfi collector send`) e segui i passi nella finestra. Il riquadro qui sotto
+        si compila dal link, oppure ci incolli il testo della finestra. Se la finestra dice che è troppo lungo,
+        comprimi in zip **WoWForeverItalian.lua** da
+        `World of Warcraft\<cartella del client>\WTF\Account\<ACCOUNT>\SavedVariables\` e trascinalo nel riquadro.
+        Dopo l'invio clicca **Inviato** nel gioco. Un controllo automatico legge il riquadro entro un minuto.
 
-        **中身:** アドオンが記録したゲームの英語テキストです。クエスト本文、NPC のセリフとその NPC の ID、アイテムと呪文の説明、
-        NPC の名前が、ゲーム内 ID ごとに、ゲームのビルドとアドオンのバージョンと一緒に入っています。
-        クラスと種族は保存されます。ゲームの文章の一部がそれによって変わるためです。
-        **キャラクター名・アカウント・レルム・位置・チャット・時刻の情報は含まれません。**
-        キャラクターの性別で変わる言い回し（"sir" / "madam"）はゲームの表示どおりに残ります。
-        zip にした保存ファイルには、アドオンの設定、出会ったクエストNPCの名前と肩書き（音声パネル用、音声を入れている場合）、問題ログ（`WFI_Log`：時刻、Lua のメモリ量、失敗したゲームの関数やフレームの名前）も含まれます。
-        この Issue は公開されます。
+        **Cosa contiene:** il testo inglese del gioco registrato dall'addon (testi delle quest, dialoghi con l'id
+        dell'NPC, descrizioni di oggetti e spell, nomi degli NPC), con la build e la versione dell'addon. Salva
+        classe e razza, perché alcune frasi del gioco cambiano in base a loro. **Non contiene nome del
+        personaggio, account, reame, posizione, chat né orari.** Un file zip salvato contiene anche le
+        impostazioni dell'addon e il suo registro dei problemi (`WFI_Log`). Questa issue è pubblica.
+
   - type: textarea
     id: dump
     attributes:
       label: Collected English
-      description: Filled in by the link, or the text from the game's window (it starts with `WFIC1:`), or the zipped file. / リンクで入力された内容、ゲームのウィンドウの文字列（`WFIC1:` で始まります）、または zip にしたファイル。
+      description: Filled in by the link, or the text from the game's window (it starts with `WFIC1:`), or the zipped file. / Compilato dal link, oppure il testo della finestra del gioco (comincia con `WFIC1:`), oppure il file zip.
     validations:
       required: true
   - type: textarea
     id: note
     attributes:
       label: Note
-      description: Anything you want to add (optional). / 補足があれば（任意）。
+      description: Anything you want to add (optional). / Qualcosa da aggiungere (facoltativo).
     validations:
       required: false
   - type: checkboxes
@@ -55,5 +53,5 @@ body:
     attributes:
       label: Permission
       options:
-        - label: It contains only what is described above, and I am fine with it being public in this issue. / 上の説明どおりの内容で、この Issue で公開されてかまいません。
+        - label: It contains only what is described above, and I am fine with it being public in this issue. / Contiene solo quanto descritto sopra e mi va bene che sia pubblico in questa issue.
           required: true

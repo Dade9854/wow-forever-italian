@@ -275,7 +275,7 @@ end
 -- leading/trailing dots trimmed, empty tokens skipped; a token glued to a Latin letter (Mk2, 18sec) is not a
 -- value. "1,200" → "1200", "18.5" → "18.5".
 -- A value the client prints as a RANGE ("causes 14 to 22 Fire damage" for Fireball's `$s1`) is
--- one value, filled as "14～22": counted as two it shifted every later `$N`, and the pipeline's
+-- one value, filled as "14-22": counted as two it shifted every later `$N`, and the pipeline's
 -- `core/align.slots` counts "A to B" as one slot to match.
 -- Every value token of `scope` in reading order: fn(start, end, token, value, isRange), `isRange` when the
 -- token continues the previous value as "A to B". One scanner for `values` and the variant key's mask.
@@ -296,7 +296,7 @@ function Align.values(scope)
   local out = {}
   eachValue(scope, function(_, _, _, v, isRange)
     if isRange then
-      out[#out] = out[#out] .. "～" .. v
+      out[#out] = out[#out] .. "-" .. v
     else
       out[#out + 1] = v
     end

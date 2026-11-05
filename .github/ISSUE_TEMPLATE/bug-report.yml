@@ -1,46 +1,46 @@
-name: Bug report / 不具合の報告
-description: Something in the addon doesn't work. For a wrong or awkward translation, use the translation report instead. / アドオンの不具合の報告です。誤訳や不自然な訳は、翻訳の報告をご利用ください。
+name: Bug report / Segnalazione di un bug
+description: Something in the addon doesn't work. For a wrong or awkward translation, use the translation report instead. / Qualcosa nell'addon non funziona. Per una traduzione sbagliata o poco naturale usa la segnalazione di traduzione.
 title: "Bug: "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you. The fastest way here is from the game: `/wfi bug` (or Report a bug or idea in the 字 minimap
+        Thank you. The fastest way here is from the game: `/wfi bug` (or Report a bug or idea in the minimap
         button's menu) opens this form with the build, the version and the addon's own Lua errors filled in. For a
-        wrong or awkward translation, the translation report is faster: the 字 minimap button (or `/wfi fix`) fills
-        it in for you. This issue is public. English or Japanese, either is fine.
+        wrong or awkward translation, the translation report is faster: the minimap button (or `/wfi fix`) fills
+        it in for you. This issue is public. English or Italian, either is fine.
 
-        ありがとうございます。ゲーム内の `/wfi bug`（またはミニマップの「字」ボタンのメニューの「不具合・提案を報告」）から開くと、
-        ビルド・バージョン・アドオン自身の Lua エラーが入力された状態でこのフォームが開きます。
-        翻訳の誤りや不自然な訳は、ミニマップの「字」ボタン（または `/wfi fix`）から送る翻訳の報告の方が早く対応できます。
-        この Issue は公開されます。英語でも日本語でも大丈夫です。
+        Grazie. Il modo più veloce è dal gioco: `/wfi bug` (o "Segnala bug o idea" nel menu del pulsante della
+        minimappa) apre questo modulo con build, versione ed errori Lua dell'addon già compilati. Per una traduzione
+        sbagliata o poco naturale è più rapida la segnalazione di traduzione: il pulsante della minimappa (o
+        `/wfi fix`) la compila per te. Questa issue è pubblica. Va bene scrivere in inglese o in italiano.
   - type: textarea
     id: what
     attributes:
-      label: What happened / 起きたこと
-      description: What you did, what you expected, and what you saw instead. A screenshot helps. / 何をしたか、どうなるはずだったか、実際にどうなったかを書いてください。スクリーンショットがあると助かります。
+      label: What happened / Cosa è successo
+      description: What you did, what you expected, and what you saw instead. A screenshot helps. / Cosa hai fatto, cosa ti aspettavi e cosa hai visto invece. Uno screenshot aiuta.
     validations:
       required: true
   - type: input
     id: client-build
     attributes:
-      label: Client build / クライアントのビルド
-      description: Shown on the login screen, bottom left (for example 1.60.1.70009). / ログイン画面の左下に表示されます（例 1.60.1.70009）。
+      label: Client build / Build del client
+      description: Shown on the login screen, bottom left (for example 1.60.1.70009). / Si vede nella schermata di accesso, in basso a sinistra (per esempio 1.60.1.70009).
     validations:
       required: true
   - type: input
     id: addon-version
     attributes:
-      label: Addon version / アドオンのバージョン
-      description: "`/wfi version` in game. / ゲーム内で `/wfi version` を実行すると表示されます。"
+      label: Addon version / Versione dell'addon
+      description: "`/wfi version` in game. / `/wfi version` nel gioco."
     validations:
       required: true
   - type: textarea
     id: errors
     attributes:
-      label: Lua errors / Lua エラー (if any)
-      description: "`/wfi bug` fills in the addon's own Lua errors, or shows them to paste here. Paste any other Lua error the game showed. / `/wfi bug` がアドオン自身の Lua エラーを入力するか、貼り付ける文字列を表示します。ゲームに表示されたその他の Lua エラーもここに貼り付けてください。"
+      label: Lua errors / Errori Lua (if any / se ci sono)
+      description: "`/wfi bug` fills in the addon's own Lua errors, or shows them to paste here. Paste any other Lua error the game showed. / `/wfi bug` compila gli errori Lua dell'addon, o li mostra da incollare qui. Incolla anche ogni altro errore Lua mostrato dal gioco."
       render: text
     validations:
       required: false

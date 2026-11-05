@@ -77,11 +77,11 @@ def _author_decisions(data: Path) -> None:
     """What a person might have written into data/ between two `make data` runs."""
     by = _by(data)
     # a correction on a line the input produces, and one on a key the input never produces
-    by[(2, "description")]["conflicts"].append({"ja": "修正済みの説明文。", "provenance": dict(CORRECTION)})
+    by[(2, "description")]["conflicts"].append({"ja": "cosa,", "provenance": dict(CORRECTION)})
     by[(90001, "title")] = {
         "id": 90001,
         "field": "title",
-        "ja": "手で入れたタイトル",
+        "ja": "fiore",
         "status": "pending",
         "checks": [],
         "provenance": dict(CORRECTION),
@@ -100,7 +100,7 @@ def _author_decisions(data: Path) -> None:
     # a correction identical to the imported text is still a person's decision (kept); a second,
     # byte-identical correction is redundant
     by[(5, "title")]["conflicts"].append({"ja": by[(5, "title")]["ja"], "provenance": dict(CORRECTION)})
-    by[(2, "description")]["conflicts"].append({"ja": "修正済みの説明文。", "provenance": dict(CORRECTION)})
+    by[(2, "description")]["conflicts"].append({"ja": "cosa,", "provenance": dict(CORRECTION)})
     # a correction that only restores a paragraph break (ja_identity-equal to the import)
     six = by[(6, "description")]
     six["conflicts"].append({"ja": six["ja"].replace("。", "。\n\n", 1), "provenance": dict(CORRECTION)})
@@ -108,7 +108,7 @@ def _author_decisions(data: Path) -> None:
     by[(90002, "title")] = {
         "id": 90002,
         "field": "title",
-        "ja": "却下された題",
+        "ja": "voce",
         "status": "rejected",
         "checks": [],
         "provenance": {"class": "human", "translator": "Tammy", "source": "cqjt@0000000", "imported": DATE},
@@ -142,8 +142,8 @@ def test_corrections_and_rulings_survive_the_rebuild(bench, capsys):
     # the correction is a variant of the rebuilt line, provenance intact; the orphan key is its line
     desc = by[(2, "description")]
     assert desc["ja"] == pristine[(2, "description")]["ja"]
-    assert [c["provenance"] for c in desc["conflicts"] if c["ja"] == "修正済みの説明文。"] == [CORRECTION]
-    assert by[(90001, "title")]["provenance"] == CORRECTION and by[(90001, "title")]["ja"] == "手で入れたタイトル"
+    assert [c["provenance"] for c in desc["conflicts"] if c["ja"] == "cosa,"] == [CORRECTION]
+    assert by[(90001, "title")]["provenance"] == CORRECTION and by[(90001, "title")]["ja"] == "fiore"
 
     # the ruling is back on the rebuilt variant; the absent ruled variant is kept whole
     assert by[(2, "title")]["ruling"] == RULING
@@ -152,7 +152,7 @@ def test_corrections_and_rulings_survive_the_rebuild(bench, capsys):
 
     # a correction equal to the import is kept as its own variant; the byte-identical duplicate is not
     assert [c["provenance"]["class"] for c in by[(5, "title")]["conflicts"]] == ["correction"]
-    assert [c["ja"] for c in desc["conflicts"]].count("修正済みの説明文。") == 1
+    assert [c["ja"] for c in desc["conflicts"]].count("cosa,") == 1
     assert "carried human decisions (corrections / ruled variants / redundant corrections): quest 4/2/1" in out
 
     # the paragraph-break-only correction survives (whitespace is significant for corrections)
@@ -173,11 +173,11 @@ def test_corrections_and_rulings_survive_the_rebuild(bench, capsys):
 def test_an_import_never_collapses_into_a_correction():
     col = imp.Collector()
     col.lines[(2, "title")] = {
-        "id": 2, "field": "title", "ja": "同じ題", "status": "trusted", "checks": [], "provenance": dict(CORRECTION),
+        "id": 2, "field": "title", "ja": "voce", "status": "trusted", "checks": [], "provenance": dict(CORRECTION),
         "english": None, "reasons": [], "conflicts": [],
     }
     wiki = {"class": "human", "translator": "Kaz", "source": "qjp@0.5.8", "imported": DATE}
-    col.add(2, "title", "同じ題", wiki, "qjp@0.5.8#9")
+    col.add(2, "title", "voce", wiki, "qjp@0.5.8#9")
     line = col.lines[(2, "title")]
     assert line["provenance"] == CORRECTION  # no adopted credit, no origins
     assert [c["provenance"]["source"] for c in line["conflicts"]] == ["qjp@0.5.8"]
@@ -229,8 +229,8 @@ def test_carried_is_canonical_regardless_of_variant_order():
 
 EN_RAW = "Greetings, $N. Kill the Thistle Boar.$B$BThe rains were heavy.$B$BJourney forth, young $c."
 EN_NORM = EN_RAW.replace("$B$B", " ").replace("$N", "Reyn").replace("$c", "druid")
-JA3 = "御機嫌よう、{name}。Thistle Boarを倒せ。\n\n今年の春は雨が多かった。\n\n若き{class}よ、行け。"
-JA2 = "御機嫌よう、{name}。Thistle Boarを倒せ。\n\n今年の春は雨が多かった、若き{class}よ、行け。"
+JA3 = "notte,{name},Thistle Boar fumo,\n\n carro,\n\n frase {class} lupo, fuoco,"
+JA2 = "notte,{name},Thistle Boar fumo,\n\n carro, frase {class} lupo, fuoco,"
 
 
 def _scope() -> Scope:
@@ -294,10 +294,10 @@ def test_a_reject_ruling_on_a_lineage_only_line_is_kept_across_the_rebuild():
              "origins": ["qjp@0.5.8#1"]}
     ruling = {"ruling": "reject", "by": "maintainer", "date": "2026-09-24", "note": "another quest's text"}
     col = imp.Collector()
-    col.carry(1958, "objectives", {"ja": "別クエストの文", "provenance": dict(human), "ruling": dict(ruling)})
-    col.carry(9999, "objectives", {"ja": "消えた行", "provenance": dict(human), "ruling": dict(ruling)})
+    col.carry(1958, "objectives", {"ja": "giorno", "provenance": dict(human), "ruling": dict(ruling)})
+    col.carry(9999, "objectives", {"ja": "lettera", "provenance": dict(human), "ruling": dict(ruling)})
     assert col.orphaned_rejects == 2 and (1958, "objectives") not in col.lines
-    col.add(1958, "objectives", "別クエストの文", dict(human), "qjp@0.5.8#1")  # the lineage merge produces it
+    col.add(1958, "objectives", "giorno", dict(human), "qjp@0.5.8#1")  # the lineage merge produces it
     pending, col.orphans, col.orphaned_rejects = col.orphans, [], 0
     for id_, field, variant in pending:
         col.carry(id_, field, variant)

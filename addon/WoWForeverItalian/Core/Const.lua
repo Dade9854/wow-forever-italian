@@ -12,10 +12,10 @@ WFI.AREAS = { "quests", "gossip", "items", "spells", "ui", "books" }
 -- Marker messages: a short bilingual message, never a glyph, so it reads at a glance. A surface with a banner
 -- FontString (the quest window: the stone band under the NPC name) shows them there in MARKER_COLOR; a surface
 -- without one gets them inline, on their own line above prose or before a single-line title (UI/Render.lua).
--- Besides these two and the word card (UI/Readings), the addon adds nothing to the screen.
+-- Besides these two, the addon adds nothing to the screen.
 WFI.MARKER = {
-  stale = "[要更新 / English Changed]",
-  missing = "[未翻訳 / Not Translated]",
+  stale = "[Da aggiornare / English Changed]",
+  missing = "[Non tradotto / Not Translated]",
 }
 WFI.MARKER_COLOR = { r = 1, g = 0.82, b = 0 } -- gold, the client's own notice colour on its stone frames
 WFI.MARKER_INLINE_COLOR = "|cffffd100"

@@ -263,36 +263,36 @@ _Avoid_: allowlist (Latin words allowed to stay in the Japanese), exemption list
 **Reading**:
 The kana pronunciation of a Japanese [[Word]] as a whole (少し → すこし, 生き物 → いきもの), stored in `data/reading/` as its own record per shipped Japanese line of a quest field, a gossip line, a [[UI string]] or a plain-text [[Book page]]: the line's words in order, each with its reading, plus the hash of the Japanese it was written for and its own [[Provenance]] (`machine` or `correction`). A reading never edits or copies the Japanese; the addon shows it in the [[Word-reading box]] and the [[Word card]].
 _Avoid_: furigana layer, ruby, readings layer, kana annotation, yomigana
-→ [Readings](systems/readings.md) · [ADR-036](adr/036-readings-hover-word-lists.md)
+→ Readings · [ADR-036](adr/036-readings-hover-word-lists.md)
 
 **Word**:
 In a [[Reading]] record, a run of the Japanese that holds at least one kanji and no ASCII character (so never a name: names stay English), found in the line in order after the previous word. Always a whole word, never a single kanji of it: 少し, not 少. An entry that carries a [[Meaning]] takes the **whole inflected unit** as one word: a verb or adjective with all its endings and helper verbs (減らしてやって欲しい), noun + する, a noun with a plural or honorific suffix; never a noun with its particle. Such an entry may be a [[Kana word]].
 _Avoid_: token, kanji run, segment, term (that's the [[Translation glossary]])
-→ [Readings](systems/readings.md)
+→ Readings
 
 **Kana word**:
 A [[Word]] written all in kana (まだ, いる, しまった). Its reading is itself, so it is listed only as an entry that carries a [[Meaning]], for the [[Word card]]; with no meaning, or with meanings off, it is not a hover target.
 _Avoid_: hiragana word, kana token
-→ [Readings](systems/readings.md)
+→ Readings
 
 **Dictionary form**:
 The plain form of a [[Word]]'s head, as a dictionary lists it: 食べている → 食べる, 強くなかった → 強い, 調査された → 調査する, 生き物たち → 生き物. It keeps the text's spelling (a word written in kana stays in kana: いる, not 居る) and is stored with its own kana reading. Shown on the [[Word card]] only when it differs from the word.
 _Avoid_: lemma (in docs prose; `lemma` is the code's field name), base form, root, stem
-→ [Readings](systems/readings.md) · [ADR-039](adr/039-word-meanings-written-in-context.md)
+→ Readings · [ADR-039](adr/039-word-meanings-written-in-context.md)
 
 **Meaning**:
 A short English meaning (at most 60 characters) of a whole [[Word]] as its sentence uses it, the inflection translated too: 食べている → "is eating", 倒して in 「…を倒して」 → "defeat". Written by the model with the sentence in front of it, as part of the word's [[Reading]] entry, and shown on the [[Word card]]. Not a dictionary list: one sense, the one this sentence uses. A class or race word the addon fills in gets its English name ("Druid (a class)"). Generated into `Data/Gloss/`, each distinct (dictionary form, reading, meaning) stored once under its [[Meaning number]].
 _Avoid_: gloss, definition, translation (in player-facing text; `gloss` is the code's name: `Core/Glosses`, `readings.glosses`, `Data/Gloss`)
-→ [Readings](systems/readings.md) · [ADR-039](adr/039-word-meanings-written-in-context.md)
+→ Readings · [ADR-039](adr/039-word-meanings-written-in-context.md)
 
 **Meaning number**:
 The number a [[Meaning]] ships under in `Data/Gloss/`; a reading row points at it (`word=reading=n`). Kept in `data/reading/meaning-numbers.tsv`, which `wfi generate` writes: a meaning keeps its number for good, a new one takes the next number after the highest, and a number is never given to another meaning.
-→ [Readings](systems/readings.md#pipeline) · [ADR-060](adr/060-stable-meaning-numbers.md)
+→ Readings · [ADR-060](adr/060-stable-meaning-numbers.md)
 
 **Stale reading**:
 A [[Reading]] whose stored hash no longer matches the Japanese it annotates: the translation changed after the words were written. `wfi validate` reports it (not a failure) and `wfi generate` leaves it out, so it never ships, unlike a [[Stale]] entry, which ships with a marker. It is written again from a fresh export.
 _Avoid_: outdated reading, [[Stale]] (that's the English side of a translation)
-→ [Readings](systems/readings.md)
+→ Readings
 
 ## Addon
 
@@ -609,23 +609,23 @@ A short message, `[要更新 / English Changed]`, shown for a translated element
 **Word-reading box**:
 The small box above a Japanese [[Word]] (the game's own tooltip frame) in quest or gossip prose, in a [[Window label]] or on a plain-text [[Book page]], showing that word's whole [[Reading]] while the mouse is on it; the word is tinted gold at the same time. Nothing is drawn until the mouse is on a word, it never shows while English shows, and the `readings.enabled` setting turns it off. One of the on-screen additions [Principles §3](architecture/principles.md#3-japanese-by-default-english-one-key-away) allows.
 _Avoid_: furigana, ruby, reading tooltip (it is not a GameTooltip), popup
-→ [Readings](systems/readings.md) · [ADR-036](adr/036-readings-hover-word-lists.md)
+→ Readings · [ADR-036](adr/036-readings-hover-word-lists.md)
 
 **Word card**:
 The [[Word-reading box]]'s larger form (`UI/ReadingPopup`): for a [[Word]] that carries a [[Meaning]], the word and its reading (a [[Kana word]] shown once), the [[Dictionary form]] and its reading when it differs (laid out like the head line, in pale blue and muted gold), then the meaning, in a 280 px card above the word, kept on screen. Shown instead of the reading-only box while `readings.glosses` is on (default on; the *Show word meanings in the reading box* checkbox on the main settings page, or `/wfi glosses on|off`); a word with no meaning still gets the reading-only box. Same rules as the box: nothing drawn until the mouse is on a word, never while English shows. Shown on quest and gossip prose, [[Window label]]s and plain-text [[Book page]]s ([Principles §3](architecture/principles.md#3-japanese-by-default-english-one-key-away)).
 Player-facing text (the README, the listing) calls it the popup dictionary.
 _Avoid_: gloss box, dictionary popup, tooltip (it is not a GameTooltip)
-→ [Readings](systems/readings.md) · [ADR-039](adr/039-word-meanings-written-in-context.md)
+→ Readings · [ADR-039](adr/039-word-meanings-written-in-context.md)
 
 **Window label**:
 A plain-text label in a window: a FontString showing one [[UI string]] (the quest window's 報酬 and 以下の報酬から1つ選択できます, the character sheet's section labels, mail's 宛先:) whose parent is not a Button or a protected frame, on a [[Surface]] that is a window: not a button, tab, menu, dropdown or tooltip, and not the HUD (tracker, alerts, error and combat text, unit frames, zone text; `View.NON_WINDOW`). The only interface text that takes a [[Word card]]. Narrower than [[Label]], which also covers buttons.
 _Avoid_: UI label (too wide: buttons are labels too), window text, header, static text
-→ [Readings](systems/readings.md) · [ADR-041](adr/041-word-cards-on-window-labels.md)
+→ Readings · [ADR-041](adr/041-word-cards-on-window-labels.md)
 
 **Cover frame**:
 The invisible frame of the addon's own laid over one prose FontString that has [[Reading]]s (`UI/Readings`): it takes mouse motion only (clicks and scrolling go through), and on mouse enter checks that the FontString still shows the text it was attached for before measuring any word. Attached after an apply, detached on every restore, release and forget.
 _Avoid_: overlay, hit frame, hover frame, mask
-→ [Readings](systems/readings.md)
+→ Readings
 
 **Live check**:
 The addon's comparison, on a quest surface, of a quest field's [[Live English]] fingerprints (the `h1` of each [[Gossip key]]-style candidate: full, race only, class only, name only, nothing replaced) with the field's shipped `h1`, or its [[Female variant]]'s `h1f`. It decides the [[Stale marker]]: no fingerprint equal → the Japanese shows with the marker; one equal → no marker, whatever the build-time status. No equal fingerprint while a name under 3 code points occurs in the text (the fingerprints include short-name candidates), no fingerprints (the player's name, class or race not known yet) or no shipped `h1` (a field checked against another field's English) → the build-time status decides. It never withholds a translation.
@@ -690,27 +690,27 @@ _Avoid_: error log, debug log, diagnostics file, BugSack
 **Voice pack**:
 One of the separate addons that hold the Japanese voice over audio, named for what it holds: `WoWForeverItalian_VoiceLevels1to10` to `…Levels51to60` (the quests of a level band and their NPCs' talk) and `…VoiceOther` (book and letter pages, the character's error lines, quests with no known level). Each holds one MP3 per voiced line (and per [[Voice variant]]), and a `Register.lua` that hands the main addon a table of [[Pack key]] → file, [[Japanese hash]] and length. Every pack depends on the main addon; the main addon plays nothing and shows no voice setting without one. Built by `wfi voice pack`, never committed to this repository.
 _Avoid_: voice addon, sound pack, part, audio data (the main addon ships no audio)
-→ [Voice over](systems/voice.md) · [ADR-061](adr/061-voice-over-from-a-separate-pack.md) · [ADR-062](adr/062-voice-cast-per-speaker-in-step-with-the-text.md)
+→ Voice over · [ADR-061](adr/061-voice-over-from-a-separate-pack.md) · [ADR-062](adr/062-voice-cast-per-speaker-in-step-with-the-text.md)
 
 **Voice entry**:
 The addon players install for the voice, "WoW Forever Italian Voice" (`WoWForeverItalian_Voice`): no audio of its own; on CurseForge its file requires the main addon and every [[Voice pack]], so the app installs them all from one click. Its list of required projects is the one place that says what the voice consists of.
 _Avoid_: voice pack (it holds none), installer, bundle
-→ [Voice over](systems/voice.md) · [Voice over runbook](operations/voice.md)
+→ Voice over · Voice over runbook
 
 **Pack key**:
 The name a voiced line goes by in a [[Voice pack]] and in `data/voice/`: `<quest id>-<field>` for a quest's offer (`description`), `progress` or turn-in (`completion`), `g-<gossip key>` for a greeting (and quest text keyed by its English), `b-<page key>` for a book or letter page. It is the audio file's name without `.mp3` (plus `_<voice id>` for a [[Voice variant]]), and keys the audio the same way the Japanese is keyed, never by position.
 _Avoid_: file index, line number
-→ [Voice over](systems/voice.md)
+→ Voice over
 
 **Japanese hash**:
 The hash of a line's shipped Japanese exactly as stored, tokens unfilled (`Hash.key`; `ja_hash` in the pipeline). A [[Voice pack]] entry carries the Japanese hash its audio was made from, and the addon plays the file only when it equals the hash of the Japanese it ships; otherwise the line stays silent. A [[Reading]] record pins itself to its Japanese the same way.
 _Avoid_: [[Source hash]] (that's the English side), audio hash
-→ [Voice over](systems/voice.md) · [Readings](systems/readings.md)
+→ Voice over · Readings
 
 **Speaker**:
 The creature that says a voiced line, by creature id: the quest's starter for its offer, its ender for progress and turn-in, the creature whose greeting it is for a gossip line. Recorded in `data/voice/speakers.jsonl` (with the others who say the line too); a creature id the [[Collector]] recorded wins over VMaNGOS. A speaker's voice comes from [[Casting]].
 _Avoid_: NPC (too broad), voice actor, quest giver (only one of the cases)
-→ [Voice over](systems/voice.md) · [Data model](architecture/data-model.md#voice-over-tables)
+→ Voice over · [Data model](architecture/data-model.md#voice-over-tables)
 
 **Speaker profile**:
 Who a speaking creature is, for casting: race (or creature family), gender (`male`, `female`, `none`, `mixed`), age band, archetype and role, each field with its provenance (the client's display tables, VMaNGOS, a machine casting pass, or the maintainer's ruling). `data/voice/profiles.jsonl`.
@@ -720,17 +720,17 @@ _Avoid_: character sheet, NPC data
 **Roster**:
 Every voice the addon may use: a voice model, its style and its engine settings (speed, pitch, intonation) and its licence, each with a voice id. `[roster.*]` in `pipeline/voice.toml`.
 _Avoid_: voice list, cast
-→ [Voice over runbook](operations/voice.md#configuration)
+→ Voice over runbook
 
 **Casting**:
 Choosing each [[Speaker]]'s voice: the casting table (`[[cast]]` rows in `pipeline/voice.toml`) maps kinds of [[Speaker profile]] to ordered [[Roster]] voices, the pick within a row is stable per creature (so an NPC never changes voice and neighbours differ), and an override names a voice for one NPC. The result is `data/voice/voices.jsonl`.
 _Avoid_: voice assignment, mapping
-→ [Voice over](systems/voice.md) · [ADR-062](adr/062-voice-cast-per-speaker-in-step-with-the-text.md)
+→ Voice over · [ADR-062](adr/062-voice-cast-per-speaker-in-step-with-the-text.md)
 
 **Voice variant**:
 A second file for a line that differently cast creatures say: `<pack key>_<voice id>.mp3`, same key and [[Japanese hash]]. The addon plays the file of the creature on screen, else the line's main voice.
 _Avoid_: alternate take, duplicate
-→ [Voice over](systems/voice.md)
+→ Voice over
 
 **Audio record**:
 `data/voice/audio.jsonl`: one row per made audio file, with the [[Japanese hash]] and voice it was made from. Committed; the CI test compares it with the shipped Japanese and the [[Casting]], so a voiced line with missing or stale audio fails the pull request.
@@ -740,27 +740,27 @@ _Avoid_: manifest, audio index
 **Audio pin**:
 `pipeline/voice-audio-commit.txt`: the commit of the voice audio repository (`Dade9854/wow-forever-italian-voice`) that goes with this repository's text. A voice run writes it; a release builds the [[Voice pack]]s from exactly that commit.
 _Avoid_: audio version, lock file
-→ [Voice over runbook](operations/voice.md)
+→ Voice over runbook
 
 **Narrator**:
 The voice that reads a line no creature says: the offer of a quest an item or object starts, or a creature whose display has no gender. Book and letter pages have a book narrator of their own. Both are [[Roster]] voices chosen at the audition.
 _Avoid_: system voice, default voice
-→ [Voice over](systems/voice.md)
+→ Voice over
 
 **Voice panel**:
 The panel that shows a voiced line while it plays: the speaking NPC's head, their name and title as the client showed them, and the line's Japanese a sentence at a time in step with the audio, with word cards, plus pause, play again, whole text and close. With it on, a line outlives its window and the reveal key shows the line's English without stopping the voice. Panel size Off turns it off.
 _Avoid_: talking head (that is the client's own frame), subtitle box, player window
-→ [Voice over](systems/voice.md#the-voice-panel-uivoicepanellua) · [ADR-063](adr/063-the-voice-panel.md)
+→ Voice over · [ADR-063](adr/063-the-voice-panel.md)
 
 **Waiting list**:
 The voiced lines that started while another plays and wait their turn (`Core/VoiceQueue`), shown above the [[Voice panel]] as "Up next (click to play)"; a click on a row plays that line now and drops the line it interrupts. There is no skip control and no count.
 _Avoid_: queue box, playlist, backlog
-→ [Voice over](systems/voice.md#the-voice-panel-uivoicepanellua)
+→ Voice over
 
 **Remembered speaker**:
 The quest NPC the addon saw show a quest line (creature id, sex, name, title), saved in `WFI_DB.voiceSpeakers` each time the quest window shows it, and used when that line is played from the quest log. Kept on the player's machine, never shipped; not the [[Speaker]] table in `data/voice/`.
 _Avoid_: speaker table, cached NPC, quest giver record
-→ [Voice over](systems/voice.md) · [Data model](architecture/data-model.md)
+→ Voice over · [Data model](architecture/data-model.md)
 
 ## Client
 

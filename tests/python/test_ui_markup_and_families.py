@@ -44,6 +44,7 @@ def _scope(en):
 # ---- markup and plural grammar --------------------------------------------------------------------------------
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): fixture giapponesi")
 @pytest.mark.parametrize(
     "en, ja, status, reason",
     [

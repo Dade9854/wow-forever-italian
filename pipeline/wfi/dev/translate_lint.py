@@ -235,7 +235,8 @@ def check_row(
     kept = ja.casefold()
     names = english_names(_COLOUR.sub(" ", en), glossary)
     # a name's plural or singular is kept: "Gnolls" kept as `gli Gnoll` is kept
-    missing = [w for w in names if w not in not_names and not any(f in kept for f in forms(w))]
+    # whole words: Italian is spaced, and a name must not hide in an Italian word (`Druid` in `arcidruido`)
+    missing = [w for w in names if w not in not_names and not any(_whole_word(f, kept) for f in forms(w))]
     # A tooltip's stat word is written with the interface's Japanese, never kept in English letters: the
     # English capitalises it (`Increases Stamina by $s1`), so where it stands on its own it is no name to
     # keep either. Inside a name (`Elixir of Agility`, `Mana Shield`) it still is one.
@@ -325,8 +326,9 @@ def _check_branches(
 
 
 def _whole_word(word: str, kept: str) -> bool:
-    """`word` (case-folded) occurs in `kept` as a whole word: `Lord` is not kept by `王Lordaeron`."""
-    return re.search(rf"(?<![a-z]){re.escape(word.casefold())}(?![a-z])", kept) is not None
+    """`word` (case-folded) occurs in `kept` as a whole word: `Lord` is not kept by `Lordaeron`, nor `Druid`
+    by `arcidruido`."""
+    return re.search(rf"(?<![a-zà-ÿ]){re.escape(word.casefold())}(?![a-zà-ÿ])", kept) is not None
 
 
 def read_not_names(path: Path) -> dict[str, set[str]]:

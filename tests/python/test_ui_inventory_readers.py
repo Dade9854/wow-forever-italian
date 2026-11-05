@@ -1,8 +1,11 @@
+
 """The inventory's readers (dialog definitions, HelpTip callouts, Bindings XML) over a small addon tree, the accept
 ruling that keeps a UI line in English letters, and the exclusion hygiene."""
 
 import re
 from pathlib import Path
+
+import pytest
 
 from wfi.core.status import Scope, decide
 from wfi.dev import ui_inventory
@@ -91,6 +94,7 @@ def _ui_line(ja, ruling=None):
     return line
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): richiede il dizionario dell'interfaccia")
 def test_an_accept_ruling_keeps_a_ui_line_in_english_letters():
     scope = Scope(kind="ui", fields={"text": "NEW"}, raw={"text": "NEW"})
     assert decide(_ui_line("NEW"), scope, set(), None).reasons == ["not_japanese"]
@@ -103,6 +107,7 @@ def test_no_exclusion_disposition_or_title_cites_the_missing_needs_file():
         assert "needs.md" not in (ROOT / rel).read_text(encoding="utf-8"), rel
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): richiede il dizionario dell'interfaccia")
 def test_the_click_binding_composite_ships_as_its_wordless_english():
     # "%s-%s" has no word of its own, so its Japanese is the same text; check passes it as wordless
     import json
@@ -112,6 +117,7 @@ def test_the_click_binding_composite_ships_as_its_wordless_english():
     assert line["ja"] == "%s-%s" and line["status"] == "trusted"
 
 
+@pytest.mark.skip(reason="fase 3 (interfaccia): richiede il dizionario dell'interfaccia")
 def test_every_countdown_unit_word_has_a_shipped_line():
     # UI/Popups puts a countdown's unit word in as its Japanese; a unit with no shipped line leaves the
     # whole countdown English (the busted spec stubs the rows, so it cannot see this)

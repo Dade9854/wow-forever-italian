@@ -8,7 +8,7 @@
 
 ## Phase 2: Addon (done)
 - **Goal:** a clean rewrite with no dependencies: quest windows and log, gossip, books, item and spell tooltips, hold-a-key-for-English, the master switch and per-area toggles, settings pages, the bundled font, the English collector.
-- **Result:** every surface in [App capabilities](app-capabilities.md). The whole game interface is in scope except names ([ADR-015](adr/015-ui-text-surfaces.md), [ADR-016](adr/016-whole-window-interface-coverage.md)): every window the Forever client loads has a recorded disposition, and a test fails when a new client build adds one nobody has read ([ADR-030](adr/030-every-window-the-forever-client-loads.md)). Word readings and the word card ship on quest and NPC-talk prose, window labels and plain-text book pages ([Readings](systems/readings.md)). Players can report a line from the game ([Fix reports](systems/fix-reports.md)).
+- **Result:** every surface in [App capabilities](app-capabilities.md). The whole game interface is in scope except names ([ADR-015](adr/015-ui-text-surfaces.md), [ADR-016](adr/016-whole-window-interface-coverage.md)): every window the Forever client loads has a recorded disposition, and a test fails when a new client build adds one nobody has read ([ADR-030](adr/030-every-window-the-forever-client-loads.md)). Word readings and the word card ship on quest and NPC-talk prose, window labels and plain-text book pages (Readings). Players can report a line from the game ([Fix reports](systems/fix-reports.md)).
 
 ## Phase 3: The Forever client (in progress)
 - **Goal:** verify the addon on the Forever client, harvest its English, and measure what changed.
@@ -25,8 +25,8 @@
   - **Player reports** as they arrive.
 
 ## Voice over (in progress)
-- **Goal:** quest and NPC talk, book and letter pages and the character's error lines read aloud in Japanese from the shipped Japanese, generated locally with AivisSpeech and shipped as separate voice addons ([ADR-061](adr/061-voice-over-from-a-separate-pack.md), [ADR-062](adr/062-voice-cast-per-speaker-in-step-with-the-text.md), [research](research/2026-10-04-japanese-voice-over.md)).
-- **Done:** every voiced line in the game, cast per kind of speaker by ear (16,199 files, 1.2 GB), in the Voice entry and seven packs named for what they hold; the audio in its own repository with every older take; a CI test that fails a pull request whose voiced lines lack their audio; one Release button for the addon and the packs that changed ([Voice over](systems/voice.md), [runbook](operations/voice.md)). Passed in game in two starting zones.
+- **Goal:** quest and NPC talk, book and letter pages and the character's error lines read aloud in Japanese from the shipped Japanese, generated locally with AivisSpeech and shipped as separate voice addons ([ADR-061](adr/061-voice-over-from-a-separate-pack.md), [ADR-062](adr/062-voice-cast-per-speaker-in-step-with-the-text.md), research).
+- **Done:** every voiced line in the game, cast per kind of speaker by ear (16,199 files, 1.2 GB), in the Voice entry and seven packs named for what they hold; the audio in its own repository with every older take; a CI test that fails a pull request whose voiced lines lack their audio; one Release button for the addon and the packs that changed (Voice over, runbook). Passed in game in two starting zones.
 - **Open:**
   - **The voice panel:** a talking-head panel with the NPC's face, the line's Japanese and a queue, so a line can keep playing after its window closes. The voice is published together with it.
   - **Not voiced:** quest objectives, audio per class or race (the player's name, class and race are spoken as 冒険者).

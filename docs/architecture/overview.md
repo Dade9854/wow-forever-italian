@@ -58,7 +58,7 @@ flowchart LR
 - **Data model** ([Data model](data-model.md)): JSONL per (id, field); statuses trusted / unaligned / stale / rejected / missing; English vendored, never shipped; generated Lua shards keyed by game id, one per 1,000-id range, positional slots plus inline 32-bit hashes (ADR-008).
 - **Pipeline** ([Pipeline](../systems/pipeline.md)): pure core, measured alignment rules, deterministic output; `validate` regenerates and diffs.
 - **Addon** ([Addon modules](addon-modules.md)): UI → Core → Data. `Compat` resolves every client-specific name; English is read from APIs; `SurfaceState` is keyed by logical element. Tooltips replace the description run in place (first line primary, the rest blank companions, ADR-010), with a runtime align gate for unaligned entries (`Core/Align`, ADR-007) that also fills the value placeholders from the live line. Interface text (tooltip structural lines, window labels, menus, help tooltips, load-on-demand windows) is matched against one UI string index built from the client's own globals and gated by the shipped hash (`Core/UIStrings`, ADR-015, ADR-016).
-- **Readings** ([Readings](../systems/readings.md)): the word card over quest, gossip, window-label and book prose.
+- **Readings** (Readings): the word card over quest, gossip, window-label and book prose.
 - **Settings** ([Settings](../systems/settings.md)), **Collector** ([Collector](../systems/collector.md)), **Fix reports** ([Fix reports](../systems/fix-reports.md)), **Release** ([Release](../operations/release.md)), **Testing** ([Testing strategy](../testing/strategy.md)).
 
 How much of the game ships in Japanese is generated, not written by hand: [Coverage](../operations/coverage.md).

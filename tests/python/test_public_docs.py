@@ -11,11 +11,11 @@ def _read(root, path):
 
 def test_readme_covers_install_use_reporting_credits_in_both_languages(root):
     text = _read(root, "README.md")
-    for heading in ("## Install", "### With the CurseForge app", "### By hand", "### Turn it on in the game",
-                    "## Using it", "## Reporting a bad translation", "## Credits", "## License", "## Contributing",
-                    "## 日本語", "### インストール", "### 使い方", "### 翻訳の問題を報告する", "### クレジット"):
+    for heading in ("## Installazione", "## Come si usa", "## Sviluppo", "## Licenza", "## English",
+                    "## What it translates", "### Quanto è tradotto"):
         assert heading in text, heading
-    assert "CONTRIBUTING.md" in text and "ATTRIBUTION.md" in text
+    assert "ATTRIBUTION.md" in text and "github.com/zyaga/wow-forever-japanese" in text
+    assert "Segnalare una traduzione sbagliata" in text
 
 
 def test_nothing_public_claims_to_replace_the_classic_addons(root):
@@ -26,8 +26,8 @@ def test_nothing_public_claims_to_replace_the_classic_addons(root):
 
 def test_curseforge_description_is_bilingual(root):
     text = _read(root, "docs/curseforge.md")
-    assert "## Description" in text and re.search(r"^## .*日本語", text, re.MULTILINE)
-    assert "Popup dictionary" in text and "ポップアップ辞書" in text
+    assert "## Description" in text and "### English" in text and "### Cosa traduce" in text
+    assert "In cifre: " in text and "In numbers: " in text
 
 
 def test_contributing_states_the_terms_and_the_setup(root):
@@ -40,25 +40,24 @@ def test_contributing_states_the_terms_and_the_setup(root):
 def test_licensing_names_every_source_and_the_bsd_notice(root):
     text = _read(root, "docs/legal/licensing.md")
     for needle in ("Forever client tables", "Forever quest cache", "Classic Era quest cache", "VMaNGOS",
-                   "wago.tools", "pfQuest", "forever-vo", "139,877", "BSD", "IPA", "not legal advice"):
+                   "wago.tools", "pfQuest", "forever-vo", "139,877", "WoW Forever Japanese", "not legal advice"):
         assert needle in text, needle
     assert "GPLv2 chain" not in text
     attribution = _read(root, "ATTRIBUTION.md")
-    for needle in ("WoWJapanizer", "QuestJapanizer", "CraftJapanizer_Quest", "Redistribution and use in source",
-                   "Permission is hereby granted"):
+    for needle in ("WoW Forever Japanese", "Zyaga", "WoWpoPolsku", "Permission is hereby granted"):
         assert needle in attribution, needle
     assert not re.search(r"\bendorse(d|s)? (this|the) project\b|\bofficial\b", attribution.split("## Lineage")[0])
 
 
 @pytest.mark.parametrize("form", ["translation-report.yml", "bug-report.yml", "collector-send.yml", "idea.yml"])
 def test_issue_forms_speak_both_languages(root, form):
-    """The name, every description and every consent line of a form carry Japanese beside the English."""
+    """The name, every description and every consent line of a form carry Italian beside the English."""
     text = _read(root, f".github/ISSUE_TEMPLATE/{form}")
     lines = [ln.strip() for ln in text.splitlines()]
     checked = [ln for ln in lines if ln.startswith(("name:", "description:", "- label:"))]
     assert len(checked) >= 3, form
     for ln in checked:
-        assert re.search(r"[぀-ヿ一-鿿]", ln), f"{form}: no Japanese in: {ln[:60]}"
+        assert " / " in ln, f"{form}: no Italian beside the English in: {ln[:60]}"
 
 
 @pytest.mark.parametrize("form", ["translation-report.yml", "bug-report.yml", "collector-send.yml", "idea.yml"])
@@ -87,7 +86,7 @@ def test_issues_come_through_the_forms(root):
 def test_security_and_conduct_pages_say_how_to_report_in_both_languages(root):
     security, conduct = _read(root, "SECURITY.md"), _read(root, "CODE_OF_CONDUCT.md")
     for text in (security, conduct):
-        assert "## 日本語" in text
+        assert "## Italiano" in text
     assert "Report a vulnerability" in security and "do not open a public issue" in security.lower()
     assert "Report content" in conduct and "SECURITY.md" in conduct
     assert "SECURITY.md" in _read(root, "CONTRIBUTING.md") and "CODE_OF_CONDUCT.md" in _read(root, "CONTRIBUTING.md")
@@ -97,8 +96,8 @@ def test_security_and_conduct_pages_say_how_to_report_in_both_languages(root):
 def test_the_trademark_notice_is_in_both_languages(root):
     for path in ("README.md", "docs/curseforge.md"):
         text = _read(root, path)
-        assert "not affiliated with or endorsed by Blizzard Entertainment" in text, path
-        assert "商標または登録商標" in text, path
+        assert "not affiliated with or endorsed by Blizzard Entertainment" in text.replace("\n", " ") or \
+            "non è affiliato né approvato da Blizzard" in text, path
     assert "not affiliated with or endorsed by Blizzard Entertainment" in _read(root, "docs/legal/licensing.md")
 
 
@@ -108,7 +107,7 @@ def test_the_settings_command_is_the_one_the_addon_has(root):
     assert 'lower == "config"' in slash
     for path in ("README.md", "docs/curseforge.md", "CHANGELOG.md"):
         for line in _read(root, path).splitlines():
-            if re.search(r"Options > AddOns|オプション > AddOns", line) and "/wfi" in line:
+            if re.search(r"Options > AddOns|Opzioni > AddOn", line) and "/wfi" in line:
                 assert "/wfi config" in line, f"{path}: {line[:80]}"
 
 

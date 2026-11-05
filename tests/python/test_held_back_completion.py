@@ -32,7 +32,7 @@ MODEL_EN = "Well done, {name}! You have earned this.\n\nTake it and go."
 
 
 def _ja(id_, field, status, prov, conflicts=(), reasons=("truncated:1/2",), **kw):
-    return {"id": id_, "field": field, "ja": "よくやった、{name}!", "status": status, "checks": [],
+    return {"id": id_, "field": field, "ja": "fuoco,{name}!", "status": status, "checks": [],
             "provenance": dict(prov), "english": None, "reasons": list(reasons),
             "conflicts": [dict(c) for c in conflicts], **kw}
 
@@ -61,7 +61,7 @@ def repo(tmp_path: Path) -> Path:
     ])                          # quest 9 below has no English → out of scope
     Store(data).save("quest", [
         _ja(1, "completion", "rejected", HUMAN),
-        _ja(2, "completion", "rejected", HUMAN, [{"ja": "別訳", "provenance": HUMAN2}],
+        _ja(2, "completion", "rejected", HUMAN, [{"ja": "acqua", "provenance": HUMAN2}],
             reasons=("duplicate_conflict",)),
         _ja(3, "completion", "trusted", HUMAN, reasons=()),
         _ja(4, "completion", "stale", HUMAN, reasons=()),
@@ -198,9 +198,9 @@ SCOPE = Scope("quest", {"completion": "Well done!"}, {"completion": "Well done!"
 
 
 def test_the_machine_draft_wins_over_a_reject_ruled_hand_written_variant():
-    line = {"id": 1, "field": "completion", "ja": "半分だけの訳", "status": "rejected", "checks": [],
+    line = {"id": 1, "field": "completion", "ja": "parola", "status": "rejected", "checks": [],
             "provenance": dict(HUMAN), "english": None, "reasons": ["truncated:1/2"],
-            "conflicts": [{"ja": "よくやった!", "provenance": dict(MACHINE)}], "ruling": dict(REJECT)}
+            "conflicts": [{"ja": "fuoco!", "provenance": dict(MACHINE)}], "ruling": dict(REJECT)}
     d = decide(line, SCOPE, set(), None)
     assert (d.status, d.winner) == ("trusted", 1)
     # without the ruling the hand-written text bars the draft (machine text never replaces a human translation
@@ -213,16 +213,16 @@ def test_the_machine_draft_wins_over_a_reject_ruled_hand_written_variant():
 def test_a_reject_ruling_is_permanent_even_when_the_ruled_text_later_passes():
     # quests 3106 / 5625: completion lines ruled `reject`, no draft imported. If new English, an allowlist entry or a rule
     # change makes the ruled text pass, it still must not ship; the ruling is what a person decided.
-    passing = {"id": 1, "field": "completion", "ja": "よくやった!", "status": "rejected", "checks": [],
+    passing = {"id": 1, "field": "completion", "ja": "fuoco!", "status": "rejected", "checks": [],
                "provenance": dict(HUMAN), "english": None, "reasons": ["truncated:1/2"], "conflicts": [],
                "ruling": dict(REJECT)}
     d = decide(passing, SCOPE, set(), None)
     assert (d.status, d.reasons, d.winner) == ("rejected", ["ruled_reject"], 0)
     # still failing: the line keeps its own reasons, as before the ruling
     failing = dict(passing, ja="Well done!")
-    assert decide(failing, SCOPE, set(), None).reasons == ["not_japanese"]
+    assert decide(failing, SCOPE, set(), None).reasons == ["not_italian"]
     # two ruled hand-written variants and nothing else: neither ships
-    both = dict(passing, conflicts=[{"ja": "見事だ!", "provenance": dict(HUMAN2), "ruling": dict(REJECT)}])
+    both = dict(passing, conflicts=[{"ja": "cosa!", "provenance": dict(HUMAN2), "ruling": dict(REJECT)}])
     assert decide(both, SCOPE, set(), None).status == "rejected"
 
 
@@ -250,7 +250,7 @@ def _save(repo: Path, lines) -> None:
 def test_validate_accepts_the_change_when_every_hand_written_variant_is_ruled_reject(tmp_path):
     repo = _git_repo(tmp_path, [_ja(1, "completion", "rejected", HUMAN)])
     ruled = _ja(1, "completion", "trusted", MACHINE, reasons=(),
-                conflicts=[{"ja": "半分だけの訳", "provenance": HUMAN, "ruling": dict(REJECT)}])
+                conflicts=[{"ja": "parola", "provenance": HUMAN, "ruling": dict(REJECT)}])
     _save(repo, [ruled])
     assert validate.rule_provenance(repo / "data", Store(repo / "data"), "HEAD") == []
 
@@ -259,7 +259,7 @@ def test_validate_refuses_reject_rulings_that_replace_a_shipping_hand_written_li
     # the held-back ruling covers text that shipped nothing; a line that shipped hand-written text needs its own ruling
     repo = _git_repo(tmp_path, [_ja(1, "completion", "trusted", HUMAN, reasons=())])
     ruled = _ja(1, "completion", "trusted", MACHINE, reasons=(),
-                conflicts=[{"ja": "よくやった、{name}!", "provenance": HUMAN, "ruling": dict(REJECT)}])
+                conflicts=[{"ja": "fuoco,{name}!", "provenance": HUMAN, "ruling": dict(REJECT)}])
     _save(repo, [ruled])
     (problem,) = validate.rule_provenance(repo / "data", Store(repo / "data"), "HEAD")
     assert problem.startswith("provenance: quest 1/completion was human and shipped (trusted) at HEAD, now machine")
@@ -276,8 +276,8 @@ def test_validate_still_refuses_the_change_when_a_hand_written_variant_is_unrule
     repo = _git_repo(tmp_path, [_ja(1, "completion", "rejected", HUMAN)])
     # two hand-written variants, only one ruled: the provenance rule still protects the line
     unruled = _ja(1, "completion", "trusted", MACHINE, reasons=(), conflicts=[
-        {"ja": "半分だけの訳", "provenance": HUMAN, "ruling": dict(REJECT)},
-        {"ja": "別訳", "provenance": HUMAN2},
+        {"ja": "parola", "provenance": HUMAN, "ruling": dict(REJECT)},
+        {"ja": "acqua", "provenance": HUMAN2},
     ])
     _save(repo, [unruled])
     assert validate.rule_provenance(repo / "data", Store(repo / "data"), "HEAD") == [

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-04
-- **Related:** [ADR-036](036-readings-hover-word-lists.md) (readings) · [ADR-039](039-word-meanings-written-in-context.md) (word meanings) · [Readings](../systems/readings.md) · [Pipeline](../systems/pipeline.md) · [Translation batches](../operations/translation-batches.md#readings-for-a-batch)
+- **Related:** [ADR-036](036-readings-hover-word-lists.md) (readings) · [ADR-039](039-word-meanings-written-in-context.md) (word meanings) · Readings · [Pipeline](../systems/pipeline.md) · [Translation batches](../operations/translation-batches.md#readings-for-a-batch)
 
 ## Context
 

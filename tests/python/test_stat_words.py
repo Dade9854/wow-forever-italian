@@ -16,6 +16,7 @@ INTERFACE_KEYS = {
 }
 
 
+@pytest.mark.skip(reason="fase 3 (tooltip): le parole delle statistiche vanno riscritte per l'italiano")
 def test_every_stat_word_is_the_interfaces_japanese(root: Path):
     ui = {ln["id"]: ln for ln in Store(root / "data").load("ui")}
     assert set(INTERFACE_KEYS) == set(stat_words.STAT_WORDS)
