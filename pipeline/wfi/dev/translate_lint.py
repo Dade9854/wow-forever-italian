@@ -6,21 +6,23 @@ Every batch row must have exactly one draft row, and every draft row a batch row
 reason per problem:
 
 - `missing` / `duplicate` / `unknown_ref`: the draft does not cover the batch one to one
-- `not_japanese`: no kana or kanji, or a simplified-only character (`language.is_japanese`). An English
-  line that is only dots (`...`) may stay only dots (`……`), and a tooltip row `cut` marked `name_only`
-  (`Umbrinoth`) may keep exactly its English.
-- `tokens:<english>→<japanese>`: the `{name}` / `{class}` / `{race}` tokens differ in kind or count
-- `leftover:<token>`: a `$` code, an unknown `{word}` or any `<a/b>` pair (drafts are gender-neutral)
-- `slash:<a>/<b>`: a `/` between two Japanese words (`師匠/主人`), two renderings where one must be chosen;
-  the reason shows the Japanese runs around it
+- `not_italian`: the English left in place, prose that reads as English, or a CJK character
+  (`language.is_italian`). An English line that is only dots (`...`) may stay only dots (`…`), and a tooltip
+  row `cut` marked `name_only` (`Umbrinoth`) may keep exactly its English.
+- `tokens:<english>→<italian>`: the `{name}` / `{class}` / `{race}` tokens differ in kind or count
+- `leftover:<token>`: a `$` code, an unknown `{word}`, or a `<x/y>` pair the addon cannot expand (a
+  gender pair is two ASCII words, `<pronto/pronta>`: the masculine, then the feminine)
+- `slash:<a>/<b>`: a `/` between two lower-case words (`maestro/padrone`, `amico/amica`), two renderings
+  where one must be chosen; the reason shows the words around it
 - `counters:<english>→<japanese>`: the server counters (`$1997w`, `$2283W`: a value the game fills in) differ
 - `paragraphs:<ja>/<en>`: a different number of paragraphs
-- `alignment_failed:<word>`: a Latin word in the Japanese the English does not have (`align.check_names`);
+- `alignment_failed:<word>`: a capitalised word inside an Italian sentence (a name) that the English does not
+  have (`align.check_names`): a name the drafter translated (`Roccavento` for `Stormwind`) or invented;
   the words of a `$G<male>:<female>;` code do not count as English (the draft writes one neutral form), except
   the names in it (the neutral form may keep a name from either branch: "Stranglethorn", not "Sir")
 - `numbers_changed:<n>`: a number in the Japanese that the English does not have (`align.check_numbers`).
   This is what stops a tooltip draft baking a literal value: the English template holds `$s1`, not `58`,
-  so a Japanese line saying `58` fails. Write `$N<k>` instead. The addon fills it from the k-th number
+  so an Italian line saying `58` fails. Write `$N<k>` instead. The addon fills it from the k-th number
   of the line the client is showing, so the translation survives a different rank, level or talent.
 - `placeholder_run:<text>`: a `$N<k>` or `$D<k>` with letters glued to its end (`$N1c1`,
   `$N2roccooldown`). The placeholder fills and the glued fragment stays on screen; the name check cannot
@@ -85,19 +87,11 @@ reason per problem:
   (exactly the glossary term; a capitalised heading word like `Warrior` does not count) is not checked
   on that row (the word is used in another sense there: "a rogue spark" is a stray one, not the class)
 
-Readings: a quest or gossip draft row may also carry `"words": [[word, reading], …]`, the whole
-reading of every kanji word in its Japanese, the same list `wfi readings import` takes (ADR-036). They are
-checked with the import's own rules (`readings.word_problems`):
-
-- `words:<problem>`: a word not found after the previous one, with no kanji, holding an ASCII character, or
-  with a non-kana reading
-- `words_unexpected`: `words` on a kind that gets no readings (tooltips, books, objectives)
-
-A quest or gossip row whose Japanese holds a kanji and that has no `words` passes, with a warning: its
-readings are still owed (`wfi readings export` picks the line up later).
+- `words_unexpected`: a draft row carrying `words` (the original project's word readings, which this one does
+  not have)
 
 Passing rows, with paragraph breaks canonicalised, go to `<DRAFT stem>.ok.jsonl` with the batch's `kind` and
-`targets` (and `words`, when the draft had them). Exit 1 when any row failed.
+`targets`. Exit 1 when any row failed.
 """
 
 from __future__ import annotations
@@ -109,7 +103,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from wfi.core import align, language, markup, paragraphs, placeholders, readings, stat_words
+from wfi.core import align, language, markup, paragraphs, placeholders, stat_words
 from wfi.dev.glossary import GLOSSARY, read_glossary, read_required, term_pattern
 from wfi.dev.lint_names import GENDER_CODE, english_names, exempt_words, forms, titles_before_names
 from wfi.dev.translate_batch import KINDS, TEMPLATE_KINDS, TITLE_CASE_KINDS, read_jsonl, write_jsonl
@@ -117,8 +111,10 @@ from wfi.dev.translate_batch import KINDS, TEMPLATE_KINDS, TITLE_CASE_KINDS, rea
 ALLOWLIST = Path("pipeline/allowlist.txt")
 NOT_NAMES = Path("pipeline/translation_not_names.tsv")
 _DOTS = re.compile(r"[.…。・\s]+")
-_JA = "\u3040-\u30ff\u3400-\u9fff々〆ヵヶー"
-_SLASH = re.compile(rf"([{_JA}]+)\s*[/／]\s*([{_JA}]+)")
+_LOWER = "a-zàèéìíîòóùú"
+_SLASH = re.compile(rf"(?<![A-Za-z0-9])([{_LOWER}]{{2,}})\s*/\s*([{_LOWER}]{{2,}})(?![A-Za-z0-9])")
+# the addon's gender pair (`<pronto/pronta>`): not two renderings to choose from
+_GENDER_PAIR = re.compile(r"<[A-Za-z]+/[A-Za-z]+>")
 # A quest's server counter (`$1997w`). The trailing boundary matters: a tooltip's cross-spell value code
 # `$1310167w2` starts the same way and is NOT a counter to copy through.
 _COUNTER = re.compile(r"\$\d+[wW](?![0-9])")
@@ -180,12 +176,12 @@ def check_row(
     # in English letters
     kept_name = bool(row.get("name_only")) and ja == en
     dots = bool(_DOTS.fullmatch(en) and _DOTS.fullmatch(ja))
-    if not language.is_japanese(ja, field) and not dots and not kept_name:
-        return ["not_japanese"]
+    if not language.is_italian(ja, field, en) and not dots and not kept_name:
+        return ["not_italian"]
     want, have = _brace_tokens(en), _brace_tokens(ja)
     if want != have:
         reasons.append(f"tokens:{_fmt(want)}→{_fmt(have)}")
-    leftovers = placeholders.unknown(ja) + [t for t in placeholders.tokens(ja) if t == "<a/b>"]
+    leftovers = placeholders.unknown(ja)
     leftovers += _CODE.findall(ja)
     if Counter(_COUNTER.findall(en)) != Counter(_COUNTER.findall(ja)):
         reasons.append(f"counters:{_fmt(Counter(_COUNTER.findall(en)))}→{_fmt(Counter(_COUNTER.findall(ja)))}")
@@ -214,7 +210,7 @@ def check_row(
     reasons += align.tail_problems(en, ja)
     reasons += _duration_index_problems(en, ja)
     reasons += _icon_problems(en, ja)
-    reasons += [f"slash:{a}/{b}" for a, b in dict.fromkeys(_SLASH.findall(ja))]
+    reasons += [f"slash:{a}/{b}" for a, b in dict.fromkeys(_SLASH.findall(_GENDER_PAIR.sub(" ", ja)))]
     # both sides counted the same way: a line holding only spaces between two breaks is one break.
     # A `${…}` sum may hold newlines (`${$m1+\n$m2}`), which are inside a code the client
     # computes, never paragraph breaks the Japanese has to mirror.
@@ -238,7 +234,7 @@ def check_row(
         reasons.append(f"markup_changed:{bad_html}")
     kept = ja.casefold()
     names = english_names(_COLOUR.sub(" ", en), glossary)
-    # Japanese has no plural: "Gnolls" kept as `Gnollども` is kept
+    # a name's plural or singular is kept: "Gnolls" kept as `gli Gnoll` is kept
     missing = [w for w in names if w not in not_names and not any(f in kept for f in forms(w))]
     # A tooltip's stat word is written with the interface's Japanese, never kept in English letters: the
     # English capitalises it (`Increases Stamina by $s1`), so where it stands on its own it is no name to
@@ -272,12 +268,15 @@ def check_row(
                                          glossary)
             if w not in not_names and not _whole_word(w, kept)
         ]
-    for term, jp in (required or {}).items():
+    folded = ja.casefold()
+    for term, rendering in (required or {}).items():
         if term in not_names:  # listed in lower case: not the race / class word on this row
             continue
         pattern = term_pattern(term)
-        if pattern.search(en) and jp not in ja and not pattern.search(ja):  # kept in English: part of a name
-            reasons.append(f"glossary:{term}")
+        # the rendering may list its forms (gender, number) joined by `|`: any of them will do
+        forms_it = [f.strip().casefold() for f in rendering.split("|") if f.strip()]
+        if pattern.search(en) and not any(f in folded for f in forms_it) and not pattern.search(ja):
+            reasons.append(f"glossary:{term}")  # kept in English letters instead: part of a name
     return reasons
 
 
@@ -363,7 +362,7 @@ def lint(
     rows = {r["ref"]: r for r in read_jsonl(batch)}
     failures: dict[str, list[str]] = {}
     seen: dict[str, str] = {}
-    words: dict[str, Any] = {}
+    with_words: set[str] = set()
     for d in read_jsonl(draft):
         ref = d.get("ref")
         if ref not in rows:
@@ -372,11 +371,8 @@ def lint(
             failures.setdefault(ref, []).append("duplicate")
         else:
             seen[ref] = paragraphs.normalize_breaks(str(d.get("ja") or ""))
-            # an empty list on a line with no kanji is the same as no `words` (nothing to read)
-            reading_kind = ref in rows and KINDS[rows[ref]["kind"]][0] in readings.TYPES
-            empty_ok = d.get("words") == [] and reading_kind and not readings.annotatable(seen[ref])
-            if "words" in d and not empty_ok:
-                words[ref] = d["words"]
+            if "words" in d:
+                with_words.add(ref)
     ok: list[dict[str, Any]] = []
     for ref, row in rows.items():
         if ref not in seen:
@@ -384,34 +380,13 @@ def lint(
             continue
         listed = (not_names or {}).get(ref, frozenset())
         reasons = check_row(row, seen[ref], allowlist, glossary, required, listed)
-        if ref in words:
-            reasons += words_problems(row["kind"], seen[ref], words[ref])
+        if ref in with_words:
+            reasons.append("words_unexpected")
         if reasons or ref in failures:
             failures.setdefault(ref, []).extend(reasons)
         else:
-            good = {"ref": ref, "kind": row["kind"], "ja": seen[ref], "targets": row["targets"]}
-            if ref in words:
-                good["words"] = words[ref]
-            ok.append(good)
+            ok.append({"ref": ref, "kind": row["kind"], "ja": seen[ref], "targets": row["targets"]})
     return ok, failures
-
-
-def words_problems(kind: str, ja: str, words: Any) -> list[str]:
-    """A draft row's readings, checked by the rules `wfi readings import` applies."""
-    if KINDS[kind][0] not in readings.TYPES:
-        return ["words_unexpected"]
-    return [f"words:{p}" for p in readings.word_problems(ja, words)]
-
-
-def owed_readings(ok: list[dict[str, Any]]) -> list[str]:
-    """Refs of passing quest / gossip rows with words to annotate (a kanji, or kana that are more than a
-    bare particle: validate's rule) and no `words`."""
-    return [
-        r["ref"]
-        for r in ok
-        if KINDS[r["kind"]][0] in readings.TYPES and "words" not in r and readings.annotatable(r["ja"])
-        and not readings.html_page(KINDS[r["kind"]][0], r["ja"])  # an HTML book page takes no card
-    ]
 
 
 def main(argv: list[str]) -> int:
@@ -432,10 +407,7 @@ def main(argv: list[str]) -> int:
     write_jsonl(out, ok)
     for ref, reasons in sorted(failures.items()):
         print(f"{ref}: {'; '.join(reasons)}")
-    owed = owed_readings(ok)
-    for ref in owed:
-        print(f"warn {ref}: no words; its readings are still owed")
-    print(f"lint: {len(ok)} ok · {len(failures)} failed · {len(owed)} without words → {out.name}")
+    print(f"lint: {len(ok)} ok · {len(failures)} failed → {out.name}")
     return 1 if failures else 0
 
 

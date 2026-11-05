@@ -221,7 +221,7 @@ A radio choice at the top picks **Bug** or **Idea**. The window always opens on 
 
 `Core/BugReport.lua` (pure) builds it. A bug link opens the bug-report form with three fields filled through the URL (GitHub issue forms take a field's value from a query parameter named by the field's id):
 
-`https://github.com/zyaga/wow-forever-italian/issues/new?template=bug-report.yml&client-build=…&addon-version=…&errors=…`
+`https://github.com/Dade9854/wow-forever-italian/issues/new?template=bug-report.yml&client-build=…&addon-version=…&errors=…`
 
 - `client-build`: the build the login screen shows (`GetBuildInfo`, version and build number, as `1.60.1.70170`).
 - `addon-version`: the addon's version.

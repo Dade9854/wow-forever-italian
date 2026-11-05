@@ -167,7 +167,7 @@ def test_plan_ships_the_alias_in_the_female_keys_shard_and_reports_it(tmp_path: 
 
 def test_the_alias_key_ships_its_lines_reading_too(tmp_path: Path):
     # a female character's line is found under the alias key, so its word card needs the reading there as well
-    from wfi.core.readings import ja_hash
+    from wfi.core.shown import ja_hash
 
     store = _store(tmp_path)
     ja = "ケナリウスの加護を。\n\n私はTajarri。"

@@ -254,60 +254,6 @@ def keyed_text(type_: str, nn: str, shard_rows: dict[str, list[str]]) -> str:
     return _add_text(type_, src, ((lua_string(k), slots) for k, slots in sorted(shard_rows.items())))
 
 
-def _packed_word(entry: list[str], meanings: dict[tuple[str, str, str], int]) -> str:
-    if len(entry) == 5:
-        return f"{entry[0]}={entry[1]}={meanings[(entry[2], entry[3], entry[4])]}"
-    return f"{entry[0]}={entry[1]}"
-
-
-def reading_text(
-    type_: str,
-    shard: int | str,
-    records: Iterable[dict[str, Any]],
-    meanings: dict[tuple[str, str, str], int] | None = None,
-) -> str:
-    """One shard of readings for `type_` (ADR-036):
-    `WFI.Data.add("reading", { ["<type>:<id>"] = { <field> = "word=reading word=reading …", … } })`.
-    One packed string per field (a string per word and per reading would cost more than the Japanese
-    itself, in the file and in the client's memory); words are ASCII-free and readings kana-only, so " " and
-    "=" never occur inside them. Rows by id, fields in the type's order, words in reading order. `records`
-    are current ones. A word with a meaning packs as "word=reading=n", n its number in `meanings`
-    (the generated meaning table, Data/Gloss/)."""
-    from wfi.core.model import FIELDS  # the translation type's field order
-
-    by_id: dict[int | str, dict[str, list[list[str]]]] = {}
-    for rec in records:
-        by_id.setdefault(rec["id"], {})[rec["field"]] = rec["words"]
-    src = f"data/reading/{type_}/" + (
-        "" if type_ == "book"  # keyed by the English hash, not the page id the shards hold
-        else f"{type_}-{shard:04d}.jsonl" if isinstance(shard, int) else f"{type_}-{shard}.jsonl"
-    )
-    lines = [HEADER.format(src=src), "local _, WFI = ...", 'WFI.Data.add("reading", {']
-    for id_ in sorted(by_id, key=lambda i: (0, i, "") if isinstance(i, int) else (1, 0, i)):
-        fields = by_id[id_]
-        parts = []
-        for f in FIELDS[type_]:
-            if f in fields:
-                packed = " ".join(_packed_word(e, meanings or {}) for e in fields[f])
-                parts.append(f"{f} = {lua_string(packed)}")
-        lines.append(f"  [{lua_string(f'{type_}:{id_}')}] = {{ {', '.join(parts)} }},")
-    lines.append("})")
-    return "\n".join(lines) + "\n"
-
-
-def gloss_text(_shard: int, rows: dict[int, tuple[str, str, str]]) -> str:
-    """One file of the word popup's meanings (ADR-039):
-    `WFI.Data.add("gloss", { [n] = "dictionary form\treading\tmeaning" })`, numbered as the reading rows
-    point at them. Rows by number."""
-    from wfi.core import glosses
-
-    lines = [HEADER.format(src="data/reading/ (the words' meanings)"), "local _, WFI = ...",
-             'WFI.Data.add("gloss", {']
-    lines += [f"  [{n}] = {lua_string(glosses.row_text(rows[n]))}," for n in sorted(rows)]
-    lines.append("})")
-    return "\n".join(lines) + "\n"
-
-
 def meta_text(schema_version: int, english: dict[str, list[str]], counts: dict[str, int]) -> str:
     """`WFI.Data.meta`: content-derived facts only (no timestamp, no path).
 

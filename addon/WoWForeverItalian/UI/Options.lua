@@ -22,10 +22,10 @@ Options.inCombat = false -- set by Main's PLAYER_REGEN_* (the lockdown query may
 
 Options.PAGES = {
   { id = "main", title = "page.main", header = true, tagline = true, sections = {
-    -- Two columns: readings beside "Enable translation", then meanings and the minimap button on a second row. With
+    -- Two columns: "Enable translation" beside the minimap button. With
     -- the areas in three columns below, the page fits 640 × 560.
     { title = "section.translation", columns = 2,
-      rows = { "enabled", "readings.enabled", "readings.glosses", "minimapButton" }, gap = 0 },
+      rows = { "enabled", "minimapButton" }, gap = 0 },
     { rows = { "modifier", "toggleKey" } },
     { title = "section.areas", columns = 3,
       rows = { "area.quests", "area.gossip", "area.books", "area.itemTooltips", "area.spellTooltips",
@@ -38,26 +38,9 @@ Options.PAGES = {
     { title = "section.files", rows = { "collectorSteps", "collectorSend", "collectorPath" } },
   } },
   { id = "about", title = "page.about", header = true, sections = {
-    { title = "section.help", rows = { "aboutHold", "aboutReadings", "aboutMarkers", "aboutOpen", "aboutVoice" } },
+    { title = "section.help", rows = { "aboutHold", "aboutMarkers", "aboutOpen" } },
     { title = "section.slash", rows = { "slashHelp" } },
     { columns = 2, rows = { "aboutFix", "aboutBug" } }, -- the fix window beside the bug and idea window
-  } },
-  -- Only when the voice pack has registered (Core/Voice): built with the others when the pack is already there, else
-  -- added by Options.addPage when it registers.
-  { id = "voice", title = "page.voice", requires = function() return WFI.Voice ~= nil and WFI.Voice.hasPack() end,
-    sections = {
-    { title = "section.voice", rows = { "voice.enabled", "voice.muteDialog", "voice.button" } },
-    { title = "section.voiceKinds", columns = 2,
-      rows = { "voice.offer", "voice.progress", "voice.turnin", "voice.greeting", "voice.books", "voice.errors" } },
-  } },
-  -- The voice panel's choices: a page of their own (a page does not scroll, and the Voice page is full).
-  { id = "voicepanel", title = "page.voicePanel",
-    requires = function() return WFI.Voice ~= nil and WFI.Voice.hasPack() end, sections = {
-    { title = "section.voicePanel",
-      rows = { "voice.panel.size", "voice.panel.style", "voice.panel.keep", "voice.panel.head" } },
-    { title = "section.voicePanelMore", -- one column: the labels are long, and two columns wrapped into each other
-      rows = { "voice.panel.hoverButtons", "voice.panel.fade", "voice.panel.combatDim",
-        "voice.panel.questLog", "voice.panel.lock" } },
   } },
 }
 
@@ -333,70 +316,12 @@ function A.aboutBug(page, x, y, width)
   return h + 36
 end
 
--- The Voice entry players install from CurseForge (pipeline/voice-packs.toml's entry slug).
-Options.VOICE_URL = "https://www.curseforge.com/wow/addons/wow-forever-italian-voice"
-
--- A pack folder as the About page names it: WoWForeverItalian_VoiceLevels1to10 → "Levels 1-10" / "レベル1-10",
--- …VoiceOther → "Other" / "その他". → en, ja, and the band's first level to sort by (nil for a pack with no band)
-function Options.voicePackName(folder)
-  local rest = folder:sub(#"WoWForeverItalian_Voice" + 1)
-  local lo, hi = rest:match("^Levels(%d+)to(%d+)$")
-  if lo then return ("Levels %s-%s"):format(lo, hi), ("レベル%s-%s"):format(lo, hi), tonumber(lo) end
-  if rest == "Other" then return "Other", "その他" end
-  if rest == "" then return "Voice", "音声" end
-  return rest, rest
-end
-
--- → the English and Japanese list of the voice packs that registered, bands in level order, the rest after; nil when
--- none did
-local function voiceLoaded()
-  local packs = WFI.Voice and WFI.Voice.hasPack() and WFI.Voice.packs()
-  if not packs then return nil end
-  local rows = {}
-  for folder in pairs(packs) do
-    local en, ja, lo = Options.voicePackName(folder)
-    rows[#rows + 1] = { en = en, ja = ja, lo = lo or math.huge, folder = folder }
-  end
-  if #rows == 0 then return nil end
-  table.sort(rows, function(a, b)
-    if a.lo ~= b.lo then return a.lo < b.lo end
-    return a.folder < b.folder
-  end)
-  local en, ja = {}, {}
-  for i, r in ipairs(rows) do en[i], ja[i] = r.en, r.ja end
-  return table.concat(en, ", "), table.concat(ja, "、")
-end
-
--- The way to the voice: with no pack, "not installed" and the Voice entry's address to copy; with packs, which
--- loaded. Filled on every refresh (a pack registers after the pages are built). No voice setting is shown here.
-function A.aboutVoice(page, x, y, width)
-  local l = W.label(page, "", "", x, y, width)
-  local box = W.copyBox(page, x, y - 32, width - 12, Options.VOICE_URL)
-  Options.copyBoxes = Options.copyBoxes or {}
-  Options.copyBoxes["about.voice"] = box
-  local function fill()
-    local en, ja = voiceLoaded()
-    if en then
-      local t = Text.T["about.voice.loaded"]
-      W.setPair(l, t.en:format(en), t.ja:format(ja))
-      box:Hide()
-    else
-      W.setPair(l, Text.get("about.voice.none"))
-      box:Show()
-    end
-  end
-  fill()
-  Options.refreshers[#Options.refreshers + 1] = fill
-  Options.aboutVoice = l
-  return 58
-end
-
 local function helpRow(key)
   return function(page, x, y, width)
     return W.labelHeight(W.label(page, Text.T[key].en, Text.T[key].ja, x, y, width), 24)
   end
 end
-A.aboutOpen, A.aboutReadings = helpRow("about.open"), helpRow("about.readings")
+A.aboutOpen = helpRow("about.open")
 
 function A.aboutMarkers(page, x, y, width)
   local l = W.label(page, "", "", x, y, width)
@@ -509,8 +434,8 @@ function Options.build()
   return list
 end
 
--- Builds one page that `requires` something which arrived after the others were registered (the voice pack), and adds
--- it under the addon's category. A page already built, or still not required, is left alone. → true when added
+-- Builds one page that `requires` something which arrived after the others were registered, and adds it
+-- under the addon's category. A page already built, or still not required, is left alone. → true when added
 function Options.addPage(id)
   if Options.pages[id] or not Options.frame then return false end
   for _, spec in ipairs(Options.PAGES) do
@@ -595,6 +520,6 @@ function Options.setCombat(flag)
 end
 
 -- "modifier": the pages read in one language, and holding the reveal key re-labels them in English
-for _, event in ipairs({ "enabled", "area", "markers", "readings", "revealKey", "modifier" }) do
+for _, event in ipairs({ "enabled", "area", "markers", "revealKey", "modifier" }) do
   WFI.State.on(event, refreshIfVisible)
 end

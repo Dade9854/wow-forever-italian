@@ -21,8 +21,8 @@
       Takes batches/reports/issue-N/decisions.jsonl (written by the drafting pass), one row per triaged
       fix: `use` (the player's Japanese), `rewrite` (the model's own) or `keep`. It checks every row first
       and writes nothing if any is wrong, then writes the lines
-      (provenance per ADR-045), checks that each changed line ships its new Japanese, imports the lines'
-      words as their readings (batch report-N), updates ATTRIBUTION.md's correctors and writes reply.md.
+      (provenance per ADR-045), checks that each changed line ships its new text, updates ATTRIBUTION.md's
+      correctors and writes reply.md.
       Running it again changes nothing.
 """
 
@@ -40,8 +40,7 @@ from pathlib import Path
 from typing import Any
 
 from wfi.cmd.check import Included, check_type, scopes_for
-from wfi.cmd.readings import import_rows
-from wfi.core import decisions, fix_report, public_text, readings, style
+from wfi.core import decisions, fix_report, public_text, style
 from wfi.core.align import load_allowlist
 from wfi.dev import gen_attribution
 from wfi.emit.lua_writer import shipped
@@ -220,17 +219,6 @@ def _key(row: dict[str, Any]) -> tuple[Any, Any, Any]:
     return (row.get("type"), row.get("id"), row.get("field"))
 
 
-def needs_words(type_: str, ja: str) -> bool:
-    """A changed quest / gossip / ui / plain-book line gets its readings with meanings in the same apply."""
-    # a line holding `|` (a colour code or any escape) is never owed one: the word box refuses it (validate)
-    return (
-        type_ in readings.TYPES
-        and readings.annotatable(ja)
-        and not readings.html_page(type_, ja)
-        and "|" not in ja
-    )
-
-
 def is_applied(line: dict[str, Any] | None, row: dict[str, Any], issue: int) -> bool:
     return (
         line is not None
@@ -266,7 +254,7 @@ def check_decisions(
             p.append(f"{where}: not a triaged fix of this report")
             continue
         line = by_line.get(k[0], {}).get((k[1], k[2]))
-        p += _decision_problems(where, k[0], row, t, line, issue)
+        p += _decision_problems(where, row, t, line, issue)
     for k in want:
         if k not in seen:
             p.append(f"no decision for {k[0]} {k[1]}/{k[2]}")
@@ -274,7 +262,7 @@ def check_decisions(
 
 
 def _decision_problems(
-    where: str, type_: str, row: dict[str, Any], t: dict[str, Any], line: dict[str, Any] | None, issue: int
+    where: str, row: dict[str, Any], t: dict[str, Any], line: dict[str, Any] | None, issue: int
 ) -> list[str]:
     """The problems with one row's decision, its ja and its note, then with the change it makes."""
     p: list[str] = []
@@ -298,16 +286,14 @@ def _decision_problems(
     if d == "use" and not t.get("consent"):
         p.append(f"{where}: `use` but the issue's Permission box is not ticked; `rewrite` or `keep`")
     if d == "keep":
-        if "words" in row:
-            p.append(f"{where}: `keep` carries no words")
         return p
-    return p + _change_problems(where, type_, row, t, line, issue)
+    return p + _change_problems(where, row, t, line, issue)
 
 
 def _change_problems(
-    where: str, type_: str, row: dict[str, Any], t: dict[str, Any], line: dict[str, Any] | None, issue: int
+    where: str, row: dict[str, Any], t: dict[str, Any], line: dict[str, Any] | None, issue: int
 ) -> list[str]:
-    """The problems with a `use` / `rewrite` row against the line it changes and the readings it carries."""
+    """The problems with a `use` / `rewrite` row against the line it changes."""
     if is_applied(line, row, issue):
         return []  # applied by an earlier run
     p: list[str] = []
@@ -316,11 +302,8 @@ def _change_problems(
         p.append(f"{where}: the new ja is the Japanese that already ships; that is a `keep`")
     if line is None or line.get("ja") != t["ja"]:
         p.append(f"{where}: the line's Japanese changed since intake; run intake again")
-    if needs_words(type_, ja):
-        bad = readings.word_problems(ja, row.get("words"))
-        p += [f"{where}: words: {x}" for x in bad]
-    elif "words" in row:
-        p.append(f"{where}: this line takes no readings, so no words")
+    if "words" in row:
+        p.append(f"{where}: a row carries no words (this project has no word readings)")
     return p
 
 
@@ -514,32 +497,10 @@ def apply(root: Path, issue: int, model_id: str, date: str, by: str, dry_run: bo
             print(f"  {x}")
         print(f"report apply: {len(problems)} line(s) would not ship, nothing written; fix the decisions")
         return 1
-    words = [
-        {
-            "type": r["type"],
-            "id": r["id"],
-            "field": r["field"],
-            "ja_hash": readings.ja_hash(r["ja"]),
-            "words": r["words"],
-        }
-        for r in rows
-        if "words" in r
-    ]
     verb = "would write" if dry_run else "wrote"
     if not dry_run:
         for type_, out in checked.items():
             store.save(type_, out)
-        prov = {"class": "machine", "model": model_id, "source": f"readings@report-{issue}", "imported": date}
-        result = import_rows(root, words, prov)
-        for x in result["rejected"]:
-            print(f"  readings rejected {x}")
-        for x in result["kept"]:
-            print(f"  {x}")
-        if result["rejected"]:
-            print(
-                "report apply: the lines are written but some readings were rejected; fix them and run again"
-            )
-            return 1
         attribution = root.parent / "ATTRIBUTION.md"
         text = attribution.read_text(encoding="utf-8")
         new = gen_attribution.with_correctors(text, correctors(root))
@@ -549,8 +510,7 @@ def apply(root: Path, issue: int, model_id: str, date: str, by: str, dry_run: bo
     print(
         f"report apply{' (dry run)' if dry_run else ''}: {verb} {counts['correction']} correction(s) · "
         f"{counts['machine']} machine rewrite(s) · kept {counts['keep']} · "
-        f"already applied {counts['already']} "
-        f"· readings for {len(words)} line(s)"
+        f"already applied {counts['already']}"
     )
     return 0
 
@@ -655,7 +615,7 @@ def run(argv: Sequence[str]) -> int:
         "--credit", help="the name to credit (default: the form's 'Credit me as', else the author)"
     )
     i.add_argument("--force", action="store_true", help="redo an existing triage")
-    a_ = sub.add_parser("apply", help="decisions.jsonl → data/, readings, ATTRIBUTION.md, reply.md")
+    a_ = sub.add_parser("apply", help="decisions.jsonl → data/, ATTRIBUTION.md, reply.md")
     a_.add_argument("--issue", required=True, type=int)
     a_.add_argument("--model", required=True, help="the model id that drafted the decisions")
     a_.add_argument("--date", default=dt.date.today().isoformat())

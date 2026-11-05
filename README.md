@@ -41,7 +41,7 @@ Website: [foreverjapanese.com](https://foreverjapanese.com)
 ### By hand
 
 1. Download the zip of the latest release from the
-   [releases page](https://github.com/zyaga/wow-forever-italian/releases).
+   [releases page](https://github.com/Dade9854/wow-forever-italian/releases).
 2. Find your Forever client's folder: open the Battle.net app, choose World of Warcraft, pick the Forever version,
    and use **Show in Explorer** (Windows) or **Show in Finder** (macOS) from the gear menu next to the Play button.
    Inside it, open `Interface`, then `AddOns` (create `AddOns` if it is not there yet).
@@ -65,7 +65,7 @@ addon: installing it from the CurseForge app brings the addon too, and the game 
 - **With the CurseForge app:** install the addon first, then search for **WoW Forever Italian Voice** and click
   **Install**. The app installs every voice pack with it and keeps them up to date. In the game, the packs show as
   extra rows under the addon in the AddOns list; leave them ticked.
-- **By hand:** on the [releases page](https://github.com/zyaga/wow-forever-italian/releases), open the latest
+- **By hand:** on the [releases page](https://github.com/Dade9854/wow-forever-italian/releases), open the latest
   release whose name starts with **Voice**, download the zip whose name ends in `-all-` and a date, and unzip it into
   the same `AddOns` folder. It holds `WoWForeverItalian_Voice` and one folder per voice pack.
 
@@ -151,7 +151,7 @@ menu also has **Send collected English**, with the count.
 
    ![The report window with a line picked](docs/images/report-window.jpg)
 
-3. Open a [translation report](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml)
+3. Open a [translation report](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml)
    and paste it. A check reads it within a minute. If your Japanese is used, you are credited by the name you
    choose. The issue and the credit are public.
 
@@ -249,7 +249,7 @@ World of Warcraft: Forever を日本語で遊べるようにするアドオン�
 
 #### 手動で
 
-1. [リリースページ](https://github.com/zyaga/wow-forever-italian/releases)から最新版の zip をダウンロードします。
+1. [リリースページ](https://github.com/Dade9854/wow-forever-italian/releases)から最新版の zip をダウンロードします。
 2. Battle.net アプリで World of Warcraft を選び、Forever のバージョンを選んで、「プレイ」ボタン横の歯車メニューから **エクスプローラーで表示**（Windows）または **Finder で表示**（macOS）を開きます。その中の `Interface`、`AddOns` の順にフォルダを開きます（`AddOns` がなければ作成）。
    - Windows: `<World of Warcraft>\<Forever のフォルダ>\Interface\AddOns`
    - macOS: `<World of Warcraft>/<Forever のフォルダ>/Interface/AddOns`
@@ -267,7 +267,7 @@ World of Warcraft: Forever を日本語で遊べるようにするアドオン�
 音声は約 1.1 GB の無料の別ダウンロードで、アドオンをインストールしても音声は入りません。音声にはアドオンが必要です。CurseForge アプリで音声を入れるとアドオンも一緒に入り、ゲームもアドオンなしで音声を読み込むことはありません。
 
 - **CurseForge アプリで:** 先にアドオンを入れてから、**WoW Forever Italian Voice** を検索して **Install** を押します。すべての音声パックが一緒に入り、更新もアプリが行います。ゲーム内の AddOns 一覧では、アドオンの下に音声パックの行が並びます。チェックは入れたままにしてください。
-- **手動で:** [リリースページ](https://github.com/zyaga/wow-forever-italian/releases)で名前が **Voice** で始まる最新のリリースを開き、名前が `-all-` と日付で終わる zip をダウンロードして、同じ `AddOns` フォルダに展開します。中身は `WoWForeverItalian_Voice` と音声パックごとのフォルダです。
+- **手動で:** [リリースページ](https://github.com/Dade9854/wow-forever-italian/releases)で名前が **Voice** で始まる最新のリリースを開き、名前が `-all-` と日付で終わる zip をダウンロードして、同じ `AddOns` フォルダに展開します。中身は `WoWForeverItalian_Voice` と音声パックごとのフォルダです。
 
 アドオンの **情報とヘルプ** ページに、音声が入っているか、どのパックが読み込まれたかが表示されます。**音声** ページの設定ひとつで音声をオフにできます。音声のフォルダを削除すれば音声はなくなり、アドオンはそのまま動きます。音声は、メンテナーのコンピューター上で AivisSpeech Engine と [`ATTRIBUTION.md`](ATTRIBUTION.md) に記載した音声モデルを使って作りました。
 
@@ -313,7 +313,7 @@ World of Warcraft: Forever を日本語で遊べるようにするアドオン�
 
    ![行を選んで理由を選ぶ報告ウィンドウ](docs/images/report-window.jpg)
 
-3. [翻訳の報告フォーム](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml)に貼り付けます。1 分以内に自動チェックの結果がコメントされます。あなたの日本語が採用された場合は、指定した名前でクレジットに載ります（Issue とクレジットは公開されます）。
+3. [翻訳の報告フォーム](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml)に貼り付けます。1 分以内に自動チェックの結果がコメントされます。あなたの日本語が採用された場合は、指定した名前でクレジットに載ります（Issue とクレジットは公開されます）。
 
    ![GitHub の翻訳の報告フォーム](docs/images/report-issue.jpg)
 

@@ -54,7 +54,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-from wfi.core import align, decisions, hashing, readings, style
+from wfi.core import align, decisions, hashing, style
 from wfi.core.english_text import PARA, model_english  # noqa: F401  (re-exported: batch / lint / tests)
 from wfi.core.model import HASH_KEYED
 from wfi.core.style import STYLE_GUIDE  # noqa: F401  (re-exported: the guide's path for callers)
@@ -581,32 +581,21 @@ def cut(  # noqa: PLR0913, PLR0917 - one parameter per CLI option; tests and the
 
 
 def expand(ok_file: Path, name: str, out_dir: Path, version: int) -> dict[str, int]:
-    """Checked draft rows → one `{id, field, ja}` import file per data type (`<name>.<type>.jsonl`), and
-    one readings batch `<name>.words.jsonl` (`{type, id, field, ja_hash, words}` per target of a
-    row that carried `words`) for `wfi readings import` once the lines are imported and checked. A draft
-    without `words` writes no readings file."""
+    """Checked draft rows → one `{id, field, ja}` import file per data type (`<name>.<type>.jsonl`)."""
     try:
         style.check_name(name, version)
     except ValueError as e:
         raise SystemExit(f"translate_batch: {e}") from None
     by_type: dict[str, list[dict[str, Any]]] = {}
-    words: list[dict[str, Any]] = []
     for row in read_jsonl(ok_file):
         type_ = KINDS[row["kind"]][0]
         for id_, field in row["targets"]:
             by_type.setdefault(type_, []).append({"id": id_, "field": field, "ja": row["ja"]})
-            if "words" in row:
-                h = readings.ja_hash(row["ja"])
-                words.append({"type": type_, "id": id_, "field": field, "ja_hash": h, "words": row["words"]})
     counts = {}
     for type_, rows in sorted(by_type.items()):
         write_jsonl(out_dir / f"{name}.{type_}.jsonl", rows)
         counts[type_] = len(rows)
         print(f"{name}.{type_}.jsonl: {len(rows)} lines")
-    if words:
-        write_jsonl(out_dir / f"{name}.words.jsonl", words)
-        counts["words"] = len(words)
-        print(f"{name}.words.jsonl: {len(words)} lines with readings")
     return counts
 
 

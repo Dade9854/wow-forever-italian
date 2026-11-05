@@ -7,7 +7,7 @@ go about it.
 
 **Translation fixes.** The best way is from inside the game: click the 字 minimap button (or type `/wfi fix`),
 pick the line, say what is wrong, and paste the report into a
-[translation report](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml).
+[translation report](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml).
 A check reads the report and comments within a minute. If your own Japanese ships, you are credited in
 `ATTRIBUTION.md` under the name you give (the issue and the credit are public).
 
@@ -35,7 +35,7 @@ cluacov, is a C module, so you also need a C compiler and the Lua 5.1 headers (t
 macOS, `build-essential` on Linux).
 
 ```bash
-git clone https://github.com/zyaga/wow-forever-italian.git
+git clone https://github.com/Dade9854/wow-forever-italian.git
 cd wow-forever-italian
 python3 -m venv .venv
 .venv/bin/pip install -e "pipeline[dev]"

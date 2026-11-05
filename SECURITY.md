@@ -19,7 +19,7 @@ it happen.
   code, write outside the repository, or publish a release.
 
 A wrong translation is not a security problem: use the
-[translation report](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml).
+[translation report](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml).
 
 ## Supported versions
 
@@ -33,6 +33,6 @@ Fixes go into the next release. Only the latest release is supported.
 報告には、アドオンのバージョン（`/wfi version`）、クライアントのビルド、起きたこと、再現手順を書いてください。
 
 翻訳の誤りはセキュリティの問題ではありません。
-[翻訳の報告フォーム](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml)をご利用ください。
+[翻訳の報告フォーム](https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml)をご利用ください。
 
 修正は次のリリースに入ります。サポート対象は最新のリリースのみです。

@@ -40,7 +40,7 @@ from pathlib import Path
 from typing import Any
 
 from wfi.cmd.validate import ui_group, ui_own
-from wfi.core import readings, specifiers
+from wfi.core import shown, specifiers
 from wfi.core.report import SHIPPED
 from wfi.dev import ui_lint
 from wfi.dev.ui_inventory import read_inventory
@@ -103,7 +103,7 @@ def _add_siblings(rows: list[dict[str, Any]], english: dict[str, str], own: set[
 def _row(en: str, ja: str, is_own: bool, keys: list[str], inventory: dict[str, set[str]]) -> dict[str, Any]:
     surfaces = sorted(set().union(*(inventory.get(k, set()) for k in keys)))
     return {"type": "ui", "id": keys[0], "field": "text", "keys": keys, "surfaces": surfaces, "own": is_own,
-            "ja": ja, "ja_hash": readings.ja_hash(ja), "en": en,
+            "ja": ja, "ja_hash": shown.ja_hash(ja), "en": en,
             "en_width": ui_lint.display_width(en), "ja_width": ui_lint.display_width(ja),
             "warn": _warnings(en, ja, surfaces, keys)}
 

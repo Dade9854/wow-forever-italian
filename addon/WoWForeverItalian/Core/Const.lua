@@ -47,7 +47,5 @@ WFI.STATUS = { ["."] = "trusted", s = "stale", u = "unaligned", m = "missing" }
 -- Keybinding globals read by Bindings.xml (auto-loaded, not in the TOC).
 BINDING_HEADER_WFI = "WoW Forever Italian"
 BINDING_NAME_WFI_TOGGLE = "Toggle translation"
-BINDING_NAME_WFI_VOICE_PAUSE = "Voice: pause / resume"
-BINDING_NAME_WFI_VOICE_REPLAY = "Voice: play the line again"
 -- Hidden (Bindings.xml hidden="true"); the name explains itself if a client lists it anyway (ADR-018).
 BINDING_NAME_WFI_REVEAL = "Hold to show English (set in WoW Forever Italian settings)"

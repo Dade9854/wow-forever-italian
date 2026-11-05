@@ -13,16 +13,13 @@ from wfi.cmd import (
     collector,
     fix_report,
     generate,
-    glosses,
     import_,
     package_check,
     public_check,
-    readings,
     release,
     stats,
     toc_check,
     validate,
-    voice,
 )
 
 VERBS: dict[str, tuple[str, Callable[[Sequence[str]], int]]] = {
@@ -32,14 +29,11 @@ VERBS: dict[str, tuple[str, Callable[[Sequence[str]], int]]] = {
     "validate": ("the CI gate: schema, provenance, collisions, regenerate-and-diff", validate.run),
     "stats": ("coverage and provenance deltas", stats.run),
     "toc-check": ("assert the TOC ## Interface matches clients.toml", toc_check.run),
-    "readings": ("export lines for readings / import a readings batch", readings.run),
-    "glosses": ("check the word popup's dictionary forms against JMdict (local)", glosses.run),
     "report": ("a player's fix report: check / intake / apply", fix_report.run),
     "collector": ("a player's collector send: check / intake", collector.run),
     "release": ("changelog + version for a release; the pull-request changelog gate", release.run),
     "package-check": ("the release zip holds exactly the shipped files", package_check.run),
     "public-check": ("keep private material out of the public repository", public_check.run),
-    "voice": ("voice over: speakers / generate / pack, from the local engine", voice.run),
 }
 
 

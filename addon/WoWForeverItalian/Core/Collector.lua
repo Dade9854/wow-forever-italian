@@ -36,7 +36,7 @@ local Normalize, Hash = WFI.Normalize, WFI.Hash
 
 Collector.VERSION = 1
 Collector.CAP_BYTES = 4 * 1024 * 1024 -- estimate of the SavedVariables text (Collector.size); a constant, no setting
-Collector.ISSUE_URL = "https://github.com/zyaga/wow-forever-italian/issues/new?template=collector-send.yml"
+Collector.ISSUE_URL = "https://github.com/Dade9854/wow-forever-italian/issues/new?template=collector-send.yml"
 -- _forever_ is the Forever client's folder under World of Warcraft (its launcher product is wowf)
 Collector.PATH = "World of Warcraft\\_forever_\\WTF\\Account\\<ACCOUNT>\\SavedVariables\\WoWForeverItalian.lua"
 
@@ -72,7 +72,9 @@ local function remember(key, value)
   memo[key] = value
 end
 
-WFI.Settings.define{ id = "collector.enabled", kind = "boolean", default = true,
+-- Off by default: the English this addon needs is the English the original project collects (data/english is synced
+-- from it); a player who wants to help turns it on.
+WFI.Settings.define{ id = "collector.enabled", kind = "boolean", default = false,
   label = "Record English for future translations", ja = "今後の翻訳のために英語テキストを記録する" }
 -- the once-a-day chat line that unsent English is waiting (Core/CollectorRemind)
 WFI.Settings.define{ id = "collector.remind", kind = "boolean", default = true,
@@ -101,10 +103,19 @@ function Collector.containsWord(text, token)
   end
 end
 
--- Text we may have written ourselves: any CJK character (U+3000..U+9FFF: ideographic punctuation, kana, kanji:
--- UTF-8 lead bytes E3..E9) or a marker message anywhere in it. English game text has neither.
+-- Text we may have written ourselves. Italian is written in the same letters as the English, so it cannot be told
+-- apart by its script: UI/Render notes every text it writes (Collector.noteOwn), and a text noted this session, or
+-- one that holds a marker message, is ours. The note is bounded like the memo below: past OWN_CAP texts it starts
+-- again, and a dropped text could only be offered again once the widget shows it again.
+local OWN_CAP, ownCount, own = 4096, 0, {}
+function Collector.noteOwn(text)
+  if type(text) ~= "string" or text == "" or own[text] then return end
+  if ownCount >= OWN_CAP then own, ownCount = {}, 0 end
+  own[text], ownCount = true, ownCount + 1
+end
+
 local function isOwnText(raw)
-  if raw:find("[\227-\233]") then return true end
+  if own[raw] then return true end
   for _, message in pairs(WFI.MARKER) do
     if raw:find(message, 1, true) then return true end
   end

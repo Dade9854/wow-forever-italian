@@ -14,7 +14,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from wfi.core import align, glosses, numbered, readings, tooltip_text
+from wfi.core import align, numbered, tooltip_text
 from wfi.core.align import load_allowlist
 from wfi.core.english_text import model_english
 from wfi.core.hashing import key as hash_key
@@ -232,8 +232,8 @@ def _branch_refusal(
 
 def plan(store: Store, vectors: list[dict], report: dict[str, Any] | None = None) -> dict[str, str]:
     """{relpath under the addon dir: text} for every generated artifact (shards, Meta, Vectors).
-    `report`, when given, receives `aliases` {type: added}, `dropped` {type: [female keys]}, `ambiguous`
-    {type: [English hashes]} and `meaning_numbers` (the numbers file's text, ADR-060).
+    `report`, when given, receives `aliases` {type: added}, `dropped` {type: [female keys]} and `ambiguous`
+    {type: [English hashes]}.
 
     Raises ValueError on a store that must not become Lua: invalid lines, a shipped line without its English
     hash, a duplicate (id, field), or a single-client English source pinned at several versions.
@@ -250,10 +250,6 @@ def plan(store: Store, vectors: list[dict], report: dict[str, Any] | None = None
     quest_keyed = quest_text_aliases(store.load("quest"), english_store.load("quest"))
     _plan_keyed_types(store, english_store, out, counts, english, report, alias_of, quest_keyed)
     _plan_ui(store, english_store, out, counts, english)
-    numbers: dict[str, str] | None = {} if report is not None else None
-    _plan_readings(store, out, counts, alias_of, quest_keyed, numbers)
-    if report is not None and numbers and numbers["text"]:  # nothing to number: the report is unchanged
-        report["meaning_numbers"] = numbers["text"]
     # One version per source is still the rule, and a mixed store is still a data error, except for the
     # sources two clients serve (`schema.MULTI_VERSION_SOURCES`), where a union import keeps both builds'
     # lines on purpose (ADR-020). Meta records every version of those, sorted; the per-line
@@ -383,7 +379,7 @@ def _plan_keyed_types(
 ) -> None:
     """The shards of every type keyed by an English hash (gossip, …), with their gender aliases and the
     repeated quests' text (`quest_keyed`, from quest_text_aliases; entries not shipped are removed from it).
-    `alias_of`, when given, receives {type: {alias key: the key it repeats}} for the readings."""
+    `alias_of`, when given, receives {type: {alias key: the key it repeats}}."""
     for type_ in schema.KEYED_TYPES:
         lines = store.load(type_)
         k_rows = lua_writer.keyed_rows(type_, lines)
@@ -452,88 +448,6 @@ def _plan_ui(
         by_c.setdefault(lua_writer.ui_shard(key), {})[key] = slots
     for c, shard_rows in sorted(by_c.items()):
         out[schema.shard_relpath("ui", c)] = lua_writer.ui_text(c, shard_rows)
-
-
-def _plan_readings(
-    store: Store,
-    out: dict[str, str],
-    counts: dict[str, int],
-    alias_of: dict[str, dict[str, str]] | None = None,
-    quest_keyed: dict[str, tuple[int, str]] | None = None,
-    numbers: dict[str, str] | None = None,
-) -> None:
-    """The readings shards and the meanings table they point into. `numbers`, when given, receives `text`:
-    the numbers file as it must be on disk. A gender alias key (the female variant of
-    a line, repeated under its own English hash) gets its line's reading too: the addon finds a female
-    character's line under the alias, and without the copy its words would have no reading."""
-    # readings (ADR-036). Only current ones ship: a stale reading (its Japanese changed) is left
-    # out and reported by `validate`; a malformed one stops generate like any invalid line.
-    counts["reading"] = 0
-    current: dict[str, list[dict[str, Any]]] = {}
-    for type_ in readings.TYPES:
-        japanese = readings.shipped_japanese(store.load(type_))
-        result = readings.check(type_, reading_store_of(store).load(type_), japanese)
-        if result["problems"]:
-            first = "; ".join(result["problems"][:5])
-            raise ValueError(f"invalid data/reading/ records (first shown): {first}")
-        current[type_] = readings.addon_keyed(type_, result["current"], store.load(type_))
-        aliases = (alias_of or {}).get(type_, {})
-        if aliases:
-            by_key = {rec["id"]: rec for rec in current[type_]}
-            current[type_] = current[type_] + [
-                by_key[key] | {"id": alias} for alias, key in sorted(aliases.items()) if key in by_key
-            ]
-    # a repeated quest's text shipped under its English key carries that quest line's reading
-    if quest_keyed:
-        by_line = {(rec["id"], rec["field"]): rec for rec in current.get("quest", [])}
-        current["gossip"] = current.get("gossip", []) + [
-            by_line[line] | {"id": key, "field": "text"}
-            for key, line in sorted(quest_keyed.items())
-            if line in by_line
-        ]
-    # the word popup's meanings (ADR-039), each distinct one stored once and numbered; a reading row
-    # points at its word's number. The numbers come from the numbers file (ADR-060), so adding a meaning
-    # changes only the files that use it; generate's `run` writes the file back when a meaning was added.
-    known, problems = load_numbers(store)
-    if problems:
-        raise ValueError(f"{glosses.NUMBERS_FILE}: {'; '.join(problems[:5])}")
-    meanings, every = glosses.number((r for recs in current.values() for r in recs), known)
-    if numbers is not None:
-        numbers["text"] = glosses.numbers_text(every)
-    for type_, recs_of_type in current.items():
-        by_rs: dict[int | str, list[dict[str, Any]]] = {}
-        for rec in recs_of_type:
-            if type_ == "ui":  # the UI dictionary's shards (the key's first character)
-                shard: int | str = lua_writer.ui_shard(rec["id"])
-            else:
-                shard = rec["id"][:2] if isinstance(rec["id"], str) else schema.shard_of(rec["id"])
-            by_rs.setdefault(shard, []).append(rec)
-        for shard, recs in sorted(by_rs.items(), key=lambda kv: str(kv[0])):
-            out[schema.reading_relpath(type_, shard)] = lua_writer.reading_text(type_, shard, recs, meanings)
-        counts["reading"] += len(recs_of_type)  # lines with readings
-    by_gs: dict[int, dict[int, glosses.Meaning]] = {}
-    for m, n in meanings.items():
-        by_gs.setdefault(glosses.shard_of(n), {})[n] = m
-    for gshard, rows in sorted(by_gs.items()):
-        out[schema.gloss_relpath(gshard)] = lua_writer.gloss_text(gshard, rows)
-    counts["gloss"] = len(meanings)
-
-
-def reading_store_of(store: Store) -> Store:
-    """The readings store beside a translation store: `<data>/reading/`."""
-    return Store(store.root / "reading")
-
-
-def numbers_path(store: Store) -> Path:
-    return reading_store_of(store).root / glosses.NUMBERS_FILE
-
-
-def load_numbers(store: Store) -> tuple[dict[glosses.Meaning, int], list[str]]:
-    """The numbers file (ADR-060) → (meaning → number, problems); no file → nothing numbered yet."""
-    path = numbers_path(store)
-    if not path.is_file():
-        return {}, []
-    return glosses.parse_numbers(path.read_bytes().decode("utf-8-sig"))
 
 
 def toc_files(planned: dict[str, str]) -> list[str]:
@@ -609,16 +523,6 @@ def apply(planned: dict[str, str], addon_dir: Path) -> dict[str, list[str]]:
     return {"written": written, "unchanged": unchanged, "deleted": deleted}
 
 
-def write_numbers(store: Store, text: str) -> int:
-    """Writes the numbers file when it changed (only ever lines added). → meanings newly numbered"""
-    path = numbers_path(store)
-    old = path.read_bytes().decode("utf-8") if path.is_file() else ""
-    if not text or text == old:
-        return 0
-    path.write_bytes(text.encode("utf-8"))
-    return len(glosses.parse_numbers(text)[0]) - len(glosses.parse_numbers(old)[0])
-
-
 def run(argv: Sequence[str]) -> int:
     p = argparse.ArgumentParser(prog="wfi generate")
     p.add_argument(
@@ -631,8 +535,6 @@ def run(argv: Sequence[str]) -> int:
         report: dict[str, Any] = {}
         store = Store(root)
         planned = plan(store, vectors_rows(root), report)
-        # the numbers first: a run that stops after them gives the same numbers again next time
-        numbers_written = write_numbers(store, report.get("meaning_numbers", ""))
         result = apply(planned, addon_dir)
     except ValueError as exc:
         raise SystemExit(f"generate: {exc}") from exc
@@ -640,8 +542,6 @@ def run(argv: Sequence[str]) -> int:
     counts = meta[meta.index("counts = {") : meta.index("},", meta.index("counts = {")) + 1]
     w, u, d = (len(result[k]) for k in ("written", "unchanged", "deleted"))
     print(f"generate: {len(planned)} artifacts; {counts}; written {w}, unchanged {u}, deleted {d}")
-    if numbers_written:
-        print(f"generate: {numbers_written} meanings numbered for the first time ({glosses.NUMBERS_FILE})")
     for line in gender_report_lines(report):
         print(line)
     refused = [

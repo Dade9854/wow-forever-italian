@@ -59,8 +59,6 @@ function TooltipLines.follow(surface, tt, opts, allow)
   if type(tt) ~= "table" or followed[tt] or type(opts) ~= "table" or type(opts.only) ~= "table" then return false end
   if type(tt.Show) ~= "function" or type(tt.HookScript) ~= "function" then return false end
   local f = { surface = surface, opts = opts, allow = allow, busy = false, recorded = 0 }
-  -- A tooltip's lines never take word cards (UI/Readings, loaded before this file)
-  if WFI.ReadingView then WFI.ReadingView.tooltipSurface(surface) end
   function f.refit()
     if f.busy then return end
     f.busy = true

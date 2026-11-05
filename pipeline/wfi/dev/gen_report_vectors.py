@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from wfi.core import fix_report
-from wfi.core.readings import ja_hash
+from wfi.core.shown import ja_hash
 from wfi.emit.lua_writer import lua_string
 
 JA1 = "Kobold Verminを10体倒せ。"

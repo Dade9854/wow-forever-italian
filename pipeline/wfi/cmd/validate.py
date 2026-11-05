@@ -8,8 +8,7 @@ Rules, each a function returning problems:
   3. collisions (ADR-005): one English hash never names two different normalized texts.
   4. referential: every shipped line has its English hash, and that hash agrees with the store
      (trusted/unaligned: equal; stale: different).
-  5. regenerate-and-diff: `generate.plan()` equals what is on disk under Data/ and in the TOC block, and the
-     meaning numbers file (data/reading/meaning-numbers.tsv, ADR-060) is the one generate would write.
+  5. regenerate-and-diff: `generate.plan()` equals what is on disk under Data/ and in the TOC block.
   6. placeholders: a shipped line carries no token the addon would render literally: a `{…}` outside
      the known set, or a `<x/y>` pair that is not two ASCII words.
   7. ui strings: a shipped UI string takes exactly its English template's arguments, and no two shipped
@@ -19,13 +18,6 @@ Rules, each a function returning problems:
      the English separates only by whitespace ("Level %d %s %s": a race may be two words) keep their order
      in the Japanese. The addon splits such a line lazily, which is safe only when fill restores the same
      order.
-  8. readings (ADR-036): every `data/reading/` record is well formed and not a duplicate, and its
-     words sit in its line's Japanese in order (kanji, no ASCII, kana readings). A reading whose Japanese
-     changed since it was written, or whose line no longer ships, is stale: reported with its ids, not a
-     failure; it does not ship. Prints how many shipped quest / gossip / ui lines have a reading, the lines
-     still owed one (a kanji or kana, no `|`) and the words without a meaning.
-  9. voice (ADR-061): data/voice/speakers.jsonl and voices.jsonl are well formed, carry provenance, hold no
-     duplicate key or creature, and every creature that speaks has a voice.
 `luac -p` over the generated files is `make luac` (part of `make validate`); the pipeline runs no Lua.
 """
 
@@ -39,9 +31,8 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from wfi.cmd import check, generate, voice_make
-from wfi.cmd.voice import read_rows, voice_dir
-from wfi.core import casting, decisions, glosses, markup, numbered, placeholders, readings, specifiers, voice
+from wfi.cmd import check, generate
+from wfi.core import decisions, markup, numbered, placeholders, specifiers
 from wfi.core.model import ENGLISH_FIELDS, FIELDS, SCHEMA, ui_family, validate_line
 from wfi.core.normalize import normalize_for, normalize_v1
 from wfi.core.report import SHIPPED
@@ -402,57 +393,6 @@ def _row_order(row: str) -> tuple[str, int]:
     return type_, int(id_)
 
 
-def rule_readings(store: Store) -> list[str]:
-    """Rule 8 (readings). Stale readings are printed, not returned: they are expected after a translation
-    changes and simply do not ship until they are written again."""
-    problems: list[str] = []
-    words = with_meaning = 0
-    for type_ in readings.TYPES:
-        japanese = readings.shipped_japanese(store.load(type_))
-        result = readings.check(type_, generate.reading_store_of(store).load(type_), japanese)
-        problems += result["problems"]
-        type_words = sum(len(r["words"]) for r in result["current"])
-        type_meanings = sum(1 for _ in glosses.meanings_of(result["current"]))
-        words += type_words
-        with_meaning += type_meanings
-        # every translation batch writes meanings; a word without one shows up here on every run
-        if type_words > type_meanings:
-            print(f"validate: readings: {type_words - type_meanings} {type_} words have no meaning")
-        # Every translation batch writes readings too: a line shipped without one shows up here on every
-        # run, so a batch that skipped the readings step is visible.
-        have = len(result["current"])
-        print(f"validate: readings: {have} of {len(japanese)} shipped {type_} lines have one")
-        # the lines still owed a reading: something to annotate and no current reading (a kanji, or kana
-        # beyond a bare particle: `readings.annotatable`, the export's rule). A line with `|`
-        # (a colour code `|c…|r`, or any other escape) is expected here: the reading box
-        # refuses such text (UI/Readings spanAreas), so it is marked, not owed.
-        covered = {(r["id"], r["field"]) for r in result["current"]}
-        owed = sorted(
-            (
-                k
-                for k, ja in japanese.items()
-                if k not in covered and readings.annotatable(ja) and not readings.html_page(type_, ja)
-            ),
-            key=str,
-        )
-        escaped = [k for k in owed if readings.holds_escape(japanese[k])]
-        owed = [k for k in owed if not readings.holds_escape(japanese[k])]
-        if owed:
-            shown = ", ".join(f"{i}/{f}" for i, f in owed[:20])
-            more = f" … {len(owed) - 20} more" if len(owed) > 20 else ""
-            head = f"validate: readings: {len(owed)} {type_} lines with words to annotate have none"
-            print(f"{head}: {shown}{more}")
-        if escaped:
-            print(f"validate: readings: {len(escaped)} {type_} lines hold an escape sequence (no readings)")
-        if result["stale"]:
-            ids = ", ".join(f"{i}/{f}" for i, f in result["stale"][:20])
-            more = f" … {len(result['stale']) - 20} more" if len(result["stale"]) > 20 else ""
-            print(f"validate: readings: {len(result['stale'])} stale {type_} (not shipped): {ids}{more}")
-    # the word popup shows a meaning only for a word whose entry carries one
-    print(f"validate: readings: {with_meaning} of {words} words carry a meaning (the word popup)")
-    return problems
-
-
 def rule_regenerate(
     root: Path, store: Store, addon_dir: Path, planned: dict[str, str] | None = None
 ) -> list[str]:
@@ -486,39 +426,18 @@ def rule_regenerate(
     return problems
 
 
-def rule_numbers(store: Store, text: str) -> list[str]:
-    """Rule 5, the meaning numbers (ADR-060): the numbers file on disk is the one generate would write, so
-    every shipped meaning has its number. Read only: `make generate` is what adds numbers."""
-    path = generate.numbers_path(store)
-    on_disk = path.read_bytes().decode("utf-8") if path.is_file() else None
-    if not text or on_disk == text:
-        return []
-    if on_disk is None:
-        return [f"regenerate: data/reading/{glosses.NUMBERS_FILE} missing; run `make generate`"]
-    added = len(glosses.parse_numbers(text)[0]) - len(glosses.parse_numbers(on_disk)[0])
-    if added > 0:
-        return [f"regenerate: {added} meanings have no number in {glosses.NUMBERS_FILE}; run `make generate`"]
-    hint = "run `make generate`, never hand-edit"
-    return [f"regenerate: {glosses.NUMBERS_FILE} differs from a regeneration; {hint}"]
-
-
 def validate(
     root: Path,
     addon_dir: Path,
     base: str | None,
     planned: dict[str, str] | None = None,
-    numbers: str | None = None,
 ) -> list[str]:
-    """`planned` / `numbers`: the store's plan and its numbers file text (report `meaning_numbers`) when the
-    caller already holds them; computed here otherwise."""
-    if planned is not None and numbers is None:
-        raise ValueError("validate: a caller passing `planned` passes its `meaning_numbers` too")
+    """`planned`: the store's plan when the caller already holds it; computed here otherwise."""
     store, english = Store(root), Store(root, english=True)
     if planned is None:
         report: dict[str, Any] = {}
         try:
             planned = generate.plan(store, generate.vectors_rows(root), report)
-            numbers = report.get("meaning_numbers", "")
         except ValueError:
             planned = None  # rule_regenerate reports it
     problems = rule_schema(root, store, english)
@@ -526,47 +445,11 @@ def validate(
     problems += rule_collisions(english)
     problems += rule_referential(store, english)
     problems += rule_regenerate(root, store, addon_dir, planned)
-    if numbers is not None:
-        problems += rule_numbers(store, numbers)
     problems += rule_placeholders(store, english)
     problems += rule_ui(
         store, english, ui_arg_kinds(addon_dir), ui_chat_families(addon_dir), ui_own(addon_dir)
     )
     problems += rule_objective(store)
-    problems += rule_voice(root)
-    problems += rule_readings(store)
-    return problems
-
-
-def rule_voice(root: Path, config: Path | None = None) -> list[str]:
-    """data/voice/: the speakers and voice tables, the profiles, and the cast in step with voice.toml (a cast
-    row changed without `make voice-cast` would leave the record naming voices nobody would make). How much
-    audio is in step with the translation is printed, not returned: the CI test owns that gate."""
-    d = voice_dir(root)
-    speakers, voices = read_rows(d / "speakers.jsonl"), read_rows(d / "voices.jsonl")
-    problems = voice.speaker_problems(speakers, voices) + casting.problems(read_rows(d / "profiles.jsonl"))
-    cfg_path = config or root.parent / "pipeline" / "voice.toml"
-    if not cfg_path.is_file() or not voices:
-        return problems
-    try:
-        cfg = voice_make.load_config(cfg_path)
-    except ValueError as e:
-        return [*problems, f"voice: {e}"]
-    fresh = {r["creature"]: {k: r[k] for k in r if k not in ("creature", "provenance")}
-             for r in voice_make.cast_rows(root, cfg, "")}
-    have = {r["creature"]: {k: r[k] for k in r if k not in ("creature", "provenance")} for r in voices}
-    moved = sorted(c for c in fresh.keys() | have.keys() if fresh.get(c) != have.get(c))
-    if moved:
-        problems.append(f"voice voices: {len(moved)} creature(s) not cast as voice.toml casts them now "
-                        f"(e.g. {moved[:5]}); run make voice-cast")
-    lines = voice_make.shipped_lines(root)
-    cast = {r["creature"]: r for r in voices}
-    jobs = voice.jobs(speakers, cast, cfg["narrator"], cfg["book_narrator"], lines)
-    values = voice_make.line_values(root, lines)
-    state = voice.in_step(jobs, lines, cfg["roster"], voice_make.audio_record(root), values)
-    stale, missing = len(state["stale"]), len(state["missing"])
-    print(f"validate: voice: {len(jobs)} files; {len(jobs) - stale - missing} in step, {stale} stale,"
-          f" {missing} not made")
     return problems
 
 

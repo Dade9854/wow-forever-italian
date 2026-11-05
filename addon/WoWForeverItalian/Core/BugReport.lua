@@ -12,7 +12,7 @@ local _, WFI = ...
 local BugReport = {}
 WFI.BugReport = BugReport
 
-local REPO = "https://github.com/zyaga/wow-forever-italian/issues/new?template="
+local REPO = "https://github.com/Dade9854/wow-forever-italian/issues/new?template="
 BugReport.URL = REPO .. "bug-report.yml"
 BugReport.IDEA_URL = REPO .. "idea.yml"
 -- the form's field ids (.github/ISSUE_TEMPLATE/bug-report.yml)

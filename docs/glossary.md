@@ -738,7 +738,7 @@ _Avoid_: manifest, audio index
 → [Data model](architecture/data-model.md#voice-over-tables)
 
 **Audio pin**:
-`pipeline/voice-audio-commit.txt`: the commit of the voice audio repository (`zyaga/wow-forever-italian-voice`) that goes with this repository's text. A voice run writes it; a release builds the [[Voice pack]]s from exactly that commit.
+`pipeline/voice-audio-commit.txt`: the commit of the voice audio repository (`Dade9854/wow-forever-italian-voice`) that goes with this repository's text. A voice run writes it; a release builds the [[Voice pack]]s from exactly that commit.
 _Avoid_: audio version, lock file
 → [Voice over runbook](operations/voice.md)
 

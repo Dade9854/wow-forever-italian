@@ -220,7 +220,7 @@ def test_the_voice_job_builds_from_the_pinned_audio_with_a_read_only_key(root, r
     _, pin = _step_named(voice, "The audio commit the text pins")
     assert "pipeline/voice-audio-commit.txt" in pin
     i, audio = _step_named(voice, "Check out the pinned audio")
-    assert "repository: zyaga/wow-forever-italian-voice" in audio and "ref: ${{ steps.pin.outputs.sha }}" in audio
+    assert "repository: Dade9854/wow-forever-italian-voice" in audio and "ref: ${{ steps.pin.outputs.sha }}" in audio
     assert "path: build/voice" in audio and "persist-credentials: false" in audio
     assert "persist-credentials: false" in _steps(voice)[0]
     # the deploy key reaches the audio checkout alone

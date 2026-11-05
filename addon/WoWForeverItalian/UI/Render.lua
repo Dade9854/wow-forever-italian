@@ -6,8 +6,6 @@
 --   message inline (on its own line above prose, before a single-line title), and that widget takes the bundled
 --   font so the kanji render (one font per widget).
 -- Surfaces call show() on their event and release() on close; refresh() runs on State events.
--- Readings: after an apply the record is offered to UI/Readings (the word-reading box; it takes only the
--- quest / gossip prose surfaces it lists); every restore, release, forget and stale drop detaches it first.
 local _, WFI = ...
 local Render = {}
 WFI.Render = Render
@@ -232,18 +230,8 @@ local function updateBanner(surface)
 end
 Render.updateBanner = updateBanner
 
--- The word-reading box is an optional display on the hot path of seven surfaces: an error in it is counted
--- (/wfi debug) and never stops a surface from rendering.
-Render.readingErrors = 0
-local function readings(fn, rec)
-  local V = WFI.ReadingView
-  if not V then return end
-  local ok = pcall(V[fn], rec)
-  if not ok then Render.readingErrors = Render.readingErrors + 1 end
-end
-
--- Every Japanese line written is offered to Core/RecentLines (the fix window's list). Like the readings
--- above, a failure there is counted and never stops a surface from rendering.
+-- Every translated line written is offered to Core/RecentLines (the fix window's list). A failure there is
+-- counted and never stops a surface from rendering.
 Render.recentErrors = 0
 -- Only a write the client asked for (Render.show) records the line; a refresh (the reveal key released, a setting
 -- switched) re-writes every applied record in no particular order and would reorder the list and bring back lines
@@ -263,7 +251,6 @@ local function sync(rec, fromShow)
   local text, font, action = desired(rec)
   if text == nil then
     pendingFonts[rec] = nil
-    readings("detach", rec)
     return SS.restore(rec.surface, rec.key)
   end
   if rec.applied == text and sameFont(rec.appliedFont, font) then
@@ -271,9 +258,9 @@ local function sync(rec, fromShow)
     return false
   end
   local _, fontOk = SS.apply(rec.surface, rec.key, text, font)
+  -- the collector must never take a line we wrote for the client's English (Core/Collector isOwnText)
+  if action == "apply" and WFI.Collector and WFI.Collector.noteOwn then WFI.Collector.noteOwn(text) end
   if action == "apply" then noteRecent(rec, text, fromShow) end
-  -- a refused font lays the text out in another face: word rectangles wait for the font (retryFonts attaches)
-  if fontOk ~= false then readings("attach", rec) end
   if fontOk == false then
     pendingFonts[rec] = font
   else
@@ -360,7 +347,6 @@ function Render.retryFonts()
       n = n + 1
     else
       pendingFonts[rec] = nil -- applied, or nothing left to retry (clearing a key during pairs is allowed)
-      if result == true then readings("attach", rec) end -- the text is laid out in its font now
     end
   end
   return n
@@ -375,7 +361,6 @@ function Render.refresh(surface)
     local refits, seen = {}, {}
     for _, rec in ipairs(list) do
       if stale(rec) then
-        readings("detach", rec)
         if SS.drop(rec.surface, rec.key) then n = n + 1 end
       elseif sync(rec) then
         n = n + 1
@@ -397,12 +382,7 @@ function Render.refresh(surface)
   return n
 end
 
-local function detachAll(surface)
-  for _, rec in pairs(SS.records(surface)) do readings("detach", rec) end
-end
-
 function Render.release(surface)
-  detachAll(surface)
   local n = SS.release(surface)
   updateBanner(surface)
   return n
@@ -410,7 +390,6 @@ end
 
 -- Forgets a surface whose widgets the client may have rewritten since we captured them (see SurfaceState.drop).
 function Render.forget(surface)
-  detachAll(surface)
   local n = SS.dropAll(surface)
   updateBanner(surface)
   return n
@@ -418,7 +397,6 @@ end
 
 -- Forgets a surface whose widgets now hold text the addon may not read (see SurfaceState.discard). Nothing is written.
 function Render.discard(surface)
-  detachAll(surface)
   local n = SS.discard(surface)
   updateBanner(surface)
   return n

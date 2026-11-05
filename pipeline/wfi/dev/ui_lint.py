@@ -12,7 +12,8 @@ A row **fails** (exit 1) with one reason per problem:
 - `bad_row` / `missing_ja`: a row whose `id` or `ja` is not text, or whose `ja` is missing or empty
 - `unknown_key`: the key has no English (not a UI string the client ships)
 - `duplicate`: the key is in the draft twice
-- `not_japanese`: no kana or kanji, or a simplified-only character. A template with no words outside its
+- `not_italian`: the English left in place, English prose, or a CJK character (`language.is_italian`). A
+  template with no words outside its
   specifiers and colour codes (`(%s)`) is exempt, as is a shipped line ruled to stay in English letters.
 - `specifiers:<reason>`: the Japanese does not take exactly the English's `%` arguments
 - `markup:<reason>`: the Japanese does not keep the English's colour codes, textures, links and line breaks
@@ -51,7 +52,7 @@ from pathlib import Path
 from typing import Any
 
 from wfi.cmd.validate import is_error_key, ui_group, ui_own
-from wfi.core import language, markup, readings, specifiers, status
+from wfi.core import language, markup, shown, specifiers, status
 from wfi.core.report import SHIPPED
 from wfi.dev.ui_inventory import read_inventory
 from wfi.io.jsonl_store import Store
@@ -111,8 +112,8 @@ def register_ending(ja: str) -> str | None:
 
 def failures(en: str, ja: str, kept_english: bool = False) -> list[str]:
     reasons: list[str] = []
-    if not language.is_japanese(ja, "text") and not status._no_words(en) and not kept_english:
-        reasons.append("not_japanese")
+    if not language.is_italian(ja, "text", en) and not status._no_words(en) and not kept_english:
+        reasons.append("not_italian")
     bad = specifiers.mismatch(en, ja)
     if bad:
         reasons.append(f"specifiers:{bad}")
@@ -177,7 +178,7 @@ def _shape_problem(key: Any, ja: Any) -> str | None:
 
 def moved(rows: list[dict[str, Any]], shipped: list[dict[str, Any]], base: dict[str, str]) -> dict[str, str]:
     """key → `moved:<hash>` for a draft key whose shipped Japanese is not the one its review judged."""
-    now = {ln["id"]: readings.ja_hash(ln["ja"]) for ln in shipped}
+    now = {ln["id"]: shown.ja_hash(ln["ja"]) for ln in shipped}
     return {r["id"]: f"moved:{base[r['id']]}" for r in rows
             if isinstance(r.get("id"), str) and r["id"] in base and now.get(r["id"]) != base[r["id"]]}
 

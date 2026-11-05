@@ -286,10 +286,8 @@ function ItemText.onBegin()
   return n
 end
 
--- A page that is no longer ours: its word covers go (SS.drop bypasses Render), then its record.
+-- A page that is no longer ours: its record goes (SS.drop bypasses Render).
 local function drop()
-  local rec = SS.get(SURFACE, KEY)
-  if rec and WFI.ReadingView then WFI.ReadingView.detach(rec) end
   SS.drop(SURFACE, KEY)
 end
 

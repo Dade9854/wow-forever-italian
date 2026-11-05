@@ -12,7 +12,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from wfi.core import model, readings, tooltip_text
+from wfi.core import model, tooltip_text
+from wfi.core.shown import ja_hash
 from wfi.emit.lua_writer import shipped
 
 VERSION = "1"
@@ -289,7 +290,7 @@ def resolve(
     shown = line["ja"]
     if fix.type in tooltip_text.TYPES:
         shown = tooltip_text.shipped_ja(line, (english or {}).get((line["id"], line["field"])))
-    if readings.ja_hash(shown) != fix.ja_hash:
+    if ja_hash(shown) != fix.ja_hash:
         if issue is not None and line.get("provenance", {}).get("report") == issue:
             return line, None
         return None, ALREADY_CHANGED

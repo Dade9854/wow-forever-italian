@@ -14,7 +14,7 @@ from wfi.core import align, decisions, dedupe, language, markup, paragraphs, spe
 from wfi.core import style as style_mod
 
 NO_ENGLISH_ID = "no_english_id"
-NOT_JAPANESE = "not_japanese"
+NOT_ITALIAN = "not_italian"
 DUPLICATE_CONFLICT = "duplicate_conflict"
 ALIGNMENT_FAILED = "alignment_failed"
 NUMBERS_CHANGED = "numbers_changed"
@@ -101,15 +101,16 @@ def _evaluate(
     """Rules 3, 5, 6 for one variant → (reasons, checks). `provenance` feeds the structural completeness
     rule (a first-paragraph-only layer, ADR-011). `accepted`: the variant carries
     `ruling: accept`; a UI line ruled to stay in English letters ("NEW", "%d FPS") is not
-    `not_japanese`."""
+    `not_italian`."""
     wordless = scope.kind == "ui" and _no_words(scope.raw.get(field_name))
     # a gossip line may carry the same ruling: a label that is only a name, a class or
     # profession name, an internal string or a line in a made-up language ships as the English it
     # is, without the missing marker; so may an item or spell line that is only a name (`Umbrinoth`)
     kept_english = scope.kind in ("ui", "gossip", "item", "spell") and accepted
     dots = field_name in scope.dotted and DOTS.fullmatch(ja) is not None
-    if not language.is_japanese(ja, field_name) and not wordless and not kept_english and not dots:
-        return [NOT_JAPANESE], []
+    english = scope.fields.get(field_name) or scope.raw.get(field_name)
+    if not language.is_italian(ja, field_name, english) and not wordless and not kept_english and not dots:
+        return [NOT_ITALIAN], []
     if scope.kind == "ui":
         return _evaluate_ui(ja, scope.raw.get(field_name, ""))
     reasons: list[str] = []

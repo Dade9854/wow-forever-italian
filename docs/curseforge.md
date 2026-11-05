@@ -62,7 +62,7 @@ Install it with the CurseForge app (make sure your **Forever** install is select
 
 ### <span style="color:#E8C77E;">Report a translation problem</span>
 
-Click the <span style="color:#E0605A;">**字**</span> minimap button (or type **/wfi fix**), pick the line you just read, choose what is wrong, and paste the report into the form on GitHub: https://github.com/zyaga/wow-forever-italian/issues
+Click the <span style="color:#E0605A;">**字**</span> minimap button (or type **/wfi fix**), pick the line you just read, choose what is wrong, and paste the report into the form on GitHub: https://github.com/Dade9854/wow-forever-italian/issues
 
 ### <span style="color:#E8C77E;">FAQ</span>
 
@@ -87,7 +87,7 @@ The hand-written translations are the work of the Japanese translators of WoWJap
 
 ### <span style="color:#E8C77E;">License</span>
 
-GPL-2.0-or-later. Website: https://foreverjapanese.com. Source and translation data: https://github.com/zyaga/wow-forever-italian. The bundled font is IPA UI Gothic, under the IPA Font License v1.0.
+GPL-2.0-or-later. Website: https://foreverjapanese.com. Source and translation data: https://github.com/Dade9854/wow-forever-italian. The bundled font is IPA UI Gothic, under the IPA Font License v1.0.
 
 This addon is made by fans. It is not affiliated with or endorsed by Blizzard Entertainment. Game screenshots: ©2004 Blizzard Entertainment, Inc. All rights reserved. World of Warcraft, Warcraft and Blizzard Entertainment are trademarks or registered trademarks of Blizzard Entertainment, Inc. in the U.S. and/or other countries.
 
@@ -143,7 +143,7 @@ CurseForge アプリでインストールしてください（**Forever** のイ
 
 ### <span style="color:#E8C77E;">翻訳の問題を報告する</span>
 
-ミニマップの <span style="color:#E0605A;">**字**</span> ボタン（または **/wfi fix**）を押し、直前に読んだ行を選んで何が問題かを選び、表示された報告文を GitHub のフォームに貼り付けてください: https://github.com/zyaga/wow-forever-italian/issues
+ミニマップの <span style="color:#E0605A;">**字**</span> ボタン（または **/wfi fix**）を押し、直前に読んだ行を選んで何が問題かを選び、表示された報告文を GitHub のフォームに貼り付けてください: https://github.com/Dade9854/wow-forever-italian/issues
 
 ### <span style="color:#E8C77E;">よくある質問</span>
 
@@ -168,6 +168,6 @@ CurseForge アプリでインストールしてください（**Forever** のイ
 
 ### <span style="color:#E8C77E;">ライセンス</span>
 
-GPL-2.0-or-later。ウェブサイト: https://foreverjapanese.com 。ソースコードと翻訳データ: https://github.com/zyaga/wow-forever-italian 。同梱のフォントは IPA UI ゴシック（IPA フォントライセンス v1.0）です。
+GPL-2.0-or-later。ウェブサイト: https://foreverjapanese.com 。ソースコードと翻訳データ: https://github.com/Dade9854/wow-forever-italian 。同梱のフォントは IPA UI ゴシック（IPA フォントライセンス v1.0）です。
 
 このアドオンはファンが制作したものです。Blizzard Entertainment とは関係がなく、承認も受けていません。ゲーム画面: ©2004 Blizzard Entertainment, Inc. All rights reserved. World of Warcraft、Warcraft、Blizzard Entertainment は、米国およびその他の国における Blizzard Entertainment, Inc. の商標または登録商標です。

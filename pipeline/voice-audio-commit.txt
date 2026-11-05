@@ -1,3 +1,0 @@
-# The voice audio repository's commit that goes with this repository's text, written by
-# `wfi voice store-sync` after a voice run. A release builds the voice packs from exactly this commit.
-cc01dd591bfa16092e92c8c4038a4cd5a4fb30e7

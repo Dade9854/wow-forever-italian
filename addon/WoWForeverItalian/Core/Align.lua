@@ -1,6 +1,7 @@
 -- Core/Align.lua: the runtime alignment gate for `unaligned` entries (ADR-007), the Lua twin of
 -- pipeline/wfi/core/align.py. Pure: no globals, no frames; proven by vectors/align_vectors.lua (both suites).
---   Align.names(text, allowlist)          Latin names in reading order (multi-word joins, allowlist, ≥ 3 letters)
+--   Align.names(text, allowlist)          names in reading order: runs of capitalised words that do not open a
+--                                         sentence (multi-word joins, allowlist, ≥ 3 letters)
 --   Align.checkNames(ja, scope, allowlist) → missing names (word-by-word fallback for multi-word names)
 --   Align.numbers(text)                   digit runs after full-width folding, digits glued to Latin letters ignored
 --   Align.numberWords(text)               English number words as digit strings ("twenty-five" → 25, 20)
@@ -42,6 +43,7 @@ Align.ALLOWLIST = {
   armor = true, rage = true, energy = true, npc = true, pvp = true,
   azeroth = true, horde = true, alliance = true, forsaken = true, elune = true,
   neutral = true, friendly = true, honored = true, revered = true, exalted = true,
+  luce = true, sacra = true, sua = true,
 }
 Align.MIN_LEN = 3
 
@@ -55,8 +57,9 @@ function Align.foldDigits(text)
   return (text:gsub("\239\188([\144-\153])", function(c) return string.char(c:byte() - 144 + 48) end))
 end
 
+-- The player tokens and the gender pairs Core/Placeholders expands ("<pronto/pronta>"): never names.
 local function stripPlaceholders(text)
-  return (text:gsub("{name}", " "):gsub("{class}", " "):gsub("{race}", " "))
+  return (text:gsub("{name}", " "):gsub("{class}", " "):gsub("{race}", " "):gsub("<[A-Za-z]+/[A-Za-z]+>", " "))
 end
 
 -- Name runs: an ASCII letter then ≥ 2 more of letters / ' / ’ / -, counted in code points (’ is one).
@@ -99,27 +102,70 @@ local function nameLen(s)
   return #s - extra * 2 -- each ’ is 3 bytes, 1 char
 end
 
+-- A run glued to an accented Latin letter (U+00C0–U+017F, × and ÷ aside) is part of an Italian word ("Città"),
+-- never a name. The twin of align._accented.
+local function accentedBefore(text, s)
+  if s < 3 then return false end
+  local lead, cont = text:byte(s - 2), text:byte(s - 1)
+  if not cont or cont < 128 or cont > 191 then return false end
+  if lead == 195 then return cont ~= 151 and cont ~= 183 end
+  return lead == 196 or lead == 197
+end
+
+local function accentedAfter(text, e)
+  local lead, cont = text:byte(e + 1), text:byte(e + 2)
+  if not cont or cont < 128 or cont > 191 then return false end
+  if lead == 195 then return cont ~= 151 and cont ~= 183 end
+  return lead == 196 or lead == 197
+end
+
+-- What may stand before a word that opens a sentence (spaces skipped): the start of the text or of a line, an end
+-- of sentence, a colon or semicolon, an opening quote, a dash, a bracket. The twin of align._OPENERS.
+local OPENER_BYTES = {}
+for c in (".!?:;\"-([<>\n"):gmatch(".") do OPENER_BYTES[c:byte()] = true end
+local OPENERS2 = { ["\194\171"] = true, ["\194\187"] = true } -- « »
+local OPENERS3 = { ["\226\128\156"] = true, ["\226\128\157"] = true, ["\226\128\152"] = true, -- “ ” ‘
+  ["\226\128\148"] = true, ["\226\128\147"] = true, ["\226\128\166"] = true } -- — – …
+
+local function opensSentence(text, s)
+  local i = s - 1
+  while i >= 1 and (text:byte(i) == 32 or text:byte(i) == 9) do i = i - 1 end
+  if i < 1 then return true end
+  if OPENER_BYTES[text:byte(i)] then return true end
+  if i >= 2 and OPENERS2[text:sub(i - 1, i)] then return true end
+  return i >= 3 and OPENERS3[text:sub(i - 2, i)] == true
+end
+
+local function isUpper(b) return b and b >= 65 and b <= 90 end
+
 function Align.names(text, allowlist)
   allowlist = allowlist or Align.ALLOWLIST
   text = stripPlaceholders(text)
-  local toks = runs(text)
+  local toks = {}
+  for _, t in ipairs(runs(text)) do
+    if not accentedBefore(text, t.s) and not accentedAfter(text, t.e) then toks[#toks + 1] = t end
+  end
   local names, seen = {}, {}
   local i = 1
   while i <= #toks do
-    local words, e = { toks[i].text }, toks[i].e
-    local j = i + 1
-    while j <= #toks and toks[j].s == e + 2 and text:sub(e + 1, e + 1) == " " and isLetter(toks[j].text:byte(1))
-      and toks[j].text:sub(1, 1):upper() == toks[j].text:sub(1, 1) do
-      words[#words + 1] = toks[j].text
-      e = toks[j].e
-      j = j + 1
+    if not isUpper(toks[i].text:byte(1)) then
+      i = i + 1
+    else
+      local words, e = { toks[i].text }, toks[i].e
+      local j = i + 1
+      while j <= #toks and toks[j].s == e + 2 and text:sub(e + 1, e + 1) == " " and isUpper(toks[j].text:byte(1)) do
+        words[#words + 1] = toks[j].text
+        e = toks[j].e
+        j = j + 1
+      end
+      if opensSentence(text, toks[i].s) then table.remove(words, 1) end
+      local name = trimQuotes(table.concat(words, " "))
+      if nameLen(name) >= Align.MIN_LEN and not allowlist[name:lower()] and not seen[name] then
+        names[#names + 1] = name
+        seen[name] = true
+      end
+      i = j
     end
-    local name = trimQuotes(table.concat(words, " "))
-    if nameLen(name) >= Align.MIN_LEN and not allowlist[name:lower()] and not seen[name] then
-      names[#names + 1] = name
-      seen[name] = true
-    end
-    i = j
   end
   return names
 end

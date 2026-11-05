@@ -32,22 +32,6 @@ function WFI_OnAddonCompartmentLeave()
   WFI.MinimapButton.hideTooltip()
 end
 
--- Global entry point for the voice pack (ADR-061): its Register.lua runs in its own addon's chunk and cannot see this
--- namespace. The pack loads after this addon (it lists it as a dependency), so the settings pages may already be
--- built: its page is added then.
-function WoWForeverItalian_RegisterVoice(tbl)
-  local n, invalid = WFI.Voice.register(tbl)
-  -- a pack loads after this addon: the character's error lines can only take over once it has registered
-  if WFI.loaded and WFI.VoiceErrors then pcall(WFI.VoiceErrors.refresh) end
-  if WFI.loaded and WFI.Options and WFI.Voice.hasPack() then
-    local ok, err = pcall(WFI.Options.addPage, "voice")
-    if not ok then WFI.initErrors[#WFI.initErrors + 1] = { surface = "options.voice", err = tostring(err) } end
-    ok, err = pcall(WFI.Options.addPage, "voicepanel")
-    if not ok then WFI.initErrors[#WFI.initErrors + 1] = { surface = "options.voicepanel", err = tostring(err) } end
-  end
-  return n, invalid
-end
-
 -- The one reader of the player's own name / class / race / sex, shared by Core/Placeholders (the corpus tokens)
 -- and Core/Collector (English normalization). Read at call time rather than cached at load. Each API
 -- is guarded: a client without one leaves that token literal and makes the collector refuse (no_player) instead of
@@ -284,19 +268,6 @@ function WFI.OnLoad()
   -- lines a newer addon covers leave the collector file; the tooltip gate needs the UI index's duration strings
   step("collectorprune", function() WFI.Collector.prune() end)
   step("objectiveindex", WFI.BuildObjectiveIndex)
-  -- voice over: the pack's lines are matched against the shipped Japanese (tokens unfilled) by its hash
-  step("voice", function() WFI.Voice.init({
-    lookup = WFI.Lookup.get,
-    hash = WFI.Hash.key,
-    setting = WFI.Settings.get,
-    revealed = WFI.Modifier.isDown,
-    enabled = function() return WFI.State.enabled end,
-  }) end)
-  step("voicequeue", function() WFI.VoiceQueue.init(WFI_DB) end)
-  step("voiceplayer", function() WFI.VoicePlayer.init(WFI_DB) end)
-  step("voicepanel", function() WFI.VoicePanel.init() end)
-  step("voicequestlog", function() WFI.VoiceQuestLog.init(WFI_DB) end)
-  step("voiceerrors", function() WFI.VoiceErrors.init(WFI_DB) end)
   step("render", function() WFI.Render.init(WFI.Translator.new({
     enabled = function() return WFI.State.enabled end,
     areaEnabled = WFI.State.areaEnabled,
@@ -374,7 +345,7 @@ function WFI.OnLoad()
     "GroupFinder", "Channels", "QuickJoin", "RecentAllies", "RecruitAFriend", "ReportFrame", "HelpFrame",
     "StatusNotices", "BNetToast", "SettingsPanel", "SettingsTutorials", "EditMode", "QuickKeybind", "ColorPicker",
     "ChatConfig", "TextToSpeech", "ChatTabs", "CombatLog", "AddonList", "ScriptErrors", "Splash", "EventTrace",
-    "ChromieTime", "Alerts", "Errors", "ChatSystem", "ChatInput", "BossBanner", "Cinematic", "Subtitles",
+    "ChromieTime", "Alerts", "Errors", "ChatSystem", "BossBanner", "Cinematic", "Subtitles",
     "CoinPickup", "CombatFeedback", "EquipmentFlyout",
     "GhostFrame", "GuildInvite", "InstanceAbandon", "LootHistory", "LossOfControl",
     "MajorFactionToast", "PartyPose", "PetHappiness", "PlayerChoice", "ReadyCheck", "StackSplit", "StreamingIcon",
@@ -457,7 +428,6 @@ frame:SetScript("OnEvent", function(self, event, name, ...)
       self:RegisterEvent("PLAYER_ENTERING_WORLD")
       self:RegisterEvent("PLAYER_REGEN_DISABLED")
       self:RegisterEvent("PLAYER_REGEN_ENABLED")
-      self:RegisterEvent("PLAYER_LOGOUT")
       for _, blocked in ipairs(WFI.Diag.BLOCK_EVENTS) do self:RegisterEvent(blocked) end
     else
       -- Guarded like the load sequence. These run the deferred setup for the talent frame, the trainer and the
@@ -477,9 +447,6 @@ frame:SetScript("OnEvent", function(self, event, name, ...)
   elseif event == "PLAYER_REGEN_ENABLED" then
     WFI.RevealBinding.flush() -- a modifier change made in combat
     WFI.Options.setCombat(false)
-  elseif event == "PLAYER_LOGOUT" then
-    WFI.VoicePlayer.stop() -- the dialog channel is saved with the logout: put it back first
-    WFI.VoiceErrors.restore() -- and the error speech
   elseif event == "MODIFIER_STATE_CHANGED" then
     WFI.Modifier.refresh()
   elseif event == "PLAYER_ENTERING_WORLD" then
@@ -499,25 +466,5 @@ frame:SetScript("OnEvent", function(self, event, name, ...)
     -- name is known, so an error caught earlier loses it
     WFI.ErrorLog.checkOurs(geterrorhandler)
     WFI.ErrorLog.rescrub()
-    -- Fonts the client refused before the bundled font file finished loading (a fresh launch): retry once a second
-    -- until none is pending (the file can take 30 s or more to load), with a 10-minute safety stop.
-    local function retry() return WFI.Render.retryFonts() + WFI.Font.retryPending() end
-    local left = retry()
-    if left > 0 then WFI.Font.startProbe(WFI.Compat.resolve("UIParent")) end -- make the client load the font file
-    WFI.fontRetry = WFI.fontRetry or { at = GetTime(), tries = 0, left = left, timer = type(C_Timer) == "table" }
-    if left > 0 and type(C_Timer) == "table" and not WFI.fontTicker then
-      WFI.fontRetry.running = true
-      WFI.fontTicker = C_Timer.NewTicker(1, function(ticker)
-        local state = WFI.fontRetry
-        state.tries = state.tries + 1
-        state.left = retry()
-        if state.left == 0 or state.tries >= 600 then
-          WFI.Font.stopProbe()
-          ticker:Cancel()
-          WFI.fontTicker = nil
-          state.running = false
-        end
-      end)
-    end
   end
 end)

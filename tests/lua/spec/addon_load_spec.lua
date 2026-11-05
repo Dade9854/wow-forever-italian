@@ -57,7 +57,6 @@ local TAIL = {
   "UI/SettingsTutorials.lua", "UI/EditMode.lua", "UI/QuickKeybind.lua", "UI/ColorPicker.lua", "UI/ChatConfig.lua",
   "UI/TextToSpeech.lua", "UI/ChatTabs.lua", "UI/CombatLog.lua", "UI/AddonList.lua", "UI/ScriptErrors.lua",
   "UI/Splash.lua", "UI/EventTrace.lua", "UI/ChromieTime.lua", "UI/Alerts.lua", "UI/Errors.lua", "UI/ChatSystem.lua",
-  "UI/ChatInput.lua",
   "UI/Speech.lua",
   "UI/BossBanner.lua",
   "UI/Cinematic.lua", "UI/Subtitles.lua",

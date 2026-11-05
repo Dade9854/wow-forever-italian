@@ -6,7 +6,7 @@ import json
 import pytest
 
 from wfi.core import fix_report as F
-from wfi.core.readings import ja_hash
+from wfi.core.shown import ja_hash
 from wfi.dev import gen_report_vectors
 
 

@@ -11,7 +11,7 @@ from wfi.cmd import fix_report as cmd
 from wfi.core import fix_report as F
 from wfi.core.hashing import key
 from wfi.core.normalize import normalize_v1
-from wfi.core.readings import ja_hash
+from wfi.core.shown import ja_hash
 from wfi.dev.gen_attribution import with_correctors
 from wfi.io.jsonl_store import Store
 

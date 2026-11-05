@@ -15,10 +15,8 @@
 --   /wfi debug objective      the objective index: shipped (objective / area rows) / indexed by
 --                             fingerprint / ambiguous
 --   /wfi debug ui scan        English still showing on visible frames: "hook?" = the dictionary knows it, "key?" = not
---   /wfi debug fonts          the refused-font retry: timer state, one pending widget, then a retry now
---   /wfi debug intro [novoice] open the first-install window (novoice: drawn as with no voice pack loaded)
---   (plain /wfi debug also prints the voice packs' counts: lines, matched, missing, stale, played, refused,
---   and the lines of each pack)
+--   /wfi debug fonts          fonts the client refused: one pending widget, then a retry now
+--   /wfi debug intro          open the first-install window
 --   /wfi version              the addon, normalization and Lua versions
 --   /wfi bug                  the report window (a bug, with the addon's own Lua errors, or an idea)
 --   /wfi log [<n>]            the problem log's last n entries, then how many Lua errors it holds
@@ -26,9 +24,7 @@
 --   /wfi collector [on|off|status|path|clear|send [all]]   the English collector; other words fall through to
 --                             settings; clear asks for the same command again within 5 s (like the page's two
 --                             clicks); send opens the send window (all: every line again)
---   /wfi glosses [on|off]     readings.glosses · /wfi readings [on|off]  readings.enabled
 --   /wfi togglekey [<key>|none]   the toggle binding the settings page's Set key / Unbind row writes
---   /wfi panel reset          the voice panel back at the bottom centre
 local _, WFI = ...
 local Slash = {}
 WFI.Slash = Slash
@@ -74,7 +70,7 @@ function Slash.status()
     if not S.isHidden(d) then print(("  %s = %s"):format(d.id, fmt(S.get(d.id)))) end
   end
   print(("  togglekey = %s"):format(toggleText())) -- a binding, not a setting, but set on the same page
-  print("  /wfi on|off|toggle · /wfi <setting> <value> · /wfi readings|glosses [on|off] · /wfi togglekey [<key>|none]"
+  print("  /wfi on|off|toggle · /wfi <setting> <value> · /wfi togglekey [<key>|none]"
     .. " · /wfi config [collector|about] · /wfi collector · /wfi bug · /wfi debug · /wfi version")
 end
 
@@ -192,13 +188,6 @@ local function debugHash()
 end
 
 local function debugFonts()
-  local r = WFI.fontRetry
-  if r then
-    say("fonts: retry %s · %d tries · %d left at the last try · %.0fs since PLAYER_ENTERING_WORLD · timer %s",
-      r.running and "running" or "stopped", r.tries, r.left, GetTime() - r.at, r.timer and "yes" or "missing")
-  else
-    say("fonts: no retry started (PLAYER_ENTERING_WORLD not seen)")
-  end
   local rec = WFI.Render.pendingFontSample()
   if rec then
     local path, size, flags = rec.fs:GetFont()
@@ -208,8 +197,7 @@ local function debugFonts()
   end
   local before = WFI.Render.pendingFonts()
   local after = WFI.Render.retryFonts()
-  say("fonts: records pending %d → %d after a retry now · own widgets pending %d", before, after,
-    WFI.Font.retryPending())
+  say("fonts: records pending %d → %d after a retry now", before, after)
 end
 
 -- /wfi debug tooltip [on | off]: record every pass over a spell or item tooltip (UI/Tooltip's trace) and show it in
@@ -278,7 +266,7 @@ end
 
 function Slash.debug(sub, arg)
   if sub == "fonts" then return debugFonts() end
-  if sub == "intro" then return WFI.IntroWindow.open(arg ~= nil and arg:lower() == "novoice") end
+  if sub == "intro" then return WFI.IntroWindow.open() end
   if sub == "tooltip" then return debugTooltip(arg) end
   if sub == "hash" then return debugHash() end
   if sub == "quest" or sub == "item" or sub == "spell" then return debugRow(sub, arg) end
@@ -298,33 +286,6 @@ function Slash.debug(sub, arg)
   local areas = {}
   for _, a in ipairs(WFI.AREAS) do areas[#areas + 1] = a .. "=" .. fmt(WFI.State.areaEnabled(a)) end
   say("enabled=%s held=%s %s", fmt(WFI.State.enabled), fmt(WFI.State.modifierHeld), table.concat(areas, " "))
-  -- the voice pack (ADR-061): lines registered, then since registration: voiced, no file, Japanese changed since the
-  -- file was made, and what the player could not play
-  local V, P = WFI.Voice, WFI.VoicePlayer
-  if V and V.hasPack() then
-    local c = V.counts
-    say("voice: %d lines (%d invalid) · matched %d · missing %d · stale %d · played %d · refused %d",
-      c.registered, c.invalid, c.matched, c.missing, c.stale, P and P.counts.played or 0, P and P.counts.refused or 0)
-    local list = {}
-    for folder, n in pairs(V.packs()) do list[#list + 1] = ("%s=%d"):format(folder, n) end
-    table.sort(list)
-    say("voice packs: %s", table.concat(list, " · "))
-    if WFI.VoicePanel and WFI.VoiceQueue then
-      local st = WFI.VoicePlayer.state()
-      say("voice panel: look %d · %d waiting · playing %s · paused %s", WFI.VoiceQueue.opt.look, #st.waiting,
-        st.item and st.playing and tostring(st.item.key) or "none", st.paused and "yes" or "no")
-    end
-    local E = WFI.VoiceErrors
-    if E then
-      local ec, l = E.counts, E.last
-      say("voice errors: game asked %d · message known %d · played %d · repeats skipped %d · refused %d",
-        ec.calls, ec.shown, ec.played, ec.skipped, ec.refused)
-      say("voice errors, last: voice id %s · message %s · %s %s · %s", tostring(l.voiceID), tostring(l.message),
-        tostring(l.race), tostring(l.sex), tostring(l.why))
-    end
-  else
-    say("voice: no pack%s", V and V.counts.invalid > 0 and " (a pack registered an invalid table)" or "")
-  end
   local fails = {}
   for surface, f in pairs(WFI.Render.fontFailureSurfaces) do fails[#fails + 1] = { surface = surface, f = f } end
   table.sort(fails, function(a, b)
@@ -337,13 +298,6 @@ function Slash.debug(sub, arg)
   end
   say("font failures: %d (%d pending)%s", WFI.Render.fontFailures, WFI.Render.pendingFonts(),
     #fails > 0 and (" · " .. table.concat(fails, " · ")) or "")
-  local RV = WFI.ReadingView -- the word-reading box
-  if RV then
-    say("readings: %d quests / greetings loaded · %s · %d attached · %d spans refused%s · %d errors",
-      WFI.Data.count("reading"), RV.enabled and "on" or "off", RV.attached, RV.refused,
-      RV.refusedAt and (" (first: " .. RV.refusedAt .. ")") or "", WFI.Render.readingErrors or 0)
-    say("glosses: %d meanings loaded · %s", WFI.Data.count("gloss"), RV.glossesOn and "on" or "off")
-  end
   local nUnknown, unknownList = WFI.Placeholders.unknownTokens()
   local listed = nUnknown > 0 and (" (" .. table.concat(unknownList, " ") .. ")") or ""
   say("placeholders: %d unknown tokens seen%s", nUnknown, listed)
@@ -435,8 +389,6 @@ function Slash.togglekey(value, extra)
   say("togglekey = %s", toggleText())
 end
 
-local BOOLEAN_WORDS = { on = true, off = true, ["true"] = true, ["false"] = true, ["1"] = true, ["0"] = true }
-
 -- Resolves `words` against the registry: "<id> <value>" or "<group> <name> <value>". → id, value | nil
 local function settingFromWords(words)
   local id = S.find(words[1])
@@ -482,26 +434,7 @@ function Slash.handle(msg)
     return
   end
   if lower == "debug" then return Slash.debug(words[2] and words[2]:lower(), words[3]) end
-  if lower == "glosses" then -- the word popup's meanings (setting readings.glosses)
-    if words[2] then
-      local ok, err = S.set("readings.glosses", words[2])
-      if not ok then return say("glosses: %s", err) end
-    end
-    return say("glosses %s · %d meanings loaded", fmt(S.get("readings.glosses")), WFI.Data.count("gloss"))
-  end
-  if lower == "readings" and (words[2] == nil or BOOLEAN_WORDS[words[2]:lower()]) then -- readings.enabled
-    if words[2] then
-      local ok, err = S.set("readings.enabled", words[2])
-      if not ok then return say("readings: %s", err) end
-    end
-    return say("readings %s", fmt(S.get("readings.enabled")))
-  end
   if lower == "togglekey" then return Slash.togglekey(words[2], words[3]) end
-  if lower == "panel" and WFI.VoicePanel then -- /wfi panel reset: the voice panel back at the bottom centre
-    local rest = {}
-    for i = 2, #words do rest[#rest + 1] = words[i] end
-    return WFI.VoicePanel.command(rest, say)
-  end
   if lower == "log" then -- the diagnostics log (Core/Diag): the last N entries, 10 by default
     for _, line in ipairs(WFI.Diag.lines(words[2])) do say("%s", line) end
     local errors = WFI.ErrorLog.status()
@@ -535,7 +468,6 @@ function Slash.handle(msg)
     return say("%s: %s", id, err)
   end
 
-  if lower == "readings" then return say("readings: expected on|off") end -- a known verb, a bad word
   print(("WFI: unknown command '%s' (try /wfi)"):format(verb))
 end
 

@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from wfi.core.hashing import key as hash_key
-from wfi.core.language import KANA, KANJI
+from wfi.core.language import has_cjk, reads_italian
 from wfi.core.normalize import normalize_v1
 from wfi.io.lua_reader import Table, parse_assignments
 
@@ -163,9 +163,9 @@ def _text_problem(text: Any, h: Any) -> str | None:
     if (
         not isinstance(text, str)
         or not normalize_v1(text)
-        or KANA.search(text)
-        or KANJI.search(text)
+        or has_cjk(text)
         or _CJK.search(text)
+        or reads_italian(text)
     ):
         return "not_english"
     if _BRACE.search(text) or any(tok not in TOKENS for tok in _DOLLAR.findall(text)):

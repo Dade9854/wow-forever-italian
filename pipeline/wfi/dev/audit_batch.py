@@ -58,8 +58,9 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
-from wfi.core import decisions, readings
+from wfi.core import decisions
 from wfi.core.report import SHIPPED
+from wfi.core.shown import ja_hash
 from wfi.dev import audit_ui
 from wfi.io.jsonl_store import Store
 from wfi.paths import data_root
@@ -127,7 +128,7 @@ def audit_rows(root: Path, type_: str, words: dict[tuple[Any, ...], list[Any]] |
         if not isinstance(en, str) or not en.strip():
             no_english += 1
             continue
-        h = readings.ja_hash(ln["ja"])
+        h = ja_hash(ln["ja"])
         row = {"type": type_, "id": ln["id"], "field": ln["field"], "class": ln["provenance"]["class"],
                "ja": ln["ja"], "ja_hash": h, "en": en}
         included = {
@@ -185,7 +186,6 @@ def verdict_problems(part: dict[str, Any], v: dict[str, Any]) -> list[str]:
         return ["a split is for UI rows only"]
     if v.get("kind") in audit_ui.UI_KINDS:
         return [f"kind {v['kind']} is for UI rows only"]
-    quest = part["type"] == "quest"
     if verdict == "match":
         if v.get("ja") not in (None, part["ja"]):
             p.append("a match carries no new `ja`")
@@ -202,23 +202,12 @@ def verdict_problems(part: dict[str, Any], v: dict[str, Any]) -> list[str]:
             p.append("a correct's `ja` is unchanged")
     if verdict == "redraft" and v.get("ja") not in (None, part["ja"]):
         p.append("a redraft carries no `ja` (the redraft batch writes it)")
-    shipped = v.get("ja") if verdict == "correct" else part["ja"]
-    owed = quest and verdict != "redraft" and isinstance(shipped, str) and readings.annotatable(shipped)
-    return p + _words_problems(v, shipped, owed)
+    return p + _words_problems(v)
 
 
-def _words_problems(v: dict[str, Any], shipped: Any, owed: bool) -> list[str]:
-    """The problems with a verdict's `words`, which a quest line that keeps annotatable Japanese owes."""
-    if "words" in v and not owed:
-        return ["words where none are owed (item / spell text, a redraft, or nothing to annotate)"]
-    if not owed:
-        return []
-    if not v.get("words"):
-        return ["words missing"]
-    p: list[str] = []
-    if any(not (isinstance(w, list) and len(w) == 5) for w in v["words"]):
-        p.append("every word entry is the 5-item form (word, reading, dict. form, reading, meaning)")
-    return p + readings.word_problems(shipped, v["words"])
+def _words_problems(v: dict[str, Any]) -> list[str]:
+    """This project has no word readings: a verdict never carries `words`."""
+    return ["words where none are owed (this project has no word readings)"] if "words" in v else []
 
 
 def check_dir(d: Path) -> tuple[list[tuple[dict[str, Any], dict[str, Any]]], list[str], list[str]]:
@@ -284,7 +273,7 @@ def outputs(pairs: list[tuple[dict[str, Any], dict[str, Any]]]) -> dict[str, lis
         if v["verdict"] == "correct":
             dec.append(base | {"decision": "correct", "ja": v["ja"], "note": note})
             if v.get("words"):
-                correct_words.append(base | {"ja_hash": readings.ja_hash(v["ja"]), "words": v["words"]})
+                correct_words.append(base | {"ja_hash": ja_hash(v["ja"]), "words": v["words"]})
         else:
             dec.append(base | {"decision": "redraft", "note": note})
     return {"audit.decisions.jsonl": dec, "audit.words.jsonl": match_words,

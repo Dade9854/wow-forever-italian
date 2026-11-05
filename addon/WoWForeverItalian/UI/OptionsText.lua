@@ -349,7 +349,7 @@ Text.SLASH = {
 }
 
 -- the translation-report issue form the fix window's report is pasted into
-Text.FIX_URL = "https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml"
+Text.FIX_URL = "https://github.com/Dade9854/wow-forever-italian/issues/new?template=translation-report.yml"
 
 -- → en, ja; a missing key raises (a typo must fail the spec, not ship a blank).
 function Text.get(key, ...)

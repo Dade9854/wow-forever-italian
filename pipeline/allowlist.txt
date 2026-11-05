@@ -1,11 +1,10 @@
-# Latin-script words the human corpus writes inside Japanese prose that are game terms, not names.
-# One per line: term  # justification. A test rejects lines without a justification and terms no
-# corpus line uses. Compared case-insensitively. Terms under 3 letters are never extracted as
-# names (align.NAME_RUN), so they do not belong here.
-# Stat and resource words. Shipped tooltip lines write them in the interface's Japanese (体力, マナ …; the style
-# guide's Settled interface terms, core/stat_words.py), but some lines still hold one in English letters inside a
-# name or phrase ("spirit of Midsummer"), and the rejected human lines keep them ("Healthを70回復"). Listed so the
-# name check never reads them as names on their own: taking them off would make the runtime gate refuse such lines.
+# Capitalised words an Italian sentence may hold that are not English names: game terms the English writes in
+# English letters too, and the Italian words the glossary writes with a capital (la Luce, Sua Maestà).
+# One per line: term  # justification. A test rejects lines without a justification. Compared
+# case-insensitively. Terms under 3 letters are never extracted as names (align.NAME_RUN), so they do not
+# belong here. Twin of Core/Align.lua Align.ALLOWLIST.
+# Stat and resource words: a line may hold one in English letters inside a name or phrase ("spirit of
+# Midsummer"). Listed so the name check never reads them as names on their own.
 Health  # stat word, not a name
 Mana  # stat word, not a name
 Stamina  # stat word, not a name
@@ -18,7 +17,7 @@ Rage  # resource word, not a name
 Energy  # resource word, not a name
 NPC  # abbreviation
 PvP  # abbreviation
-# World / faction / reputation words the translators add for context even when the English line omits them
+# World / faction / reputation words a translation may add for context even when the English line omits them
 Azeroth  # world name used as context ("Azerothの英雄")
 Horde  # faction word added for context
 Alliance  # faction word added for context
@@ -29,3 +28,7 @@ Friendly  # reputation level
 Honored  # reputation level
 Revered  # reputation level
 Exalted  # reputation level
+# Italian words the glossary and the style guide write with a capital inside a sentence
+Luce  # la Luce (the Light), glossary
+Sacra  # la Sacra Luce (the Holy Light), glossary
+Sua  # Sua Maestà (His Majesty), glossary

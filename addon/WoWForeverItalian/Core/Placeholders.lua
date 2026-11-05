@@ -1,28 +1,36 @@
--- Core/Placeholders.lua: the player tokens the human quest corpus carries, expanded when the Japanese is applied.
+-- Core/Placeholders.lua: the player tokens the translations carry, expanded when the Italian is applied.
 -- Pure: the player arrives as a table (Main.lua reads the client). Tokens stay literal in data/.
 --   {name}  → player.name (the client's own spelling of the character name)
---   {class} → the corpus's katakana class word, by classFile (UnitClass 2nd return); else the localized className
---   {race}  → the katakana race word, by raceFile (UnitRace 2nd return); else the localized raceName
---   <a/b>   → b for a female character (UnitSex 3), else a; ASCII word pairs only (English gender words the
---             translators left in; an emote such as <Sirraは…> is not a pair)
+--   {class} → the Italian class word for the character's sex, by classFile (UnitClass 2nd return); else the
+--             localized className
+--   {race}  → the Italian race word for the character's sex, by raceFile (UnitRace 2nd return); else the
+--             localized raceName
+--             A class or race word is written in lower case, as Italian prose writes it ("un guerriero"), and
+--             with a capital where it opens the text or a sentence.
+--   <m/f>   → f for a female character (UnitSex 3), else m; ASCII word pairs only. Italian agrees adjectives and
+--             participles with the player ("Sei <pronto/pronta>?"); an emote such as <Sirra ride> is not a pair
 --   any other {word} → left literal and recorded once in Placeholders.unknown (distinct tokens; /wfi debug)
 -- A token whose value is unavailable (no name yet, an unlisted class with no localized name) stays literal.
--- The katakana forms are the Classic plugin's (male and female identical there); class and race are prose words in
--- this corpus (katakana 380× vs Latin 94× in shipped quest lines), not proper names, which stay English.
+-- Class and race are prose words, not proper names (which stay English); the words are the official Italian
+-- client's.
 local _, WFI = ...
 local Placeholders = {}
 WFI.Placeholders = Placeholders
 
 Placeholders.KNOWN = { "name", "class", "race" }
 
+-- { male, female }
 Placeholders.CLASS = {
-  WARRIOR = "ウォリアー", PALADIN = "パラディン", HUNTER = "ハンター", ROGUE = "ローグ", PRIEST = "プリースト",
-  SHAMAN = "シャーマン", MAGE = "メイジ", WARLOCK = "ウォーロック", DRUID = "ドルイド",
+  WARRIOR = { "guerriero", "guerriera" }, PALADIN = { "paladino", "paladina" },
+  HUNTER = { "cacciatore", "cacciatrice" }, ROGUE = { "ladro", "ladra" }, PRIEST = { "sacerdote", "sacerdotessa" },
+  SHAMAN = { "sciamano", "sciamana" }, MAGE = { "mago", "maga" }, WARLOCK = { "stregone", "strega" },
+  DRUID = { "druido", "druida" },
 }
 
 Placeholders.RACE = {
-  Human = "人間", Orc = "オーク", Dwarf = "ドワーフ", NightElf = "ナイトエルフ", Scourge = "アンデッド",
-  Tauren = "トーレン", Gnome = "ノーム", Troll = "トロール",
+  Human = { "umano", "umana" }, Orc = { "orco", "orchessa" }, Dwarf = { "nano", "nana" },
+  NightElf = { "elfo della notte", "elfa della notte" }, Scourge = { "non morto", "non morta" },
+  Tauren = { "tauren", "tauren" }, Gnome = { "gnomo", "gnoma" }, Troll = { "troll", "troll" },
 }
 
 Placeholders.unknown = {} -- set of distinct unknown {word} tokens met this session
@@ -51,6 +59,24 @@ end
 
 -- → expanded text, number of unknown {word} tokens left literal in this text
 -- ASCII classes, not %a: %a follows the C locale in PUC Lua and could take high bytes of UTF-8 text.
+-- The word for the character's sex from a { male, female } pair; nil when the key is not listed.
+local function gendered(pair, sex)
+  if not pair then return nil end
+  return sex == FEMALE and pair[2] or pair[1]
+end
+
+-- Whether the token at byte `at` opens the text or a sentence (spaces skipped back to a . ! ? : or a line break).
+local function opensSentence(text, at)
+  local before = text:sub(1, at - 1):gsub("[ \t]+$", "")
+  return before == "" or before:find("[%.!%?:\n]$") ~= nil
+end
+
+local function capitalize(word)
+  return (word:gsub("^%l", string.upper))
+end
+
+-- → expanded text, number of unknown {word} tokens left literal in this text
+-- ASCII classes, not %a: %a follows the C locale in PUC Lua and could take high bytes of UTF-8 text.
 function Placeholders.expand(text, player)
   if not Placeholders.mayHaveTokens(text) then
     return text, 0
@@ -58,17 +84,19 @@ function Placeholders.expand(text, player)
   player = player or {}
   local values = {
     name = nonEmpty(player.name),
-    class = Placeholders.CLASS[player.classFile] or nonEmpty(player.className),
-    race = Placeholders.RACE[player.raceFile] or nonEmpty(player.raceName),
+    class = gendered(Placeholders.CLASS[player.classFile], player.sex) or nonEmpty(player.className),
+    race = gendered(Placeholders.RACE[player.raceFile], player.sex) or nonEmpty(player.raceName),
   }
   local unknown = 0
-  local out = text:gsub("{([A-Za-z]+)}", function(word)
+  local out = text:gsub("(){([A-Za-z]+)}", function(at, word)
     if not known[word] then
       unknown = unknown + 1
       Placeholders.unknown["{" .. word .. "}"] = true
       return nil -- keep the token literal
     end
-    return values[word] -- nil keeps a known token literal when its value is unavailable
+    local value = values[word]
+    if value and word ~= "name" and opensSentence(text, at) then value = capitalize(value) end
+    return value -- nil keeps a known token literal when its value is unavailable
   end)
   out = out:gsub("<([A-Za-z]+)/([A-Za-z]+)>", function(male, female)
     if player.sex == FEMALE then return female end

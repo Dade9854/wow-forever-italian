@@ -1,8 +1,10 @@
-"""Alignment: the English names and numbers inside a Japanese line must exist in its English scope.
+"""Alignment: the English names and numbers inside an Italian line must exist in its English scope.
 
-No model. `latin_names` finds Latin-script runs (joined into multi-word names when the next token is
-capitalized), drops allowlisted game words and runs shorter than 3 letters; `numbers` collects digit
-runs after full-width folding, ignoring digits glued to Latin letters (Mk2, N1).
+No model. Italian is written in the same letters as the English names it keeps, so a name is told apart by
+its capital: `latin_names` finds the runs of capitalised words (joined into multi-word names when the next
+word is capitalised too) that do not open a sentence, drops a word glued to an accented letter (an Italian
+word: `Città`), allowlisted game words and runs shorter than 3 letters; `numbers` collects digit runs after
+full-width folding, ignoring digits glued to Latin letters (Mk2, N1).
 """
 
 from __future__ import annotations
@@ -18,6 +20,8 @@ from wfi.core.normalize import normalize_v1
 
 NAME_RUN = re.compile(r"[A-Za-z][A-Za-z'’\-]{2,}")
 PLACEHOLDER = re.compile(r"\{(?:name|class|race)\}")
+# a gender pair the addon expands (`<pronto/pronta>`, Core/Placeholders.lua): its words are never names
+GENDER_PAIR = re.compile(r"<[A-Za-z]+/[A-Za-z]+>")
 # A whole run; "Mk12" yields nothing, not "2". An ENGLISH ordinal is that number: "40th level" reads as
 # 40 to a player, so a Japanese "40" there is not a number the Japanese invented.
 NUMBER = re.compile(r"(?<![A-Za-z0-9])\d+(?![A-Za-z0-9])")
@@ -147,21 +151,52 @@ def fold_digits(text: str) -> str:
     return "".join(unicodedata.normalize("NFKC", c) if "０" <= c <= "９" else c for c in text)
 
 
+# What may stand before a word that opens a sentence (spaces skipped): the start of the text or of a line, an
+# end of sentence, a colon or semicolon, an opening quote, a dash, a bracket. A capital there is the
+# sentence's, not a name's.
+_OPENERS = frozenset(".!?:;…«»\"“”‘—–-([<>\n")
+
+
+def _opens_sentence(text: str, start: int) -> bool:
+    i = start - 1
+    while i >= 0 and text[i] in " \t":
+        i -= 1
+    return i < 0 or text[i] in _OPENERS
+
+
+def _accented(c: str) -> bool:
+    """An accented Latin letter (U+00C0–U+017F, × and ÷ aside: à, È, ñ …): a run glued to one is part of an
+    Italian word, not a name. The twin of Core/Align.lua accentedBefore / accentedAfter."""
+    return len(c) == 1 and "\u00c0" <= c <= "\u017f" and c not in "\u00d7\u00f7"
+
+
 def latin_names(text: str, allowlist: set[str]) -> list[str]:
-    """Distinct candidate names in order of first appearance; multi-word when tokens are space-joined
-    and the following token starts with a capital (Senani Thunderheart, Sharptalon's Claw)."""
-    text = PLACEHOLDER.sub(" ", text)
-    tokens = [(m.start(), m.end(), m.group(0)) for m in NAME_RUN.finditer(text)]
+    """Distinct candidate names in order of first appearance: runs of capitalised words, multi-word when the
+    words are joined by one space (Senani Thunderheart, Sharptalon's Claw). A run that opens a sentence loses
+    its first word (the sentence's capital: "Porta …", "Marshal McBride ti cerca" keeps McBride)."""
+    text = GENDER_PAIR.sub(" ", PLACEHOLDER.sub(" ", text))
+    tokens = []
+    for m in NAME_RUN.finditer(text):
+        before = text[m.start() - 1] if m.start() > 0 else ""
+        after = text[m.end()] if m.end() < len(text) else ""
+        if _accented(before) or _accented(after):
+            continue
+        tokens.append((m.start(), m.end(), m.group(0)))
     names: list[str] = []
     i = 0
     while i < len(tokens):
         start, end, tok = tokens[i]
+        if not tok[0].isupper():
+            i += 1
+            continue
         words = [tok]
         j = i + 1
         while j < len(tokens) and tokens[j][0] == end + 1 and text[end] == " " and tokens[j][2][0].isupper():
             words.append(tokens[j][2])
             end = tokens[j][1]
             j += 1
+        if _opens_sentence(text, start):
+            words = words[1:]
         name = " ".join(words).strip("'’-")
         if len(name) >= MIN_LEN and name.casefold() not in allowlist and name not in names:
             names.append(name)

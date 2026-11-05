@@ -1,14 +1,14 @@
-"""Player tokens in the Japanese corpus. Pure.
+"""Player tokens in the translations. Pure.
 
-The human quest corpus keeps the predecessor's tokens literally in `ja`; the addon expands them when the
-Japanese is applied (`Core/Placeholders.lua`). Tokens stay literal in `data/`. This module is the pipeline's
+A translation keeps its tokens literally in `ja`; the addon expands them when the Italian is applied
+(`Core/Placeholders.lua`). Tokens stay literal in `data/`. This module is the pipeline's
 view of the same vocabulary: what counts as a token, which ones the addon knows, and which are unknown
 (validate).
 
 - `{word}`: `name`, `class`, `race` are known; anything else between braces (`{foo}`, `{name1}`, `{ name }`,
   `{名前}`) is unknown: the addon leaves it literal
-- `<a/b>`: an English gender word pair (ASCII words), expanded by the player's sex; any other `<x/y>` pair
-  (`<閣下/ご婦人>`, `<Mr./Ms.>`) is not expanded and would show both forms
+- `<m/f>`: a gender word pair (ASCII words: `<pronto/pronta>`), expanded by the player's sex; any other
+  `<x/y>` pair (`<più/meno>`, `<Mr./Ms.>`) is not expanded and would show both forms
 """
 
 from __future__ import annotations

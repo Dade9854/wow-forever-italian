@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make the Japanese voice from the Japanese the addon ships, copy it into the Forever client for a test, and release it. The voice ships as the **Voice entry**, `WoWForeverItalian_Voice` (no audio; on CurseForge it requires every pack, so the app installs them all from one click), and seven **packs** named for what they hold: `WoWForeverItalian_VoiceLevels1to10` through `…Levels51to60`, and `…Other`. How it works: [Voice over](../systems/voice.md); decisions: [ADR-061](../adr/061-voice-over-from-a-separate-pack.md), ADR-062. The audio lives in its own repository, `zyaga/wow-forever-italian-voice` (private for now), whose checkout is the audio store, `build/voice/` in the main checkout: every recording, with every older one in its history. This repository commits the audio record, `data/voice/audio.jsonl`, and the audio commit that goes with its text, `pipeline/voice-audio-commit.txt`. The packs are build output under `build/voice-pack/`.
+Make the Japanese voice from the Japanese the addon ships, copy it into the Forever client for a test, and release it. The voice ships as the **Voice entry**, `WoWForeverItalian_Voice` (no audio; on CurseForge it requires every pack, so the app installs them all from one click), and seven **packs** named for what they hold: `WoWForeverItalian_VoiceLevels1to10` through `…Levels51to60`, and `…Other`. How it works: [Voice over](../systems/voice.md); decisions: [ADR-061](../adr/061-voice-over-from-a-separate-pack.md), ADR-062. The audio lives in its own repository, `Dade9854/wow-forever-italian-voice` (private for now), whose checkout is the audio store, `build/voice/` in the main checkout: every recording, with every older one in its history. This repository commits the audio record, `data/voice/audio.jsonl`, and the audio commit that goes with its text, `pipeline/voice-audio-commit.txt`. The packs are build output under `build/voice-pack/`.
 
 ## Prerequisites
 
@@ -72,7 +72,7 @@ If the game's English NPC voices stay silent after a test (the dialog channel le
 
 | What | Where |
 |---|---|
-| The MP3s | `build/voice/` in the main checkout, a checkout of `zyaga/wow-forever-italian-voice`. Set it up once on a new machine: `git clone git@github.com:zyaga/wow-forever-italian-voice.git build/voice` from the main checkout. |
+| The MP3s | `build/voice/` in the main checkout, a checkout of `Dade9854/wow-forever-italian-voice`. Set it up once on a new machine: `git clone git@github.com:Dade9854/wow-forever-italian-voice.git build/voice` from the main checkout. |
 | Which audio goes with this text | `pipeline/voice-audio-commit.txt`: one commit of the audio repository |
 | Each quest's level, for the packs | `pipeline/voice_quest_levels.txt`, written by `make voice-levels` (the quest cache and VMaNGOS, which only the maintainer's computer has; a quest neither gives a level keeps the one the table had, so a quest the new cache does not answer stays in its pack). `make voice-speakers` runs it first; rerun both after a re-pull. |
 
@@ -88,7 +88,7 @@ The voice is released by the main [Release](release.md) workflow, one run for ev
 |---|---|---|
 | 1 | Create the eight CurseForge projects, as World of Warcraft addons: "WoW Forever Italian Voice (日本語音声)" (the entry) and the seven packs, "WoW Forever Italian Voice: Levels 1-10" … "… : Levels 51-60", "… : Other". | Do it early: a new project waits for CurseForge's approval. Description text: [CurseForge voice description](../curseforge-voice.md), pasted on each. |
 | 2 | Put each project's id and slug in `pipeline/voice-packs.toml`. | A normal pull request. A pack with `project_id = 0` is built and put on GitHub, but not uploaded to CurseForge, and the entry does not name it. Once its id is set, the next release uploads it (the id is part of its content hash). |
-| 3 | Give the Release workflow read access to the audio repository: a read-only deploy key on `zyaga/wow-forever-italian-voice`, its private half as the repository secret **`VOICE_REPO_KEY`** of the addon repository. | The workflow's CurseForge token is the addon's `CF_API_KEY`, which already reaches the voice projects. |
+| 3 | Give the Release workflow read access to the audio repository: a read-only deploy key on `Dade9854/wow-forever-italian-voice`, its private half as the repository secret **`VOICE_REPO_KEY`** of the addon repository. | The workflow's CurseForge token is the addon's `CF_API_KEY`, which already reaches the voice projects. |
 | 4 | For local dry runs and rehearsals: a CurseForge API token where `make voice-release` can read it. | `CF_API_KEY` in the environment for the one run, or a local, untracked `VOICE_TOKEN_CMD` setting that prints it. It is never written into the repository or to disk by the release. |
 
 ### Cutting a voice release
