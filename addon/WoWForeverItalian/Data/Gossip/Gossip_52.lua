@@ -2,5 +2,6 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["5245520036c20db8"] = { "Gli affari vanno a gonfie vele, {name}, e non ho molto tempo per le domande. Se hai affari con i Reclaimers, sentiamo. Altrimenti dovrò chiederti di parlare con uno dei miei sottoposti: sono abbastanza bravi a occuparsi delle cose da queste parti.", "." },
+  ["52608ebe87eeccb2"] = { "Ecco fatto: ora puoi creare il tuo Incense Candle. Alla maggior parte della gente non piace che si piantino accampamenti in mezzo alla città, quindi dovrai andare nelle terre selvagge se vuoi provarlo.\n\nAh, e ricorda: nessun accampamento è completo senza un fuoco da campo. Te ne servirà uno prima di allestire l'accampamento. La maggior parte dei cuochi può insegnarti ad accendere un fuoco. Se non l'hai già fatto, forse dovresti rivolgerti a qualcuno che possa addestrarti nelle arti culinarie per imparare le basi.", "." },
   ["52f37378d89ed462"] = { "Resistiamo vicino alla casa!", "." },
 })
