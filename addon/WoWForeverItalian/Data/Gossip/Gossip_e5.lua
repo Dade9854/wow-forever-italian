@@ -3,4 +3,5 @@ local _, WFI = ...
 WFI.Data.add("gossip", {
   ["e5057f89f25feb05"] = { "Imparerai, {name}, e un giorno sarai {class} di grande valore.", "." },
   ["e581a55da6659009"] = { "Non posso mostrarti come controllare un voidwalker finché non ne avrai sopraffatto uno.", "." },
+  ["e5c38af53c8ecfc1"] = { "Ecco fatto, ora puoi creare una Sharpening Wheel tutto tuo. Alla maggior parte della gente non piace che si montino accampamenti in mezzo al paese, quindi dovrai andare nelle terre selvagge se vuoi provarlo.\n\nAh, e ricorda: nessun accampamento è completo senza un fuoco da campo. Te ne servirà uno prima di montare il tuo accampamento. Quasi tutti i cuochi possono insegnarti ad accendere un fuoco. Se non l'hai già fatto, potresti rivolgerti a qualcuno che possa addestrarti nell'arte culinaria per impararne le basi.", "." },
 })

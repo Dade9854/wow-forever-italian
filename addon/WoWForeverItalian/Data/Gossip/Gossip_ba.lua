@@ -2,4 +2,5 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["ba59c4d32b9d9da9"] = { "Hai qualche faccenda da sbrigare con me, {class}?", "." },
+  ["ba8589170c895aa2"] = { "Questo tomo sembra parlare della famiglia Valor. Credo di aver sentito parlare di alcuni di loro. Brava gente. Non sono sicuro che meritino un libro intero.\n\nTi farò una copia del tomo. Se durante i tuoi viaggi vedi qualcos'altro che li riguarda, sarò felice di prenderlo.", "." },
 })
