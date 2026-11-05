@@ -43,11 +43,13 @@ Data\Gossip\Gossip_01.lua
 Data\Gossip\Gossip_04.lua
 Data\Gossip\Gossip_0e.lua
 Data\Gossip\Gossip_12.lua
+Data\Gossip\Gossip_15.lua
 Data\Gossip\Gossip_18.lua
 Data\Gossip\Gossip_1b.lua
 Data\Gossip\Gossip_22.lua
 Data\Gossip\Gossip_24.lua
 Data\Gossip\Gossip_25.lua
+Data\Gossip\Gossip_2a.lua
 Data\Gossip\Gossip_2b.lua
 Data\Gossip\Gossip_40.lua
 Data\Gossip\Gossip_46.lua
@@ -57,11 +59,14 @@ Data\Gossip\Gossip_51.lua
 Data\Gossip\Gossip_52.lua
 Data\Gossip\Gossip_60.lua
 Data\Gossip\Gossip_6b.lua
+Data\Gossip\Gossip_6c.lua
 Data\Gossip\Gossip_73.lua
 Data\Gossip\Gossip_78.lua
 Data\Gossip\Gossip_7e.lua
 Data\Gossip\Gossip_7f.lua
 Data\Gossip\Gossip_85.lua
+Data\Gossip\Gossip_8c.lua
+Data\Gossip\Gossip_96.lua
 Data\Gossip\Gossip_9e.lua
 Data\Gossip\Gossip_a4.lua
 Data\Gossip\Gossip_ab.lua
@@ -69,6 +74,7 @@ Data\Gossip\Gossip_ad.lua
 Data\Gossip\Gossip_b9.lua
 Data\Gossip\Gossip_ba.lua
 Data\Gossip\Gossip_bc.lua
+Data\Gossip\Gossip_bf.lua
 Data\Gossip\Gossip_c0.lua
 Data\Gossip\Gossip_c8.lua
 Data\Gossip\Gossip_c9.lua
@@ -77,6 +83,7 @@ Data\Gossip\Gossip_d4.lua
 Data\Gossip\Gossip_de.lua
 Data\Gossip\Gossip_e3.lua
 Data\Gossip\Gossip_e8.lua
+Data\Gossip\Gossip_e9.lua
 Data\Gossip\Gossip_ec.lua
 Data\Gossip\Gossip_ee.lua
 Data\Gossip\Gossip_f6.lua
