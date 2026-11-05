@@ -1,14 +1,14 @@
 # ADR-038: Menus, HelpTip callouts and composite lines on every Forever window: the forms, hooks and markup that show them
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/Core/UIStrings.lua` (the
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/Core/UIStrings.lua` (the
   `entryList` / `entryOrText` kinds, a colour-wrapped `entry`, `time` taking `<`, the `seq` fill),
   `Core/UIStringKeys.lua` (the label forms, the `ARGS` and `ONLY` entries), `Core/Objectives.lua` (thousands separators), `UI/Labels.lua`
   (`showArgs`, `part`), `UI/HelpTooltip.lua` (`appended`, `refit`), `UI/Menus.lua` (utility-button owners, the
   optional `show`, `UNTAGGED` context specs, `MenusUnit.WHICH`), `UI/MenusTags.lua`, `UI/MenusUnit.lua`,
   `UI/MenusUntagged.lua` (the `Menu.PopulateDescription` post-hook), `UI/ChatSystem.lua` (`hookKeyed`,
   `translateOnly`), `UI/HelpTips.lua` and the other surface files (57 `UI/*.lua` files in all), the TOC;
-  `pipeline/wfj/core/markup.py` (`|A`, `|cn`), `pipeline/wfj/dev/translate_batch.py` (`cut` reads
-  `objective_names.txt`), `pipeline/wfj/dev/ui_windows.py` (`CommunitiesUtil.lua`), `ui_keys.txt`,
+  `pipeline/wfi/core/markup.py` (`|A`, `|cn`), `pipeline/wfi/dev/translate_batch.py` (`cut` reads
+  `objective_names.txt`), `pipeline/wfi/dev/ui_windows.py` (`CommunitiesUtil.lua`), `ui_keys.txt`,
   `ui_exclusions.txt`, `ui_inventory.txt`. The in-game checks are pending (the
   level-1 checklist in [Testing strategy](../testing/strategy.md)).
 - **Date:** 2026-09-25
@@ -179,7 +179,7 @@ What the existing mechanisms could not reach:
       argument is admitted only when the enclosing key is listed in `UIStrings.ENTRY_TEXT` (none is), so
       "- Defeat Hogger (Current Health: 50%)" is no `"%s (%s)"` line.
     - The voice announce parts answer only a caller that asks for `VOICE_CHAT_CHANNEL_ANNOUNCE`; the untagged-menu
-      hook never raises into the client's menu (errors go to `WFJ.initErrors`); the Communities chat hook tests a
+      hook never raises into the client's menu (errors go to `WFI.initErrors`); the Communities chat hook tests a
       line against its keys' English before any lookup.
 
 ## Consequences

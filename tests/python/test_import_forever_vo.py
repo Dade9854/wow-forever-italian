@@ -1,16 +1,16 @@
-"""`wfj import english forever-vo`: quest progress and turn-in English from forever-vo's captures (ADR-055)."""
+"""`wfi import english forever-vo`: quest progress and turn-in English from forever-vo's captures (ADR-055)."""
 
 import json
 from pathlib import Path
 
 import pytest
 
-from wfj.cmd.import_ import run
-from wfj.core.hashing import key
-from wfj.core.model import english_line, validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.io.forever_vo import english_origins, read_captures, read_greetings
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.core.hashing import key
+from wfi.core.model import english_line, validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.io.forever_vo import english_origins, read_captures, read_greetings
+from wfi.io.jsonl_store import Store
 
 SRC = "forever-vo@025070f"
 

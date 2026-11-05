@@ -1,7 +1,7 @@
 """Quest `completion` lines whose hand-written variants are all rejected ship nothing, so the model translates
 the whole line and replaces that text.
 
-`wfj.dev.rule_held_back` records the decision the ADR-012 way: `ruling: reject` on every hand-written
+`wfi.dev.rule_held_back` records the decision the ADR-012 way: `ruling: reject` on every hand-written
 variant. `translate_batch cut --held-back` then selects those lines, the provenance guard stops barring the
 machine draft (ADR-014 §3), and `validate --base` accepts the resulting hand-written → machine change
 (ADR-014 §5). A shipping hand-written line is never selected, never ruled, and still protected.
@@ -12,13 +12,13 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import validate
-from wfj.core import decisions
-from wfj.core.model import english_line
-from wfj.core.status import Scope, decide
-from wfj.dev import rule_held_back as rhb
-from wfj.dev import translate_batch as tb
-from wfj.io.jsonl_store import Store
+from wfi.cmd import validate
+from wfi.core import decisions
+from wfi.core.model import english_line
+from wfi.core.status import Scope, decide
+from wfi.dev import rule_held_back as rhb
+from wfi.dev import translate_batch as tb
+from wfi.io.jsonl_store import Store
 
 HUMAN = {"class": "human", "translator": "Tammy", "source": "cqjt@3446c82", "imported": "2026-09-13"}
 HUMAN2 = {"class": "human", "translator": "Az", "source": "qjp@0.5.8", "imported": "2026-09-13"}

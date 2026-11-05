@@ -16,9 +16,9 @@ local TITLES = { [101] = { ja = "狼の毛皮", status = "." }, [201] = { ja = "
 local LOG = { [201] = "The Lost Tome" } -- an offered quest is not in the log
 
 describe("UI/Gossip: quest rows", function()
-  local WFJ, SS, sb
+  local WFI, SS, sb
 
-  local function key(en) return WFJ.Collector.key(en, PLAYER) end
+  local function key(en) return WFI.Collector.key(en, PLAYER) end
 
   local function rowsOf(kind)
     local out = {}
@@ -35,24 +35,24 @@ describe("UI/Gossip: quest rows", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installGossipAPI(12)
     _G.C_QuestLog = { GetTitleForQuestID = function(id) return LOG[id] end }
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Settings.load(nil, 1, {})
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Settings.load(nil, 1, {})
     local function lookup(kind, id) if kind == "quest.title" then return TITLES[id] end end
-    WFJ.Collector.load(nil, H.collectorDeps({ lookup = lookup }))
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Collector.load(nil, H.collectorDeps({ lookup = lookup }))
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = lookup,
-      marker = function(n) return WFJ.Settings.get("marker." .. n) end,
+      marker = function(n) return WFI.Settings.get("marker." .. n) end,
     }))
-    WFJ.QuestMap.init() -- declares the quest log API the title helper reads (Main runs it at load)
-    assert.is_true(WFJ.Gossip.init({ key = key }))
+    WFI.QuestMap.init() -- declares the quest log API the title helper reads (Main runs it at load)
+    assert.is_true(WFI.Gossip.init({ key = key }))
     sb = GossipFrame.GreetingPanel.ScrollBox
   end)
 
@@ -69,13 +69,13 @@ describe("UI/Gossip: quest rows", function()
       assert.are.equal("|cff000000狼の毛皮|r", available[1]:GetText())
       assert.are.equal("|cff000000Untranslated Errand|r", available[2]:GetText())
       assert.are.equal("|cff000000失われた書物|r", active[1]:GetText())
-      assert.are.equal(WFJ.Font.PATH, (available[1]:GetFontString():GetFont()))
+      assert.are.equal(WFI.Font.PATH, (available[1]:GetFontString():GetFont()))
       assert.is_table(SS.get("gossip", "title.101"))
       assert.is_table(SS.get("gossip", "title.201"))
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("|cff000000Wolf Pelts|r", available[1]:GetText())
       assert.are.equal("|cff000000The Lost Tome|r", active[1]:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("|cff000000狼の毛皮|r", available[1]:GetText())
     end)
 
@@ -98,7 +98,7 @@ describe("UI/Gossip: quest rows", function()
     Stub.closeGossip()
     assert.is_false(GossipFrame:IsShown())
     assert.are.equal(0, titleRecords())
-    assert.are.equal(0, WFJ.Gossip.onInitialized(nil, row, row.elementData))
+    assert.are.equal(0, WFI.Gossip.onInitialized(nil, row, row.elementData))
     assert.are.equal(0, titleRecords())
   end)
 

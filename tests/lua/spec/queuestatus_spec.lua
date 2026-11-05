@@ -74,7 +74,7 @@ end
 local GLOBALS = { "QueueStatusFrame", "QueueStatusEntry_OnUpdate" }
 
 describe("the queue status panel on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
     local ns = H.loadChunks(FILES)
@@ -85,7 +85,7 @@ describe("the queue status panel on Forever", function()
   local function fresh()
     H.uiTeardown()
     for _, n in ipairs(GLOBALS) do _G[n] = nil end
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
   end
 
@@ -97,11 +97,11 @@ describe("the queue status panel on Forever", function()
 
   before_each(function()
     fresh()
-    WFJ = load()
+    WFI = load()
     installQueueStatus()
     Q = { { title = "Raid", status = en("QUEUED_STATUS_WAITING"), subtitle = "Warsong Gulch",
       extra = "Also queued for: Raid" } }
-    assert.is_true(WFJ.QueueStatus.init())
+    assert.is_true(WFI.QueueStatus.init())
   end)
 
   after_each(function()
@@ -119,7 +119,7 @@ describe("the queue status panel on Forever", function()
     assert.are.equal("Also queued for: Raid", e.ExtraText:GetText())
     assert.are.equal("1/2", e.TanksFound.Count:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal(en("QUEUED_STATUS_WAITING"), e.Status:GetText())
   end)
 
@@ -133,10 +133,10 @@ describe("the queue status panel on Forever", function()
     assert.are.equal("Warsong Gulch", list[1].Title:GetText())
     assert.are.equal("Raid", list[2].SubTitle:GetText()) -- a dictionary word, no family row: English
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Capture the enemy flag three times.", list[1].SubTitle:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("敵の旗を3回奪取せよ。", list[1].SubTitle:GetText())
   end)
 
@@ -166,7 +166,7 @@ describe("the queue status panel on Forever", function()
     _G.QueueStatusEntry_OnUpdate(e, 0.1)
     assert.are.equal("待機時間: 1分未満", e.TimeInQueue:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Time In Queue: < 1 minute", e.TimeInQueue:GetText())
   end)
 
@@ -185,7 +185,7 @@ describe("the queue status panel on Forever", function()
   end)
 
   it("hooks install once; a client without QueueStatusFrame is skipped without error", function()
-    assert.is_false(WFJ.QueueStatus.init())
+    assert.is_false(WFI.QueueStatus.init())
     assert.are.equal(1, #Stub.hooks["QueueStatusFrame:Update"])
     fresh()
     local bare = load()

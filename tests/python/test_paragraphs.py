@@ -2,7 +2,7 @@
 
 import pytest
 
-from wfj.core import paragraphs as P
+from wfi.core import paragraphs as P
 
 EN3 = (
     "Greetings, $N.  I am Conservator Ilthalaine.  My purpose in Shadowglen is to ensure that the balance of "

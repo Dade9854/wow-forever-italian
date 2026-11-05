@@ -3,13 +3,13 @@
 
 from pathlib import Path
 
-from wfj.cmd import validate
-from wfj.core.hashing import key
-from wfj.core.normalize import normalize_v1
-from wfj.core.status import Scope, decide
-from wfj.dev.translate_batch import AREA_NAMES, objective_names
-from wfj.emit import lua_writer, schema
-from wfj.io.jsonl_store import Store
+from wfi.cmd import validate
+from wfi.core.hashing import key
+from wfi.core.normalize import normalize_v1
+from wfi.core.status import Scope, decide
+from wfi.dev.translate_batch import AREA_NAMES, objective_names
+from wfi.emit import lua_writer, schema
+from wfi.io.jsonl_store import Store
 
 MACHINE = {"class": "machine", "model": "m", "source": "draft-objective@2026-09-19",
            "imported": "2026-09-19"}
@@ -72,8 +72,8 @@ def test_one_english_ships_one_japanese(tmp_path):
 def test_an_area_line_is_checked_as_prose_against_its_own_english(tmp_path):
     """`check` scopes area (no NOT_IN_SCOPE): a line keyed by the quest id is judged against the
     area English (a Latin name must be the English's, PROSE_KINDS) and records that English as its baseline."""
-    from wfj.cmd.check import TYPES, check_type, scopes_for
-    from wfj.core.model import english_line
+    from wfi.cmd.check import TYPES, check_type, scopes_for
+    from wfi.core.model import english_line
 
     en = "Escort Corporal Keeshan back to Redridge"
     eng = Store(tmp_path, english=True)

@@ -1,13 +1,13 @@
 # ADR-042: Client-table text as `ui` fingerprint families
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/io/client_tables.py` (`_TEXT_TABLES`), `pipeline/wfj/io/wago.py` (`TEXT_FAMILIES`, `FAMILY_TABLES`, `INTERNAL_TEXT`, `read_family`,
-  `read_families`), `pipeline/wfj/core/model.py` (`UI_FAMILIES`, `UI_KEY_RE`), `pipeline/wfj/cmd/import_english.py`
-  (`wago-ui --families`), `pipeline/wfj/cmd/served.py` (`UI_TABLES`), `Makefile` (`FAMILY_CLIENTS`, `FAMILY_TABLES`),
-  the client-table blocks of `pipeline/ui_keys.txt`, `addon/WoWForeverJapanese/Core/UIStrings.lua` (fingerprint
+- **Status:** Accepted. Implemented in `pipeline/wfi/io/client_tables.py` (`_TEXT_TABLES`), `pipeline/wfi/io/wago.py` (`TEXT_FAMILIES`, `FAMILY_TABLES`, `INTERNAL_TEXT`, `read_family`,
+  `read_families`), `pipeline/wfi/core/model.py` (`UI_FAMILIES`, `UI_KEY_RE`), `pipeline/wfi/cmd/import_english.py`
+  (`wago-ui --families`), `pipeline/wfi/cmd/served.py` (`UI_TABLES`), `Makefile` (`FAMILY_CLIENTS`, `FAMILY_TABLES`),
+  the client-table blocks of `pipeline/ui_keys.txt`, `addon/WoWForeverItalian/Core/UIStrings.lua` (fingerprint
   prefixes, synonyms, `isSlottedKey`, `matchSlots`, `familyArg`, `byRestricted`, `restrictedKeys`, `isNumberedKey`,
   `matchNumbers`), `Core/UIStringKeys.lua` (`FAMILY_KINDS`), `UI/Labels.lua` (`families`, `familiesWith`,
-  `scrolling`), `pipeline/wfj/io/wago.py` (`read_item_subclass_names`), `pipeline/wfj/core/model.py`
-  (`RESTRICTED_FAMILIES`, `ui_family`), `pipeline/wfj/core/numbered.py`, `pipeline/wfj/cmd/generate.py` /
+  `scrolling`), `pipeline/wfi/io/wago.py` (`read_item_subclass_names`), `pipeline/wfi/core/model.py`
+  (`RESTRICTED_FAMILIES`, `ui_family`), `pipeline/wfi/core/numbered.py`, `pipeline/wfi/cmd/generate.py` /
   `validate.py`, `UI/Widgets.lua` and the surfaces listed in decisions 7 and 9. Evidence:
   [client-table text research](../research/2026-09-26-client-table-text.md) (and its [second round](../research/2026-09-26-client-table-text.md#second-round-other-client-table-and-server-text)).
 - **Date:** 2026-09-26

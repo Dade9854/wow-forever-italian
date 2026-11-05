@@ -25,20 +25,20 @@ local UI = {
 }
 
 describe("templated client-table rows", function()
-  local WFJ, index
-  local function fam(name) return WFJ.UIStrings.familyKeys(index.rows, name) end
+  local WFI, index
+  local function fam(name) return WFI.UIStrings.familyKeys(index.rows, name) end
   local function japanese(key, args) return index:fill(index.rows[key][1], args) end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(H.UI_FILES)
-    H.uiSetup(WFJ, UI)
-    index = WFJ.UIIndex
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(H.UI_FILES)
+    H.uiSetup(WFI, UI)
+    index = WFI.UIIndex
   end)
   after_each(function() H.uiTeardown() end)
 
   it("are templated only in the four families, and only when the Japanese takes an argument", function()
-    local U = WFJ.UIStrings
+    local U = WFI.UIStrings
     assert.is_true(U.isTemplatedKey("SharedString:911"))
     assert.is_true(U.isTemplatedKey("EventToastText:1"))
     assert.is_true(U.isTemplatedKey("FriendshipGain:1"))
@@ -122,9 +122,9 @@ describe("templated client-table rows", function()
 
   it("two templated rows of one English with different Japanese are ambiguous and match nothing", function()
     H.uiTeardown()
-    H.uiSetup(WFJ, { ["FriendshipGain:1"] = { "You gain %d Rank Points.", "ランクポイントを%d獲得した。" },
+    H.uiSetup(WFI, { ["FriendshipGain:1"] = { "You gain %d Rank Points.", "ランクポイントを%d獲得した。" },
       ["FriendshipGain:2"] = { "You gain %d Rank Points.", "%dランクポイント獲得。" } })
-    index = WFJ.UIIndex
+    index = WFI.UIIndex
     assert.are.same({ "FriendshipGain:1", "FriendshipGain:2" }, index.problems.ambiguous)
     assert.is_nil(index:matchOnly("You gain 25 Rank Points.", fam("FriendshipGain")))
   end)

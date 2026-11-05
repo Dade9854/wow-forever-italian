@@ -1,4 +1,4 @@
-# WoW Forever Japanese: Roadmap
+# WoW Forever Italian: Roadmap
 
 > What is done, what is open, and what waits on a decision. How much of the game ships in Japanese right now: [Coverage](operations/coverage.md). Forever launches on 2026-11-04.
 

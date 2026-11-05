@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from wfj.cmd import voice_audition, voice_make
-from wfj.core import casting
-from wfj.io import creature_tables, tables_stamp
-from wfj.io.creature_tables import Display
+from wfi.cmd import voice_audition, voice_make
+from wfi.core import casting
+from wfi.io import creature_tables, tables_stamp
+from wfi.io.creature_tables import Display
 
 ROOT = Path(__file__).resolve().parents[2]
 CLIENT, VM = "client@1.60.1.70235", "vmangos@13b49dc"

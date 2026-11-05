@@ -8,7 +8,7 @@
 
 Forever hides Lua errors by default. When this addon's code fails, the player sees a window that does nothing or
 text that stays English, and has no error to report. The bug-report issue form asked for a Lua error the player
-had never seen. The addon already keeps a problem log (`WFJ_Log`) and already fills issue forms through a link
+had never seen. The addon already keeps a problem log (`WFI_Log`) and already fills issue forms through a link
 ([ADR-045](045-player-fix-reports.md), [ADR-056](056-collector-send-string.md)).
 
 The client gives addons `geterrorhandler` and `seterrorhandler`. The handler Blizzard installs
@@ -27,12 +27,12 @@ it, and then replaces `seterrorhandler` with a function that does nothing. `!Bug
    without the height functions gives no stack, so the message alone decides. Errors a setup step catches with its
    own `pcall` never reach the handler, so the step guard records them too, from the message.
 2. **Only errors raised in this addon's files.** An error is kept when it was raised in a file under
-   `WoWForeverJapanese/` (including the client's front-truncated `...rface/AddOns/WoWForeverJapanese/...` form).
+   `WoWForeverItalian/` (including the client's front-truncated `...rface/AddOns/WoWForeverItalian/...` form).
    The file that decides is the one the message names at its start; for a message without one, the top Lua frame
    of the stack, skipping `[C]` frames, `(tail call)` and the wrapper's own frames. An error whose message names
    another addon's or Blizzard's file is not ours, even when this addon's code is lower in the stack: that error
    is for the other addon's author, and "anywhere in the stack" would catch every error raised from a hook.
-3. **Kept in the problem log.** `WFJ_Log.errors` holds the message (500 bytes), a trimmed stack (12 lines,
+3. **Kept in the problem log.** `WFI_Log.errors` holds the message (500 bytes), a trimmed stack (12 lines,
    1,000 bytes), a count, first and last time and a sent flag. No local variables. The player's name is written
    as `<name>`. Addresses in the message are blanked for matching, so the same error on another table is one
    entry. Over 30 errors the oldest sent one goes; with none sent the newest is dropped, so the first errors

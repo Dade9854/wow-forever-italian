@@ -10,9 +10,9 @@ The project's non-negotiable rules (Blizzard API only, names stay in English, Ja
 
 ## Repo layout
 ```
-wow-forever-japanese/
-├── addon/WoWForeverJapanese/        the shipped folder (the packager zips only this)
-│   ├── WoWForeverJapanese.toc       @project-version@ · Interface from clients.toml · SavedVariables: WFJ_DB, WFJ_Collector, WFJ_Log
+wow-forever-italian/
+├── addon/WoWForeverItalian/        the shipped folder (the packager zips only this)
+│   ├── WoWForeverItalian.toc       @project-version@ · Interface from clients.toml · SavedVariables: WFI_DB, WFI_Collector, WFI_Log
 │   ├── Core/   pure logic: Const Compat Normalize Hash Data Lookup Align Objectives Placeholders State Settings
 │   │           Modifier Translator UIStrings SurfaceState Collector Readings Glosses RecentLines Reports ReportText
 │   ├── UI/     Font Render ButtonText Labels LoadOnDemand HelpTooltip QuestFrame QuestMap Gossip ItemText Tooltip
@@ -23,8 +23,8 @@ wow-forever-japanese/
 │   ├── Fonts/  ipagui.ttf (IPA UI Gothic) + its licence + README.txt
 │   ├── Media/  the addon icon
 │   └── Main.lua  Bindings.xml
-├── pipeline/wfj/   core/ (pure)  io/ (readers: predecessor Lua, JSONL store, wago, client tables, quest cache, collector dump)
-│   │               emit/ (schema, lua_writer)  cmd/ (the `wfj` verbs)  dev/ (maintainer tooling, not in the CLI)
+├── pipeline/wfi/   core/ (pure)  io/ (readers: predecessor Lua, JSONL store, wago, client tables, quest cache, collector dump)
+│   │               emit/ (schema, lua_writer)  cmd/ (the `wfi` verbs)  dev/ (maintainer tooling, not in the CLI)
 │   └── pyproject.toml · allowlist.txt · ui_keys.txt · ui_inventory.txt · ui_exclusions.txt · clients.toml · translation_glossary.tsv …
 ├── data/           quest/ item/ spell/ gossip/ book/ objective/ area/ ui/ unit/ reading/  (*.jsonl shards)
 │                   english/  the same layout, English prose, never shipped
@@ -39,15 +39,15 @@ Main commands: `make data` (import → check → generate) · `make test` · `ma
 ```mermaid
 flowchart LR
   subgraph build["build (Python, CI)"]
-    SRC[predecessor repos · pfQuest · VMaNGOS · the client's quest cache and tables · collector dumps · machine drafts · fix reports] --> PIPE[wfj import / check] --> DATA[(data/ JSONL)] --> GEN[wfj generate] --> LUA[Data/ shards + Meta + TOC block]
-    DATA --> VAL[wfj validate] ; LUA --> VAL
+    SRC[predecessor repos · pfQuest · VMaNGOS · the client's quest cache and tables · collector dumps · machine drafts · fix reports] --> PIPE[wfi import / check] --> DATA[(data/ JSONL)] --> GEN[wfi generate] --> LUA[Data/ shards + Meta + TOC block]
+    DATA --> VAL[wfi validate] ; LUA --> VAL
   end
   subgraph run["run (Lua, client)"]
     LUA --> LK[Lookup] --> TR[Translator] --> SS[SurfaceState] --> RD[Render] --> FR[Blizzard frames]
     API[quest / gossip APIs · tooltip lines · widget text · help tooltips] --> SF[surfaces] --> TR
     LUA --> UIX[UIStrings index<br/>h1-gated live globals] --> SF
     RD --> RV[Readings: word card]
-    SF --> CO[Collector] --> SV[(WFJ_Collector)]
+    SF --> CO[Collector] --> SV[(WFI_Collector)]
     ST[Settings · Modifier] --> TR
   end
   SV -. issue attachment .-> SRC

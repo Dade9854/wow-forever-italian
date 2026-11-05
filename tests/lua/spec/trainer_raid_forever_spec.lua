@@ -53,13 +53,13 @@ local function en(key) return UI[key][1] end
 local function ja(key) return UI[key][2] end
 
 describe("trainer and raid on the Forever client", function()
-  local WFJ
+  local WFI
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end)
 
   after_each(function() H.uiTeardown() end)
@@ -132,7 +132,7 @@ describe("trainer and raid on the Forever client", function()
 
     it("rows: subtext and requirements translate, names never; a reused row follows its new data", function()
       loadTrainerUI()
-      WFJ.Trainer.init()
+      WFI.Trainer.init()
       assert.are.equal(ja("TRAIN"), _G.ClassTrainerTrainButton:GetText())
       local b1 = row(1, { name = "Tailoring", sub = en("APPRENTICE"), level = 5 })
       local b2 = row(2, { name = "Exit", used = true })
@@ -144,9 +144,9 @@ describe("trainer and raid on the Forever client", function()
       row(1, { name = "First Aid", sub = "Journeyman" }) -- pooled: re-initialized for another service
       assert.are.equal("(Journeyman)", b1.nameSubText:GetText()) -- not a dictionary word: English
       assert.are.equal("", b1.subText:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(en("ITEM_SPELL_KNOWN"), b2.subText:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       frame:Hide()
       assert.are.equal(en("ITEM_SPELL_KNOWN"), b2.subText:GetText()) -- released on hide
     end)
@@ -154,12 +154,12 @@ describe("trainer and raid on the Forever client", function()
     it("camelot's UpdateNameWidth runs again after the Japanese subtext and cost are written, and after Alt"
       .. " restores the English", function()
       loadTrainerUI()
-      WFJ.Trainer.init()
+      WFI.Trainer.init()
       local b = row(1, { name = "Tailoring", sub = en("APPRENTICE"), tp = 7 })
       assert.are.equal("(見習い)|7 TP", b.fitted[#b.fitted])
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("(Apprentice)|7 TP", b.fitted[#b.fitted])
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("(見習い)|7 TP", b.fitted[#b.fitted])
       local before = #b.fitted
       row(1, { name = "First Aid", sub = "Journeyman" }) -- nothing of ours: only the client's own call
@@ -168,7 +168,7 @@ describe("trainer and raid on the Forever client", function()
 
     it("a requirement item is read as a list item even when a spell subtext row has the same English", function()
       loadTrainerUI()
-      WFJ.Trainer.init()
+      WFI.Trainer.init()
       local b1 = row(1, { name = "Mark of the Wild", sub = "Rank 1" })
       local b2 = row(2, { name = "Moonfire", level = 4 })
       local b3 = row(3, { name = "Rejuvenation", level = 4 })
@@ -183,22 +183,22 @@ describe("trainer and raid on the Forever client", function()
       .. " not an entry stays English; a requirement list translates per item, the skill name kept",
       function()
         loadTrainerUI()
-        WFJ.Trainer.init()
+        WFI.Trainer.init()
         local b = row(1, { name = "Heroic Strike", sub = "Rank 2", level = 5, skill = "First Aid", rank = 50 })
         assert.are.equal("(ランク 2)", b.nameSubText:GetText())
         assert.are.equal("Heroic Strike", b.name:GetText())
         assert.are.equal("必要: レベル |cffffffff5|r, First Aid (|cffffffff50|r)", b.subText:GetText())
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("(Rank 2)", b.nameSubText:GetText())
         assert.are.equal("Requires: Level |cffffffff5|r, First Aid (|cffffffff50|r)", b.subText:GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         row(1, { name = "Heroic Strike", sub = "Grandmaster" }) -- not a dictionary entry: not this template
         assert.are.equal("(Grandmaster)", b.nameSubText:GetText())
       end)
 
     it("a pet trainer: the points label and each row's cost translate on UpdateTrainingPoints", function()
       loadTrainerUI()
-      WFJ.Trainer.init()
+      WFI.Trainer.init()
       local b = row(1, { name = "Bite", tp = 7 })
       _G.ClassTrainerFrame_UpdateTrainingPoints()
       assert.are.equal("訓練ポイント: 12", frame.trainingPoints.text:GetText())
@@ -207,7 +207,7 @@ describe("trainer and raid on the Forever client", function()
 
     it("help tooltips: the train button's profession-cap reason and the points tutorial", function()
       loadTrainerUI()
-      WFJ.Trainer.init()
+      WFI.Trainer.init()
       local tt = _G.GameTooltip
       local function left(i) return _G["GameTooltipTextLeft" .. i] end
       tt:SetOwner(_G.ClassTrainerTrainButton, "ANCHOR_RIGHT") -- lua:307–312
@@ -228,36 +228,36 @@ describe("trainer and raid on the Forever client", function()
 
     it("an already-loaded trainer UI is set up at init without error", function()
       loadTrainerUI()
-      assert.has_no.errors(function() assert.is_true(WFJ.Trainer.init()) end)
+      assert.has_no.errors(function() assert.is_true(WFI.Trainer.init()) end)
     end)
 
     it("the filter dropdown button shows Japanese after each UpdateText; the dropdown's SetText is never called by"
       .. " the addon", function()
-      loadTrainerUI(); WFJ.Trainer.init()
+      loadTrainerUI(); WFI.Trainer.init()
       frame:Show()
       local dd = frame.FilterDropdown
       assert.are.equal("フィルター", dd.Text:GetText())
-      assert.are.equal(WFJ.Font.PATH, (dd.Text:GetFont()))
+      assert.are.equal(WFI.Font.PATH, (dd.Text:GetFont()))
       assert.are.equal(1, dropdownCalls.SetText) -- the client's own
       assert.are.equal("Filter", dd.text) -- the Blizzard field keeps the English
       dd:UpdateToMenuSelections() -- a pick in the menu rewrites the text
       assert.are.equal("フィルター", dd.Text:GetText())
       assert.are.equal(2, dropdownCalls.SetText)
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Filter", dd.Text:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("フィルター", dd.Text:GetText())
-      WFJ.Settings.set("area.interface", false)
+      WFI.Settings.set("area.interface", false)
       assert.are.equal("Filter", dd.Text:GetText())
       assert.are.equal(2, dropdownCalls.SetText)
-      WFJ.Settings.set("area.interface", true)
+      WFI.Settings.set("area.interface", true)
     end)
 
     it("a writer bound to a table is never hooked", function()
       loadTrainerUI()
       _G.ClassTrainerFrame_InitServiceButton = {}
       _G.ClassTrainerFrame_UpdateTrainingPoints = {}
-      assert.has_no.errors(function() WFJ.Trainer.init() end)
+      assert.has_no.errors(function() WFI.Trainer.init() end)
     end)
   end)
 
@@ -310,7 +310,7 @@ describe("trainer and raid on the Forever client", function()
 
     it("static labels through their Forever widgets; the description's container is re-heighted", function()
       local container = installRaid()
-      assert.is_true(WFJ.Raid.init())
+      assert.is_true(WFI.Raid.init())
       assert.are.equal(ja("RAID_DESCRIPTION"), container.FontString:GetText())
       assert.are.equal(40, container.height)
       assert.are.equal(ja("CONVERT_TO_RAID"), _G.RaidFrameConvertToRaidButton:GetText())
@@ -325,7 +325,7 @@ describe("trainer and raid on the Forever client", function()
 
     it("the extend button follows RaidInfoFrame_UpdateButtons", function()
       installRaid()
-      WFJ.Raid.init()
+      WFI.Raid.init()
       assert.are.equal(ja("EXTEND_RAID_LOCK"), _G.RaidInfoExtendButton:GetText())
       _G.RaidInfoFrame.selected = { extended = true }
       _G.RaidInfoFrame_UpdateButtons()
@@ -333,14 +333,14 @@ describe("trainer and raid on the Forever client", function()
       _G.RaidInfoFrame.selected = { locked = false }
       _G.RaidInfoFrame_UpdateButtons()
       assert.are.equal(ja("REACTIVATE_RAID_LOCK"), _G.RaidInfoExtendButton:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(en("REACTIVATE_RAID_LOCK"), _G.RaidInfoExtendButton:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
     end)
 
     it("saved-instance rows: the lowercase reset, a world boss difficulty and Extended translate", function()
       installRaid()
-      WFJ.Raid.init()
+      WFI.Raid.init()
       local r = infoRow(nil, { name = "Onyxia", difficulty = en("RAID_INFO_WORLD_BOSS") })
       assert.are.equal("|cff808080期限切れ|r", r.reset:GetText())
       assert.are.equal(ja("RAID_INFO_WORLD_BOSS"), r.difficulty:GetText())
@@ -353,13 +353,13 @@ describe("trainer and raid on the Forever client", function()
 
     it("a saved instance's difficulty is a Difficulty row's Japanese; Alt shows English; the name stays", function()
       installRaid()
-      WFJ.Raid.init()
+      WFI.Raid.init()
       local r = infoRow(nil, { name = "Molten Core", reset = "3 Days", difficulty = "40 Player" })
       assert.are.equal("40人", r.difficulty:GetText())
       assert.are.equal("Molten Core", r.name:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("40 Player", r.difficulty:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("40人", r.difficulty:GetText())
       infoRow(r, { name = "40 Player", reset = "3 Days", difficulty = en("RAID_INFO_WORLD_BOSS") })
       assert.are.equal("40 Player", r.name:GetText()) -- a name never matches, even a family row's English
@@ -369,7 +369,7 @@ describe("trainer and raid on the Forever client", function()
     it("a class button's UIParent-anchored tooltip: Main Tank / Pets with the count kept; a class "
       .. "title and the member list stay", function()
         installRaid()
-        WFJ.Raid.init()
+        WFI.Raid.init()
         local members = "Thrall, Jaina"
         _G.UIParent = CreateFrame("Frame", "UIParent")
         _G.RaidClassButton_OnEnter = function(self) -- lua:121–142
@@ -379,31 +379,31 @@ describe("trainer and raid on the Forever client", function()
           tt:AddLine(members)
           tt:Show()
         end
-        WFJ.Raid.setupRaidUI()
+        WFI.Raid.setupRaidUI()
         _G.RaidClassButton_OnEnter({ class = en("MAINTANK"), count = 3 })
         assert.are.equal("メインタンク|cffffd200 (3)|r", _G.GameTooltipTextLeft1:GetText())
         assert.are.equal(members, _G.GameTooltipTextLeft2:GetText())
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("Main Tank|cffffd200 (3)|r", _G.GameTooltipTextLeft1:GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         _G.RaidClassButton_OnEnter({ class = en("PETS"), count = 2 })
         assert.are.equal("ペット|cffffd200 (2)|r", _G.GameTooltipTextLeft1:GetText())
         _G.RaidClassButton_OnEnter({ class = en("WARRIOR"), count = 5 })
         assert.are.equal("Warrior|cffffd200 (5)|r", _G.GameTooltipTextLeft1:GetText())
-        assert.is_false(WFJ.HelpTooltip.registered(_G.UIParent))
+        assert.is_false(WFI.HelpTooltip.registered(_G.UIParent))
         _G.RaidClassButton_OnEnter, _G.UIParent = nil, nil
       end)
 
     it("Blizzard_RaidUI without loot icons: setup skips them", function()
       installRaid()
-      WFJ.Raid.init()
+      WFI.Raid.init()
       for g = 1, 8 do Stub.button("RaidGroup" .. g .. "Label", "Group " .. g) end
-      assert.has_no.errors(function() WFJ.Raid.setupRaidUI() end)
+      assert.has_no.errors(function() WFI.Raid.setupRaidUI() end)
     end)
 
     -- no record on any surface holds this widget
     local function unrecorded(widget)
-      for _, bucket in pairs(WFJ.SurfaceState.surfaces()) do
+      for _, bucket in pairs(WFI.SurfaceState.surfaces()) do
         for _, rec in pairs(bucket) do
           if rec.fs == widget or (type(rec.fs) == "table" and rec.fs.button == widget) then return false end
         end
@@ -413,10 +413,10 @@ describe("trainer and raid on the Forever client", function()
 
     it("an existing row is covered by the iterateExisting pass when the subscription starts late", function()
       installRaid()
-      WFJ.Raid.init()
+      WFI.Raid.init()
       local r = { name = Stub.fontString("Naxxramas"), reset = Stub.fontString("|cff808080Expired|r"),
         difficulty = Stub.fontString(""), extended = Stub.fontString("") }
-      WFJ.Raid.onRow(r, {}) -- the client's ForEachFrame shape: (frame, elementData)
+      WFI.Raid.onRow(r, {}) -- the client's ForEachFrame shape: (frame, elementData)
       assert.are.equal("|cff808080期限切れ|r", r.reset:GetText())
       assert.is_true(unrecorded(r.name))
     end)
@@ -424,11 +424,11 @@ describe("trainer and raid on the Forever client", function()
     it("Blizzard_RaidUI: group labels and Empty slots translate after its ADDON_LOADED; classes never",
       function()
         installRaid()
-        WFJ.Raid.init()
+        WFI.Raid.init()
         Social.loadRaidUI()
         Social.raid = { { name = "Reyn", class = "Raid", level = 60 } }
         _G.RaidGroupFrame_Update()
-        assert.are.equal(1, WFJ.LoadOnDemand.loaded("Blizzard_RaidUI"))
+        assert.are.equal(1, WFI.LoadOnDemand.loaded("Blizzard_RaidUI"))
         assert.are.equal("グループ 1", _G.RaidGroup1Label:GetText())
         assert.are.equal("グループ 8", _G.RaidGroup8Label:GetText())
         assert.are.equal("空き", (_G.RaidGroup3Slot5:GetRegions()):GetText())
@@ -436,20 +436,20 @@ describe("trainer and raid on the Forever client", function()
         assert.is_true(unrecorded(_G.RaidGroupButton1Class))
         Social.hover(_G.RaidGroupButton1Rank, { "Raid Leader" })
         assert.are.equal("レイドリーダー", _G.GameTooltipTextLeft1:GetText())
-        assert.are.equal(0, WFJ.LoadOnDemand.loaded("Blizzard_RaidUI")) -- once
+        assert.are.equal(0, WFI.LoadOnDemand.loaded("Blizzard_RaidUI")) -- once
       end)
 
     it("an already-loaded Blizzard_RaidUI is set up at init", function()
       installRaid()
       Social.loadRaidUI()
       _G.RaidGroup2Label.fontString.text = "Group 2"
-      WFJ.Raid.init()
+      WFI.Raid.init()
       assert.are.equal("グループ 2", _G.RaidGroup2Label:GetText())
     end)
 
     it("the all-assist checkbox tooltip translates", function()
       installRaid()
-      WFJ.Raid.init()
+      WFI.Raid.init()
       Social.hover(_G.RaidFrameAllAssistCheckButton, { en("ALL_ASSIST_DESCRIPTION") })
       assert.are.equal(ja("ALL_ASSIST_DESCRIPTION"), _G.GameTooltipTextLeft1:GetText())
     end)
@@ -457,12 +457,12 @@ describe("trainer and raid on the Forever client", function()
     it("every NEVER_TOUCH roster widget stays unrecorded after every writer runs with dictionary words",
       function()
         installRaid()
-        WFJ.Raid.init()
+        WFI.Raid.init()
         Social.loadRaidUI()
-        WFJ.LoadOnDemand.loaded("Blizzard_RaidUI")
-        WFJ.Labels.forbidNames(WFJ.Raid.NEVER_TOUCH)
+        WFI.LoadOnDemand.loaded("Blizzard_RaidUI")
+        WFI.Labels.forbidNames(WFI.Raid.NEVER_TOUCH)
         local present = {}
-        for _, name in ipairs(WFJ.Raid.NEVER_TOUCH) do
+        for _, name in ipairs(WFI.Raid.NEVER_TOUCH) do
           local w = _G[name]
           if type(w) == "table" then
             if w.fontString then w.fontString.text = "Group" else w.text = "Group" end
@@ -470,9 +470,9 @@ describe("trainer and raid on the Forever client", function()
           end
         end
         assert.is_true(#present > 20)
-        WFJ.Raid.showStatic(); WFJ.Raid.setupRaidUI()
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        WFI.Raid.showStatic(); WFI.Raid.setupRaidUI()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         for _, name in ipairs(present) do assert.is_true(unrecorded(_G[name]), name) end
       end)
   end)

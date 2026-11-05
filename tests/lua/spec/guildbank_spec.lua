@@ -77,16 +77,16 @@ C.suite(getfenv(1), {
     "GuildBankFrameTab3", "GuildBankFrameTab4" },
   cases = {
     { "tabs, buttons, the error message and the popup header are Japanese; Alt shows English; hide releases",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         assert.are.equal("ギルド銀行", _G.GuildBankFrameTab1:GetText())
         assert.are.equal("資金ログ", _G.GuildBankFrameTab3:GetText())
         assert.are.equal("預ける", frame.DepositButton:GetText())
         assert.are.equal("ギルド銀行のタブがありません。", frame.ErrorMessage:GetText())
         assert.are.equal("ギルド銀行タブの名前を入力:", _G.GuildBankPopupFrame.BorderBox.EditBoxHeaderText:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Withdraw", frame.WithdrawButton:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:Hide()
         assert.are.equal("Deposit", frame.DepositButton:GetText())
       end },
@@ -103,29 +103,29 @@ C.suite(getfenv(1), {
         assert.are.equal("ギルド銀行タブを購入", frame.TabTitle:GetText())
       end },
     { "guildBankTab: the access word and the log title in Japanese, the tab's name kept; Alt English",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         frame:UpdateTabs("Deposit  Log  " .. "|cff20ff20(Full Access)|r") -- a tab named "Deposit"
         assert.are.equal("Deposit  ログ  |cff20ff20(フルアクセス)|r", frame.TabTitle:GetText())
         frame:UpdateTabs("Deposit  |cffff2020(Locked)|r")
         assert.are.equal("Deposit  |cffff2020(ロック中)|r", frame.TabTitle:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Deposit  |cffff2020(Locked)|r", frame.TabTitle:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:UpdateTabs("Deposit  (Mystery)") -- no access word: the whole title stays English
         assert.are.equal("Deposit  (Mystery)", frame.TabTitle:GetText())
       end },
-    { "the withdrawal limit line in Japanese with the tab name kept", function(frame, WFJ)
+    { "the withdrawal limit line in Japanese with the tab name kept", function(frame, WFI)
       frame:Show()
       frame.LimitLabel.text = "Remaining Daily Withdrawals for Deposit:  |cffffffffUnlimited|r"
-      WFJ.GuildBank.show()
+      WFI.GuildBank.show()
       assert.are.equal("Depositの本日の残り引き出し:  |cffffffff無制限|r", frame.LimitLabel:GetText())
       frame.LimitLabel.text = "Remaining Daily Withdrawals for Deposit:  |cffffffff3 Stacks|r"
-      WFJ.GuildBank.show()
+      WFI.GuildBank.show()
       assert.are.equal("Depositの本日の残り引き出し:  |cffffffff3スタック|r", frame.LimitLabel:GetText())
     end },
     { "guildBankLog: a log line with quantity and time in Japanese, names and the item link kept; Alt English",
-      function(_, WFJ)
+      function(_, WFI)
         local log = _G.GuildBankMessageFrame
         log:Clear()
         log:AddMessage(BOB .. " deposited " .. LINEN .. " x 3" .. AGO)
@@ -137,24 +137,24 @@ C.suite(getfenv(1), {
         assert.are.equal(BOB .. " sneezed" .. AGO, log.history[3])
         log.history[3] = nil
         log:Refresh()
-        assert.are.equal(WFJ.Font.PATH, log.visibleLines[1].font.path)
-        C.alt(WFJ, true)
+        assert.are.equal(WFI.Font.PATH, log.visibleLines[1].font.path)
+        C.alt(WFI, true)
         local moved = BOB .. " moved " .. LINEN .. " x 2 from Deposit to Tab 2" .. AGO
         assert.are.equal(moved, log.visibleLines[1]:GetText())
         assert.are.equal("Fonts\\ARIALN.TTF", log.visibleLines[1].font.path)
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         assert.are.equal(log.history[2], log.visibleLines[1]:GetText())
         log:AddMessage(BOB .. " sneezed" .. AGO) -- English on the row the Japanese had: the log's font again
         log:Refresh()
         assert.are.equal("Fonts\\ARIALN.TTF", log.visibleLines[1].font.path)
         assert.are.equal(12, log.visibleLines[1].font.size)
       end },
-    { "guildBankLog: a row given the log's font back follows a later change of the font's size", function(_, WFJ)
+    { "guildBankLog: a row given the log's font back follows a later change of the font's size", function(_, WFI)
         local log = _G.GuildBankMessageFrame
         log:Clear()
         log:AddMessage(BOB .. " deposited " .. LINEN .. " x 3" .. AGO)
         log:Refresh()
-        assert.are.equal(WFJ.Font.PATH, log.visibleLines[1].font.path)
+        assert.are.equal(WFI.Font.PATH, log.visibleLines[1].font.path)
         log:AddMessage(BOB .. " sneezed" .. AGO)
         log:Refresh()
         assert.are.equal(12, log.visibleLines[1].font.size)
@@ -170,12 +170,12 @@ C.suite(getfenv(1), {
       assert.are.equal("Deposit", _G.GameTooltipTextLeft1:GetText())
     end },
   },
-  name = function(frame, WFJ) -- the limit label only ever takes GUILDBANK_REMAINING_MONEY: a bare tab name is kept
+  name = function(frame, WFI) -- the limit label only ever takes GUILDBANK_REMAINING_MONEY: a bare tab name is kept
     frame:Show()
     frame:Update()
-    WFJ.GuildBank.show()
+    WFI.GuildBank.show()
     assert.are.equal("Deposit", frame.LimitLabel:GetText())
-    assert.is_true(C.unrecorded(WFJ, frame.LimitLabel))
+    assert.is_true(C.unrecorded(WFI, frame.LimitLabel))
   end,
   wrong = function(frame)
     frame.WithdrawButton, frame.BankTabs, frame.BuyInfo, frame.TabTitle = 7, "tabs", true, 3

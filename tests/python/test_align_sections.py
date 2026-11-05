@@ -1,7 +1,7 @@
 """align: SECTIONED lines (a heading, then optional paragraphs each found by its opening words)."""
 
-from wfj.core import align
-from wfj.emit import lua_writer
+from wfi.core import align
+from wfi.emit import lua_writer
 
 EN = ("Gained the following camp benefits:\r\n\r\n"
       "$?a1[Tent: You rest. Once per $1d.\r\n\r\n][]"
@@ -43,7 +43,7 @@ def test_sections_ship_as_their_own_lua_slot():
 
 
 def test_an_opening_that_begins_another_opening_ships_nothing():
-    from wfj.cmd.generate import _sections
+    from wfi.cmd.generate import _sections
     parts = ["Tent: You rest $1d.", "Tent: You rest well $2w1.", "Banner: Up $3w1.", "Well: Up $4w1.", "Chair: Up $5w1."]
     en = "Head:\r\n\r\n" + "".join(f"$?a{i}[{p}\r\n\r\n][]" for i, p in enumerate(parts, 1))
     b = align.branching(en)
@@ -55,7 +55,7 @@ def test_an_opening_that_begins_another_opening_ships_nothing():
 
 
 def test_a_heading_with_a_number_ships_nothing():
-    from wfj.cmd.generate import _sections
+    from wfi.cmd.generate import _sections
     parts = ["Tent: Rest $1d.", "Banner: Up $2w1.", "Well: Up $3w1.", "Chair: Up $4w1.", "Pot: Up $5w1."]
     en = "Gained 5 camp benefits:\r\n\r\n" + "".join(f"$?a{i}[{p}\r\n\r\n][]" for i, p in enumerate(parts, 1))
     b = align.branching(en)

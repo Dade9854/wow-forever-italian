@@ -39,14 +39,14 @@ R.suite(getfenv(1), {
   root = "BossBanner", globals = GLOBALS, ui = UI, build = build,
   args = { BOSS_BANNER_LOOT_SET = { [1] = "text" } },
   cases = {
-    { "the subtitle and the praise title are Japanese; Alt shows English", function(frame, WFJ)
+    { "the subtitle and the praise title are Japanese; Alt shows English", function(frame, WFI)
       frame:play("Ragnaros")
       assert.are.equal("を倒した", frame.SubTitle:GetText())
       frame:play(nil, true)
       assert.are.equal("撃破", frame.Title:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("You Defeated", frame.Title:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
     { "a loot row's set line is Japanese around the set's English name", function()
       local row = lootRow()
@@ -55,15 +55,15 @@ R.suite(getfenv(1), {
       assert.are.equal("Onslaught Girdle", row.ItemName:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:play("Onyxia")
     assert.are.equal("Onyxia", frame.Title:GetText())
-    assert.is_true(R.unrecorded(WFJ, frame.Title))
+    assert.is_true(R.unrecorded(WFI, frame.Title))
     local row = lootRow()
     _G.BossBanner_ConfigureLootFrame(row, { item = "Set: Gold", player = "has been defeated" })
     assert.are.equal("has been defeated", row.PlayerName:GetText())
-    assert.is_true(R.unrecorded(WFJ, row.PlayerName))
-    assert.is_true(R.unrecorded(WFJ, row.ItemName))
+    assert.is_true(R.unrecorded(WFI, row.PlayerName))
+    assert.is_true(R.unrecorded(WFI, row.ItemName))
   end,
   wrong = function(frame)
     frame.SubTitle = Stub

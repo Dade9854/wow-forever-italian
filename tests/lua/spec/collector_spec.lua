@@ -15,7 +15,7 @@ local function loadCollector()
 end
 
 describe("Core/Collector", function()
-  local WFJ, C, prints, shipped, on, player, lookups
+  local WFI, C, prints, shipped, on, player, lookups
 
   local function deps()
     return {
@@ -31,17 +31,17 @@ describe("Core/Collector", function()
   end
 
   local function h1Of(e)
-    return (WFJ.Hash.h32x2(WFJ.Normalize.v1(e)))
+    return (WFI.Hash.h32x2(WFI.Normalize.v1(e)))
   end
 
   before_each(function()
-    WFJ = loadCollector()
-    C = WFJ.Collector
+    WFI = loadCollector()
+    C = WFI.Collector
     prints, shipped, on, player, lookups = {}, {}, true, PLAYER, {}
   end)
 
   it("loads under a std-lib-only environment and defines collector.enabled and collector.remind", function()
-    local list, defs = WFJ.Settings.list(), {}
+    local list, defs = WFI.Settings.list(), {}
     for _, d in ipairs(list) do defs[d.id] = d end
     for _, id in ipairs({ "collector.enabled", "collector.remind" }) do
       assert.are.equal("boolean", defs[id].kind, id)
@@ -136,7 +136,7 @@ describe("Core/Collector", function()
       assert.are.equal("recorded", C.record("quest", 2, "description", "Kill Sharptalon."))
       assert.are.equal("recorded", C.record("quest", 3, "completion", "Well done."))
       local e = db.entries["quest:2:description"]
-      assert.are.same({ t = "quest", i = 2, f = "description", h = WFJ.Hash.key("Kill Sharptalon."),
+      assert.are.same({ t = "quest", i = 2, f = "description", h = WFI.Hash.key("Kill Sharptalon."),
         e = "Kill Sharptalon.", b = 1 }, e)
       assert.are.same({ "1.15.9.69722" }, db.builds)
       assert.are.equal(C.size("quest:2:description", "Kill Sharptalon.") + C.size("quest:3:completion", "Well done."),
@@ -203,7 +203,7 @@ describe("Core/Collector", function()
           -- "A hunter walks in.": quest text also restores the lowercase class (lowercase $c)
           assert.are.equal("A $C walks in. $C, greetings.", e)
         else
-          assert.are.equal(c.key, WFJ.Hash.key(WFJ.Normalize.v1(e)), c.id)
+          assert.are.equal(c.key, WFI.Hash.key(WFI.Normalize.v1(e)), c.id)
         end
       end
     end)
@@ -219,10 +219,10 @@ describe("Core/Collector", function()
       local e = C.text(live, druid)
       assert.is_truthy(e:find("young $C, and thin", 1, true))
       assert.is_truthy(e:find("Go, $R.", 1, true))
-      assert.are.equal(WFJ.Hash.key(WFJ.Normalize.v1(pfquest)), WFJ.Hash.key(WFJ.Normalize.v1(e)))
+      assert.are.equal(WFI.Hash.key(WFI.Normalize.v1(pfquest)), WFI.Hash.key(WFI.Normalize.v1(e)))
       local d = deps()
       player = druid
-      local h1 = WFJ.Hash.h32x2(WFJ.Normalize.v1(pfquest))
+      local h1 = WFI.Hash.h32x2(WFI.Normalize.v1(pfquest))
       shipped["quest.description"] = { [456] = { ja = "x", status = ".", h1 = h1 } }
       C.load(nil, d)
       assert.are.equal("known", C.record("quest", 456, "description", live))
@@ -279,7 +279,7 @@ describe("Core/Collector", function()
       assert.are.same({ "refused", "own_text" }, { C.record("item", 117, "description", "18秒間でhealthを61回復。") })
       assert.are.same({ "refused", "own_text" }, { C.record("item", 118, "description", "使用: 攻撃力 +10") })
       assert.are.same({ "refused", "own_text" }, { C.record("item", 119, "description", "Use: Restores 5 health、") })
-      for name, message in pairs(WFJ.MARKER) do
+      for name, message in pairs(WFI.MARKER) do
         assert.are.same({ "refused", "own_text" },
           { C.record("quest", 2, "title", "|cffffd100" .. message .. "|r\nSharptalon's Claw") }, name)
         assert.are.same({ "refused", "own_text" }, { C.record("quest", 3, "title", "Claw " .. message .. " ") }, name)
@@ -449,7 +449,7 @@ describe("Core/Collector", function()
     it("path names the Forever client's folder", function()
       C.load(nil, deps())
       assert.are.equal(
-        "World of Warcraft\\_forever_\\WTF\\Account\\<ACCOUNT>\\SavedVariables\\WoWForeverJapanese.lua", C.path())
+        "World of Warcraft\\_forever_\\WTF\\Account\\<ACCOUNT>\\SavedVariables\\WoWForeverItalian.lua", C.path())
     end)
   end)
 
@@ -527,7 +527,7 @@ describe("Core/Collector", function()
       on = true
       assert.is_true(C.disclose())
       assert.are.equal(2, #prints)
-      assert.is_truthy(prints[2]:find("/wfj collector off", 1, true))
+      assert.is_truthy(prints[2]:find("/wfi collector off", 1, true))
       assert.is_false(C.disclose())
       C.record("quest", 2, "title", "Title")
       assert.are.equal(1, C.clear())
@@ -539,7 +539,7 @@ describe("Core/Collector", function()
 end)
 
 describe("Core/Collector gossip kind", function()
-  local WFJ, C, shipped, player
+  local WFI, C, shipped, player
 
   local function deps()
     return {
@@ -555,8 +555,8 @@ describe("Core/Collector gossip kind", function()
   local GUARD = "Creature-0-4372-0-17-1423-0000D4E5F6"
 
   before_each(function()
-    WFJ = loadCollector()
-    C = WFJ.Collector
+    WFI = loadCollector()
+    C = WFI.Collector
     shipped, player = {}, PLAYER
   end)
 
@@ -570,7 +570,7 @@ describe("Core/Collector gossip kind", function()
     assert.are.same({ t = "gossip", i = key, f = "text", h = key, e = "Well met, $N. A $C needs rest too.", b = 1,
       n = { 6740 }, p = "Hunter|Night Elf" }, e)
     assert.are.equal(C.size("gossip:" .. key .. ":text", e.e, e.n, e.p), db.bytes)
-    assert.are.equal(WFJ.Hash.key(WFJ.Normalize.v1(e.e)), key)
+    assert.are.equal(WFI.Hash.key(WFI.Normalize.v1(e.e)), key)
     assert.are.equal("seen", C.recordGossip(raw, INN)) -- memo
   end)
 
@@ -647,14 +647,14 @@ end)
 -- a whole stub session through the real surfaces writes nothing personal.
 describe("Collector through the loaded addon", function()
   it("a stub session writes only the documented shape and no personal string", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI()
-    Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     Stub.fireAll("PLAYER_ENTERING_WORLD")
     require("tests.lua.spec.collector_session").run()
 
-    local db = WFJ_Collector
+    local db = WFI_Collector
     local top = {}
     for k in pairs(db) do top[#top + 1] = k end
     table.sort(top)
@@ -684,18 +684,18 @@ end)
 
 -- Short-name candidate keys (ADR-024) and the quest known check on the female-variant h1.
 describe("Core/Collector short names and h1f", function()
-  local WFJ, C
+  local WFI, C
   local KA = { name = "Ka", class = "Hunter", race = "Night Elf" }
 
   before_each(function()
     H.coreStub()
-    WFJ = H.loadChunks({ "Core/Const.lua", "Core/Normalize.lua", "Core/Hash.lua", "Core/State.lua",
+    WFI = H.loadChunks({ "Core/Const.lua", "Core/Normalize.lua", "Core/Hash.lua", "Core/State.lua",
       "Core/Settings.lua" })
-    H.loadPure("Core/Collector.lua", nil, WFJ)
-    C = WFJ.Collector
+    H.loadPure("Core/Collector.lua", nil, WFI)
+    C = WFI.Collector
   end)
 
-  local function key(e) return WFJ.Hash.key(WFJ.Normalize.v1(e)) end
+  local function key(e) return WFI.Hash.key(WFI.Normalize.v1(e)) end
 
   it("the three existing candidates first, then the short-name ones, deduplicated", function()
     local raw = "Well met, Ka. The hunter lodge awaits."
@@ -733,8 +733,8 @@ describe("Core/Collector short names and h1f", function()
 
   it("the quest known check accepts the field's h1f", function()
     local female = "Welcome, sister."
-    local shipped = { h1 = WFJ.Hash.h32x2(WFJ.Normalize.v1("Welcome, brother.")),
-      h1f = WFJ.Hash.h32x2(WFJ.Normalize.v1(female)) }
+    local shipped = { h1 = WFI.Hash.h32x2(WFI.Normalize.v1("Welcome, brother.")),
+      h1f = WFI.Hash.h32x2(WFI.Normalize.v1(female)) }
     local reyn = { name = "Reyn", class = "Hunter", race = "Night Elf" }
     local collected = C.load(nil, H.collectorDeps({ player = function() return reyn end,
       lookup = function(kind, id) if kind == "quest.progress" and id == 5 then return shipped end end }))

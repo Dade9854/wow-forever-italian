@@ -2,10 +2,10 @@
 -- scrubbed), the pre-load buffer, the cap, the chat line, another handler on top, and sent errors.
 local H = require("tests.lua.spec.helpers")
 
-local OURS = "Interface/AddOns/WoWForeverJapanese/UI/Tooltip.lua:120: attempt to index a nil value"
-local STACK = "[string \"@Interface/AddOns/WoWForeverJapanese/UI/Tooltip.lua\"]:120: in function <...>\n"
-  .. "...rface/AddOns/WoWForeverJapanese/UI/MinimapButton.lua:144: in function <...rface/AddOns/"
-  .. "WoWForeverJapanese/UI/MinimapButton.lua:141>"
+local OURS = "Interface/AddOns/WoWForeverItalian/UI/Tooltip.lua:120: attempt to index a nil value"
+local STACK = "[string \"@Interface/AddOns/WoWForeverItalian/UI/Tooltip.lua\"]:120: in function <...>\n"
+  .. "...rface/AddOns/WoWForeverItalian/UI/MinimapButton.lua:144: in function <...rface/AddOns/"
+  .. "WoWForeverItalian/UI/MinimapButton.lua:141>"
 local THEIRS = "Interface/AddOns/OtherAddon/Core.lua:5: bad argument"
 local THEIR_STACK = "[string \"@Interface/AddOns/OtherAddon/Core.lua\"]:5: in main chunk"
 
@@ -58,24 +58,24 @@ describe("Core/ErrorLog", function()
     assert.are.equal(0, E.status().count)
   end)
 
-  it("keeps only errors naming a file under WoWForeverJapanese/, in the client's truncated forms too", function()
+  it("keeps only errors naming a file under WoWForeverItalian/, in the client's truncated forms too", function()
     local E = fresh()
     assert.is_true(E.isOurs(OURS, ""))
     assert.is_true(E.isOurs("x", STACK))
-    assert.is_true(E.isOurs("...rface/AddOns/WoWForeverJapanese/UI/X.lua:1: oops", nil))
-    assert.is_true(E.isOurs("...oWForeverJapanese/Data/Reading/Reading_quest_0097.lua:2: oops", nil))
-    assert.is_true(E.isOurs("...ForeverJapanese/Data/Reading/Reading_quest_0097.lua:2: oops", nil))
-    assert.is_true(E.isOurs("Interface\\AddOns\\WoWForeverJapanese\\Core\\Lookup.lua:3: oops", nil))
+    assert.is_true(E.isOurs("...rface/AddOns/WoWForeverItalian/UI/X.lua:1: oops", nil))
+    assert.is_true(E.isOurs("...oWForeverItalian/Data/Reading/Reading_quest_0097.lua:2: oops", nil))
+    assert.is_true(E.isOurs("...ForeverItalian/Data/Reading/Reading_quest_0097.lua:2: oops", nil))
+    assert.is_true(E.isOurs("Interface\\AddOns\\WoWForeverItalian\\Core\\Lookup.lua:3: oops", nil))
     assert.is_false(E.isOurs(THEIRS, THEIR_STACK))
-    assert.is_false(E.isOurs("Interface/AddOns/WoWForeverJapaneseX/a.lua:1: x", nil))
+    assert.is_false(E.isOurs("Interface/AddOns/WoWForeverItalianX/a.lua:1: x", nil))
     assert.is_false(E.isOurs("Interface/AddOns/OtherAddon/Other.lua:1: x", nil))
-    assert.is_false(E.isOurs("Interface/AddOns/MyForeverJapanese/a.lua:1: x", nil))
+    assert.is_false(E.isOurs("Interface/AddOns/MyForeverItalian/a.lua:1: x", nil))
     assert.is_false(E.isOurs(nil, nil))
   end)
 
   it("decides by the file the message names, else the top Lua frame; the wrapper's own frames never count", function()
     local E = fresh()
-    local WRAP = "...rface/AddOns/WoWForeverJapanese/Core/ErrorLog.lua:146: in function <...ErrorLog.lua:143>"
+    local WRAP = "...rface/AddOns/WoWForeverItalian/Core/ErrorLog.lua:146: in function <...ErrorLog.lua:143>"
     -- another addon's error, raised while our code was lower in the call chain: theirs
     assert.is_false(E.isOurs(THEIRS, STACK))
     -- a message naming Blizzard's file while our hook called it: not ours
@@ -111,7 +111,7 @@ describe("Core/ErrorLog", function()
 
   it("stores message, trimmed stack, count, first and last time; a repeat counts; no locals", function()
     local long = {}
-    for i = 1, 20 do long[i] = ("...rface/AddOns/WoWForeverJapanese/UI/X.lua:%d: in function <x>"):format(i) end
+    for i = 1, 20 do long[i] = ("...rface/AddOns/WoWForeverItalian/UI/X.lua:%d: in function <x>"):format(i) end
     local E, st = fresh({ stack = table.concat(long, "\n") })
     local log = {}
     E.load(log)
@@ -139,16 +139,16 @@ describe("Core/ErrorLog", function()
     assert.are.equal("<name> hit Reynolds; <name>.", E.scrub("Reyn hit Reynolds; Reyn.", "Reyn"))
     assert.are.equal("Ünaxö", E.scrub("Ünaxö", "naxö")) -- inside a word with a non-ASCII letter: left alone
     E.load({})
-    local e = E.record("Interface/AddOns/WoWForeverJapanese/UI/A.lua:1: Reyn is nil")
-    assert.are.equal("Interface/AddOns/WoWForeverJapanese/UI/A.lua:1: <name> is nil", e.msg)
+    local e = E.record("Interface/AddOns/WoWForeverItalian/UI/A.lua:1: Reyn is nil")
+    assert.are.equal("Interface/AddOns/WoWForeverItalian/UI/A.lua:1: <name> is nil", e.msg)
   end)
 
   it("keeps a file named like the player, and scrubs before cutting so no part of the name is left", function()
     local E = fresh({ name = "Main" })
-    assert.are.equal("Interface/AddOns/WoWForeverJapanese/Main.lua:5: <name> is nil",
-      E.scrub("Interface/AddOns/WoWForeverJapanese/Main.lua:5: Main is nil", "Main"))
+    assert.are.equal("Interface/AddOns/WoWForeverItalian/Main.lua:5: <name> is nil",
+      E.scrub("Interface/AddOns/WoWForeverItalian/Main.lua:5: Main is nil", "Main"))
     E.load({})
-    local msg = "Interface/AddOns/WoWForeverJapanese/UI/A.lua:1: " .. string.rep("x", E.MAX_MESSAGE - 52) .. " Main"
+    local msg = "Interface/AddOns/WoWForeverItalian/UI/A.lua:1: " .. string.rep("x", E.MAX_MESSAGE - 52) .. " Main"
     local e = E.record(msg)
     assert.is_nil(e.msg:find("Mai", 1, true))
   end)
@@ -157,7 +157,7 @@ describe("Core/ErrorLog", function()
     local E, st = fresh()
     local log = {}
     E.load(log)
-    E.record("Interface/AddOns/WoWForeverJapanese/UI/A.lua:1: Reyn is nil")
+    E.record("Interface/AddOns/WoWForeverItalian/UI/A.lua:1: Reyn is nil")
     st.name = "Reyn"
     assert.are.equal(1, E.rescrub())
     assert.is_nil(log.errors[1].msg:find("Reyn", 1, true))
@@ -183,7 +183,7 @@ describe("Core/ErrorLog", function()
     local E = fresh()
     local log = {}
     E.load(log)
-    local function err(i) return ("Interface/AddOns/WoWForeverJapanese/UI/A.lua:%d: x"):format(i) end
+    local function err(i) return ("Interface/AddOns/WoWForeverItalian/UI/A.lua:%d: x"):format(i) end
     for i = 1, E.MAX_ERRORS do E.record(err(i)) end
     E.markSent({ { msg = err(5), last = log.errors[5].last, n = 1 } })
     E.record(err(100))
@@ -199,8 +199,8 @@ describe("Core/ErrorLog", function()
     local log = {}
     E.load(log)
     for i = 1, 40 do
-      E.record(("Interface/AddOns/WoWForeverJapanese/UI/A.lua:3: bad self (table: 0x%08x)"):format(i * 4096))
-      E.record(("Interface/AddOns/WoWForeverJapanese/UI/A.lua:4: bad self (table: %016X)"):format(i * 4096))
+      E.record(("Interface/AddOns/WoWForeverItalian/UI/A.lua:3: bad self (table: 0x%08x)"):format(i * 4096))
+      E.record(("Interface/AddOns/WoWForeverItalian/UI/A.lua:4: bad self (table: %016X)"):format(i * 4096))
     end
     assert.are.equal(2, #log.errors)
     assert.are.same({ 40, 40 }, { log.errors[1].n, log.errors[2].n })
@@ -226,7 +226,7 @@ describe("Core/ErrorLog", function()
     E.load(log)
     assert.are.equal(1, #log.errors)
     assert.are.equal(1, log.errors[1].n)
-    assert.is_not_nil(E.recordCaught("Interface/AddOns/WoWForeverJapanese/UI/Bags.lua:7: setup failed"))
+    assert.is_not_nil(E.recordCaught("Interface/AddOns/WoWForeverItalian/UI/Bags.lua:7: setup failed"))
     assert.is_nil(E.recordCaught(THEIRS))
     assert.are.equal(2, E.status().count)
   end)
@@ -235,8 +235,8 @@ describe("Core/ErrorLog", function()
     local E, st = fresh()
     E.load({})
     E.record(OURS)
-    E.record("Interface/AddOns/WoWForeverJapanese/UI/B.lua:9: other")
-    assert.are.same({ "WFJ: the addon hit a Lua error. /wfj bug reports it." }, st.printed)
+    E.record("Interface/AddOns/WoWForeverItalian/UI/B.lua:9: other")
+    assert.are.same({ "WFI: the addon hit a Lua error. /wfi bug reports it." }, st.printed)
   end)
 
   it("knows when another handler replaced ours (BugGrabber), unless an error still reached it", function()
@@ -259,7 +259,7 @@ describe("Core/ErrorLog", function()
     E.record(OURS)
     local shown = { { msg = log.errors[1].msg, last = log.errors[1].last, n = 1 } }
     st.at = "2026-10-03 14:41:00"
-    E.record("Interface/AddOns/WoWForeverJapanese/UI/B.lua:9: other")
+    E.record("Interface/AddOns/WoWForeverItalian/UI/B.lua:9: other")
     assert.are.equal(1, E.markSent(shown))
     assert.are.equal(1, #E.unsent())
     assert.are.same({ count = 2, unsent = 1 }, E.status())

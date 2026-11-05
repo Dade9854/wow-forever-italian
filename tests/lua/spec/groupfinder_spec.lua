@@ -190,18 +190,18 @@ local function nameRow()
 end
 
 describe("the group finder on Forever", function()
-  local WFJ
+  local WFI
 
   local function setup(loadedFirst)
-    WFJ = S.load(FILES, UI)
+    WFI = S.load(FILES, UI)
     C.listed, C.grouped, C.failed = false, false, false
     if loadedFirst then
       loadGroupFinder()
-      assert.is_true(WFJ.GroupFinder.init())
+      assert.is_true(WFI.GroupFinder.init())
     else
-      assert.is_false(WFJ.GroupFinder.init()) -- waits for the addon
+      assert.is_false(WFI.GroupFinder.init()) -- waits for the addon
       loadGroupFinder()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -223,10 +223,10 @@ describe("the group finder on Forever", function()
         assert.are.equal("メッセージを送る", browse.SendMessageButton:GetText())
         assert.are.equal("この募集は取り下げられました。", _G.LFGBrowseSearchEntryTooltip.Delisted:GetText())
         assert.are.equal("Back", listing.BackButton:GetText()) -- "Back" belongs to INVTYPE_CLOAK: left English
-        S.alt(WFJ, true)
+        S.alt(WFI, true)
         assert.are.equal("Looking For Group", listing.TitleContainer.TitleText:GetText())
         assert.are.equal("List Self", listing.PostButton:GetText())
-        S.alt(WFJ, false)
+        S.alt(WFI, false)
         assert.are.equal("自分を登録", listing.PostButton:GetText())
       end)
 
@@ -257,8 +257,8 @@ describe("the group finder on Forever", function()
         assert.are.equal("Close", row.Name:GetText())
         C.entry(row, { leader = "Close", activity = "Close" }) -- the pooled row reused: an activity called "Close"
         assert.are.equal("Close", row.ActivityName:GetText())
-        assert.is_true(S.unrecorded(WFJ, row.Name))
-        assert.is_true(S.unrecorded(WFJ, row.ActivityName))
+        assert.is_true(S.unrecorded(WFI, row.Name))
+        assert.is_true(S.unrecorded(WFI, row.ActivityName))
         row.elementData = { leader = "Thrall", own = true }
         _G.LFGBrowseSearchEntry_Update(row) -- the row's own event refresh
         assert.are.equal("自分の募集", row.ActivityName:GetText())
@@ -273,15 +273,15 @@ describe("the group finder on Forever", function()
         _G.LFGBrowseSearchEntryTooltip_UpdateAndShow(tip, 1)
         assert.are.equal("メンバー: |cffffffff1|r", tip.MemberCount:GetText())
         assert.are.equal("Close", tip.Leader.Name:GetText())
-        assert.is_true(S.unrecorded(WFJ, tip.Leader.Name))
+        assert.is_true(S.unrecorded(WFI, tip.Leader.Name))
       end)
 
       it("the level-range checkbox's label translates; Alt shows English", function()
         local text = _G.LFGListingFrame.ActivityView.LevelRangesCheckbox.Text
         assert.are.equal("すべてのレベル帯を表示", text:GetText())
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("Show All Level Ranges", text:GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         assert.are.equal("すべてのレベル帯を表示", text:GetText())
       end)
 
@@ -292,10 +292,10 @@ describe("the group finder on Forever", function()
         assert.are.equal("ゲーム内ボイス(レガシー)", view.VoiceChatDropdown.Text:GetText())
         _G.LFGBrowseSearchEntryTooltip_UpdateAndShow(tip, 1, nil, "In-Game Voice (Legacy)")
         assert.are.equal("ボイスチャット: |cnHIGHLIGHT_FONT_COLOR:ゲーム内ボイス(レガシー)|r", tip.VoiceChat:GetText())
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("Voice Chat: |cnHIGHLIGHT_FONT_COLOR:In-Game Voice (Legacy)|r", tip.VoiceChat:GetText())
         assert.are.equal("Voice Chat", view.VoiceChatLabel:GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         _G.LFGBrowseSearchEntryTooltip_UpdateAndShow(tip, 1, nil, "Other") -- not an entry here
         assert.are.equal("Voice Chat: |cnHIGHLIGHT_FONT_COLOR:Other|r", tip.VoiceChat:GetText())
       end)
@@ -366,20 +366,20 @@ describe("the group finder on Forever", function()
           assert.are.equal(#"カスタム" * 7, custom.NameButton.size[1])
           assert.are.equal("Deadmines", dungeon.NameButton.Name:GetText())
           assert.are.equal(#"Deadmines" * 7, dungeon.NameButton.size[1])
-          assert.is_true(S.unrecorded(WFJ, dungeon.NameButton.Name))
+          assert.is_true(S.unrecorded(WFI, dungeon.NameButton.Name))
           _G.LFGListingActivityView_InitActivityButton(custom, { name = "Custom Group" }) -- the pooled row reused
           assert.are.equal("Custom Group", custom.NameButton.Name:GetText())
           -- a browse row's single activity name
           local row = C.entry(nil, { leader = "Close", activity = "Custom" })
           assert.are.equal("カスタム", row.ActivityName:GetText())
-          S.alt(WFJ, true)
+          S.alt(WFI, true)
           assert.are.equal("Dungeons", selection.CategoryButtons[1]:GetText())
           assert.are.equal("World PvP", group.NameButton.Name:GetText())
           assert.are.equal(#"World PvP" * 7, group.NameButton.size[1]) -- the record's refit: sized to the English
           assert.are.equal("Custom", row.ActivityName:GetText())
-          S.alt(WFJ, false)
+          S.alt(WFI, false)
           assert.are.equal("ワールドPvP", group.NameButton.Name:GetText())
-          assert.is_nil(WFJ.UIIndex:match("World PvP")) -- the families only where a widget names them
+          assert.is_nil(WFI.UIIndex:match("World PvP")) -- the families only where a widget names them
         end)
 
       it("an activity row's lockout icon: BOSSES_KILLED with its counts kept; Alt English", function()
@@ -388,16 +388,16 @@ describe("the group finder on Forever", function()
         assert.are.same({ "ボス撃破 2/4" }, S.tooltip(row.InstanceLockWarningIcon, { "2/4 Bosses Defeated" }))
         assert.are.same({ "Close" }, S.tooltip(row.InstanceLockWarningIcon, { "Close" }))
         S.tooltip(row.InstanceLockWarningIcon, { "2/4 Bosses Defeated" })
-        S.alt(WFJ, true)
+        S.alt(WFI, true)
         assert.are.equal("2/4 Bosses Defeated", _G.GameTooltipTextLeft1:GetText())
-        S.alt(WFJ, false)
+        S.alt(WFI, false)
       end)
     end)
   end
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.GroupFinder.setup())
+    assert.is_false(WFI.GroupFinder.setup())
     assert.are.equal(1, #Stub.hooks["LFGParentFrame:UpdateTabs"])
     assert.are.equal(1, #Stub.hooks["LFGBrowseSearchEntry_Update"])
     assert.are.equal(1, #Stub.hooks["CategoryDropdown:UpdateText"])
@@ -406,23 +406,23 @@ describe("the group finder on Forever", function()
   end)
 
   it("a client name bound to the wrong type degrades to English with no error", function()
-    WFJ = S.load(FILES, UI)
+    WFI = S.load(FILES, UI)
     loadGroupFinder()
     _G.LFGBrowseSearchEntry_Update = "not a function"
     _G.LFGBrowseFrame.CategoryDropdown = 7
     _G.LFGBrowseFrame.UpdateResults = true
     _G.LFGListingFrame.PostButton = "?"
-    assert.has_no.errors(function() WFJ.GroupFinder.init() end)
+    assert.has_no.errors(function() WFI.GroupFinder.init() end)
     assert.are.equal("グループ検索", _G.LFGListingFrame.TitleContainer.TitleText:GetText())
     assert.is_nil(Stub.hooks["LFGBrowseSearchEntry_Update"])
   end)
 
   it("without the camelot frames nothing is set up", function()
-    WFJ = S.load(FILES, UI)
-    assert.is_false(WFJ.GroupFinder.init()) -- the addon is not loaded
-    assert.is_false(WFJ.GroupFinder.setup()) -- no LFGParentFrame
+    WFI = S.load(FILES, UI)
+    assert.is_false(WFI.GroupFinder.init()) -- the addon is not loaded
+    assert.is_false(WFI.GroupFinder.setup()) -- no LFGParentFrame
     loadGroupFinder({ noWhoList = true }) -- a client whose finder has no who list (not camelot)
-    assert.is_false(WFJ.GroupFinder.setup())
+    assert.is_false(WFI.GroupFinder.setup())
     assert.are.equal("Looking For Group", _G.LFGListingFrame.TitleContainer.TitleText:GetText())
     assert.is_nil(Stub.hooks["LFGParentFrame:UpdateTabs"])
   end)

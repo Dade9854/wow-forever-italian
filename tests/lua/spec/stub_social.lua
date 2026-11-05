@@ -20,7 +20,7 @@ end
 
 -- Blizzard_RaidUI arriving on demand: the roster frames its XML builds (group labels, the unnamed "Empty" region of
 -- every slot, each member button's Name / Level / Class and Rank / Role / Loot icons) and the load flag. The spec
--- forwards ADDON_LOADED to WFJ.LoadOnDemand.loaded, as Main does.
+-- forwards ADDON_LOADED to WFI.LoadOnDemand.loaded, as Main does.
 function Social.loadRaidUI()
   for g = 1, 8 do
     CreateFrame("Frame", "RaidGroup" .. g)

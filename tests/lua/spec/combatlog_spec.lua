@@ -18,13 +18,13 @@ local function loadCombatLog()
 end
 
 describe("the combat log quick-button bar on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   after_each(function()
@@ -38,20 +38,20 @@ describe("the combat log quick-button bar on Forever", function()
         load()
         if order[1] then
           loadCombatLog()
-          assert.is_true(WFJ.CombatLog.init())
+          assert.is_true(WFI.CombatLog.init())
         else
-          assert.is_false(WFJ.CombatLog.init())
+          assert.is_false(WFI.CombatLog.init())
           loadCombatLog()
-          assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+          assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
         end
-        assert.are.equal(1, WFJ.Labels.forbidNames(WFJ.CombatLog.NEVER_TOUCH))
+        assert.are.equal(1, WFI.Labels.forbidNames(WFI.CombatLog.NEVER_TOUCH))
         local tt = _G.GameTooltip
         tt:SetOwner(_G[OVERFLOW])
         tt:SetText(_G.ADDITIONAL_FILTERS)
         assert.are.equal("その他のフィルター", _G.GameTooltipTextLeft1:GetText())
-        assert.are.equal(0, WFJ.Labels.show("combatlog", "x", _G.CombatLogQuickButtonFrameButton1))
+        assert.are.equal(0, WFI.Labels.show("combatlog", "x", _G.CombatLogQuickButtonFrameButton1))
         assert.are.equal("All", _G.CombatLogQuickButtonFrameButton1:GetText())
-        assert.is_false(WFJ.CombatLog.setup()) -- once
+        assert.is_false(WFI.CombatLog.setup()) -- once
       end)
   end
 
@@ -59,11 +59,11 @@ describe("the combat log quick-button bar on Forever", function()
     load()
     _G[OVERFLOW] = 12
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() WFJ.CombatLog.init() end)
-    assert.is_false(WFJ.CombatLog.setup())
+    assert.has_no.errors(function() WFI.CombatLog.init() end)
+    assert.is_false(WFI.CombatLog.setup())
     load()
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() WFJ.CombatLog.init() end) -- loaded, no button
-    assert.is_false(WFJ.CombatLog.setup())
+    assert.has_no.errors(function() WFI.CombatLog.init() end) -- loaded, no button
+    assert.is_false(WFI.CombatLog.setup())
   end)
 end)

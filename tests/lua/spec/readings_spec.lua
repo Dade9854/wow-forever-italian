@@ -72,29 +72,29 @@ local function extendFrames()
 end
 
 describe("Readings", function()
-  local WFJ, R, S, V
+  local WFI, R, S, V
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     extendFrames()
     _G.UIParent = CreateFrame("Frame", "UIParent")
     _G.GetCursorPosition = function() return Stub.cursor[1], Stub.cursor[2] end
     Stub.cursor = { 0, 0 }
-    WFJ = H.loadChunks(FILES)
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Data.add("reading", { ["quest:456"] = { description = PACKED }, ["gossip:g1"] = { text = "私=わたし" },
+    WFI = H.loadChunks(FILES)
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Data.add("reading", { ["quest:456"] = { description = PACKED }, ["gossip:g1"] = { text = "私=わたし" },
       ["ui:QUEST_REWARDS"] = { text = "報酬=ほうしゅう" }, ["book:bk1"] = { text = "悪魔=あくま 鎧=よろい" } })
-    R, S, V = WFJ.Render, WFJ.Settings, WFJ.ReadingView
+    R, S, V = WFI.Render, WFI.Settings, WFI.ReadingView
     S.load(nil, 1, {})
     local DATA = { ["quest.description"] = { [456] = { ja = JA:gsub("{name}", "Reyn"), status = "." } },
       gossip = { g1 = { ja = "私は元気だ。", status = "." } }, ["quest.title"] = { [456] = { ja = "題", status = "." } },
       ui = { QUEST_REWARDS = { ja = "報酬", status = "." }, CLASS_LABEL = { ja = "ドルイドの道", status = "." } },
       book = { bk1 = { ja = "この悪魔の鎧は古い。", status = "." },
         bk2 = { ja = "<HTML><BODY><P>悪魔の鎧</P></BODY></HTML>", status = "." } } }
-    R.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    R.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
       marker = function() return false end,
     }))
@@ -179,7 +179,7 @@ describe("Readings", function()
     it("calls the client for every whole word of a line (bytes, right end exclusive)", function()
       local text = JA:gsub("{name}", "Reyn")
       local fs = spanFontString(text)
-      local spans = WFJ.Readings.lookup("quest.description", 456, text)
+      local spans = WFI.Readings.lookup("quest.description", 456, text)
       for _, sp in ipairs(spans) do
         local areas
         assert.has_no.errors(function() areas = V.spanAreas(fs, text, sp.first, sp.last) end)
@@ -230,8 +230,8 @@ describe("Readings", function()
       R.show("questframe.detail", "description", fs, fs:GetText(), "quests", "quest.description", 456)
       assert.is_nil(coverOf(fs))
       Stub.combat = false
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.is_true(coverOf(fs).propagate)
     end)
 
@@ -239,10 +239,10 @@ describe("Readings", function()
       local fs = questFs()
       R.show("questframe.detail", "description", fs, fs:GetText(), "quests", "quest.description", 456)
       local cover = coverOf(fs)
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Greetings, Reyn.", fs:GetText())
       assert.is_false(cover:IsShown())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.is_true(cover:IsShown())
     end)
 
@@ -301,10 +301,10 @@ describe("Readings", function()
         assert.is_true(cover:IsShown())
         assert.are.equal(2, #cover.spans)
         assert.are.equal("あくま", cover.spans[1].reading)
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("These demon plates are old.", page.html)
         assert.is_false(cover:IsShown())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         assert.is_true(cover:IsShown())
       end)
 
@@ -367,15 +367,15 @@ describe("Readings", function()
     end)
 
     it("a label holding only a class word, with no word list of its own, gets no cover", function()
-      WFJ.Placeholders = { CLASS = { DRUID = "ドルイド" }, RACE = {} }
-      assert.are.equal(1, #WFJ.Readings.withTokenWords({}, "ドルイドの道")) -- prose would get the class card
+      WFI.Placeholders = { CLASS = { DRUID = "ドルイド" }, RACE = {} }
+      assert.are.equal(1, #WFI.Readings.withTokenWords({}, "ドルイドの道")) -- prose would get the class card
       local fs = spanFontString("Path of the Druid")
       fs.parentFrame = CreateFrame("Frame")
       R.show("character", "ui.class", fs, "Path of the Druid", "ui", "ui", "CLASS_LABEL")
       assert.are.equal("ドルイドの道", fs:GetText())
       assert.is_nil(coverOf(fs))
       -- with a word list of its own the label takes a cover, and still only its own words
-      WFJ.Data.reading["ui:CLASS_LABEL"] = { text = "道=みち" }
+      WFI.Data.reading["ui:CLASS_LABEL"] = { text = "道=みち" }
       local fs2 = spanFontString("Path of the Druid")
       fs2.parentFrame = CreateFrame("Frame")
       R.show("character", "ui.class2", fs2, "Path of the Druid", "ui", "ui", "CLASS_LABEL")
@@ -383,11 +383,11 @@ describe("Readings", function()
       assert.is_table(cover)
       assert.are.equal(1, #cover.spans)
       assert.are.equal("道", cover.spans[1].word)
-      WFJ.Placeholders = nil
+      WFI.Placeholders = nil
     end)
 
     it("a label with no word list gets no cover; prose surfaces are unchanged", function()
-      WFJ.Data.reading["ui:QUEST_REWARDS"] = nil
+      WFI.Data.reading["ui:QUEST_REWARDS"] = nil
       local fs = labelFs()
       R.show("character", "ui.x", fs, "Rewards", "ui", "ui", "QUEST_REWARDS")
       assert.is_nil(coverOf(fs))
@@ -505,7 +505,7 @@ describe("Readings", function()
       assert.is_true(coverOf(fs):IsShown())
     end)
 
-    it("a saved WFJ_DB from before the setting existed loads with it on", function()
+    it("a saved WFI_DB from before the setting existed loads with it on", function()
       local saved = { schema = 1, settings = { enabled = true, ["marker.stale"] = false } }
       local db = S.load(saved, 1, {})
       assert.is_true(S.get("readings.enabled"))
@@ -522,7 +522,7 @@ describe("Readings", function()
       local ns = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/Data.lua", "Core/Lookup.lua",
         "Core/Readings.lua", "Core/State.lua", "UI/Font.lua", "UI/Readings.lua" })
       local rows = 0
-      for _, f in ipairs(Loader.tocFiles(H.ADDON_DIR .. "/WoWForeverJapanese.toc")) do
+      for _, f in ipairs(Loader.tocFiles(H.ADDON_DIR .. "/WoWForeverItalian.toc")) do
         local wanted = f:find("^Data/Reading/") or f:find("^Data/Quest/") or f:find("^Data/Gossip/")
           or f:find("^Data/UI/") or f == "Data/Meta.lua" -- UI rows
           or f:find("^Data/Book/") -- book pages, keyed by their English hash

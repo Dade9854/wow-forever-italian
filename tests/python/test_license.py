@@ -7,11 +7,11 @@ def test_gpl2_license_text(root):
 def test_or_later_declared(root):
     assert 'license = { text = "GPL-2.0-or-later" }' in (root / "pipeline" / "pyproject.toml").read_text()
     assert "## X-License: GPL-2.0-or-later" in (
-        root / "addon" / "WoWForeverJapanese" / "WoWForeverJapanese.toc"
+        root / "addon" / "WoWForeverItalian" / "WoWForeverItalian.toc"
     ).read_text(encoding="utf-8")
 
 
 def test_font_and_license_shipped(root):
-    fonts = root / "addon" / "WoWForeverJapanese" / "Fonts"
+    fonts = root / "addon" / "WoWForeverItalian" / "Fonts"
     assert (fonts / "ipagui.ttf").stat().st_size > 1_000_000
     assert "IPA" in (fonts / "IPA_Font_License_Agreement_v1.0.txt").read_text(encoding="utf-8")[:200]

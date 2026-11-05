@@ -7,7 +7,7 @@ import zlib
 import pytest
 from casc_fixture import ENC_KEY_NAME, blte_chunks, blte_single
 
-from wfj.io import blte
+from wfi.io import blte
 
 
 def test_single_plain_frame():

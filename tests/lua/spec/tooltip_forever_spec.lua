@@ -26,24 +26,24 @@ local JERKY_LINES = { "Tough Jerky", "Use: Restores 61 health over 18 sec. Must 
 local SHIELD_LINES = { "Power Word: Shield", "40 yd range", "Instant cast",
   "Draws on the soul of the friendly target to shield them, absorbing 44 damage. Lasts 30 sec." }
 
--- Loads the surface against a stub client of the given flavour. → WFJ, the tooltip frame
+-- Loads the surface against a stub client of the given flavour. → WFI, the tooltip frame
 local function setup()
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
-  local WFJ = H.loadChunks(FILES)
-  WFJ.Compat.init(function(name) return _G[name] end)
-  WFJ.Settings.load(nil, 1, {})
-  WFJ.Render.init(WFJ.Translator.new({
-    enabled = function() return WFJ.State.enabled end,
-    areaEnabled = WFJ.State.areaEnabled,
-    modifierHeld = WFJ.Modifier.isDown,
+  local WFI = H.loadChunks(FILES)
+  WFI.Compat.init(function(name) return _G[name] end)
+  WFI.Settings.load(nil, 1, {})
+  WFI.Render.init(WFI.Translator.new({
+    enabled = function() return WFI.State.enabled end,
+    areaEnabled = WFI.State.areaEnabled,
+    modifierHeld = WFI.Modifier.isDown,
     lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
-    marker = function(n) return WFJ.Settings.get("marker." .. n) end,
-    align = WFJ.Align.check,
+    marker = function(n) return WFI.Settings.get("marker." .. n) end,
+    align = WFI.Align.check,
   }))
   Stub.spellDescriptions[17] =
     "Draws on the soul of the friendly target to shield them, absorbing 44 damage. Lasts 30 sec."
-  return WFJ, _G.GameTooltip
+  return WFI, _G.GameTooltip
 end
 
 local function fs(frameName, i) return _G[frameName .. "TextLeft" .. i] end
@@ -52,15 +52,15 @@ describe("UI/Tooltip hooks the client's data processor", function()
   after_each(function() _G.issecretvalue, _G.GetActionInfo, _G.C_TooltipInfo = nil, nil, nil end)
 
   it("takes the data-processor path and hooks no OnTooltipSet* script", function()
-    local WFJ = setup()
-    assert.are.equal(6, WFJ.Tooltip.init())
-    local _, _, _, path = WFJ.Tooltip.resolved()
+    local WFI = setup()
+    assert.are.equal(6, WFI.Tooltip.init())
+    local _, _, _, path = WFI.Tooltip.resolved()
     assert.are.equal("dataprocessor", path)
-    assert.is_not_nil(WFJ.Tooltip.modern())
+    assert.is_not_nil(WFI.Tooltip.modern())
     -- exactly one registration per data type, for the whole client, not one per frame
     assert.are.equal(1, #Stub.tooltipPostCalls[0])
     assert.are.equal(1, #Stub.tooltipPostCalls[1])
-    for _, name in ipairs(WFJ.Tooltip.FRAMES) do
+    for _, name in ipairs(WFI.Tooltip.FRAMES) do
       assert.is_nil(_G[name].scripts.OnTooltipSetItem, name)
       assert.is_nil(_G[name].scripts.OnTooltipSetSpell, name)
       assert.is_function(_G[name].scripts.OnHide, name) -- a plain widget script
@@ -68,8 +68,8 @@ describe("UI/Tooltip hooks the client's data processor", function()
   end)
 
   it("renders the item tooltip through the Item post-call", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     Stub.setItemTooltip(tt, JERKY, JERKY_LINES)
     assert.are.equal(DATA["item.description"][117].ja, fs("GameTooltip", 2):GetText())
     assert.are.equal("Tough Jerky", fs("GameTooltip", 1):GetText())
@@ -78,11 +78,11 @@ describe("UI/Tooltip hooks the client's data processor", function()
 
   it("renders the spell tooltip through the Spell post-call, reading the description the client offers",
     function()
-      local WFJ, tt = setup()
-      WFJ.Tooltip.init()
+      local WFI, tt = setup()
+      WFI.Tooltip.init()
       -- Forever answered the bare GetSpellDescription absent (in-game probe); the stub carries only
       -- C_Spell.GetSpellDescription, which Compat resolves as a dotted candidate.
-      local _, _, api = WFJ.Tooltip.resolved()
+      local _, _, api = WFI.Tooltip.resolved()
       assert.is_true(api)
       Stub.setSpellTooltip(tt, 17, SHIELD_LINES)
       assert.are.equal("Power Word: Shield", fs("GameTooltip", 1):GetText())
@@ -118,8 +118,8 @@ describe("UI/Tooltip hooks the client's data processor", function()
 
   it("a hidden pass reads no row: it translates the client's own data for the spell and writes it by row", function()
     -- an action button's tooltip in combat: every row's text is secret, the spell id is not
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     hiddenClient()
     tt.owner = "ActionButton1"
     hide(HIDDEN, { COUNTDOWN })
@@ -128,7 +128,7 @@ describe("UI/Tooltip hooks the client's data processor", function()
     assert.are.equal(SHIELD_LINES[1] .. " ", fs("GameTooltip", 1):GetText()) -- the name is never replaced
     assert.are.equal(COUNTDOWN .. " ", fs("GameTooltip", 4):GetText()) -- no duration API in this stub: left
     assert.are.equal("Press F6 ", fs("GameTooltip", 7):GetText()) -- another addon's row: left
-    assert.are.equal(1, WFJ.Tooltip.hidden.written)
+    assert.are.equal(1, WFI.Tooltip.hidden.written)
     -- the spell id hidden too (a secret stands in for it here): the owner's action slot names it
     tt.owner = { action = 5 }
     _G.GetActionInfo = function(slot) if slot == 5 then return "spell", 17 end end
@@ -139,13 +139,13 @@ describe("UI/Tooltip hooks the client's data processor", function()
     tt.owner = "ActionButton1"
     hiddenPass(tt, "hidden id")
     assert.are.equal(SHIELD_LINES[4] .. " ", fs("GameTooltip", 5):GetText())
-    assert.are.equal("the spell or item itself is hidden", WFJ.Tooltip.hidden.last)
+    assert.are.equal("the spell or item itself is hidden", WFI.Tooltip.hidden.last)
     -- the modifier held: the client's English stays
     hide(HIDDEN, { COUNTDOWN })
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     hiddenPass(tt)
     assert.are.equal(SHIELD_LINES[4] .. " ", fs("GameTooltip", 5):GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     -- readable again: the ordinary path, with records
     _G.issecretvalue = nil
     Stub.setSpellTooltip(tt, 17, SHIELD_LINES)
@@ -154,27 +154,27 @@ describe("UI/Tooltip hooks the client's data processor", function()
   end)
 
   it("the trace records each pass row by row and writes a secret value as <secret>, never reading it", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     hiddenClient()
-    WFJ.Tooltip.trace = {}
+    WFI.Tooltip.trace = {}
     tt.owner = "ActionButton1"
     Stub.setSpellTooltip(tt, 17, SHIELD_LINES)
     hide(HIDDEN, { COUNTDOWN })
     assert.has_no.errors(function() hiddenPass(tt) end)
     _G.issecretvalue = nil
-    assert.are.equal(2, #WFJ.Tooltip.trace)
-    assert.is_truthy(WFJ.Tooltip.trace[1]:find("readable spell", 1, true))
-    assert.is_truthy(WFJ.Tooltip.trace[2]:find("secret spell id=17", 1, true))
-    assert.is_truthy(WFJ.Tooltip.trace[2]:find("<secret>", 1, true))
-    assert.is_truthy(WFJ.Tooltip.trace[2]:find("-> wrote 1 (data rows 5, hidden: 4", 1, true))
-    WFJ.Tooltip.trace = nil
+    assert.are.equal(2, #WFI.Tooltip.trace)
+    assert.is_truthy(WFI.Tooltip.trace[1]:find("readable spell", 1, true))
+    assert.is_truthy(WFI.Tooltip.trace[2]:find("secret spell id=17", 1, true))
+    assert.is_truthy(WFI.Tooltip.trace[2]:find("<secret>", 1, true))
+    assert.is_truthy(WFI.Tooltip.trace[2]:find("-> wrote 1 (data rows 5, hidden: 4", 1, true))
+    WFI.Tooltip.trace = nil
     _G.C_TooltipInfo = nil
   end)
 
   it("ignores a tooltip whose data type is not the one the handler registered for", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     Stub.setItemTooltip(tt, JERKY, JERKY_LINES)
     local before = fs("GameTooltip", 2):GetText()
     -- the Spell handler, handed an item tooltip: IsTooltipType(Spell) is false, so it must not touch it
@@ -183,8 +183,8 @@ describe("UI/Tooltip hooks the client's data processor", function()
   end)
 
   it("ignores a tooltip frame the addon never declared", function()
-    local WFJ = setup()
-    WFJ.Tooltip.init()
+    local WFI = setup()
+    WFI.Tooltip.init()
     local other = Stub.tooltipFrame("SomeOtherAddonTooltip")
     Stub.setItemTooltip(other, JERKY, JERKY_LINES)
     assert.are.equal(JERKY_LINES[2], _G.SomeOtherAddonTooltipTextLeft2:GetText())
@@ -192,9 +192,9 @@ describe("UI/Tooltip hooks the client's data processor", function()
 
   it("keeps the spell-description API absent when the client has neither name", function()
     Stub.noSpellDescriptionAPI = true
-    local WFJ = setup()
-    WFJ.Tooltip.init()
-    local _, _, api = WFJ.Tooltip.resolved()
+    local WFI = setup()
+    WFI.Tooltip.init()
+    local _, _, api = WFI.Tooltip.resolved()
     assert.is_false(api)
     Stub.noSpellDescriptionAPI = false
   end)

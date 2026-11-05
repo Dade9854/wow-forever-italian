@@ -168,11 +168,11 @@ local function installPvPMatch()
 end
 
 describe("the PvP scoreboard and match results on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -191,11 +191,11 @@ describe("the PvP scoreboard and match results on Forever", function()
   end
 
   local function fresh()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     P.winner, P.shutdown, P.deaths, P.flag = "draw", nil, true, false
   end
 
@@ -208,8 +208,8 @@ describe("the PvP scoreboard and match results on Forever", function()
   before_each(function()
     fresh()
     installPvPMatch()
-    WFJ.Labels.forbidNames(WFJ.PvPMatch.NEVER_TOUCH)
-    assert.is_true(WFJ.PvPMatch.init())
+    WFI.Labels.forbidNames(WFI.PvPMatch.NEVER_TOUCH)
+    assert.is_true(WFI.PvPMatch.init())
   end)
 
   after_each(function()
@@ -225,7 +225,7 @@ describe("the PvP scoreboard and match results on Forever", function()
     s.scripts.OnShow(s)
     assert.are.equal("Arena", s.HeaderContainer.Text:GetText()) -- a zone name, though a dictionary word here
     assert.is_true(unrecorded(s.HeaderContainer.Text))
-    assert.is_true(WFJ.Labels.forbidden(s.HeaderContainer.Text))
+    assert.is_true(WFI.Labels.forbidden(s.HeaderContainer.Text))
   end)
 
   it("Init: the outcome, the leave button and the column headers translate; faction tabs and a stat column do not",
@@ -238,7 +238,7 @@ describe("the PvP scoreboard and match results on Forever", function()
         "獲得\n名誉" }, headers(r.tableBuilder))
       assert.are.equal("Guild (10)", _G.PVPScoreFrameTab2:GetText())
       assert.is_true(unrecorded(_G.PVPScoreFrameTab2))
-      assert.is_true(WFJ.Labels.forbidden(_G.PVPScoreFrameTab2))
+      assert.is_true(WFI.Labels.forbidden(_G.PVPScoreFrameTab2))
       alt(true)
       assert.are.equal("DRAW", r.header:GetText())
       assert.are.same({ "<icon>", "Name", "Guild", "Killing\nBlows", "Kills", "Deaths", "Damage\nDone",
@@ -255,8 +255,8 @@ describe("the PvP scoreboard and match results on Forever", function()
   it("Init: the winner's line keeps its team colour around the Japanese, the faction name kept English", function()
     local r = _G.PVPMatchResults
     -- a colour-wrapped line renders once Core/UIStrings grants these keys the `wrapped` label form
-    local wrapped = WFJ.UIStrings.hasForm("VICTORY_TEXT1", "wrapped")
-      and WFJ.UIStrings.hasForm("VICTORY_TEXT0", "wrapped")
+    local wrapped = WFI.UIStrings.hasForm("VICTORY_TEXT1", "wrapped")
+      and WFI.UIStrings.hasForm("VICTORY_TEXT0", "wrapped")
     P.winner = "alliance"
     r:Init()
     assert.are.equal(wrapped and "|cff0060ffAlliance の勝利|r" or "|cff0060ffAlliance Wins|r", r.header:GetText())
@@ -286,7 +286,7 @@ describe("the PvP scoreboard and match results on Forever", function()
     P.shutdown = "59s"
     r.scripts.OnUpdate(r)
     -- "%s (%s)" renders only once Core/UIStrings.ARGS carries its `entry` / `text` arguments
-    if WFJ.UIStrings.ARGS.PVP_LEAVE_BUTTON_TIME then
+    if WFI.UIStrings.ARGS.PVP_LEAVE_BUTTON_TIME then
       assert.are.equal("マッチから退出 (59s)", r.leaveButton:GetText())
     else
       assert.are.equal("Leave Match (59s)", r.leaveButton:GetText())
@@ -295,7 +295,7 @@ describe("the PvP scoreboard and match results on Forever", function()
 
   it("Forever's results window has no rewards: DisplayRewards is not hooked", function()
     assert.is_nil(Stub.hooks["PVPMatchResults:DisplayRewards"])
-    assert.is_nil(WFJ.PvPMatch.onRewards)
+    assert.is_nil(WFI.PvPMatch.onRewards)
   end)
 
   it("tooltips: a column header's and the honor-level cell's translate; a class name does not", function()
@@ -337,10 +337,10 @@ describe("the PvP scoreboard and match results on Forever", function()
       row.rowData.rankTitle = "Paladin" -- a title that is also a dictionary word stays as the client wrote it
       honor.scripts.OnEnter(honor)
       assert.are.equal("ランク 7 - Paladin", _G.GameTooltipTextLeft1:GetText())
-      WFJ.State.setEnabled(false)
+      WFI.State.setEnabled(false)
       honor.scripts.OnEnter(honor)
       assert.are.equal("Rank 7 - Paladin", _G.GameTooltipTextLeft1:GetText())
-      WFJ.State.setEnabled(true)
+      WFI.State.setEnabled(true)
     end)
 
   it("a stat column's header (either table) and its tooltip are Japanese; a column with no row stays; Alt English",
@@ -365,8 +365,8 @@ describe("the PvP scoreboard and match results on Forever", function()
       assert.are.equal("Flag Captures", headers(r.tableBuilder)[8])
       alt(false)
       assert.are.equal("旗の奪取", headers(r.tableBuilder)[8])
-      assert.is_nil(WFJ.UIIndex:match("Flag Captures")) -- the family only where the headers name it
-      assert.is_nil(WFJ.UIIndex:match("Towers Assaulted"))
+      assert.is_nil(WFI.UIIndex:match("Flag Captures")) -- the family only where the headers name it
+      assert.is_nil(WFI.UIIndex:match("Towers Assaulted"))
     end)
 
   it("client names bound to the wrong type degrade to English with no error", function()
@@ -376,21 +376,21 @@ describe("the PvP scoreboard and match results on Forever", function()
     results.HeaderContainer = false
     scoreboard.Content, scoreboard.tableBuilder = 3, { EnumerateHeaders = 1, AddRow = 2 }
     _G.ConstructPVPMatchTable = "not a function"
-    assert.has_no.errors(function() assert.is_true(WFJ.PvPMatch.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.PvPMatch.init()) end)
     assert.has_no.errors(function()
-      WFJ.PvPMatch.onTable(nil)
-      WFJ.PvPMatch.onTable({ EnumerateHeaders = function() return function() end end })
-      WFJ.PvPMatch.onRow(nil, { cells = { 1, "x", { icon = 1 } } })
-      WFJ.PvPMatch.onRow(nil, nil)
-      WFJ.PvPMatch.onLeaveButton()
+      WFI.PvPMatch.onTable(nil)
+      WFI.PvPMatch.onTable({ EnumerateHeaders = function() return function() end end })
+      WFI.PvPMatch.onRow(nil, { cells = { 1, "x", { icon = 1 } } })
+      WFI.PvPMatch.onRow(nil, nil)
+      WFI.PvPMatch.onLeaveButton()
     end)
   end)
 
   it("hooks install once; a client with neither window is skipped without error", function()
-    assert.is_false(WFJ.PvPMatch.init())
+    assert.is_false(WFI.PvPMatch.init())
     assert.are.equal(1, #Stub.hooks["PVPMatchResults:Init"])
     assert.are.equal(1, #Stub.hooks["ConstructPVPMatchTable"])
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.PVPMatchResults, _G.PVPMatchScoreboard, _G.ConstructPVPMatchTable = nil, nil, nil
     local bare = H.loadChunks(FILES)

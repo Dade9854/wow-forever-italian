@@ -57,11 +57,11 @@ local function installStable()
 end
 
 describe("the pet stable on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -74,18 +74,18 @@ describe("the pet stable on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end
 
   before_each(function()
     load()
     installStable()
-    WFJ.Labels.forbidNames(WFJ.Stable.NEVER_TOUCH)
-    assert.is_true(WFJ.Stable.init())
+    WFI.Labels.forbidNames(WFI.Stable.NEVER_TOUCH)
+    assert.is_true(WFI.Stable.init())
   end)
 
   after_each(function()
@@ -132,7 +132,7 @@ describe("the pet stable on Forever", function()
     .. " the Japanese loyalty line", function()
     _G.PetStableFrame:Show()
     _G.PetStableFrame:SelectPet({ name = "Close", level = 12, family = "Boar", loyalty = "Close", loyaltyLevel = 2 })
-    WFJ.Stable.onShow()
+    WFI.Stable.onShow()
     assert.are.equal("Close Level 12 Boar", _G.PetStableLevelText:GetText())
     assert.are.equal("Close（忠誠度：2）", _G.PetStableLoyaltyText:GetText()) -- a dictionary word, but no PetLoyalty row
     assert.is_true(unrecorded(_G.PetStableLevelText))
@@ -149,13 +149,13 @@ describe("the pet stable on Forever", function()
     assert.are.equal("Best Friend (Loyalty: 6)", _G.PetStableLoyaltyText:GetText())
     alt(false)
     assert.are.equal("親友（忠誠度：6）", _G.PetStableLoyaltyText:GetText())
-    WFJ.Stable.onShow() -- Update while the Japanese is up: still ours
+    WFI.Stable.onShow() -- Update while the Japanese is up: still ours
     assert.are.equal("親友（忠誠度：6）", _G.PetStableLoyaltyText:GetText())
     _G.PetStableFrame:SelectPet({ name = "Grimfang", level = 40, family = "Wolf", loyalty = "Best Friend",
       loyaltyLevel = 5 })
     assert.are.equal("親友（忠誠度：5）", _G.PetStableLoyaltyText:GetText())
     _G.PetStableLoyaltyText.text = "Something else"
-    WFJ.Stable.onShow() -- no PET_LOYALTY_TEMPLATE line: the client's text stays
+    WFI.Stable.onShow() -- no PET_LOYALTY_TEMPLATE line: the client's text stays
     assert.are.equal("Something else", _G.PetStableLoyaltyText:GetText())
     _G.PetStableFrame:SelectPet({ name = "Grimfang", level = 40, family = "Wolf", loyalty = "Best Friend",
       loyaltyLevel = 6 })
@@ -179,7 +179,7 @@ describe("the pet stable on Forever", function()
   end)
 
   it("hooks install once", function()
-    assert.is_false(WFJ.Stable.init())
+    assert.is_false(WFI.Stable.init())
     assert.are.equal(1, #Stub.hooks["PetStableFrame:Update"])
     assert.are.equal(1, #Stub.hooks["PetStableFrame:SelectPet"])
   end)
@@ -191,7 +191,7 @@ describe("the pet stable on Forever", function()
     _G.PetStableCurrentPet = "not a frame"
     _G.PetStableLoyaltyText = {}
     assert.has_no.errors(function()
-      assert.is_true(WFJ.Stable.init())
+      assert.is_true(WFI.Stable.init())
       _G.PetStableFrame:Show()
     end)
     assert.are.equal("費用:", _G.PetStableCostLabel:GetText())
@@ -202,13 +202,13 @@ describe("the pet stable on Forever", function()
     function()
       load()
       for _, name in ipairs(GLOBALS) do _G[name] = nil end
-      assert.has_no.errors(function() assert.is_false(WFJ.Stable.init()) end)
+      assert.has_no.errors(function() assert.is_false(WFI.Stable.init()) end)
       local bare = CreateFrame("Frame", "PetStableFrame") -- global children only
       Stub.namedFontString("PetStableCostLabel", en("COSTS_LABEL"))
-      assert.has_no.errors(function() assert.is_false(WFJ.Stable.init()) end)
+      assert.has_no.errors(function() assert.is_false(WFI.Stable.init()) end)
       bare:Show()
       assert.are.equal("Cost:", _G.PetStableCostLabel:GetText())
       _G.PetStableFrame = "text"
-      assert.has_no.errors(function() assert.is_false(WFJ.Stable.init()) end)
+      assert.has_no.errors(function() assert.is_false(WFI.Stable.init()) end)
     end)
 end)

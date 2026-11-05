@@ -13,7 +13,7 @@ local SPELLS = {
 }
 
 describe("UI/Tooltip set bonus lines", function()
-  local WFJ, tt, bonuses, records
+  local WFI, tt, bonuses, records
 
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
   local function show(lines)
@@ -21,16 +21,16 @@ describe("UI/Tooltip set bonus lines", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     local files = {}
     for i, f in ipairs(H.UI_FILES) do files[i] = f end
     files[#files + 1] = "UI/TimeLine.lua"
     files[#files + 1] = "UI/Tooltip.lua"
-    WFJ = H.loadChunks(files)
-    H.uiSetup(WFJ, UI)
-    WFJ.Lookup = { get = function(kind, id) return kind == "spell.description" and SPELLS[id] or nil end }
-    WFJ.GateText = function(entry, lines) return WFJ.Align.check(entry and entry.ja, lines) end
+    WFI = H.loadChunks(files)
+    H.uiSetup(WFI, UI)
+    WFI.Lookup = { get = function(kind, id) return kind == "spell.description" and SPELLS[id] or nil end }
+    WFI.GateText = function(entry, lines) return WFI.Align.check(entry and entry.ja, lines) end
     bonuses = { 460230 }
     -- the bonus spell's description as the client renders it (C_Spell.GetSpellDescription)
     Stub.spellDescriptions[460230] = "Improves your chance to hit by 2.0%."
@@ -38,11 +38,11 @@ describe("UI/Tooltip set bonus lines", function()
       return id == 15062 and bonuses or {}
     end }
     records = {}
-    WFJ.Collector.record = function(kind, id, field, raw)
+    WFI.Collector.record = function(kind, id, field, raw)
       records[#records + 1] = { kind, id, field, raw }
       return "recorded"
     end
-    WFJ.Tooltip.init()
+    WFI.Tooltip.init()
     tt = _G.GameTooltip
   end)
 
@@ -56,7 +56,7 @@ describe("UI/Tooltip set bonus lines", function()
     show({ "Devilsaur Leggings", "Devilsaur Armor (0/2)", "(2) Set: Improves your chance to hit by 2.0%." })
     assert.are.equal("(2) セット: 命中率を2.0%上昇させます。", left(3):GetText())
     assert.are.equal("Devilsaur Armor (0/2)", left(2):GetText()) -- the set's name stays English
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("(2) Set: Improves your chance to hit by 2.0%.", left(3):GetText())
   end)
 

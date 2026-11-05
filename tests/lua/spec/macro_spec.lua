@@ -74,11 +74,11 @@ local NAMES = { "MacroFrame", "MacroFrameEnterMacroText", "MacroFrameCharLimitTe
   "MacroFrameTab1", "MacroFrameTab2", "MacroFrameText", "MacroPopupFrame" }
 
 describe("the macro window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -91,24 +91,24 @@ describe("the macro window on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
     -- the player's name is a `text` capture (Core/UIStrings ARGS; granted here until the shared table carries it)
-    WFJ.UIStrings.ARGS.CHARACTER_SPECIFIC_MACROS = WFJ.UIStrings.ARGS.CHARACTER_SPECIFIC_MACROS or { [1] = "text" }
-    H.uiSetup(WFJ, UI)
+    WFI.UIStrings.ARGS.CHARACTER_SPECIFIC_MACROS = WFI.UIStrings.ARGS.CHARACTER_SPECIFIC_MACROS or { [1] = "text" }
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
     load()
     if loadedFirst then
       loadMacroUI()
-      assert.is_true(WFJ.Macro.init())
+      assert.is_true(WFI.Macro.init())
     else
-      assert.is_false(WFJ.Macro.init()) -- waits for the addon
+      assert.is_false(WFI.Macro.init()) -- waits for the addon
       loadMacroUI()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -174,7 +174,7 @@ describe("the macro window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.Macro.setup())
+    assert.is_false(WFI.Macro.setup())
     assert.are.equal(1, #Stub.hooks["MacroPopupFrame:SetSelectedIconText"])
   end)
 
@@ -185,14 +185,14 @@ describe("the macro window on Forever", function()
     _G.MacroFrameText = 42
     _G.MacroPopupFrame = true
     _G.MacroFrameCharLimitText = false
-    assert.has_no.errors(function() assert.is_true(WFJ.Macro.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Macro.init()) end)
     assert.are.equal("保存", _G.MacroSaveButton:GetText()) -- the rest still works
   end)
 
   it("without the window: init waits, setup returns false", function()
     load()
-    assert.is_false(WFJ.Macro.init())
+    assert.is_false(WFI.Macro.init())
     Stub.loadedAddons[ADDON] = true
-    assert.is_false(WFJ.Macro.setup())
+    assert.is_false(WFI.Macro.setup())
   end)
 end)

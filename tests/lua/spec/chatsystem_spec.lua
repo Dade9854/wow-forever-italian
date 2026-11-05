@@ -118,30 +118,30 @@ end
 local function system(frame, text) frame:AddMessage(text, 1, 1, 0, SYSTEM) end
 
 local function load()
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
   Stub.installScrollUtil()
   local files = {}
   for i, f in ipairs(H.UI_FILES) do files[i] = f end
   files[#files + 1] = "UI/Errors.lua"
   files[#files + 1] = "UI/ChatSystem.lua"
-  local WFJ = H.loadChunks(files)
+  local WFI = H.loadChunks(files)
   install()
-  H.uiSetup(WFJ, UI)
-  return WFJ
+  H.uiSetup(WFI, UI)
+  return WFI
 end
 
-local function alt(WFJ, down)
+local function alt(WFI, down)
   Stub.keys.alt = down
-  WFJ.Modifier.refresh()
+  WFI.Modifier.refresh()
 end
 
 describe("SYSTEM chat lines", function()
-  local WFJ
+  local WFI
   before_each(function()
     secrets = {}
-    WFJ = load()
-    assert.is_true(WFJ.ChatSystem.init())
+    WFI = load()
+    assert.is_true(WFI.ChatSystem.init())
   end)
   after_each(function()
     H.uiTeardown()
@@ -160,9 +160,9 @@ describe("SYSTEM chat lines", function()
     f:AddMessage("You gain 25 Rank Points.", 0.5, 0.5, 1, FACTION)
     assert.are.equal("ランクポイントを25獲得した。", f:Last())
     f:Refresh()
-    alt(WFJ, true)
+    alt(WFI, true)
     assert.are.equal("You gain 25 Rank Points.", f.visibleLines[2]:GetText())
-    alt(WFJ, false)
+    alt(WFI, false)
     assert.are.equal("ランクポイントを25獲得した。", f.visibleLines[2]:GetText())
     system(f, "You gain 25 Rank Points.") -- a SYSTEM line does not name the family
     assert.are.equal("You gain 25 Rank Points.", f:Last())
@@ -208,38 +208,38 @@ describe("SYSTEM chat lines", function()
     local stamps = { f.history[1].timestamp, f.history[2].timestamp }
     local top, bottom = f.visibleLines[1], f.visibleLines[2]
     assert.are.equal("パーティーがいっぱいです。", top:GetText())
-    alt(WFJ, true)
+    alt(WFI, true)
     assert.are.equal("Your party is full.", top:GetText())
     assert.are.equal("Kobold Vermin slain: 1/10", bottom:GetText())
-    assert.are.equal(WFJ.Font.PATH, top.font.path) -- every chat line wears the bundled face, English too
+    assert.are.equal(WFI.Font.PATH, top.font.path) -- every chat line wears the bundled face, English too
     f:Refresh() -- scrolling / a new line while held: still English
     assert.are.equal("Your party is full.", top:GetText())
-    alt(WFJ, false)
+    alt(WFI, false)
     assert.are.equal("パーティーがいっぱいです。", top:GetText())
-    assert.are.equal(WFJ.Font.PATH, top.font.path)
+    assert.are.equal(WFI.Font.PATH, top.font.path)
     assert.are.same(stamps, { f.history[1].timestamp, f.history[2].timestamp }) -- no faded line comes back
     assert.are.equal("パーティーがいっぱいです。", f.history[1].message)
-    WFJ.State.setEnabled(false)
+    WFI.State.setEnabled(false)
     assert.are.equal("Your party is full.", top:GetText())
-    WFJ.State.setEnabled(true)
+    WFI.State.setEnabled(true)
     assert.are.equal("パーティーがいっぱいです。", top:GetText())
-    WFJ.State.setArea("ui", false)
+    WFI.State.setArea("ui", false)
     assert.are.equal("Your party is full.", top:GetText())
-    WFJ.State.setArea("ui", true)
+    WFI.State.setArea("ui", true)
     assert.are.equal("パーティーがいっぱいです。", top:GetText())
   end)
 
   it("a line that arrives while held is Japanese on release; one that arrives while off stays English", function()
     local f = _G.ChatFrame1
-    alt(WFJ, true)
+    alt(WFI, true)
     system(f, "Your party is full.")
     f:Refresh()
     assert.are.equal("Your party is full.", f.visibleLines[2]:GetText())
-    alt(WFJ, false)
+    alt(WFI, false)
     assert.are.equal("パーティーがいっぱいです。", f.visibleLines[2]:GetText())
-    WFJ.State.setEnabled(false)
+    WFI.State.setEnabled(false)
     system(f, "Kobold Vermin slain: 1/10")
-    WFJ.State.setEnabled(true)
+    WFI.State.setEnabled(true)
     f:Refresh()
     assert.are.equal("Kobold Vermin slain: 1/10", f.visibleLines[2]:GetText())
   end)
@@ -250,7 +250,7 @@ describe("SYSTEM chat lines", function()
     assert.are.equal("パーティーに所属していません。", f:Last())
     system(f, "You are not in a party.") -- the same Japanese, other English: Alt could not tell them apart
     assert.are.equal("You are not in a party.", f:Last())
-    WFJ.ChatSystem.MAX_REMEMBERED = 1
+    WFI.ChatSystem.MAX_REMEMBERED = 1
     system(f, "Your party is full.")
     assert.are.equal("Your party is full.", f:Last())
     system(f, "You aren't in a party.") -- a known pair is still fine
@@ -259,17 +259,17 @@ describe("SYSTEM chat lines", function()
 
   it("at the limit, the pairs no history holds any more are forgotten; one still held is kept", function()
     local f = _G.ChatFrame1
-    WFJ.ChatSystem.MAX_REMEMBERED = 2
+    WFI.ChatSystem.MAX_REMEMBERED = 2
     system(f, "You aren't in a party.")
     system(f, "Your party is full.")
     f.history = { f.history[2] } -- the first line scrolled out of the history
     f:AddMessage("Kobold Vermin dies, you gain 45 experience.", 0.4, 0.4, 1, XP)
     assert.are.equal("Kobold Verminが倒れ、45の経験値を獲得しました。", f:Last()) -- the freed slot
     f:Refresh()
-    alt(WFJ, true)
+    alt(WFI, true)
     assert.are.equal("Your party is full.", f.visibleLines[1]:GetText()) -- still held: Alt still has its English
-    alt(WFJ, false)
-    WFJ.ChatSystem.MAX_REMEMBERED = 4096
+    alt(WFI, false)
+    WFI.ChatSystem.MAX_REMEMBERED = 4096
   end)
 
   it("a secret history entry (chat messaging lockdown) is asked about before any comparison", function()
@@ -294,9 +294,9 @@ describe("SYSTEM chat lines", function()
     f:Refresh()
     local ja, en = f.visibleLines[1], f.visibleLines[2]
     assert.are.equal("パーティーがいっぱいです。", ja:GetText())
-    assert.are.equal(WFJ.Font.PATH, ja.font.path)
+    assert.are.equal(WFI.Font.PATH, ja.font.path)
     assert.are.equal(14, ja.font.size)
-    assert.are.equal(WFJ.Font.PATH, en.font.path) -- a player's Japanese would show here too
+    assert.are.equal(WFI.Font.PATH, en.font.path) -- a player's Japanese would show here too
     assert.are.equal(14, en.font.size)
     -- a refresh that changes nothing sets no font again (busy chat refreshes many times a second)
     local before = en.calls.SetFont or 0
@@ -313,12 +313,12 @@ describe("SYSTEM chat lines", function()
       f:AddMessage("Ostara says: hey", 1, 1, 1, SAY) -- the Japanese moves up a row; English takes this one
       f:Refresh()
       assert.are.equal("Ostara says: hey", row:GetText())
-      assert.are.equal(WFJ.Font.PATH, row.font.path)
+      assert.are.equal(WFI.Font.PATH, row.font.path)
       assert.are.equal(14, row.font.size)
       f.fontObject.font.size = 18 -- the player picks a bigger chat font: the client changes the object
       f:Refresh()
       for _, line in ipairs(f.visibleLines) do
-        assert.are.equal(WFJ.Font.PATH, line.font.path)
+        assert.are.equal(WFI.Font.PATH, line.font.path)
         assert.are.equal(18, line.font.size)
       end
     end)
@@ -329,12 +329,12 @@ describe("SYSTEM chat lines", function()
     f:Refresh()
     local row = f.visibleLines[2]
     row.font.size = 11 -- a size an earlier fit shrank it to
-    alt(WFJ, true)
+    alt(WFI, true)
     assert.are.equal("Your party is full.", row:GetText())
-    assert.are.equal(WFJ.Font.PATH, row.font.path)
+    assert.are.equal(WFI.Font.PATH, row.font.path)
     assert.are.equal(14, row.font.size)
-    alt(WFJ, false)
-    assert.are.equal(WFJ.Font.PATH, row.font.path)
+    alt(WFI, false)
+    assert.are.equal(WFI.Font.PATH, row.font.path)
     assert.are.equal(14, row.font.size) -- from the frame's font, not the row's leftover size
   end)
 
@@ -345,16 +345,16 @@ describe("SYSTEM chat lines", function()
       function line.GetHeight() return 14 end -- the height the frame laid the line out at
       -- two lines (28 px) at 12 px and up, one line (14 px) below: shrinks until the extra line is gone
       function line:GetStringHeight()
-        if self.font.path ~= WFJ.Font.PATH then return 14 end
+        if self.font.path ~= WFI.Font.PATH then return 14 end
         return self.font.size >= 12 and 28 or 14
       end
-      assert.are.equal(11, WFJ.ChatSystem.fit(line))
-      assert.are.equal(WFJ.Font.PATH, line.font.path)
+      assert.are.equal(11, WFI.ChatSystem.fit(line))
+      assert.are.equal(WFI.Font.PATH, line.font.path)
       Stub.fontSetFails = true
       local refused = Stub.fontString("")
-      assert.is_nil(WFJ.ChatSystem.fit(refused))
+      assert.is_nil(WFI.ChatSystem.fit(refused))
       Stub.fontSetFails = false
-      assert.are.equal(0, WFJ.Font.retryPending()) -- nothing was left pending for a pooled line
+      assert.are.equal(0, WFI.Font.retryPending()) -- nothing was left pending for a pooled line
     end)
 
   it("a one-line Japanese line a couple of pixels taller than its slot keeps its size", function()
@@ -362,7 +362,7 @@ describe("SYSTEM chat lines", function()
     line.font = { path = "Fonts\\ARIALN.TTF", size = 14, flags = "" }
     function line.GetHeight() return 14 end
     function line.GetStringHeight() return 16 end -- the bundled face's line is a little taller: not an extra line
-    assert.are.equal(14, WFJ.ChatSystem.fit(line))
+    assert.are.equal(14, WFI.ChatSystem.fit(line))
   end)
 
   it("all system chat: loot, XP, a stat word, the away message, each its own chat type", function()
@@ -396,9 +396,9 @@ describe("SYSTEM chat lines", function()
     system(f, "Text-to-Speech and Speech-to-Text enabled")
     assert.are.equal("読み上げと音声入力を有効にしました", f:Last())
     f:Refresh()
-    alt(WFJ, true)
+    alt(WFI, true)
     assert.are.equal("Switching to voice chat service: Legacy", f.visibleLines[1]:GetText())
-    alt(WFJ, false)
+    alt(WFI, false)
     system(f, "Switching to voice chat service: Discord") -- a name, kept as written
     assert.are.equal("ボイスチャットサービスを切り替えます: Discord", f:Last())
   end)
@@ -435,9 +435,9 @@ describe("SYSTEM chat lines", function()
       assert.are.equal("|A:voicechat-channellist-icon-headphone-off:0:0|a (O)でボイスチャットの管理と参加ができます。",
         f:Last())
       f:Refresh()
-      alt(WFJ, true)
+      alt(WFI, true)
       assert.are.equal(tip, f.visibleLines[2]:GetText())
-      alt(WFJ, false)
+      alt(WFI, false)
     end)
 
   it("a key-restricted frame: the separators and the MOTD label, from AddMessage and BackFillMessage;"
@@ -445,8 +445,8 @@ describe("SYSTEM chat lines", function()
       local keys = { "COMMUNITIES_CHAT_FRAME_TODAY_NOTIFICATION", "COMMUNITIES_CHAT_FRAME_YESTERDAY_NOTIFICATION",
         "COMMUNITIES_CHAT_FRAME_UNREAD_MESSAGES_NOTIFICATION", "COMMUNITIES_MESSAGE_OF_THE_DAY_FORMAT" }
       local m = chatFrame()
-      assert.are.equal(1, WFJ.ChatSystem.hookKeyed(m, keys))
-      assert.are.equal(0, WFJ.ChatSystem.hookKeyed(m, keys)) -- once
+      assert.are.equal(1, WFI.ChatSystem.hookKeyed(m, keys))
+      assert.are.equal(0, WFI.ChatSystem.hookKeyed(m, keys)) -- once
       m:AddMessage("Today", 0.4, 0.4, 0.4)
       assert.are.equal("今日", m:Last())
       m:AddMessage("Message of the Day: \"Raid at 8. Bring flasks!\"", 1, 1, 0)
@@ -462,9 +462,9 @@ describe("SYSTEM chat lines", function()
       m.history[#m.history + 1] = m.history[1] -- the backfilled separator scrolled into view
       m:Refresh()
       assert.are.equal("未読メッセージ", m.visibleLines[2]:GetText())
-      alt(WFJ, true)
+      alt(WFI, true)
       assert.are.equal("Unread Messages", m.visibleLines[2]:GetText())
-      alt(WFJ, false)
+      alt(WFI, false)
       assert.are.equal("未読メッセージ", m.visibleLines[2]:GetText())
     end)
 
@@ -472,8 +472,8 @@ describe("SYSTEM chat lines", function()
     local keys = { "COMMUNITIES_CHAT_FRAME_TODAY_NOTIFICATION", "COMMUNITIES_CHAT_FRAME_YESTERDAY_NOTIFICATION",
       "COMMUNITIES_CHAT_FRAME_UNREAD_MESSAGES_NOTIFICATION", "COMMUNITIES_MESSAGE_OF_THE_DAY_FORMAT" }
     local m = chatFrame()
-    WFJ.ChatSystem.hookKeyed(m, keys)
-    local index = WFJ.UIIndex
+    WFI.ChatSystem.hookKeyed(m, keys)
+    local index = WFI.UIIndex
     local calls, match, matchOnly = 0, index.match, index.matchOnly
     index.match = function(...) calls = calls + 1; return match(...) end
     index.matchOnly = function(...) calls = calls + 1; return matchOnly(...) end
@@ -492,9 +492,9 @@ describe("SYSTEM chat lines", function()
   end)
 
   it("a temporary window is hooked once; init once", function()
-    assert.is_false(WFJ.ChatSystem.init())
+    assert.is_false(WFI.ChatSystem.init())
     local w = _G.FCF_OpenTemporaryWindow()
-    assert.are.equal(0, WFJ.ChatSystem.hookAll()) -- the hook on FCF_OpenTemporaryWindow already took it
+    assert.are.equal(0, WFI.ChatSystem.hookAll()) -- the hook on FCF_OpenTemporaryWindow already took it
     system(w, "Your party is full.")
     assert.are.equal("パーティーがいっぱいです。", w:Last())
     assert.are.equal(1, #w.history)
@@ -502,9 +502,9 @@ describe("SYSTEM chat lines", function()
 
   it("a wrong-typed call raises nothing", function()
     assert.has_no.errors(function()
-      WFJ.ChatSystem.onAddMessage(nil)
-      WFJ.ChatSystem.onAddMessage(_G.ChatFrame1, 5, 1, 1, 1, SYSTEM)
-      WFJ.ChatSystem.onRefreshed({ visibleLines = { 3 } })
+      WFI.ChatSystem.onAddMessage(nil)
+      WFI.ChatSystem.onAddMessage(_G.ChatFrame1, 5, 1, 1, 1, SYSTEM)
+      WFI.ChatSystem.onRefreshed({ visibleLines = { 3 } })
     end)
   end)
 end)

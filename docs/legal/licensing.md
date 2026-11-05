@@ -64,7 +64,7 @@ they come from those same releases. The QuestJapanizer wiki site itself was neve
 
 Every line in `data/` records who wrote it (`provenance.translator`), so credit follows each line. Translators
 are credited by the tags they used, with no suggestion that they endorse this project. `ATTRIBUTION.md` lists
-every tag in `data/`, shipped or not (`python -m wfj.dev.gen_attribution` writes the list, and a test fails when
+every tag in `data/`, shipped or not (`python -m wfi.dev.gen_attribution` writes the list, and a test fails when
 a tag is missing).
 
 Machine-drafted lines are marked `machine` in their provenance, with the model that drafted them.
@@ -74,7 +74,7 @@ report form says so before they send it.
 
 ## Font: IPA UI Gothic
 
-`addon/WoWForeverJapanese/Fonts/ipagui.ttf` is **IPA UI Gothic**, redistributed **unmodified under the IPA Font
+`addon/WoWForeverItalian/Fonts/ipagui.ttf` is **IPA UI Gothic**, redistributed **unmodified under the IPA Font
 License Agreement v1.0**. The license requires its text to travel with the font and the original file name to be
 kept, which is why the file is `ipagui.ttf`. The official Japanese text is
 `Fonts/IPA_Font_License_Agreement_v1.0.txt`; `Fonts/README.txt` points to the English translation at
@@ -88,8 +88,8 @@ apart from the facts named here.
 
 | Project | What it was read for | Its license |
 |---|---|---|
-| [WoWDBDefs](https://github.com/wowdev/WoWDBDefs) | the declared types of the columns of three client tables (`ItemSubClass`, `QuestV2`, `ItemEffect`), copied by hand into `pipeline/wfj/io/client_tables.py` and `io/dbcache.py` | definitions CC BY-SA 4.0, code BSD-3-Clause |
-| [wowdev.wiki](https://wowdev.wiki) | the descriptions of the archive and table formats the readers under `pipeline/wfj/io/` follow | see the site |
+| [WoWDBDefs](https://github.com/wowdev/WoWDBDefs) | the declared types of the columns of three client tables (`ItemSubClass`, `QuestV2`, `ItemEffect`), copied by hand into `pipeline/wfi/io/client_tables.py` and `io/dbcache.py` | definitions CC BY-SA 4.0, code BSD-3-Clause |
+| [wowdev.wiki](https://wowdev.wiki) | the descriptions of the archive and table formats the readers under `pipeline/wfi/io/` follow | see the site |
 | [wow-listfile](https://github.com/wowdev/wow-listfile) | the file ids of interface files, to find them in an installed client | none stated |
 | [wow-ui-source](https://github.com/Gethe/wow-ui-source) | a public mirror of the client's interface code, read for the citations in the docs and comments | the code is Blizzard Entertainment's |
 

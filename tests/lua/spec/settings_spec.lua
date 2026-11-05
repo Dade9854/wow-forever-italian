@@ -24,11 +24,11 @@ local DEFAULTS = { enabled = true, modifier = "alt", ["area.quests"] = true, ["a
   ["voice.panel.combatDim"] = true, ["voice.panel.questLog"] = true, ["voice.panel.lock"] = false }
 
 describe("Settings registry", function()
-  local WFJ, S
+  local WFI, S
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(CORE)
-    S = WFJ.Settings
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(CORE)
+    S = WFI.Settings
   end)
 
   -- every setting has an Options row, so none is hidden; the voice settings' row is on the page that exists only
@@ -42,7 +42,7 @@ describe("Settings registry", function()
     assert.are.same(IDS, ids)
   end)
 
-  it("returns the documented defaults on an empty WFJ_DB", function()
+  it("returns the documented defaults on an empty WFI_DB", function()
     S.load(nil, 1, {})
     for id, v in pairs(DEFAULTS) do assert.are.equal(v, S.get(id), id) end
   end)
@@ -107,27 +107,27 @@ describe("Settings registry", function()
     assert.are.equal("alt", S.get("modifier")); assert.is_nil(db.settings.modifier)
     assert.is_true(S.get("enabled")); assert.is_nil(db.settings.enabled)
     assert.is_false(S.get("marker.stale")); assert.is_false(db.settings["marker.stale"])
-    assert.are.equal("alt", WFJ.Modifier.key())
+    assert.are.equal("alt", WFI.Modifier.key())
   end)
 
   it("apply hooks mirror into State on load", function()
     S.load({ schema = 1, settings = { enabled = false, ["area.gossip"] = false } }, 1, {})
-    assert.is_false(WFJ.State.enabled)
-    assert.is_false(WFJ.State.areaEnabled("gossip"))
-    assert.is_true(WFJ.State.areaEnabled("quests"))
-    assert.is_true(WFJ.State.areaEnabled("items"))
-    assert.is_true(WFJ.State.areaEnabled("spells"))
+    assert.is_false(WFI.State.enabled)
+    assert.is_false(WFI.State.areaEnabled("gossip"))
+    assert.is_true(WFI.State.areaEnabled("quests"))
+    assert.is_true(WFI.State.areaEnabled("items"))
+    assert.is_true(WFI.State.areaEnabled("spells"))
   end)
 end)
 
 describe("Settings kind \"key\" and the modifier's toggle check", function()
-  local WFJ, S
+  local WFI, S
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua",
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua",
       "Core/Modifier.lua" })
-    WFJ.Compat.init(function(name) return _G[name] end)
-    S = WFJ.Settings
+    WFI.Compat.init(function(name) return _G[name] end)
+    S = WFI.Settings
   end)
 
   it("an invalid key is refused with its reason and the stored value stays", function()
@@ -141,19 +141,19 @@ describe("Settings kind \"key\" and the modifier's toggle check", function()
 
   it("the modifier cannot be the toggle's key; only an exact key conflicts", function()
     S.load(nil, 1, {})
-    Stub.bindings.J = "WFJ_TOGGLE"
+    Stub.bindings.J = "WFI_TOGGLE"
     local ok, why = S.set("modifier", "j")
     assert.is_false(ok)
     assert.is_truthy(why:find("turning translation on / off", 1, true))
     assert.are.equal("alt", S.get("modifier"))
     assert.are.same({}, Stub.bindingCalls)
-    Stub.bindings = { ["CTRL-J"] = "WFJ_TOGGLE" }
+    Stub.bindings = { ["CTRL-J"] = "WFI_TOGGLE" }
     assert.is_true((S.set("modifier", "j")))
     assert.are.equal("J", S.get("modifier"))
   end)
 
   it("every non-hidden setting carries its Japanese label", function()
-    WFJ = H.loadChunks({ "Core/Collector.lua" }, WFJ)
+    WFI = H.loadChunks({ "Core/Collector.lua" }, WFI)
     for _, d in ipairs(S.list()) do
       if not d.hidden then assert.is_true(type(d.ja) == "string" and #d.ja > 0, d.id) end
     end

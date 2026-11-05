@@ -19,8 +19,8 @@ local UI = {
 }
 
 describe("talent requirement lines", function()
-  local WFJ
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local WFI
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function line(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
   local function button(conditions, field)
     local display = CreateFrame("Button")
@@ -33,13 +33,13 @@ describe("talent requirement lines", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     PS.install()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     PS.loadPlayerSpells()
-    WFJ.Talents.init()
+    WFI.Talents.init()
   end)
   after_each(function()
     H.uiTeardown()
@@ -84,6 +84,6 @@ describe("talent requirement lines", function()
     assert.are.equal(text, line(2))
     display.talentFrame = { condInfoCache = "x" }
     assert.has_no.errors(function() PS.hoverTalent(display, { "Mortal Strike", text }) end)
-    assert.are.same({}, WFJ.Talents.conditionFormats(nil))
+    assert.are.same({}, WFI.Talents.conditionFormats(nil))
   end)
 end)

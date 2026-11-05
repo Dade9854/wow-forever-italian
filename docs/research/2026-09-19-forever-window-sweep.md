@@ -3,7 +3,7 @@
 - **Date:** 2026-09-19
 - **Question:** Which Blizzard addons does the Forever client load in game, which of them open a window a player can
   reach, and for each window: where is its entry point, who writes its text, and what does the addon do with it?
-- **Client:** World of Warcraft: Forever beta, build **1.60.1.69913**. UI extracted read-only with `wfj.dev.client_ui`
+- **Client:** World of Warcraft: Forever beta, build **1.60.1.69913**. UI extracted read-only with `wfi.dev.client_ui`
   (the read-only ADR-021 path), with the addons' `.toc` files in its path list. Content evidence from the
   client's own tables (`db2@1.60.1.69913`).
 - **Citations:** `path:line`, relative to `Interface/AddOns`, lowercased as extracted. The extract is not committed.
@@ -33,7 +33,7 @@ B was taken ([ADR-030](../adr/030-every-window-the-forever-client-loads.md)).
 
 ### 1. Method
 
-**The resolver** (`pipeline/wfj/dev/client_addons.py`, pinned by `tests/python/test_client_addons.py`) reads each
+**The resolver** (`pipeline/wfi/dev/client_addons.py`, pinned by `tests/python/test_client_addons.py`) reads each
 addon's TOC under ADR-029's rule:
 
 - `[Family]` in a path is `Mainline`, `[Game]` is `Camelot`.
@@ -179,7 +179,7 @@ are titles on existing surfaces:
 | blizzard_objectivetracker (login) | questmap, tracker · UI/Tracker.lua | `ObjectiveTrackerManager:Init` adds eleven modules (`blizzard_objectivetrackermanager.lua:192–215`) |
 
 Trade, taxi, tabard, petition, guild registrar, dress-up, casting bar and group loot have frames of the same name on
-Classic Era. Each of those modules first checks `WFJ.Camelot.present()` (or a camelot-only widget: the loot
+Classic Era. Each of those modules first checks `WFI.Camelot.present()` (or a camelot-only widget: the loot
 `ScrollBox`, `LootButtonContainer`), so Classic Era is unchanged.
 
 **Commerce and NPC windows**
@@ -357,7 +357,7 @@ this build, and none can show anything. A later build that fills one of these ta
 
 #### Re-run on build 1.60.1.70009 (2026-09-25)
 The check above was done by hand. It is now a committed tool: `make forever-table-counts WOW_DIR=\<client folder>
-[HOTFIXES=\<Cache/ADB/enUS/DBCache.bin>]` (`python -m wfj.dev.table_counts`) prints each table's record count in the
+[HOTFIXES=\<Cache/ADB/enUS/DBCache.bin>]` (`python -m wfi.dev.table_counts`) prints each table's record count in the
 local archive and its valid hotfix rows, flags a table with rows, and exits non-zero when a table cannot be read. It
 reads `.build.info`, the archive and the hotfix cache only, read-only ([ADR-021](../adr/021-client-tables-from-the-local-archive.md)). The tables are looked up
 by FileDataID, pinned in the tool: the Forever root carries no name hashes for them (ids from the community listfile).

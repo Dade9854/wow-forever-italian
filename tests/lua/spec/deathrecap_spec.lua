@@ -80,11 +80,11 @@ local function installDeathRecap()
 end
 
 describe("the death recap window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -97,11 +97,11 @@ describe("the death recap window on Forever", function()
   end
 
   local function fresh()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
@@ -109,11 +109,11 @@ describe("the death recap window on Forever", function()
     _G.OpenDeathRecapUI = function() end -- the bootstrap's opener is there from login
     if loadedFirst then
       installDeathRecap()
-      assert.is_true(WFJ.DeathRecap.init())
+      assert.is_true(WFI.DeathRecap.init())
     else
-      assert.is_false(WFJ.DeathRecap.init()) -- waits for the addon
+      assert.is_false(WFI.DeathRecap.init()) -- waits for the addon
       installDeathRecap()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -149,7 +149,7 @@ describe("the death recap window on Forever", function()
         assert.are.equal("-120", first.DamageInfo.Amount:GetText())
         assert.is_true(unrecorded(first.SpellInfo.Name))
         assert.is_true(unrecorded(first.SpellInfo.Caster))
-        assert.is_true(WFJ.Labels.forbidden(first.SpellInfo.Name))
+        assert.is_true(WFI.Labels.forbidden(first.SpellInfo.Name))
         assert.are.equal("何か", second.SpellInfo.Caster:GetText())
         -- the pool reuses the first row for another event: its caster shows the new text
         f:OpenRecap({ { spell = "Fireball", caster = nil, amount = "300", seconds = 0, hp = 12 } })
@@ -167,7 +167,7 @@ describe("the death recap window on Forever", function()
         damage.scripts.OnEnter(damage)
         assert.are.equal("120 ", _G.GameTooltipTextLeft1:GetText())
         -- "%s by %s" takes names: it renders only once Core/UIStrings.ARGS carries its `text` arguments
-        if WFJ.UIStrings.ARGS.DEATH_RECAP_CAST_BY_TT then
+        if WFI.UIStrings.ARGS.DEATH_RECAP_CAST_BY_TT then
           assert.are.equal("Fireball（Kobold Geomancerによる）", _G.GameTooltipTextLeft2:GetText())
         else
           assert.are.equal("Fireball by Kobold Geomancer", _G.GameTooltipTextLeft2:GetText())
@@ -221,21 +221,21 @@ describe("the death recap window on Forever", function()
     _G.OpenDeathRecapUI = function() end
     local frame = installDeathRecap()
     frame.Title, frame.CloseButton, frame.ScrollBox = "Death Recap", 42, true
-    assert.has_no.errors(function() WFJ.DeathRecap.init() end)
+    assert.has_no.errors(function() WFI.DeathRecap.init() end)
     assert.are.equal("死亡の記録は利用できません。", frame.Unavailable:GetText())
     _G.DeathRecapFrame = "not a frame"
     local other = H.loadChunks(FILES)
     H.uiSetup(other, UI)
     assert.has_no.errors(function() other.DeathRecap.init() end)
     -- a row of the wrong shape
-    assert.has_no.errors(function() WFJ.DeathRecap.onRow({ SpellInfo = 1, DamageInfo = "x" }) end)
+    assert.has_no.errors(function() WFI.DeathRecap.onRow({ SpellInfo = 1, DamageInfo = "x" }) end)
   end)
 
   it("hooks install once; a client without the death recap is skipped without error", function()
     setup(true)
-    assert.has_no.errors(function() WFJ.DeathRecap.init() end)
+    assert.has_no.errors(function() WFI.DeathRecap.init() end)
     assert.are.equal(1, #_G.DeathRecapFrame.ScrollBox.initCallbacks)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.DeathRecapFrame, _G.OpenDeathRecapUI = nil, nil
     local bare = H.loadChunks(FILES)

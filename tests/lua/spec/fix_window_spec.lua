@@ -17,26 +17,26 @@ local ROWS = {
 }
 
 local function load()
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   F.install()
-  local WFJ = H.loadChunks(FILES)
-  WFJ.Compat.init(function(name) return _G[name] end)
-  local db = WFJ.Settings.load(nil, 1, {})
-  WFJ.Reports.load(db)
-  WFJ.Lookup = { get = function(kind, id) return ROWS[kind] and ROWS[kind][id] or nil end }
+  local WFI = H.loadChunks(FILES)
+  WFI.Compat.init(function(name) return _G[name] end)
+  local db = WFI.Settings.load(nil, 1, {})
+  WFI.Reports.load(db)
+  WFI.Lookup = { get = function(kind, id) return ROWS[kind] and ROWS[kind][id] or nil end }
   _G.QUEST_7_ENGLISH = ENGLISH
-  WFJ.RecentLines.note("quest.title", 7, "questframe")
-  WFJ.RecentLines.note("gossip", "0001ce030c010973", "gossip")
-  WFJ.RecentLines.note("quest.description", 7, "questframe")
-  return WFJ, db
+  WFI.RecentLines.note("quest.title", 7, "questframe")
+  WFI.RecentLines.note("gossip", "0001ce030c010973", "gossip")
+  WFI.RecentLines.note("quest.description", 7, "questframe")
+  return WFI, db
 end
 
 describe("the fix window", function()
-  local WFJ, FW
+  local WFI, FW
 
   before_each(function()
-    WFJ = load()
-    FW = WFJ.FixWindow
+    WFI = load()
+    FW = WFI.FixWindow
   end)
   after_each(function() F.clear(); _G.QUEST_7_ENGLISH = nil end)
 
@@ -49,13 +49,13 @@ describe("the fix window", function()
 
   it("a language flip with no widget on screen only marks them stale; showing re-draws them",
     function()
-    local W = WFJ.OptionsWidgets -- the window is not built yet: this label is the only widget on the list
+    local W = WFI.OptionsWidgets -- the window is not built yet: this label is the only widget on the list
     local owner = CreateFrame("Frame")
     owner:Hide()
     local l = W.label(owner, "English", "日本語", 0, 0, 100)
     assert.are.equal("日本語", l.en:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.is_true(W.stale)
     assert.are.equal("日本語", l.en:GetText()) -- nothing re-drawn off screen
     W.relabelIfStale()
@@ -63,7 +63,7 @@ describe("the fix window", function()
     assert.are.equal("English", l.en:GetText())
     owner:Show()
     Stub.keys.alt = false
-    WFJ.Modifier.refresh() -- on screen: re-drawn at once
+    WFI.Modifier.refresh() -- on screen: re-drawn at once
     assert.are.equal("日本語", l.en:GetText())
   end)
 
@@ -88,7 +88,7 @@ describe("the fix window", function()
     assert.are.same({ "LEFT", F_.all.text, "RIGHT" }, { F_.story.point[1], F_.story.point[2], F_.story.point[3] })
     assert.is_true(F_.all:GetChecked())
     FW.filter = "story"
-    WFJ.RecentLines.note("ui", "OKAY", "s", "了解")
+    WFI.RecentLines.note("ui", "OKAY", "s", "了解")
     FW.open()
     for i = 1, 4 do
       local left = row("recent", i):IsShown() and row("recent", i).left:GetText() or ""
@@ -114,20 +114,20 @@ describe("the fix window", function()
   it("a line written while the list is open appears on the next frame, redrawn once", function()
     FW.open()
     assert.is_false(row("recent", 4):IsShown())
-    WFJ.RecentLines.note("quest.title", 7, "questframe", nil, 50.0)
-    WFJ.RecentLines.note("quest.description", 7, "questframe", nil, 50.0)
+    WFI.RecentLines.note("quest.title", 7, "questframe", nil, 50.0)
+    WFI.RecentLines.note("quest.description", 7, "questframe", nil, 50.0)
     local tick = FW.frame.scripts.OnUpdate
     assert.is_function(tick)
     tick(FW.frame)
     assert.is_nil(FW.frame.scripts.OnUpdate) -- cleared: no polling once drawn
     assert.are.equal("旅立ち", row("recent", 1).text:GetText())
     FW.frame:Hide()
-    WFJ.RecentLines.note("gossip", "0001ce030c010973", "gossip", nil, 60.0)
+    WFI.RecentLines.note("gossip", "0001ce030c010973", "gossip", nil, 60.0)
     assert.is_nil(FW.frame.scripts.OnUpdate) -- a closed window is not redrawn
   end)
 
   it("an empty log says to read some text first", function()
-    WFJ.RecentLines.clear()
+    WFI.RecentLines.clear()
     FW.open()
     assert.are.equal("まだありません。クエストやNPCの文章を読んでから、もう一度開いてください。",
       FW.pages.recent.empty.en:GetText())
@@ -137,7 +137,7 @@ describe("the fix window", function()
     FW.open()
     row("recent", 2):click()
     assert.are.equal("edit", FW.current)
-    assert.are.same({ "gossip", "0001ce030c010973", "text", WFJ.Hash.key("ようこそ。") },
+    assert.are.same({ "gossip", "0001ce030c010973", "text", WFI.Hash.key("ようこそ。") },
       { FW.edit.type, FW.edit.id, FW.edit.field, FW.edit.ja_hash })
     assert.are.equal("ようこそ。", edit().ja.box:GetText())
     assert.are.equal("ようこそ。", edit().ja.box:GetText())
@@ -149,12 +149,12 @@ describe("the fix window", function()
     FW.open()
     row("recent", 1):click()
     edit().save:click()
-    assert.are.equal(0, WFJ.Reports.count())
+    assert.are.equal(0, WFI.Reports.count())
     assert.are.equal("先に、どこがおかしいかを選んでください。", FW.frame.message:GetText())
     edit().reasons.awkward:click()
     edit().save:click()
-    assert.are.equal(1, WFJ.Reports.count())
-    local fix = WFJ.Reports.list()[1]
+    assert.are.equal(1, WFI.Reports.count())
+    local fix = WFI.Reports.list()[1]
     assert.are.equal("awkward", fix.reason)
     assert.is_nil(fix.ja) -- the box was left as shown
     assert.are.equal("pending", FW.current)
@@ -165,10 +165,10 @@ describe("the fix window", function()
     edit().note:SetText("too formal")
     edit().reasons.wrong:click()
     edit().save:click()
-    assert.are.equal(1, WFJ.Reports.count()) -- opened from the recent list, it asked first
+    assert.are.equal(1, WFI.Reports.count()) -- opened from the recent list, it asked first
     assert.is_truthy(FW.frame.message:GetText():find("もう一度クリック", 1, true))
     edit().save:click()
-    fix = WFJ.Reports.list()[1]
+    fix = WFI.Reports.list()[1]
     assert.are.same({ "wrong", "旅人よ、よく来た。", "too formal" }, { fix.reason, fix.ja, fix.note })
   end)
 
@@ -178,7 +178,7 @@ describe("the fix window", function()
     edit().reasons.typo:click()
     assert.is_nil(edit().noSuggestion)
     edit().save:click()
-    local fix = WFJ.Reports.list()[1]
+    local fix = WFI.Reports.list()[1]
     assert.are.same({ "quest", 7, "title", "typo" }, { fix.type, fix.id, fix.field, fix.reason })
     assert.is_nil(fix.ja)
   end)
@@ -190,10 +190,10 @@ describe("the fix window", function()
     edit().note:SetText("it should greet reyn by name")
     edit().reasons.wrong:click()
     edit().save:click()
-    local fix = WFJ.Reports.list()[1]
+    local fix = WFI.Reports.list()[1]
     assert.are.same({ "{name}よ、よく来た。", "it should greet {name} by name" }, { fix.ja, fix.note })
     assert.is_nil(fix.t)
-    local report = WFJ.ReportText.serialize(WFJ.VERSION, "1.60.1.70009", WFJ.Reports.list())
+    local report = WFI.ReportText.serialize(WFI.VERSION, "1.60.1.70009", WFI.Reports.list())
     assert.is_nil(report:lower():find("reyn", 1, true))
   end)
 
@@ -202,14 +202,14 @@ describe("the fix window", function()
     local stored = ROWS["quest.description"][7]
     local original = stored.ja
     stored.ja = "Reynの元へ行け。"
-    WFJ.RecentLines.note("quest.description", 7, "questframe") -- the line as the player just saw it
+    WFI.RecentLines.note("quest.description", 7, "questframe") -- the line as the player just saw it
     FW.open()
     row("recent", 1):click()
     edit().note:SetText("Reyn is the quest giver here")
     edit().ja.box:SetText("Reynのところへ行け。")
     edit().reasons.wrong:click()
     edit().save:click()
-    local fix = WFJ.Reports.list()[1]
+    local fix = WFI.Reports.list()[1]
     assert.are.same({ "Reyn is the quest giver here", "Reynのところへ行け。" }, { fix.note, fix.ja })
     stored.ja = original
   end)
@@ -225,7 +225,7 @@ describe("the fix window", function()
   end)
 
   it("the pending page lists fixes; one opens for edit and can be deleted", function()
-    WFJ.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFJ.Hash.key("旅立ち"), reason = "typo",
+    WFI.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFI.Hash.key("旅立ち"), reason = "typo",
       note = "missing particle" })
     FW.open("pending")
     -- the type with the reason under it on the left, the Japanese beside them
@@ -237,59 +237,59 @@ describe("the fix window", function()
     assert.is_true(edit().delete:IsShown())
     edit().reasons.other:click()
     edit().save:click() -- opened from the fix itself: replaced at once
-    assert.are.equal("other", WFJ.Reports.list()[1].reason)
+    assert.are.equal("other", WFI.Reports.list()[1].reason)
     row("pending", 1):click()
     edit().delete:click()
-    assert.are.equal(0, WFJ.Reports.count())
+    assert.are.equal(0, WFI.Reports.count())
     assert.are.equal("保存された報告はありません。", FW.pages.pending.empty.en:GetText())
   end)
 
   it("the 26th fix is refused with a message", function()
-    for i = 1, WFJ.Reports.CAP do
-      WFJ.Reports.save({ type = "quest", id = 1000 + i, field = "title", ja_hash = "0011223344556677",
+    for i = 1, WFI.Reports.CAP do
+      WFI.Reports.save({ type = "quest", id = 1000 + i, field = "title", ja_hash = "0011223344556677",
         reason = "other" })
     end
     FW.open()
     row("recent", 1):click()
     edit().reasons.wrong:click()
     edit().save:click()
-    assert.are.equal(WFJ.Reports.CAP, WFJ.Reports.count())
-    assert.are.equal(select(2, WFJ.OptionsText.get("fix.full", WFJ.Reports.CAP)), FW.frame.message:GetText())
+    assert.are.equal(WFI.Reports.CAP, WFI.Reports.count())
+    assert.are.equal(select(2, WFI.OptionsText.get("fix.full", WFI.Reports.CAP)), FW.frame.message:GetText())
   end)
 
   it("Copy report shows the serialized report, selected; the issue form URL; clear asks first", function()
-    WFJ.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFJ.Hash.key("旅立ち"), reason = "typo",
+    WFI.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFI.Hash.key("旅立ち"), reason = "typo",
       ja = "旅|立ち" })
     FW.open("copy")
     local text = FW.pages.copy.report.box:GetText()
-    assert.are.equal(WFJ.ReportText.serialize(WFJ.VERSION, "1.15.9.69722", WFJ.Reports.list()), text)
+    assert.are.equal(WFI.ReportText.serialize(WFI.VERSION, "1.15.9.69722", WFI.Reports.list()), text)
     assert.are.equal(FW.reportText(), text)
-    assert.is_truthy(text:find("fix quest 7 title " .. WFJ.Hash.key("旅立ち") .. " typo\nja 旅\\x7c立ち\n", 1, true))
+    assert.is_truthy(text:find("fix quest 7 title " .. WFI.Hash.key("旅立ち") .. " typo\nja 旅\\x7c立ち\n", 1, true))
     assert.is_true(FW.pages.copy.report.box.focused)
     assert.is_true(FW.pages.copy.report.box.highlighted)
-    assert.are.equal(WFJ.OptionsText.FIX_URL, FW.pages.copy.url.value)
+    assert.are.equal(WFI.OptionsText.FIX_URL, FW.pages.copy.url.value)
     FW.pages.copy.clear:click()
-    assert.are.equal(1, WFJ.Reports.count())
+    assert.are.equal(1, WFI.Reports.count())
     assert.are.equal("もう一度クリックで1件を消去", FW.pages.copy.clear.caption:GetText())
     FW.pages.copy.clear:click()
-    assert.are.equal(0, WFJ.Reports.count())
+    assert.are.equal(0, WFI.Reports.count())
     assert.are.equal("", FW.pages.copy.report.box:GetText())
   end)
 
   it("Clear removes only the reports the copied text held; one saved after stays", function()
-    WFJ.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFJ.Hash.key("旅立ち"), reason = "typo" })
+    WFI.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFI.Hash.key("旅立ち"), reason = "typo" })
     FW.open("copy") -- the report is rendered with one fix
-    WFJ.Reports.save({ type = "gossip", id = "0001ce030c010973", field = "text", ja_hash = WFJ.Hash.key("ようこそ。"),
+    WFI.Reports.save({ type = "gossip", id = "0001ce030c010973", field = "text", ja_hash = WFI.Hash.key("ようこそ。"),
       reason = "awkward" }) -- saved after the copy, never sent
     FW.pages.copy.clear:click()
     assert.are.equal("もう一度クリックで1件を消去", FW.pages.copy.clear.caption:GetText())
     FW.pages.copy.clear:click()
-    assert.are.equal(1, WFJ.Reports.count())
-    assert.are.equal("gossip", WFJ.Reports.list()[1].type)
+    assert.are.equal(1, WFI.Reports.count())
+    assert.are.equal("gossip", WFI.Reports.list()[1].type)
   end)
 
   it("an armed Clear that runs out puts its caption back", function()
-    WFJ.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFJ.Hash.key("旅立ち"), reason = "typo" })
+    WFI.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = WFI.Hash.key("旅立ち"), reason = "typo" })
     FW.open("copy")
     local t = 50
     _G.GetTime = function() return t end
@@ -300,7 +300,7 @@ describe("the fix window", function()
     tick(FW.pages.copy.clear)
     assert.are.equal("送信済みの報告を消去", FW.pages.copy.clear.caption:GetText())
     assert.is_nil(FW.pages.copy.clear.scripts.OnUpdate)
-    assert.are.equal(1, WFJ.Reports.count())
+    assert.are.equal(1, WFI.Reports.count())
     _G.GetTime = function() return 0 end
   end)
 
@@ -319,7 +319,7 @@ describe("the fix window", function()
     edit().note:SetText("   ")
     edit().reasons.typo:click()
     edit().save:click()
-    local fix = WFJ.Reports.list()[1]
+    local fix = WFI.Reports.list()[1]
     assert.is_nil(fix.ja) -- unchanged: no Japanese of the player's
     assert.is_nil(fix.note) -- only spaces: no note
     FW.open()
@@ -330,29 +330,29 @@ describe("the fix window", function()
     edit().reasons.wrong:click()
     edit().save:click() -- the line already has a fix: the first Save asks
     edit().save:click()
-    fix = WFJ.Reports.list()[1]
+    fix = WFI.Reports.list()[1]
     assert.is_nil(fix.ja)
     assert.are.equal("stiff", fix.note)
   end)
 
   it("Save with the saved settings missing says so", function()
-    WFJ.Reports.load(nil)
+    WFI.Reports.load(nil)
     FW.open()
     row("recent", 1):click()
     edit().reasons.wrong:click()
     edit().save:click()
-    assert.are.equal(select(2, WFJ.OptionsText.get("fix.unavailable")), FW.frame.message:GetText())
+    assert.are.equal(select(2, WFI.OptionsText.get("fix.unavailable")), FW.frame.message:GetText())
   end)
 
   it("a row whose shown text is empty falls back to the stored Japanese; a CR never reaches a row", function()
-    WFJ.RecentLines.clear()
-    WFJ.RecentLines.note("quest.title", 7, "questframe", "")
+    WFI.RecentLines.clear()
+    WFI.RecentLines.note("quest.title", 7, "questframe", "")
     FW.open()
     assert.are.equal("旅立ち", row("recent", 1).text:GetText())
   end)
 
   it("a read-only report box snaps back after a keystroke", function()
-    WFJ.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = "0011223344556677", reason = "typo" })
+    WFI.Reports.save({ type = "quest", id = 7, field = "title", ja_hash = "0011223344556677", reason = "typo" })
     FW.open("copy")
     local box = FW.pages.copy.report.box
     local before = box:GetText()
@@ -371,11 +371,11 @@ describe("the fix window", function()
     FW.show("recent")
     assert.is_nil(F.allText():find("traveler", 1, true))
     assert.is_nil(FW.reportText():find("traveler", 1, true))
-    for _, fix in ipairs(WFJ.Reports.list()) do
+    for _, fix in ipairs(WFI.Reports.list()) do
       for _, v in pairs(fix) do assert.is_nil(tostring(v):find("traveler", 1, true)) end
     end
     -- and the module reads lines only through RecentLines / Reports / Lookup: no global, frame text or collector
-    local src = H.readFile("addon/WoWForeverJapanese/UI/FixWindow.lua")
+    local src = H.readFile("addon/WoWForeverItalian/UI/FixWindow.lua")
     for _, banned in ipairs({ "_G%[", "Collector", "UIIndex", "english", "%.en%)", "rec%.en" }) do
       assert.is_nil(src:gsub("%-%-[^\n]*", ""):find(banned), banned)
     end
@@ -396,59 +396,59 @@ describe("the fix window", function()
     FW.open()
     row("recent", 1):click()
     assert.are.equal("翻訳", FW.frame.tabs.recent.caption:GetText())
-    assert.are.equal(WFJ.Font.PATH, (FW.frame.tabs.recent.caption:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (FW.frame.tabs.recent.caption:GetFont()))
     for _, rb in pairs(edit().reasons) do
-      assert.is_truthy(WFJ.OptionsWidgets.hasJapanese(rb.text:GetText()))
-      assert.are.equal(WFJ.Font.PATH, (rb.text:GetFont()))
+      assert.is_truthy(WFI.OptionsWidgets.hasJapanese(rb.text:GetText()))
+      assert.are.equal(WFI.Font.PATH, (rb.text:GetFont()))
     end
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Translations", FW.frame.tabs.recent.caption:GetText())
     assert.are.equal("Wrong meaning", edit().reasons.wrong.text:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("翻訳", FW.frame.tabs.recent.caption:GetText())
-    WFJ.State.setEnabled(false) -- translation off: the window reads in English too
+    WFI.State.setEnabled(false) -- translation off: the window reads in English too
     assert.are.equal("Translations", FW.frame.tabs.recent.caption:GetText())
-    WFJ.State.setEnabled(true)
+    WFI.State.setEnabled(true)
     assert.are.equal("翻訳", FW.frame.tabs.recent.caption:GetText())
     -- the text fields keep the bundled face: the template's ApplyText puts its own font back, and our hook follows it
     -- (no addon font object)
-    assert.are.equal(WFJ.Font.PATH, edit().ja.box.font.path) -- the player may type Japanese
-    assert.are.equal(WFJ.Font.PATH, edit().note.font.path)
+    assert.are.equal(WFI.Font.PATH, edit().ja.box.font.path) -- the player may type Japanese
+    assert.are.equal(WFI.Font.PATH, edit().note.font.path)
     edit().ja:setText("別の文")
-    assert.are.equal(WFJ.Font.PATH, edit().ja.box.font.path)
+    assert.are.equal(WFI.Font.PATH, edit().ja.box.font.path)
   end)
 end)
 
 describe("the ways into the fix window with the whole addon loaded", function()
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     F.install()
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
     F.scrollUtil() -- the gossip stub replaced ScrollUtil
   end)
   after_each(function() F.clear() end)
 
-  it("/wfj fix, the About page's button and the addon dropdown's left click open it", function()
-    local WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    assert.are.same({}, WFJ.initErrors)
-    _G.SlashCmdList.WFJ("fix")
-    assert.is_true(_G.WFJFixWindow:IsShown())
-    _G.WFJFixWindow:Hide()
-    WFJ.Options.reportLine:click()
-    assert.is_true(_G.WFJFixWindow:IsShown())
-    _G.WFJFixWindow:Hide()
-    _G.WFJ_OnAddonCompartmentClick("WoWForeverJapanese", "LeftButton")
-    assert.is_true(_G.WFJFixWindow:IsShown())
-    _G.WFJ_OnAddonCompartmentClick("WoWForeverJapanese", "RightButton")
-    assert.is_true(_G.WFJMinimapMenu:IsShown()) -- the addon's own menu frame
-    _G.WFJ_OnAddonCompartmentEnter("WoWForeverJapanese", _G.Minimap)
-    assert.is_true(_G.WFJMinimapTooltip:IsShown())
-    _G.WFJ_OnAddonCompartmentLeave("WoWForeverJapanese", _G.Minimap)
-    assert.is_false(_G.WFJMinimapTooltip:IsShown())
-    local help = table.concat(WFJ.OptionsText.SLASH, "\n")
-    assert.is_truthy(help:find("/wfj fix", 1, true))
+  it("/wfi fix, the About page's button and the addon dropdown's left click open it", function()
+    local WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    assert.are.same({}, WFI.initErrors)
+    _G.SlashCmdList.WFI("fix")
+    assert.is_true(_G.WFIFixWindow:IsShown())
+    _G.WFIFixWindow:Hide()
+    WFI.Options.reportLine:click()
+    assert.is_true(_G.WFIFixWindow:IsShown())
+    _G.WFIFixWindow:Hide()
+    _G.WFI_OnAddonCompartmentClick("WoWForeverItalian", "LeftButton")
+    assert.is_true(_G.WFIFixWindow:IsShown())
+    _G.WFI_OnAddonCompartmentClick("WoWForeverItalian", "RightButton")
+    assert.is_true(_G.WFIMinimapMenu:IsShown()) -- the addon's own menu frame
+    _G.WFI_OnAddonCompartmentEnter("WoWForeverItalian", _G.Minimap)
+    assert.is_true(_G.WFIMinimapTooltip:IsShown())
+    _G.WFI_OnAddonCompartmentLeave("WoWForeverItalian", _G.Minimap)
+    assert.is_false(_G.WFIMinimapTooltip:IsShown())
+    local help = table.concat(WFI.OptionsText.SLASH, "\n")
+    assert.is_truthy(help:find("/wfi fix", 1, true))
   end)
 end)

@@ -28,7 +28,7 @@ R.suite(getfenv(1), {
   title = "the vote-to-abandon panel on Forever", module = "InstanceAbandon",
   file = "UI/InstanceAbandon.lua", root = "InstanceAbandonFrame", globals = GLOBALS, ui = UI, build = build,
   cases = {
-    { "the vote count and the response are Japanese; Alt shows English", function(frame, WFJ)
+    { "the vote count and the response are Japanese; Alt shows English", function(frame, WFI)
       frame:Show()
       assert.are.equal("インスタンス放棄には3票が必要です。", frame.VoteText:GetText())
       frame.response = true
@@ -37,18 +37,18 @@ R.suite(getfenv(1), {
       frame.response = false
       frame:Refresh()
       assert.are.equal("反対に投票しました", frame.ResponseText:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("You voted No", frame.ResponseText:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Show()
     frame.ResponseText.text = "Deadmines" -- anything else written there stays as written
     frame.response = nil
     frame:Refresh()
     assert.are.equal("", frame.ResponseText:GetText())
-    assert.is_true(R.unrecorded(WFJ, frame.ResponseText))
+    assert.is_true(R.unrecorded(WFI, frame.ResponseText))
   end,
   wrong = function(frame)
     frame.ResponseText = Stub

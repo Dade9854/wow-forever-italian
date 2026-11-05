@@ -14,11 +14,11 @@ local function install()
 end
 
 describe("the money pickup box on Forever", function()
-  local WFJ
+  local WFI
   before_each(function()
-    WFJ = X.load("UI/CoinPickup.lua", UI, { before = install })
-    WFJ.Labels.forbidNames(WFJ.CoinPickup.NEVER_TOUCH)
-    assert.is_true(WFJ.CoinPickup.init())
+    WFI = X.load("UI/CoinPickup.lua", UI, { before = install })
+    WFI.Labels.forbidNames(WFI.CoinPickup.NEVER_TOUCH)
+    assert.is_true(WFI.CoinPickup.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
@@ -27,15 +27,15 @@ describe("the money pickup box on Forever", function()
     assert.are.equal("OK", _G.CoinPickupOkayButton:GetText())
     assert.are.equal("キャンセル", _G.CoinPickupCancelButton:GetText())
     _G.CoinPickupText.text = "Okay"
-    assert.are.equal(0, WFJ.Labels.show("coinpickup", "x", _G.CoinPickupText))
+    assert.are.equal(0, WFI.Labels.show("coinpickup", "x", _G.CoinPickupText))
     assert.are.equal("Okay", _G.CoinPickupText:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Cancel", _G.CoinPickupCancelButton:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
   end)
 
   it("init runs once; wrong types and a missing frame leave English and raise nothing", function()
-    assert.is_false(WFJ.CoinPickup.init())
+    assert.is_false(WFI.CoinPickup.init())
     X.teardown(NAMES)
     local wrong = X.load("UI/CoinPickup.lua", UI, { before = function()
       install()

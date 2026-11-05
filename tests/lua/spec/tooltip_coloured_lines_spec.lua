@@ -23,16 +23,16 @@ local UI = {
 }
 
 describe("UI/Tooltip: colour-wrapped names, coloured lines, the sell price range", function()
-  local WFJ, tt
+  local WFI, tt
 
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    WFJ.Tooltip.init()
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    WFI.Tooltip.init()
     tt = _G.GameTooltip
   end)
 
@@ -80,7 +80,7 @@ describe("UI/Tooltip: colour-wrapped names, coloured lines, the sell price range
     local frame = _G.ShoppingTooltip1
     Stub.setItemTooltip(frame, "|Hitem:2488:0:0:0|h[Worn Shortsword]|h",
       { "Currently Equipped", "Worn Shortsword", "(With |cffffffffWorn Dagger|r equipped in your main-hand)" })
-    WFJ.Tooltip.onCompareShow(frame)
+    WFI.Tooltip.onCompareShow(frame)
     assert.are.equal("Worn Shortsword", _G.ShoppingTooltip1TextLeft2:GetText())
     assert.are.equal("(メインハンドに|cffffffffWorn Dagger|rを装備した場合)", _G.ShoppingTooltip1TextLeft3:GetText())
   end)

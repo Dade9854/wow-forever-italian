@@ -112,7 +112,7 @@ C.suite(getfenv(1), {
   addon = "Blizzard_Transmog", root = F, ui = UI, build = build, globals = { F },
   cases = {
     { "the title, static labels, tabs and the filter's own text are Japanese; Alt shows English; hide releases",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         assert.are.equal("トランスモグ", frame.TitleContainer.TitleText:GetText())
         frame:SetTitle(en("TRANSMOGRIFY"))
@@ -128,9 +128,9 @@ C.suite(getfenv(1), {
         frame.WardrobeCollection.TabHeaders:GetTabButton(2):UpdateTabText()
         assert.are.equal("セット", tabText(frame, 2))
         assert.are.equal("カスタムセット", tabText(frame, 3))
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Transmogrify", frame.TitleContainer.TitleText:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:Hide()
         assert.are.equal("Sheathe Weapon", frame.CharacterPreview.ToggleOptions.SheatheWeaponToggle.Text:GetText())
       end },
@@ -188,14 +188,14 @@ C.suite(getfenv(1), {
       assert.are.equal("衣装スロットは最大10個までです。", _G.GameTooltipTextLeft1:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     -- an option set: "$slot ($option)" filled with an option name stays as written (lua:2153–2157)
     local items = frame.WardrobeCollection.TabContent.ItemsFrame
     items.composite = "Head (Sets)"
     items:RefreshActiveSlotTitle()
     assert.are.equal("Head (Sets)", items.ActiveSlotTitle:GetText())
-    assert.is_true(C.unrecorded(WFJ, items.ActiveSlotTitle))
-    assert.are.equal(0, WFJ.Labels.show("transmog", "x", items.SearchBox))
+    assert.is_true(C.unrecorded(WFI, items.ActiveSlotTitle))
+    assert.are.equal(0, WFI.Labels.show("transmog", "x", items.SearchBox))
   end,
   wrong = function(frame)
     frame.WardrobeCollection.TabHeaders = "tabs"

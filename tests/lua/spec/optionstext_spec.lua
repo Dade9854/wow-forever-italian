@@ -43,11 +43,11 @@ describe("UI/OptionsText.SLASH names every command", function()
     local all = table.concat(Text.SLASH, "\n")
     for _, verb in ipairs({ "on", "off", "toggle", "config", "debug", "glosses", "readings", "togglekey", "collector",
         "version", "modifier", "area", "marker", "fix" }) do
-      assert.is_truthy(all:find("/wfj " .. verb, 1, true) or all:find("| " .. verb, 1, true), verb)
+      assert.is_truthy(all:find("/wfi " .. verb, 1, true) or all:find("| " .. verb, 1, true), verb)
     end
     local debug = {}
-    for list in all:gmatch("/wfj debug %[(.-)%]\n") do debug[#debug + 1] = list end
-    for list in all:gmatch("/wfj debug %[(.-)%]$") do debug[#debug + 1] = list end
+    for list in all:gmatch("/wfi debug %[(.-)%]\n") do debug[#debug + 1] = list end
+    for list in all:gmatch("/wfi debug %[(.-)%]$") do debug[#debug + 1] = list end
     local subs = table.concat(debug, " | ")
     for _, sub in ipairs({ "hash", "quest", "item", "spell", "gossip", "book", "objective", "fonts", "ui", "scan" }) do
       assert.is_truthy(subs:find(sub, 1, true), sub)

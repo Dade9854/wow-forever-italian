@@ -33,7 +33,7 @@ C.suite(getfenv(1), {
   globals = { "ItemUpgradeFrame" },
   cases = {
     { "the title is Japanese on show and again after a second SetTitle; labels translate; hide releases",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         local title = frame.TitleContainer.TitleText
         assert.are.equal("アイテム強化", title:GetText())
@@ -41,22 +41,22 @@ C.suite(getfenv(1), {
         assert.are.equal("アイテム強化", title:GetText())
         assert.are.equal("強化", frame.UpgradeButton:GetText())
         assert.are.equal("強化先:", frame.ItemInfo.UpgradeTo:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Item Upgrade", title:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:Hide()
         assert.are.equal("Upgrade", frame.UpgradeButton:GetText())
       end },
     { "a maxed item's error text and the Upgrade button's disabled tooltip; a server failure message stays",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         frame:PopulatePreviewFrames(nil, en("ITEM_UPGRADE_NO_MORE_UPGRADES"))
         assert.are.equal("このアイテムはこれ以上強化できません。", frame.FrameErrorText:GetText())
         C.tooltip(frame.UpgradeButton, { en("ITEM_UPGRADE_NO_MORE_UPGRADES") })
         assert.are.equal("このアイテムはこれ以上強化できません。", _G.GameTooltipTextLeft1:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("This item cannot be upgraded anymore.", frame.FrameErrorText:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:PopulatePreviewFrames(nil, "You need a higher item level.")
         assert.are.equal("You need a higher item level.", frame.FrameErrorText:GetText())
       end },
@@ -68,11 +68,11 @@ C.suite(getfenv(1), {
       assert.are.equal("Upgrade", frame.RightPreviewBigText:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Show()
     assert.are.equal("Upgrade", frame.ItemInfo.ItemName:GetText()) -- an item named "Upgrade"
-    assert.are.equal(0, WFJ.Labels.show("itemupgrade", "x", frame.ItemInfo.ItemName))
-    assert.is_true(C.unrecorded(WFJ, frame.ItemInfo.ItemName))
+    assert.are.equal(0, WFI.Labels.show("itemupgrade", "x", frame.ItemInfo.ItemName))
+    assert.is_true(C.unrecorded(WFI, frame.ItemInfo.ItemName))
   end,
   wrong = function(frame)
     frame.ItemInfo, frame.RightPreviewBigText, frame.TitleContainer = 7, "text", true

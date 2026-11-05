@@ -22,8 +22,8 @@ local NAMES = { "PetitionFrame", "PetitionFrame_Update", "PetitionFrameCancelBut
 
 local P = {}
 
-local function patch(WFJ) -- the Core/UIStrings entry this surface needs
-  WFJ.UIStrings.ARGS.GUILD_CHARTER_TEMPLATE = { [1] = "text" }
+local function patch(WFI) -- the Core/UIStrings entry this surface needs
+  WFI.UIStrings.ARGS.GUILD_CHARTER_TEMPLATE = { [1] = "text" }
 end
 
 local function install()
@@ -55,10 +55,10 @@ local function install()
 end
 
 describe("the guild charter window on Forever", function()
-  local WFJ
+  local WFI
 
   before_each(function()
-    WFJ = G.load(FILES, UI, patch)
+    WFI = G.load(FILES, UI, patch)
     P.originator, P.guild, P.signers = true, "Members", { "Jaina", "Close" } -- a guild and a signer named like words
   end)
   after_each(function() G.clear(NAMES) end)
@@ -66,8 +66,8 @@ describe("the guild charter window on Forever", function()
   it("labels, instructions and unsigned lines translate; guild, founder, signers and the rank name stay English",
     function()
       local frame = install()
-      WFJ.Labels.forbidNames(WFJ.Petition.NEVER_TOUCH)
-      assert.is_true(WFJ.Petition.init())
+      WFI.Labels.forbidNames(WFI.Petition.NEVER_TOUCH)
+      assert.is_true(WFI.Petition.init())
       frame:Show()
       _G.PetitionFrame_Update(frame)
       assert.are.equal("メンバー", _G.PetitionFrameMemberTitle:GetText())
@@ -82,12 +82,12 @@ describe("the guild charter window on Forever", function()
       assert.are.equal("Thrall", _G.PetitionFrameMasterName:GetText())
       assert.are.equal("Jaina", _G.PetitionFrameMemberName1:GetText())
       assert.are.equal("Close", _G.PetitionFrameMemberName2:GetText()) -- a signer called "Close"
-      assert.is_true(G.unrecorded(WFJ, _G.PetitionFrameMemberName2))
+      assert.is_true(G.unrecorded(WFI, _G.PetitionFrameMemberName2))
       assert.are.equal("<未署名>", _G.PetitionFrameMemberName3:GetText())
       P.signers[3] = "Sylvanas" -- a signature arrives: the line follows the client's new text
       _G.PetitionFrame_Update(frame)
       assert.are.equal("Sylvanas", _G.PetitionFrameMemberName3:GetText())
-      G.alt(WFJ, true)
+      G.alt(WFI, true)
       assert.are.equal("<not yet signed>", _G.PetitionFrameMemberName4:GetText())
       assert.are.equal("Members Guild Charter", _G.PetitionFrameNpcNameText:GetText())
     end)
@@ -96,16 +96,16 @@ describe("the guild charter window on Forever", function()
     local frame = install()
     _G.PetitionFrameInstructions = 1
     _G.PetitionFrameMemberName5 = "x"
-    assert.has_no.errors(function() assert.is_true(WFJ.Petition.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Petition.init()) end)
     _G.PetitionFrameInstructions = Stub.fontString("") -- the client's writer still needs its widget
     _G.PetitionFrameMemberName5 = Stub.fontString("")
     assert.has_no.errors(function() frame:Show(); _G.PetitionFrame_Update(frame) end)
     assert.are.equal("メンバー", _G.PetitionFrameMemberTitle:GetText())
-    assert.is_false(WFJ.Petition.init())
+    assert.is_false(WFI.Petition.init())
     assert.are.equal(1, #Stub.hooks["PetitionFrame_Update"])
   end)
 
   it("no PetitionFrame: init is false and nothing is touched", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.Petition.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Petition.init()) end)
   end)
 end)

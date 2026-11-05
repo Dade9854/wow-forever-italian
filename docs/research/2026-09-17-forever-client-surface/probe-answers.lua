@@ -1,11 +1,11 @@
 
-WFJProbeDB = {
+WFIProbeDB = {
 ["manifest"] = "28773485bfbe",
 ["loaded"] = {
 ["Blizzard_TimeManager"] = true,
-["WFJProbe"] = true,
+["WFIProbe"] = true,
 ["Blizzard_GroupFinder_VanillaStyle"] = true,
-["WoWForeverJapanese"] = true,
+["WoWForeverItalian"] = true,
 ["Blizzard_PlayerSpells"] = true,
 ["Blizzard_CombatLog"] = true,
 },

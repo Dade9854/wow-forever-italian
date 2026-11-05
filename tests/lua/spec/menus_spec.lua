@@ -98,15 +98,15 @@ local function release(frames)
 end
 
 describe("UI/Menus: menu entries", function()
-  local WFJ, callbacks
+  local WFI, callbacks
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     callbacks = {}
     _G.Menu = { ModifyMenu = function(tag, fn) callbacks[tag] = fn end }
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end)
 
   after_each(function() H.uiTeardown(); _G.Menu = nil end)
@@ -119,8 +119,8 @@ describe("UI/Menus: menu entries", function()
   end
 
   it("registers one callback per tag and translates top-level and submenu entries", function()
-    assert.is_true(WFJ.Menus.init())
-    for tag in pairs(WFJ.Menus.TAGS) do assert.is_function(callbacks[tag], tag) end
+    assert.is_true(WFI.Menus.init())
+    for tag in pairs(WFI.Menus.TAGS) do assert.is_function(callbacks[tag], tag) end
     local sub
     local root, frames = generate("MENU_CONTAINER_FRAME_COMBINED", function(r)
       r:CreateButton(UI.BAG_FILTER_TITLE_SORTING[1])
@@ -132,30 +132,30 @@ describe("UI/Menus: menu entries", function()
     assert.are.equal("バッグの設定", frames[e[1]].fontString:GetText())
     assert.are.equal("バッグ1", frames[e[2]].fontString:GetText())
     -- the client's own SetFont, never the compositor's wrapped one
-    assert.are.equal(WFJ.Font.PATH, frames[e[2]].fontString.font.path)
+    assert.are.equal(WFI.Font.PATH, frames[e[2]].fontString.font.path)
     assert.are.equal("割り当て先:", frames[sub.children[1]].fontString:GetText())
     assert.are.equal("装備品", frames[sub.children[2]].fontString:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Bag 1", frames[e[2]].fontString:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     release(frames)
-    assert.are.equal(0, WFJ.SurfaceState.count(WFJ.Menus.SURFACE))
+    assert.are.equal(0, WFI.SurfaceState.count(WFI.Menus.SURFACE))
   end)
 
   it("gamepad UI mode's reagent bag entry in the combined bag menu; Alt shows English", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_CONTAINER_FRAME_COMBINED", function(r)
       r:CreateButton(UI.BAG_NAME_BAG_REAGENT[1])
     end)
     local fs = frames[root.children[1]].fontString
     assert.are.equal("素材バッグ", fs:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Reagent Bag", fs:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("a name in a menu, and a dictionary word outside the tag's list, stay as written", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_CONTAINER_FRAME_COMBINED", function(r)
       r:CreateButton("My Herb Bag") -- a bag the player named
       r:CreateButton(UI.RAID[1])
@@ -165,7 +165,7 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("a colour-wrapped entry keeps its colour (the trainer filter)", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_TRAINER_FILTER", function(r)
       r:CreateButton("|cffff2020" .. UI.UNAVAILABLE[1] .. "|r")
       r:CreateButton("|cff808080" .. UI.USED[1] .. "|r")
@@ -175,28 +175,28 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("the trainer filter's Available owns its Japanese; the friends status keeps its own", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_TRAINER_FILTER", function(r)
       r:CreateButton("|cff00ff00" .. UI.AVAILABLE[1] .. "|r")
     end)
     assert.are.equal("|cff00ff00習得可能|r", frames[root.children[1]].fontString:GetText())
-    assert.are.equal(0, WFJ.UIIndex.counts.ambiguous)
+    assert.are.equal(0, WFI.UIIndex.counts.ambiguous)
   end)
 
   it("the trainer filter's Categorize checkbox translates; Alt shows English", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_TRAINER_FILTER", function(r)
       r:CreateButton(UI.CATEGORIZE[1])
     end)
     local fs = frames[root.children[1]].fontString
     assert.are.equal("分類", fs:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Categorize", fs:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("the Communities menus' colour-wrapped entries keep their colour; a channel name stays as written", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_COMMUNITIES_STREAM", function(r)
       r:CreateButton("General") -- a channel name
       r:CreateButton("|cff19ff19" .. UI.COMMUNITIES_CREATE_CHANNEL[1] .. "|r")
@@ -213,11 +213,11 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("a disabled rank's reason is registered on its own element as a help-tooltip owner", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_GUILD_RANKS", function(r) r:CreateButton("Officer") end)
     local frame = frames[root.children[1]]
     assert.are.equal("Officer", frame.fontString:GetText()) -- the rank's name
-    assert.is_true(WFJ.HelpTooltip.registered(frame))
+    assert.is_true(WFI.HelpTooltip.registered(frame))
   end)
 
   it("no Menu API: init returns false and hooks nothing", function()
@@ -228,17 +228,17 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("an element whose frame has no text widget, or a malformed description, never errors", function()
-    WFJ.Menus.init()
-    assert.are.equal(0, WFJ.Menus.showElement("MENU_TRAINER_FILTER", {}))
-    assert.are.equal(0, WFJ.Menus.showElement("MENU_TRAINER_FILTER", { fontString = "x" }))
-    assert.are.equal(0, WFJ.Menus.onMenu("MENU_TRAINER_FILTER", {}))
-    assert.are.equal(0, WFJ.Menus.resetElement(nil))
+    WFI.Menus.init()
+    assert.are.equal(0, WFI.Menus.showElement("MENU_TRAINER_FILTER", {}))
+    assert.are.equal(0, WFI.Menus.showElement("MENU_TRAINER_FILTER", { fontString = "x" }))
+    assert.are.equal(0, WFI.Menus.onMenu("MENU_TRAINER_FILTER", {}))
+    assert.are.equal(0, WFI.Menus.resetElement(nil))
   end)
 
   -- the level-1 menus
   it("a unit menu: entries and the raid-target submenu in Japanese; the title (the unit's name) never matched",
     function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local markers
     local root, frames = generate("MENU_UNIT_PLAYER", function(r)
       r:CreateButton("Duel") -- the title: a player named Duel (unitpopupshared.lua:112–116)
@@ -263,7 +263,7 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("a target menu with only a unit: an entry equal to UnitName(unit) is never matched", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     _G.UnitName = function(unit) return unit == "target" and "Trade" or nil end
     local root, frames = generate("MENU_UNIT_TARGET", function(r)
       r:CreateButton("Trade") -- the title
@@ -277,7 +277,7 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("a channel menu keeps its title (the channel's name) even when it is a dictionary word", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_CHAT_FRAME_CHANNEL", function(r)
       r:CreateButton("Trade") -- ChatFrameUtil.ResolveChannelName
       r:CreateButton(UI.MOVE_TO_NEW_WINDOW[1])
@@ -287,7 +287,7 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("the minimap tracking menu: townsfolk entries in Japanese, a tracking spell stays its name", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_MINIMAP_TRACKING", function(r)
       r:CreateButton(UI.UNCHECK_ALL[1])
       r:CreateButton(UI.MINIMAP_TRACKING_BANKER[1])
@@ -299,7 +299,7 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("the chat tab menu: Font Size's radios keep their number; the shortcuts menu in Japanese", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local size
     local root, frames = generate("MENU_FCF_TAB", function(r)
       size = r:CreateButton(UI.FONT_SIZE[1])
@@ -318,7 +318,7 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("the world map filter: title and entries in Japanese; each entry owns its description tooltip", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_WORLD_MAP_TRACKING", function(r)
       r:CreateButton(UI.WORLD_MAP_FILTER_LABEL_SHOW[1])
       r:CreateButton(UI.SHOW_QUEST_LEVELS[1])
@@ -326,7 +326,7 @@ describe("UI/Menus: menu entries", function()
     assert.are.equal("表示：", frames[root.children[1]].fontString:GetText())
     local entry = frames[root.children[2]]
     assert.are.equal("クエストレベルを表示", entry.fontString:GetText())
-    assert.is_true(WFJ.HelpTooltip.registered(entry))
+    assert.is_true(WFI.HelpTooltip.registered(entry))
     local tt = _G.GameTooltip
     tt:SetOwner(entry, "ANCHOR_PRESERVE")
     tt:SetText(UI.SHOW_QUEST_LEVELS[1])
@@ -337,7 +337,7 @@ describe("UI/Menus: menu entries", function()
   end)
 
   it("the world map filter in gamepad UI mode: the map and quest log titles and the objectives checkbox", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local root, frames = generate("MENU_WORLD_MAP_TRACKING", function(r)
       r:CreateButton(UI.WORLD_MAP_FILTER_TITLE_SHOW_MAP[1])
       r:CreateButton(UI.WORLD_MAP_FILTER_TITLE_SHOW_QUEST_LOG[1])
@@ -349,14 +349,14 @@ describe("UI/Menus: menu entries", function()
     assert.are.equal("クエストログに表示：", frames[e[2]].fontString:GetText())
     assert.are.equal("クエスト目標を表示", frames[e[3]].fontString:GetText())
     assert.are.equal("Raid", frames[e[4]].fontString:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Show Quest Objectives", frames[e[3]].fontString:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("a role radio keeps its icon; the loot opt-out shows Yes / No in Japanese; hovers are registered",
     function()
-      WFJ.Menus.init()
+      WFI.Menus.init()
       local icon = "|A:groupfinder-icon-role-micro-tank:16:16:0:0|a"
       local role
       local root, frames = generate("MENU_UNIT_SELF", function(r)
@@ -374,14 +374,14 @@ describe("UI/Menus: menu entries", function()
       assert.are.equal("役割を設定", frames[e[4]].fontString:GetText())
       assert.are.equal(icon .. " タンク", frames[role.children[1]].fontString:GetText())
       assert.are.equal("役割なし", frames[role.children[2]].fontString:GetText())
-      assert.is_true(WFJ.HelpTooltip.registered(frames[e[2]]))
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      assert.is_true(WFI.HelpTooltip.registered(frames[e[2]]))
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(icon .. " Tank", frames[role.children[1]].fontString:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
     end)
 
   it("one entry per sweep tag in Japanese; names beside them stay as written", function()
-    WFJ.Menus.init()
+    WFI.Menus.init()
     local cases = {
       { "MENU_EDIT_MODE_MANAGER", { "Modern", UI.HUD_EDIT_MODE_IMPORT_LAYOUT[1] }, { "Modern", "インポート" } },
       { "MENU_QUEUE_STATUS_FRAME", { "Deadmines", UI.UNLIST_ME[1] }, { "Deadmines", "登録を取り消す" } },
@@ -401,7 +401,7 @@ describe("UI/Menus: menu entries", function()
 
   it("an AddOn entry's menu keeps its title (the addon's title) even when it is a dictionary word",
     function()
-      WFJ.Menus.init()
+      WFI.Menus.init()
       local root, frames = generate("MENU_ADDON_LIST_ENTRY", function(r)
         r:CreateButton(UI.ALL[1]) -- an addon titled "All"
         r:CreateButton(UI.ADDON_LIST_RESET_TO_DEFAULT[1])
@@ -420,9 +420,9 @@ describe("UI/Menus: menu entries", function()
     _G.Settings = settings
     local editRow = { Dropdown = dropdown() }
     _G.EditModeSettingDropdownMixin = { SetupSetting = function() end }
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Menus.init()
-    assert.are.equal(2, WFJ.MenusUntagged.init())
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Menus.init()
+    assert.are.equal(2, WFI.MenusUntagged.init())
     local options = dropdown()
     settings.InitDropdown(options)
     _G.EditModeSettingDropdownMixin.SetupSetting(editRow)
@@ -440,7 +440,7 @@ describe("UI/Menus: menu entries", function()
     editRow.Dropdown:RegisterMenu(edit)
     assert.are.equal("高", open(edit)[edit.children[1]].fontString:GetText())
     -- hooked once per dropdown, however often the client sets it up
-    assert.is_false(WFJ.MenusUntagged.hookDropdown(options, "SETTINGS_DROPDOWN"))
+    assert.is_false(WFI.MenusUntagged.hookDropdown(options, "SETTINGS_DROPDOWN"))
     _G.Settings, _G.EditModeSettingDropdownMixin = nil, nil
   end)
 
@@ -448,9 +448,9 @@ describe("UI/Menus: menu entries", function()
     .. " Target entry", function()
     local settings = { InitDropdown = function() end }
     _G.Settings = settings
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Menus.init()
-    WFJ.MenusUntagged.init()
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Menus.init()
+    WFI.MenusUntagged.init()
     local onMe = { RegisterMenu = function(self, r) self.menuDescription = r end }
     settings.InitDropdown(onMe)
     local root = element(nil)
@@ -460,7 +460,7 @@ describe("UI/Menus: menu entries", function()
     local box = frames[root.children[1]]
     assert.are.equal("回避/受け流し/ミス", box.fontString:GetText())
     -- Settings.CreateDropdownCheckbox's SetTooltip (blizzard_settings_shared/blizzard_settings.lua:508–513)
-    assert.is_true(WFJ.HelpTooltip.registered(box))
+    assert.is_true(WFI.HelpTooltip.registered(box))
     local tt = _G.GameTooltip
     tt:SetOwner(box, "ANCHOR_RIGHT")
     tt:SetText(UI.COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT[1])

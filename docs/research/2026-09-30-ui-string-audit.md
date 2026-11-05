@@ -4,8 +4,8 @@
 > English and the windows that show it, under the style guide's
 > [Interface text](../content/translation-style-guide.md#interface-text-ui-strings) rules. The lines were
 > machine-written in batches and had not been read against their context before. A quality pass, not a rewrite:
-> a line that works was left alone. Tooling: `wfj.dev.audit_batch --type ui` (`wfj.dev.audit_ui`),
-> `wfj.dev.ui_lint`.
+> a line that works was left alone. Tooling: `wfi.dev.audit_batch --type ui` (`wfi.dev.audit_ui`),
+> `wfi.dev.ui_lint`.
 
 - **Date:** 2026-09-30
 - **Question:** how much of the shipped interface text reads wrong in its window, too long, in the wrong register

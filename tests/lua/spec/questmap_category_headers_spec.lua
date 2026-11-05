@@ -20,11 +20,11 @@ local UI = {
 }
 
 describe("UI/QuestMap: the quest list's category headers", function()
-  local WFJ, Q, headers
+  local WFI, Q, headers
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   -- headerFramePool (questmapframe.lua:1238): pooled header buttons; the client wrote each one's title before
@@ -49,7 +49,7 @@ describe("UI/QuestMap: the quest list's category headers", function()
   local function text(button) return (button.title or button):GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     Q = QStub.install()
     Q.quests[9] = { title = "Burning Archives", description = "Burn it.", objectives = "Burn the archive.", level = 20 }
@@ -57,10 +57,10 @@ describe("UI/QuestMap: the quest list's category headers", function()
     _G.EventRegistry = { RegisterCallback = function() end }
     headers = headerPool()
     _G.QuestScrollFrame.headerFramePool = headers
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_true(WFJ.QuestFrame.init())
-    assert.is_true(WFJ.QuestMap.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_true(WFI.QuestFrame.init())
+    assert.is_true(WFI.QuestMap.init())
   end)
 
   after_each(function()

@@ -4,11 +4,11 @@ local Stub = require("tests.lua.spec.wow_stub")
 local CORE = { "Core/Const.lua", "Core/State.lua", "Core/Settings.lua", "Core/Modifier.lua" }
 
 describe("Settings.load: migrations and the downgrade backup", function()
-  local WFJ, S
+  local WFI, S
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(CORE)
-    S = WFJ.Settings
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(CORE)
+    S = WFI.Settings
   end)
 
   it("first run creates a fresh db at the current schema", function()
@@ -16,7 +16,7 @@ describe("Settings.load: migrations and the downgrade backup", function()
     assert.are.equal(2, db.schema)
     assert.are.same({}, db.settings)
     assert.is_nil(db.backup)
-    assert.are.equal(WFJ.VERSION, db.build.addon)
+    assert.are.equal(WFI.VERSION, db.build.addon)
     assert.are.equal(0, #Stub.prints)
   end)
 
@@ -79,34 +79,34 @@ describe("Settings.load: migrations and the downgrade backup", function()
     assert.are.same({}, db.settings)
   end)
 
-  it("a WFJ_DB saved before area.interface existed loads with it on and no migration", function()
+  it("a WFI_DB saved before area.interface existed loads with it on and no migration", function()
     local db = S.load({ schema = 1, settings = { enabled = true, ["area.itemTooltips"] = false } }, 1, {})
     assert.are.equal(1, db.schema)
     assert.is_nil(db.settings["area.interface"]) -- nothing written: the default lives in define
     assert.is_true(S.get("area.interface"))
-    assert.is_true(WFJ.State.areaEnabled("ui"))
-    assert.is_false(WFJ.State.areaEnabled("items"))
+    assert.is_true(WFI.State.areaEnabled("ui"))
+    assert.is_false(WFI.State.areaEnabled("items"))
   end)
 
-  it("a WFJ_DB saved before area.books existed loads with it on and no migration", function()
+  it("a WFI_DB saved before area.books existed loads with it on and no migration", function()
     local db = S.load({ schema = 1, settings = { enabled = true, ["area.interface"] = false } }, 1, {})
     assert.are.equal(1, db.schema)
     assert.is_nil(db.settings["area.books"])
     assert.is_true(S.get("area.books"))
-    assert.is_true(WFJ.State.areaEnabled("books"))
+    assert.is_true(WFI.State.areaEnabled("books"))
     assert.is_true(S.set("area.books", false))
-    assert.is_false(WFJ.State.areaEnabled("books"))
+    assert.is_false(WFI.State.areaEnabled("books"))
   end)
 
   it("uses Const.SCHEMA and Settings.MIGRATIONS by default", function()
     local db = S.load(nil)
-    assert.are.equal(WFJ.SCHEMA, db.schema)
+    assert.are.equal(WFI.SCHEMA, db.schema)
   end)
 end)
 
 describe("Settings.load keeps every modifier saved before modifiers became keys", function()
   it("keeps alt / ctrl / shift / lalt / Q, drops a chord or junk to alt, never bumps the schema", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     local S = H.loadChunks(CORE).Settings
     for stored, want in pairs({ alt = "alt", ctrl = "ctrl", shift = "shift", lalt = "lalt", Q = "Q",
       ["CTRL-Q"] = "alt", ["bogus key"] = "alt" }) do

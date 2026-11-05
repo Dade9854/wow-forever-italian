@@ -202,7 +202,7 @@ cache, the Classic Era quest cache, wago.tools DB2 exports (`ItemSparse`, `Spell
 
 ## Voice
 
-The Japanese voice (the separate `WoWForeverJapanese_Voice` addons) was made on the maintainer's own computer with
+The Japanese voice (the separate `WoWForeverItalian_Voice` addons) was made on the maintainer's own computer with
 the AivisSpeech Engine (https://aivis-project.com) and these voice models, used under their licences. The audio
 files are not part of this repository.
 
@@ -211,7 +211,7 @@ files are not part of this repository.
 
 ## This project
 
-WoW Forever Japanese ships its own code and translations under GPL-2.0-or-later (see `LICENSE`); every
+WoW Forever Italian ships its own code and translations under GPL-2.0-or-later (see `LICENSE`); every
 translated line keeps its provenance in `data/` (`provenance.translator`). The English text in `data/english/`
 is Blizzard Entertainment's and is not licensed by this project. The bundled font is IPA UI Gothic under the
-IPA Font License v1.0 (see `addon/WoWForeverJapanese/Fonts/`). Details: `docs/legal/licensing.md`.
+IPA Font License v1.0 (see `addon/WoWForeverItalian/Fonts/`). Details: `docs/legal/licensing.md`.

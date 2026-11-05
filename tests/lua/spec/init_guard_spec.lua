@@ -2,7 +2,7 @@
 --
 -- The failure this pins is the one the Forever client produced: Main.lua ran ~20 init calls in
 -- one unguarded sequence, Tooltip.init was the third, and when it threw, the other seventeen surfaces (and
--- Slash.register, so `/wfj` itself) never ran. The guard must keep the order and keep going.
+-- Slash.register, so `/wfi` itself) never ran. The guard must keep the order and keep going.
 local H = require("tests.lua.spec.helpers")
 local Stub = require("tests.lua.spec.wow_stub")
 local Loader = require("tests.lua.spec.loader")
@@ -70,23 +70,23 @@ local ORDER = {
 }
 
 describe("Main guards every surface init", function()
-  local WFJ
+  local WFI
 
   local function fresh()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    return Loader.load("WoWForeverJapanese")
+    return Loader.load("WoWForeverItalian")
   end
 
   -- Loads the addon, optionally replacing named modules' `init` with one that raises, then fires ADDON_LOADED.
   local function load(broken)
-    WFJ = fresh()
+    WFI = fresh()
     for _, module in ipairs(broken or {}) do
-      WFJ[module].init = function() error("stub client has no " .. module, 0) end
+      WFI[module].init = function() error("stub client has no " .. module, 0) end
     end
     Stub.prints = {}
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    return WFJ
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    return WFI
   end
 
   local function names(errors)
@@ -97,44 +97,44 @@ describe("Main guards every surface init", function()
 
   it("records nothing on a clean load", function()
     load()
-    assert.are.same({}, names(WFJ.initErrors))
+    assert.are.same({}, names(WFI.initErrors))
   end)
 
   it("runs every surface, in the order Main documents", function()
-    WFJ = fresh()
+    WFI = fresh()
     local seen = {}
     for _, row in ipairs(ORDER) do
-      local module, original = row[2], WFJ[row[2]].init
-      WFJ[module].init = function(...)
+      local module, original = row[2], WFI[row[2]].init
+      WFI[module].init = function(...)
         seen[#seen + 1] = row[1]
         return original(...)
       end
     end
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     local expected = {}
     for i, row in ipairs(ORDER) do expected[i] = row[1] end
     assert.are.same(expected, seen)
-    assert.are.same({}, names(WFJ.initErrors))
+    assert.are.same({}, names(WFI.initErrors))
   end)
 
   -- ADR-025 claims the guard does not reorder the sequence, and names one property as load-bearing:
   -- `Labels.forbidNames` runs for every window BEFORE any window's `init`. Break that and the never-touch
   -- registration silently stops covering widgets that are then written over.
   it("registers every window's never-touch list before any window initialises (ADR-025)", function()
-    WFJ = fresh()
+    WFI = fresh()
     local seq = {}
-    local forbidNames = WFJ.Labels.forbidNames
-    WFJ.Labels.forbidNames = function(list)
+    local forbidNames = WFI.Labels.forbidNames
+    WFI.Labels.forbidNames = function(list)
       seq[#seq + 1] = "forbid"
       return forbidNames(list)
     end
     local WINDOWS = { "Character", "Reputation", "Skills", "SpellBook", "Talents", "Trainer",
       "GossipChrome", "Merchant", "Bank", "Bags", "Mail", "Friends", "Raid", "MicroMenu" }
     for _, module in ipairs(WINDOWS) do
-      local original = WFJ[module].init
-      WFJ[module].init = function(...) seq[#seq + 1] = "init"; return original(...) end
+      local original = WFI[module].init
+      WFI[module].init = function(...) seq[#seq + 1] = "init"; return original(...) end
     end
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     local firstInit, lastForbid
     for i, kind in ipairs(seq) do
       if kind == "forbid" then lastForbid = i elseif not firstInit then firstInit = i end
@@ -143,55 +143,55 @@ describe("Main guards every surface init", function()
     assert.is_truthy(firstInit, "no window init was made")
     assert.is_true(lastForbid < firstInit,
       "a window initialised before its never-touch list was registered")
-    assert.are.same({}, names(WFJ.initErrors))
+    assert.are.same({}, names(WFI.initErrors))
   end)
 
   it("runs the core bootstrap before any surface, in order", function()
-    WFJ = fresh()
+    WFI = fresh()
     local seen = {}
     local hooks = {
-      { "settings", WFJ.Settings, "load" }, { "collector", WFJ.Collector, "load" },
-      { "render", WFJ.Render, "init" }, { "buttontext", WFJ.ButtonText, "init" },
-      { "questframe", WFJ.QuestFrame, "init" },
+      { "settings", WFI.Settings, "load" }, { "collector", WFI.Collector, "load" },
+      { "render", WFI.Render, "init" }, { "buttontext", WFI.ButtonText, "init" },
+      { "questframe", WFI.QuestFrame, "init" },
     }
     for _, h in ipairs(hooks) do
       local label, tbl, key = h[1], h[2], h[3]
       local original = tbl[key]
       tbl[key] = function(...) seen[#seen + 1] = label; return original(...) end
     end
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     assert.are.same({ "settings", "collector", "render", "buttontext", "questframe" }, seen)
   end)
 
   it("a throwing Tooltip.init costs the tooltip and nothing after it (the Forever failure)", function()
     load({ "Tooltip" })
-    assert.are.same({ "tooltip" }, names(WFJ.initErrors))
-    assert.is_truthy(WFJ.initErrors[1].err:find("no Tooltip", 1, true))
+    assert.are.same({ "tooltip" }, names(WFI.initErrors))
+    assert.is_truthy(WFI.initErrors[1].err:find("no Tooltip", 1, true))
     -- Slash.register is the last surface in the sequence and the one the Forever failure actually cost
-    assert.is_function(SlashCmdList.WFJ)
+    assert.is_function(SlashCmdList.WFI)
   end)
 
-  it("keeps /wfj answering when a late surface throws", function()
+  it("keeps /wfi answering when a late surface throws", function()
     load({ "Communities" })
-    assert.are.same({ "communities" }, names(WFJ.initErrors))
-    assert.is_function(SlashCmdList.WFJ)
+    assert.are.same({ "communities" }, names(WFI.initErrors))
+    assert.is_function(SlashCmdList.WFI)
   end)
 
   it("records every failure, not just the first, in order", function()
     load({ "Tooltip", "Mail" })
-    assert.are.same({ "tooltip", "mail" }, names(WFJ.initErrors))
-    assert.is_function(SlashCmdList.WFJ)
+    assert.are.same({ "tooltip", "mail" }, names(WFI.initErrors))
+    assert.is_function(SlashCmdList.WFI)
   end)
 
   it("a surface that throws does not stop the ones after it from initialising", function()
-    WFJ = fresh()
-    WFJ.Tooltip.init = function() error("no tooltip", 0) end
+    WFI = fresh()
+    WFI.Tooltip.init = function() error("no tooltip", 0) end
     local ran = {}
     for _, module in ipairs({ "GameMenu", "Gossip", "ItemText", "Trainer", "MicroMenu" }) do
-      local original = WFJ[module].init
-      WFJ[module].init = function(...) ran[#ran + 1] = module; return original(...) end
+      local original = WFI[module].init
+      WFI[module].init = function(...) ran[#ran + 1] = module; return original(...) end
     end
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     assert.are.same({ "GameMenu", "Gossip", "ItemText", "Trainer", "MicroMenu" }, ran)
   end)
 
@@ -199,25 +199,25 @@ describe("Main guards every surface init", function()
   -- globals that is dangerous, not safe: assigning the guard's nil would hand the client an empty global to
   -- write at logout and wipe the player's settings and their collected English. A failed load must keep what
   -- was on disk.
-  it("keeps WFJ_DB and WFJ_Collector when their load step fails (SavedVariables are not wiped)", function()
-    WFJ = fresh()
-    _G.WFJ_DB = { schema = 1, marker = "on disk" }
-    _G.WFJ_Collector = { quest = { [1] = "harvested English" } }
-    local db, collector = _G.WFJ_DB, _G.WFJ_Collector
-    WFJ.Settings.load = function() error("no settings on this client", 0) end
-    WFJ.Collector.load = function() error("no collector on this client", 0) end
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    assert.are.equal(db, _G.WFJ_DB)
-    assert.are.equal(collector, _G.WFJ_Collector)
-    assert.are.equal("on disk", _G.WFJ_DB.marker)
-    assert.are.same({ "settings", "collector" }, names(WFJ.initErrors))
-    assert.is_function(SlashCmdList.WFJ) -- and the rest of the addon still came up
+  it("keeps WFI_DB and WFI_Collector when their load step fails (SavedVariables are not wiped)", function()
+    WFI = fresh()
+    _G.WFI_DB = { schema = 1, marker = "on disk" }
+    _G.WFI_Collector = { quest = { [1] = "harvested English" } }
+    local db, collector = _G.WFI_DB, _G.WFI_Collector
+    WFI.Settings.load = function() error("no settings on this client", 0) end
+    WFI.Collector.load = function() error("no collector on this client", 0) end
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    assert.are.equal(db, _G.WFI_DB)
+    assert.are.equal(collector, _G.WFI_Collector)
+    assert.are.equal("on disk", _G.WFI_DB.marker)
+    assert.are.same({ "settings", "collector" }, names(WFI.initErrors))
+    assert.is_function(SlashCmdList.WFI) -- and the rest of the addon still came up
   end)
 
-  it("/wfj debug prints the failed surface and its error, and 'none' when clean", function()
+  it("/wfi debug prints the failed surface and its error, and 'none' when clean", function()
     load({ "Trainer" })
     Stub.prints = {}
-    SlashCmdList.WFJ("debug")
+    SlashCmdList.WFI("debug")
     local printed = table.concat(Stub.prints, "\n")
     assert.is_truthy(printed:find("surface errors:", 1, true))
     assert.is_truthy(printed:find("trainer", 1, true))
@@ -225,7 +225,7 @@ describe("Main guards every surface init", function()
 
     load()
     Stub.prints = {}
-    SlashCmdList.WFJ("debug")
+    SlashCmdList.WFI("debug")
     assert.is_truthy(table.concat(Stub.prints, "\n"):find("surface errors: none", 1, true))
   end)
 end)
@@ -238,30 +238,30 @@ describe("Labels refuses a resolved name that is not a text widget", function()
   local H2 = require("tests.lua.spec.helpers")
   local Stub2 = require("tests.lua.spec.wow_stub")
   local Loader2 = require("tests.lua.spec.loader")
-  local WFJ
+  local WFI
 
   before_each(function()
-    Stub2.install(H2.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub2.install(H2.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub2.installQuestAPI(); Stub2.installTooltipAPI(); Stub2.installGossipAPI(); Stub2.installItemTextAPI()
-    WFJ = Loader2.load("WoWForeverJapanese")
-    Stub2.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    WFI = Loader2.load("WoWForeverItalian")
+    Stub2.fireAll("ADDON_LOADED", "WoWForeverItalian")
   end)
 
   it("returns nil for a table with no GetText instead of handing it on", function()
-    assert.is_nil(WFJ.Labels.widget({}))
-    assert.is_nil(WFJ.Labels.widget({ SetText = function() end }))   -- writable but not readable
-    assert.is_nil(WFJ.Labels.widget("not a table"))
-    assert.is_nil(WFJ.Labels.widget(nil))
+    assert.is_nil(WFI.Labels.widget({}))
+    assert.is_nil(WFI.Labels.widget({ SetText = function() end }))   -- writable but not readable
+    assert.is_nil(WFI.Labels.widget("not a table"))
+    assert.is_nil(WFI.Labels.widget(nil))
   end)
 
   it("still accepts a real font string", function()
     local fs = Stub2.namedFontString("SomeLabel", "Hello", "Fonts\\FRIZQT__.TTF", 12, "")
-    assert.are.equal(fs, WFJ.Labels.widget(fs))
+    assert.are.equal(fs, WFI.Labels.widget(fs))
   end)
 
   it("show() drops the record instead of raising", function()
     assert.has_no.errors(function()
-      assert.are.equal(0, WFJ.Labels.show("raid", "ui.thing", { SetText = function() end }))
+      assert.are.equal(0, WFI.Labels.show("raid", "ui.thing", { SetText = function() end }))
     end)
   end)
 end)

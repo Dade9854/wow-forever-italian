@@ -106,7 +106,7 @@ def test_an_edit_of_the_pull_request_text_runs_nothing(root):
     assert "edited" not in text
     assert "github.event.action" not in validate + lua
     assert "if: github.event_name == 'pull_request'" in job
-    assert "python -m wfj public-check pr" in job and "public-check pr" not in validate + lua
+    assert "python -m wfi public-check pr" in job and "public-check pr" not in validate + lua
     assert "pip install" not in job and "pip install" not in lua
 
 
@@ -207,7 +207,7 @@ def test_release_jobs_plan_then_validate_then_release_then_voice(release):
     addon = _block(release, "release", 2)
     assert "needs: [plan, validate]\n" in addon
     assert "if: needs.plan.outputs.addon == 'true'\n" in addon  # nothing under Unreleased: no addon release
-    assert "wfj release next-version --allow-empty" in _block(release, "plan", 2)
+    assert "wfi release next-version --allow-empty" in _block(release, "plan", 2)
     voice = _block(release, "voice", 2)
     assert "needs: [plan, validate, release]\n" in voice
     # after the checks pass, and after the addon or when there was none; never when the addon release failed
@@ -220,7 +220,7 @@ def test_the_voice_job_builds_from_the_pinned_audio_with_a_read_only_key(root, r
     _, pin = _step_named(voice, "The audio commit the text pins")
     assert "pipeline/voice-audio-commit.txt" in pin
     i, audio = _step_named(voice, "Check out the pinned audio")
-    assert "repository: zyaga/wow-forever-japanese-voice" in audio and "ref: ${{ steps.pin.outputs.sha }}" in audio
+    assert "repository: zyaga/wow-forever-italian-voice" in audio and "ref: ${{ steps.pin.outputs.sha }}" in audio
     assert "path: build/voice" in audio and "persist-credentials: false" in audio
     assert "persist-credentials: false" in _steps(voice)[0]
     # the deploy key reaches the audio checkout alone
@@ -230,7 +230,7 @@ def test_the_voice_job_builds_from_the_pinned_audio_with_a_read_only_key(root, r
         if name != "release.yml":
             assert "VOICE_REPO_KEY" not in text, name
     j, run = _step_named(voice, "Release the changed voice packs")
-    assert j > i and "run: wfj voice release --store ../build/voice" in run
+    assert j > i and "run: wfi voice release --store ../build/voice" in run
     assert "GH_TOKEN: ${{ github.token }}" in run
 
 
@@ -238,7 +238,7 @@ def test_the_voice_job_skips_when_no_voice_input_changed(release):
     """An addon-only release neither checks out the audio nor needs the deploy key."""
     voice = _block(release, "voice", 2)
     k, inputs = _step_named(voice, "Did the voice inputs change")
-    assert "run: wfj voice inputs" in inputs and "$GITHUB_OUTPUT" in inputs
+    assert "run: wfi voice inputs" in inputs and "$GITHUB_OUTPUT" in inputs
     assert "secrets." not in inputs
     for name in ("The audio commit the text pins", "Check out the pinned audio", "Release the changed voice packs"):
         i, step = _step_named(voice, name)
@@ -249,7 +249,7 @@ def test_release_refuses_before_anything_else(release):
     plan = _steps(_block(release, "plan", 2))
     assert "if: github.ref != 'refs/heads/main'" in plan[0] and "exit 1" in plan[0]
     assert "if: env.CF_TOKEN_SET != 'true'" in plan[1] and "exit 1" in plan[1]
-    nxt = next(i for i, s in enumerate(plan) if "wfj release next-version" in s)
+    nxt = next(i for i, s in enumerate(plan) if "wfi release next-version" in s)
     assert "$GITHUB_OUTPUT" in plan[nxt] and nxt == len(plan) - 2  # then only the resume guard
 
 
@@ -264,7 +264,7 @@ def test_release_pushes_only_after_the_zip_is_checked(release):
     assert "args: -d # build only" in build
     assert "args: -c -o\n" in publish  # zips the checked package folder, no fresh copy
     _, check = _step_named(job, "Check the zip")
-    assert "wfj package-check" in check
+    assert "wfi package-check" in check
     _, push = _step_named(job, "Push the changelog commit and tag")
     assert 'push --atomic origin "HEAD:refs/heads/main" "refs/tags/v$VERSION"' in push
     # everything before the push happens on the runner only
@@ -306,11 +306,11 @@ def test_changelog_gate_and_data_delta_run_on_pull_requests_only(root):
     text = _workflows(root)["pr.yml"]
     _, gate = _step_named(text, "Changelog")
     assert "if: github.event_name == 'pull_request'" in gate
-    assert 'wfj release changelog-gate --base "origin/$BASE_REF"' in gate
+    assert 'wfi release changelog-gate --base "origin/$BASE_REF"' in gate
     _, delta = _step_named(text, "Data delta")
     assert "if: github.event_name == 'pull_request'" in delta
     assert 'changed=$(git diff --name-only "origin/$BASE_REF...HEAD" -- data/)' in delta
-    assert 'if [ -n "$changed" ]; then' in delta and 'wfj stats --delta "origin/$BASE_REF" ||' in delta
+    assert 'if [ -n "$changed" ]; then' in delta and 'wfi stats --delta "origin/$BASE_REF" ||' in delta
     assert '>> "$GITHUB_STEP_SUMMARY"' in delta
 
 

@@ -97,7 +97,7 @@ local GLOBALS = { "TargetFrame", "FocusFrame", "Boss1TargetFrame", "PartyFrame",
   "CompactRaidGroup_InitializeForGroup", "CompactPartyFrame_Generate", "UnitFrame_UpdateTooltip", "issecretvalue" }
 
 describe("the unit frames' fixed words on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
     local ns = H.loadChunks(FILES)
@@ -108,16 +108,16 @@ describe("the unit frames' fixed words on Forever", function()
   local function fresh()
     H.uiTeardown()
     for _, n in ipairs(GLOBALS) do _G[n] = nil end
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
   end
 
   before_each(function()
     fresh()
-    WFJ = load()
+    WFI = load()
     installUnitFrames()
-    WFJ.Labels.forbidNames(WFJ.UnitFrames.NEVER_TOUCH)
-    assert.is_true(WFJ.UnitFrames.init())
+    WFI.Labels.forbidNames(WFI.UnitFrames.NEVER_TOUCH)
+    assert.is_true(WFI.UnitFrames.init())
   end)
 
   after_each(function()
@@ -136,7 +136,7 @@ describe("the unit frames' fixed words on Forever", function()
         assert.are.equal("Raid", main.Name:GetText()) -- a unit named like a dictionary word
       end
       Stub.keys.alt = true
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       assert.are.equal(en("DEAD"), _G.TargetFrame.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer
         .DeadText:GetText())
     end)
@@ -150,10 +150,10 @@ describe("the unit frames' fixed words on Forever", function()
     _G.CompactUnitFrame_UpdateStatusText(f)
     assert.are.equal("4521", f.statusText:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("4521", f.statusText:GetText()) -- no stale word is restored over it
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     f.nextStatus = en("PLAYER_OFFLINE")
     _G.CompactUnitFrame_UpdateStatusText(f)
     assert.are.equal(ja("PLAYER_OFFLINE"), f.statusText:GetText())
@@ -178,7 +178,7 @@ describe("the unit frames' fixed words on Forever", function()
     assert.are.equal("Raid", tip(1))
     assert.are.equal("Level 12 Orc Warrior", tip(2))
     assert.are.equal(ja("UNIT_POPUP_RIGHT_CLICK"), tip(4))
-    assert.is_false(WFJ.HelpTooltip.registered(_G.TargetFrame))
+    assert.is_false(WFI.HelpTooltip.registered(_G.TargetFrame))
   end)
 
   it("the not-present icons own help tooltips restricted to their keys", function()
@@ -220,7 +220,7 @@ describe("the unit frames' fixed words on Forever", function()
   end)
 
   it("hooks install once; a client without the mainline target frame is skipped without error", function()
-    assert.is_false(WFJ.UnitFrames.init())
+    assert.is_false(WFI.UnitFrames.init())
     assert.are.equal(1, #Stub.hooks["CompactUnitFrame_UpdateStatusText"])
     fresh()
     local bare = load()

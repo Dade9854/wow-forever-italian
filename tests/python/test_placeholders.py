@@ -2,10 +2,10 @@
 
 import re
 
-from wfj.cmd import validate
-from wfj.core import placeholders, report
-from wfj.core.model import entry, provenance
-from wfj.io.jsonl_store import Store
+from wfi.cmd import validate
+from wfi.core import placeholders, report
+from wfi.core.model import entry, provenance
+from wfi.io.jsonl_store import Store
 
 PROV = provenance("human", "cqjt@3446c82", "2026-09-13", translator="T", origins=["cqjt@3446c82#1"])
 
@@ -34,11 +34,11 @@ def test_unknown_catches_every_form_the_addon_leaves_literal():
 
 def test_the_name_check_strips_every_known_token(root):
     """A known token must never be read as a Latin name by the alignment checks (pipeline and runtime gate)."""
-    from wfj.core import align
+    from wfi.core import align
 
     for word in placeholders.KNOWN:
         assert align.PLACEHOLDER.fullmatch("{" + word + "}"), word
-    lua = (root / "addon/WoWForeverJapanese/Core/Align.lua").read_text(encoding="utf-8")
+    lua = (root / "addon/WoWForeverItalian/Core/Align.lua").read_text(encoding="utf-8")
     strip = re.search(r"local function stripPlaceholders\(text\)(.*?)\nend", lua, re.S)
     assert strip, "stripPlaceholders not found in Core/Align.lua"
     for word in placeholders.KNOWN:
@@ -101,7 +101,7 @@ def test_committed_store_ships_no_unknown_token(root):
 
 
 def test_lua_and_python_know_the_same_tokens(root):
-    src = (root / "addon/WoWForeverJapanese/Core/Placeholders.lua").read_text(encoding="utf-8")
+    src = (root / "addon/WoWForeverItalian/Core/Placeholders.lua").read_text(encoding="utf-8")
     m = re.search(r"Placeholders\.KNOWN\s*=\s*\{([^}]*)\}", src)
     assert m, "Placeholders.KNOWN not found in Core/Placeholders.lua"
     lua_known = tuple(re.findall(r'"([A-Za-z]+)"', m.group(1)))

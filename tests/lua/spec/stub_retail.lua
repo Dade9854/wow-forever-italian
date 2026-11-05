@@ -7,23 +7,23 @@ local Stub = require("tests.lua.spec.wow_stub")
 local C = require("tests.lua.spec.stub_commerce")
 local R = setmetatable({}, { __index = C })
 
--- → WFJ. `opts`: { args = { KEY = { [n] = kind } } → UIStrings.ARGS
+-- → WFI. `opts`: { args = { KEY = { [n] = kind } } → UIStrings.ARGS
 -- entries the surface needs (Core/UIStrings carries them; a key already there is kept),
 -- before = function() … end → builds client frames before the index is built }.
 function R.load(file, ui, opts)
   opts = opts or {}
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
   local files = {}
   for i, f in ipairs(H.UI_FILES) do files[i] = f end
   files[#files + 1] = file
-  local WFJ = H.loadChunks(files)
+  local WFI = H.loadChunks(files)
   for key, kinds in pairs(opts.args or {}) do
-    if WFJ.UIStrings.ARGS[key] == nil then WFJ.UIStrings.ARGS[key] = kinds end
+    if WFI.UIStrings.ARGS[key] == nil then WFI.UIStrings.ARGS[key] = kinds end
   end
   if opts.before then opts.before() end
-  H.uiSetup(WFJ, ui)
-  return WFJ
+  H.uiSetup(WFI, ui)
+  return WFI
 end
 
 function R.teardown(names)
@@ -31,20 +31,20 @@ function R.teardown(names)
 end
 
 -- The shared assertions. `o` is stub_commerce's C.suite options plus `args` (UIStrings.ARGS the surface needs).
---   title, module, file, addon (nil for a login frame), root, globals, ui, build(), cases, name(frame, WFJ),
---   wrong(frame) → function(frame, WFJ)
+--   title, module, file, addon (nil for a login frame), root, globals, ui, build(), cases, name(frame, WFI),
+--   wrong(frame) → function(frame, WFI)
 function R.suite(env, o)
   local describe, it, before_each, after_each, assert = env.describe, env.it, env.before_each, env.after_each,
     env.assert
   describe(o.title, function()
-    local WFJ
+    local WFI
 
-    local function load() WFJ = R.load(o.file, o.ui, { args = o.args }) end
-    local function module() return WFJ[o.module] end
+    local function load() WFI = R.load(o.file, o.ui, { args = o.args }) end
+    local function module() return WFI[o.module] end
     local function build()
       local frame = o.build()
       if o.addon then Stub.loadedAddons[o.addon] = true end
-      WFJ.Labels.forbidNames(module().NEVER_TOUCH)
+      WFI.Labels.forbidNames(module().NEVER_TOUCH)
       return frame
     end
 
@@ -56,7 +56,7 @@ function R.suite(env, o)
       else
         assert.is_false(module().init()) -- waits for the addon
         build()
-        assert.are.equal(1, WFJ.LoadOnDemand.loaded(o.addon))
+        assert.are.equal(1, WFI.LoadOnDemand.loaded(o.addon))
       end
     end
 
@@ -68,7 +68,7 @@ function R.suite(env, o)
       describe(order[2], function()
         before_each(function() setup(order[1]) end)
         for _, case in ipairs(o.cases) do
-          it(case[1], function() case[2](_G[o.root], WFJ) end)
+          it(case[1], function() case[2](_G[o.root], WFI) end)
         end
         it("hooks install once", function()
           assert.is_false(module().init())
@@ -79,7 +79,7 @@ function R.suite(env, o)
 
     it("a name is left untouched", function()
       setup(true)
-      o.name(_G[o.root], WFJ)
+      o.name(_G[o.root], WFI)
     end)
 
     it("client names bound to the wrong type degrade to English with no error", function()
@@ -90,7 +90,7 @@ function R.suite(env, o)
         assert.is_true(module().init())
         if frame.Show then frame:Show() end
       end)
-      after(frame, WFJ)
+      after(frame, WFI)
       R.teardown(o.globals)
       load()
       _G[o.root] = 42

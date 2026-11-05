@@ -3,33 +3,33 @@ local Stub = require("tests.lua.spec.wow_stub")
 local Loader = require("tests.lua.spec.loader")
 
 describe("UI/AddonListButton: Settings on this addon's AddOn List row", function()
-  local WFJ
+  local WFI
 
   local function load(withList)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     if withList then Stub.installAddonList() end
-    Stub.addonNames = { "SomeOtherAddon", "WoWForeverJapanese" }
-    WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Stub.addonNames = { "SomeOtherAddon", "WoWForeverItalian" }
+    WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
   end
 
   it("a pooled row shows the button for this addon and hides it for another", function()
     load(true)
-    assert.is_true(WFJ.AddonListButton.installed)
+    assert.is_true(WFI.AddonListButton.installed)
     local entry = Stub.addonEntry()
     AddonList_InitAddon(entry, Stub.addonNode(2))
-    local b = entry.wfjSettings
+    local b = entry.wfiSettings
     assert.is_table(b)
     assert.is_true(b:IsShown())
     assert.are.equal("設定", b.caption:GetText()) -- one language: Japanese unless the reveal key is held
-    assert.are.equal(WFJ.Font.PATH, (b.caption:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (b.caption:GetFont()))
     assert.are.same({ "LEFT", entry.Title, "RIGHT", 70, 0 }, b.point)
     AddonList_InitAddon(entry, Stub.addonNode(1)) -- the same pooled entry, reused for another addon
     assert.is_false(b:IsShown())
     AddonList_InitAddon(entry, Stub.addonNode(2))
     assert.is_true(b:IsShown())
-    assert.are.equal(b, entry.wfjSettings) -- created once per entry
+    assert.are.equal(b, entry.wfiSettings) -- created once per entry
   end)
 
   it("a click opens the settings (no HideUIPanel); pending AddOn changes disable it", function()
@@ -37,46 +37,46 @@ describe("UI/AddonListButton: Settings on this addon's AddOn List row", function
     local entry = Stub.addonEntry()
     AddonList_InitAddon(entry, Stub.addonNode(2))
     Stub.settingsCalls = {}
-    entry.wfjSettings:click()
+    entry.wfiSettings:click()
     assert.are.same({}, Stub.panelCalls) -- a forbidden call: the Settings panel manages the panels
     assert.are.same({ { "OpenToCategory", 42 } }, Stub.settingsCalls)
     Stub.addonListChanged = true
     AddonList_InitAddon(entry, Stub.addonNode(2)) -- the list re-inits rows after every enable toggle
-    assert.is_false(entry.wfjSettings:IsEnabled())
+    assert.is_false(entry.wfiSettings:IsEnabled())
     Stub.panelCalls, Stub.settingsCalls = {}, {}
-    entry.wfjSettings:click()
+    entry.wfiSettings:click()
     assert.are.same({}, Stub.panelCalls)
     assert.are.same({}, Stub.settingsCalls)
-    entry.wfjSettings.scripts.OnEnter(entry.wfjSettings)
-    assert.are.equal("先にアドオンの変更を適用またはキャンセルしてください。", WFJSettingsTooltip.text) -- one line, one language
-    assert.are.equal(_G.UIParent, WFJSettingsTooltip.parent) -- not the clipping ScrollBox row
+    entry.wfiSettings.scripts.OnEnter(entry.wfiSettings)
+    assert.are.equal("先にアドオンの変更を適用またはキャンセルしてください。", WFISettingsTooltip.text) -- one line, one language
+    assert.are.equal(_G.UIParent, WFISettingsTooltip.parent) -- not the clipping ScrollBox row
   end)
 
   it("installs only when the settings pages registered, and a failing row never breaks the list", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installAddonList()
     Stub.removeSettingsAPI()
-    local ns = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    local ns = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     assert.is_false(ns.AddonListButton.installed)
     load(true)
     local entry = Stub.addonEntry()
     local broken = { GetData = function() error("boom: a row built differently") end }
-    assert.has_no.errors(function() WFJ.AddonListButton.decorate(entry, broken) end)
-    assert.is_string(WFJ.AddonListButton.error)
+    assert.has_no.errors(function() WFI.AddonListButton.decorate(entry, broken) end)
+    assert.is_string(WFI.AddonListButton.error)
   end)
 
   it("absent at load → nothing hooked; the list's own ADDON_LOADED installs the hook once", function()
     load(false)
-    assert.is_false(WFJ.AddonListButton.installed)
+    assert.is_false(WFI.AddonListButton.installed)
     assert.are.equal("addon list button: absent", (function()
       Stub.prints = {}
-      SlashCmdList.WFJ("debug")
+      SlashCmdList.WFI("debug")
       for _, line in ipairs(Stub.prints) do if line:find("addon list button", 1, true) then return line:sub(6) end end
     end)())
     Stub.installAddonList()
     Stub.fireAll("ADDON_LOADED", "Blizzard_AddOnList")
-    assert.is_true(WFJ.AddonListButton.installed)
+    assert.is_true(WFI.AddonListButton.installed)
     assert.are.equal(1, #Stub.hooks.AddonList_InitAddon)
     Stub.fireAll("ADDON_LOADED", "Blizzard_AddOnList")
     assert.are.equal(1, #Stub.hooks.AddonList_InitAddon)

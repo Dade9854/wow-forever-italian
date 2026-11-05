@@ -4,7 +4,7 @@
 
 - **Date:** 2026-09-26
 - **Question:** Does the Forever client draw cinematic subtitles through Lua an addon can post-hook, where does their English come from, and is a subtitle surface worth building?
-- **Source:** the Forever client's UI extract, build **1.60.1.70009** (`interface/addons/…`, lowercased paths, as `wfj.dev.client_ui` writes them) and its `GlobalStrings.csv`. Anything not settled by those files is marked **[unverified]**.
+- **Source:** the Forever client's UI extract, build **1.60.1.70009** (`interface/addons/…`, lowercased paths, as `wfi.dev.client_ui` writes them) and its `GlobalStrings.csv`. Anything not settled by those files is marked **[unverified]**.
 
 ## Options
 | Option | Pros | Cons |
@@ -53,10 +53,10 @@ A new character's race intro plays straight after the first login, before any `/
 For any later in-game cinematic (not the intro), this line prints each subtitle event to chat. Paste it before the cinematic starts; the chat window is hidden while it plays, so read the chat afterwards:
 
 ```
-/run local f=CreateFrame("Frame")for _,e in ipairs({"CINEMATIC_START","SHOW_SUBTITLE","HIDE_SUBTITLE","CINEMATIC_STOP"})do f:RegisterEvent(e)end f:SetScript("OnEvent",function(_,...)print("WFJ trace:",...)end)WFJTrace=f print("WFJ trace: on")
+/run local f=CreateFrame("Frame")for _,e in ipairs({"CINEMATIC_START","SHOW_SUBTITLE","HIDE_SUBTITLE","CINEMATIC_STOP"})do f:RegisterEvent(e)end f:SetScript("OnEvent",function(_,...)print("WFI trace:",...)end)WFITrace=f print("WFI trace: on")
 ```
 
-It prints `WFJ trace: on` at once (the line is under the 255-character chat limit). Then, during a cinematic:
+It prints `WFI trace: on` at once (the line is under the 255-character chat limit). Then, during a cinematic:
 - `CINEMATIC_START` with its two arguments (`cinematicframe.lua:82–83`);
 - one `SHOW_SUBTITLE <message> <sender>` per line (`blizzard_subtitles.lua:88`);
 - `HIDE_SUBTITLE`;

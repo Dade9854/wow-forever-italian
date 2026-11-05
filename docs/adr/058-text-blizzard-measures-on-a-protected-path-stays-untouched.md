@@ -61,7 +61,7 @@ it. Flipped live, five times, with and without the addon: 1 errors, 0 does not. 
 4. **A taint watch is always on** (`UI/TaintWatch`, [Diagnostics](../systems/diagnostics.md)): a check every 2
    seconds on the fields the bar layout reads, a stack from each of their writers when the value comes out tainted,
    a sweep of the bars' other fields, the last 60 game events with every finding, a stack on every block and a
-   tainted-field scan after the first block of a session, once combat is over (also `/wfj taint`). It only reads; its cost is a few dozen
+   tainted-field scan after the first block of a session, once combat is over (also `/wfi taint`). It only reads; its cost is a few dozen
    checks every 2 seconds.
 5. **`taintLog` is never used on Forever.** Not in the in-game checklists, not to debug. The taint watch replaces it.
 

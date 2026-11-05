@@ -59,13 +59,13 @@ local function installEventTrace()
 end
 
 describe("the Event Log developer window on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     S.paused, S.results = false, 3
   end
 
@@ -82,11 +82,11 @@ describe("the Event Log developer window on Forever", function()
         local f
         if order[1] then
           f = installEventTrace()
-          assert.is_true(WFJ.EventTrace.init())
+          assert.is_true(WFI.EventTrace.init())
         else
-          assert.is_false(WFJ.EventTrace.init())
+          assert.is_false(WFI.EventTrace.init())
           f = installEventTrace()
-          assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+          assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
         end
         assert.are.equal("イベントログ", f.TitleContainer.TitleText:GetText())
         f:SetTitle(en("EVENTTRACE_HEADER")) -- a second SetTitle keeps it
@@ -105,11 +105,11 @@ describe("the Event Log developer window on Forever", function()
         f:DisplayEvents()
         assert.are.equal("ログ", f.Log.Bar.Label:GetText())
         assert.are.equal("Filter", f.Log.Bar.SearchBox:GetText())
-        assert.are.equal(0, WFJ.Labels.show("eventtrace", "x", f.Log.Bar.SearchBox))
+        assert.are.equal(0, WFI.Labels.show("eventtrace", "x", f.Log.Bar.SearchBox))
         Stub.keys.alt = true
-        WFJ.Modifier.refresh()
+        WFI.Modifier.refresh()
         assert.are.equal("Event Log", f.TitleContainer.TitleText:GetText())
-        assert.is_false(WFJ.EventTrace.setup()) -- once
+        assert.is_false(WFI.EventTrace.setup()) -- once
       end)
   end
 
@@ -117,7 +117,7 @@ describe("the Event Log developer window on Forever", function()
     load()
     local f = installEventTrace()
     f.Log.Bar.MarkButton.Label.text = en("EVENTTRACE_OPTIONS")
-    assert.is_true(WFJ.EventTrace.init())
+    assert.is_true(WFI.EventTrace.init())
     assert.are.equal("Options", f.Log.Bar.MarkButton.Label:GetText())
   end)
 
@@ -125,18 +125,18 @@ describe("the Event Log developer window on Forever", function()
     load()
     local f = installEventTrace()
     f.SubtitleBar, f.Filter, f.UpdatePlaybackButton, f.TitleContainer = 4, "filter", "not a function", true
-    assert.has_no.errors(function() assert.is_true(WFJ.EventTrace.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.EventTrace.init()) end)
     assert.has_no.errors(function() f:Show() end)
     assert.are.equal("すべて破棄", f.Log.Bar.DiscardAllButton.Label:GetText())
     load()
     _G.EventTrace = 12
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() assert.is_false(WFJ.EventTrace.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.EventTrace.init()) end)
   end)
 
   it("no EventTrace frame → init is false, nothing touched", function()
     load()
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() assert.is_false(WFJ.EventTrace.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.EventTrace.init()) end)
   end)
 end)

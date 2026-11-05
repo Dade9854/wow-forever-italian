@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from wfj.dev import client_surface as cs
+from wfi.dev import client_surface as cs
 
 ADDON = """
 local SURFACE = "quest"
@@ -30,7 +30,7 @@ end
 
 @pytest.fixture
 def addon(tmp_path: Path) -> Path:
-    root = tmp_path / "WoWForeverJapanese"
+    root = tmp_path / "WoWForeverItalian"
     (root / "UI").mkdir(parents=True)
     (root / "UI" / "QuestFrame.lua").write_text(ADDON, encoding="utf-8")
     return root
@@ -169,7 +169,7 @@ def test_source_hits_without_a_source_dir_is_empty(addon: Path):
 
 
 SAVED = '''
-WFJProbeDB = {
+WFIProbeDB = {
 \t["build"] = {
 \t\t"1.60.1", "69893", "Sep 17 2026", 11509,
 \t},
@@ -209,15 +209,15 @@ def test_the_probe_is_one_lua_file_for_the_scan_addon(addon: Path, tmp_path: Pat
     import subprocess
 
     manifest = cs.build(addon)
-    out = tmp_path / "WFJScan" / "WFJScanProbe.lua"
+    out = tmp_path / "WFIScan" / "WFIScanProbe.lua"
     m = tmp_path / "m.json"
     m.write_text(__import__("json").dumps(manifest), encoding="utf-8")
     assert cs.main(["probe", "--manifest", str(m), "--out", str(out)]) == 0
-    assert [p.name for p in out.parent.iterdir()] == ["WFJScanProbe.lua"]  # no TOC: WFJScan's own TOC loads it
+    assert [p.name for p in out.parent.iterdir()] == ["WFIScanProbe.lua"]  # no TOC: WFIScan's own TOC loads it
     lua = out.read_text(encoding="utf-8")
     for kind, name in cs.probe_names(manifest):
         assert f'{{"{kind}","{name}",' in lua
-    assert "WFJProbeDB" not in lua and "WFJScanDB.probe" in lua
+    assert "WFIProbeDB" not in lua and "WFIScanDB.probe" in lua
     luac = shutil.which("luac") or shutil.which("luac5.1")
     if luac:  # the client parses this file; a syntax error would waste an in-game run
         assert subprocess.run([luac, "-p", str(out)], capture_output=True, check=False).returncode == 0
@@ -242,7 +242,7 @@ def test_a_load_on_demand_surface_is_unknown_not_rework_until_its_addon_loads(tm
     (root / "UI").mkdir(parents=True)
     (root / "UI" / "Trainer.lua").write_text(
         'function T.init()\n'
-        '  WFJ.LoadOnDemand.on("Blizzard_TrainerUI", T.setup)\n'
+        '  WFI.LoadOnDemand.on("Blizzard_TrainerUI", T.setup)\n'
         '  Compat.declare(SURFACE, "greeting", { "ClassTrainerGreetingText" })\n'
         'end\n', encoding="utf-8")
     manifest = cs.build(root)
@@ -256,7 +256,7 @@ def test_a_load_on_demand_surface_is_unknown_not_rework_until_its_addon_loads(tm
 
 
 def test_read_saved_variables_records_which_addons_loaded():
-    sv = ('WFJProbeDB = {\n["loaded"] = {\n["Blizzard_TrainerUI"] = true,\n},\n'
+    sv = ('WFIProbeDB = {\n["loaded"] = {\n["Blizzard_TrainerUI"] = true,\n},\n'
           '["answers"] = {\n["global|ClassTrainerGreetingText|trainer"] = "no",\n},\n}\n')
     out = cs.read_saved_variables(sv)
     assert out["loaded|Blizzard_TrainerUI"] == "yes"
@@ -313,7 +313,7 @@ def test_the_probe_resets_its_answers_when_the_client_build_changes(tmp_path: Pa
 # without a second signal its absences read as proven even though nobody ever opened that window.
 
 SAVED_WITH_ASKED = '''
-WFJProbeDB = {
+WFIProbeDB = {
 \t["build"] = {
 \t\t"1.60.1", "69893", "Sep 17 2026", 16001,
 \t},
@@ -388,7 +388,7 @@ def test_report_without_an_asked_table_reports_no_unopened_surfaces():
 
 def test_the_probe_addon_offers_the_slash_command_and_tracks_what_is_left(addon: Path, tmp_path: Path):
     lua = cs.probe_lua(cs.build(addon))
-    assert 'SLASH_WFJPROBE1 = "/wfjprobe"' in lua
+    assert 'SLASH_WFIPROBE1 = "/wfiprobe"' in lua
     assert "db.asked[arg]" in lua                  # a manual sweep marks the surface it was told about
     assert "surfaces still unasked" in lua                 # in-game progress: what is left to do
     assert "asked = {}" in lua   # reset with the rest of the DB
@@ -463,7 +463,7 @@ def test_the_probe_addon_skips_windowless_surfaces_in_what_is_left(tmp_path: Pat
 
 def test_saved_variables_parse_a_three_segment_name():
     # parser side: `_SV_ENTRY` took at most one dot, so a deeper answer was never read
-    sv = ('WFJProbeDB = {\n["answers"] = {\n["global|Enum.TooltipDataType.Item|tooltip"] = "number",\n'
+    sv = ('WFIProbeDB = {\n["answers"] = {\n["global|Enum.TooltipDataType.Item|tooltip"] = "number",\n'
           '["function|C_Spell.GetSpellDescription|tooltip"] = "function",\n},\n}\n')
     out = cs.read_saved_variables(sv)
     assert out["global|Enum.TooltipDataType.Item"] == "yes"
@@ -508,7 +508,7 @@ def test_the_probe_resolves_a_three_segment_name(tmp_path: Path):
 
 
 # --- the probe lives in the scan dev addon -----------------------------------------------------------------
-# It shares the scan's saved table, WFJScanDB, and may only ever replace WFJScanDB.probe: the rest is the quest
+# It shares the scan's saved table, WFIScanDB, and may only ever replace WFIScanDB.probe: the rest is the quest
 # scan's progress for the current build, which a probe reset must never cost.
 
 _HARNESS = '''
@@ -528,12 +528,12 @@ local function fire(event, addon) for _, fn in ipairs(handlers) do fn(nil, event
 '''
 
 _SCAN_STATE = '''
-WFJScanDB = { version = 1, builds = { ["1.60.1.70245"] = { phase = "recheck", pos = 42,
+WFIScanDB = { version = 1, builds = { ["1.60.1.70245"] = { phase = "recheck", pos = 42,
   answered = { [1] = true, [50001] = true } } } }
-local builds, entry = WFJScanDB.builds, WFJScanDB.builds["1.60.1.70245"]
+local builds, entry = WFIScanDB.builds, WFIScanDB.builds["1.60.1.70245"]
 local function scanIntact()
-  local e = WFJScanDB.builds["1.60.1.70245"]
-  return WFJScanDB.version == 1 and WFJScanDB.builds == builds and e == entry and e.phase == "recheck"
+  local e = WFIScanDB.builds["1.60.1.70245"]
+  return WFIScanDB.version == 1 and WFIScanDB.builds == builds and e == entry and e.phase == "recheck"
     and e.pos == 42 and e.answered[1] == true and e.answered[50001] == true
 end
 '''
@@ -563,7 +563,7 @@ def _probe_chunk(manifest) -> str:
 
 def test_the_probe_sweeps_into_its_own_table_and_leaves_the_scan_state_alone(tmp_path: Path):
     out = _run_lua(tmp_path, _SCAN_STATE + _probe_chunk(_MANIFEST) + '''
-local p = WFJScanDB.probe
+local p = WFIScanDB.probe
 io.write(tostring(scanIntact()), " ", p.answers["global|QuestFrame|questframe"], " ",
   p.answers["global|GoneFrame|questframe"], " ", p.client, "\\n")
 ''')
@@ -573,8 +573,8 @@ io.write(tostring(scanIntact()), " ", p.answers["global|QuestFrame|questframe"],
 def test_the_probe_creates_the_scan_table_when_there_is_none(tmp_path: Path):
     out = _run_lua(tmp_path, _probe_chunk(_MANIFEST) + '''
 local keys = {}
-for k in pairs(WFJScanDB) do keys[#keys + 1] = k end
-io.write(table.concat(keys, ","), " ", WFJScanDB.probe.answers["global|QuestFrame|questframe"], "\\n")
+for k in pairs(WFIScanDB) do keys[#keys + 1] = k end
+io.write(table.concat(keys, ","), " ", WFIScanDB.probe.answers["global|QuestFrame|questframe"], "\\n")
 ''')
     assert out == ["probe", "frame"]
 
@@ -582,14 +582,14 @@ io.write(table.concat(keys, ","), " ", WFJScanDB.probe.answers["global|QuestFram
 def test_a_new_manifest_or_build_resets_only_the_probe(tmp_path: Path):
     other = {"entries": [{"kind": "global", "name": "QuestFrame", "surface": "questframe"}]}
     out = _run_lua(tmp_path, _SCAN_STATE + _probe_chunk(_MANIFEST) + '''
-WFJScanDB.probe.asked.questframe = 3
+WFIScanDB.probe.asked.questframe = 3
 ''' + _probe_chunk(other) + '''
-io.write(tostring(scanIntact()), " ", tostring(WFJScanDB.probe.answers["global|GoneFrame|questframe"]), " ",
-  tostring(WFJScanDB.probe.asked.questframe), "\\n")
-WFJScanDB.probe.asked.questframe = 2
+io.write(tostring(scanIntact()), " ", tostring(WFIScanDB.probe.answers["global|GoneFrame|questframe"]), " ",
+  tostring(WFIScanDB.probe.asked.questframe), "\\n")
+WFIScanDB.probe.asked.questframe = 2
 BUILD = "70300"
 ''' + _probe_chunk(other) + '''
-io.write(tostring(scanIntact()), " ", WFJScanDB.probe.client, " ", tostring(WFJScanDB.probe.asked.questframe),
+io.write(tostring(scanIntact()), " ", WFIScanDB.probe.client, " ", tostring(WFIScanDB.probe.asked.questframe),
   "\\n")
 ''')
     # another manifest drops the old answers and the asked counts; so does another client build
@@ -598,15 +598,15 @@ io.write(tostring(scanIntact()), " ", WFJScanDB.probe.client, " ", tostring(WFJS
 
 def test_a_later_sweep_never_downgrades_a_found_answer(tmp_path: Path):
     out = _run_lua(tmp_path, _SCAN_STATE + _probe_chunk(_MANIFEST) + '''
-WFJScanDB.probe.answers["global|GoneFrame|questframe"] = "frame"   -- found while its window was open
+WFIScanDB.probe.answers["global|GoneFrame|questframe"] = "frame"   -- found while its window was open
 ''' + _probe_chunk(_MANIFEST) + '''
-io.write(tostring(scanIntact()), " ", WFJScanDB.probe.answers["global|GoneFrame|questframe"], "\\n")
+io.write(tostring(scanIntact()), " ", WFIScanDB.probe.answers["global|GoneFrame|questframe"], "\\n")
 ''')
     assert out == ["true", "frame"]
 
 
 SAVED_SCAN = '''
-WFJScanDB = {
+WFIScanDB = {
 \t["builds"] = {
 \t\t["1.60.1.70245"] = {
 \t\t\t["phase"] = "done",
@@ -658,7 +658,7 @@ def test_report_reads_the_scan_addons_saved_file(addon: Path, tmp_path: Path, ca
 
     manifest = tmp_path / "m.json"
     manifest.write_text(json.dumps(cs.build(addon)), encoding="utf-8")
-    saved = tmp_path / "WFJScan.lua"
+    saved = tmp_path / "WFIScan.lua"
     names = cs.probe_names(cs.build(addon))
     rows = "".join(f'\t\t\t["{k}|{n}|questframe"] = "frame",\n' for k, n in names)
     saved.write_text(SAVED_SCAN.replace('\t\t\t["global|QuestFrame|questframe"] = "frame",\n', rows),

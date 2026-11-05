@@ -1,10 +1,10 @@
 -- Lua side: Core/ReportText writes the report text v1 (docs/systems/fix-reports.md) byte for byte as
--- the shared vectors say; pipeline/wfj/core/fix_report.py reads the same vectors (tests/python).
+-- the shared vectors say; pipeline/wfi/core/fix_report.py reads the same vectors (tests/python).
 local H = require("tests.lua.spec.helpers")
 
 local function pure() -- the module loaded fresh, under the plain Lua environment (no WoW global)
   local ns = {}
-  H.loadPure("Core/ReportText.lua", "WoWForeverJapanese", ns)
+  H.loadPure("Core/ReportText.lua", "WoWForeverItalian", ns)
   return ns.ReportText
 end
 
@@ -24,7 +24,7 @@ describe("Core/ReportText", function()
       { type = "ui", id = "OKAY", field = "text", ja_hash = "8899aabbccddeeff", reason = "other", note = "",
         ja = "了解" },
     })
-    assert.are.equal("WFJ-REPORT 1\naddon ? client 1_2\nfix quest 7 title 0011223344556677 typo\n"
+    assert.are.equal("WFI-REPORT 1\naddon ? client 1_2\nfix quest 7 title 0011223344556677 typo\n"
       .. "fix ui OKAY text 8899aabbccddeeff other\nja 了解\nend 2\n", text)
   end)
 

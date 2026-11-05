@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import generate
-from wfj.cmd import glosses as cmd
-from wfj.core import glosses, readings
-from wfj.emit import schema
-from wfj.io.jsonl_store import Store
+from wfi.cmd import generate
+from wfi.cmd import glosses as cmd
+from wfi.core import glosses, readings
+from wfi.emit import schema
+from wfi.io.jsonl_store import Store
 
 # a synthetic file in JMdict's (jmdict-simplified) shape: made-up ids and meanings, no JMdict data
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "jmdict" / "jmdict-mini.json"
@@ -110,7 +110,7 @@ def test_the_meaning_table_is_split_per_thousand():
 
 
 def _generate(data):
-    """generate's plan and numbers file, as `wfj generate` writes them."""
+    """generate's plan and numbers file, as `wfi generate` writes them."""
     store, report = Store(data), {}
     planned = generate.plan(store, [], report)
     generate.write_numbers(store, report["meaning_numbers"])
@@ -212,7 +212,7 @@ def test_a_byte_order_mark_is_read_past(data):
 
 
 def test_validate_reads_the_numbers_file_and_never_writes_it(data):
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     store, report = Store(data), {}
     generate.plan(store, [], report)

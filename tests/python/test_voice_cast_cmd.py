@@ -1,4 +1,4 @@
-"""`wfj voice profiles build|export|import`: the speaker profiles the casting reads, from the client tables,
+"""`wfi voice profiles build|export|import`: the speaker profiles the casting reads, from the client tables,
 the database and the casting pass's drafts."""
 
 from __future__ import annotations
@@ -11,8 +11,8 @@ from types import SimpleNamespace
 import pytest
 import voice_fixture as vf
 
-from wfj.cmd import voice_cast
-from wfj.core import voice
+from wfi.cmd import voice_cast
+from wfi.core import voice
 
 G = voice.gossip_key
 RULED = {"source": "maintainer", "imported": "2026-10-01"}

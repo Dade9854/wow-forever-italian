@@ -1,9 +1,9 @@
 # ADR-036: Readings: word lists keyed to the Japanese, shown on hover
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/core/readings.py`, `pipeline/wfj/cmd/readings.py`,
-  `pipeline/wfj/cmd/validate.py` (`rule_readings`, rule 8), `pipeline/wfj/cmd/generate.py`,
-  `pipeline/wfj/emit/lua_writer.py` (`reading_text`), `pipeline/wfj/emit/schema.py` (`reading_relpath`, `TOC_ORDER`),
-  `addon/WoWForeverJapanese/Core/Readings.lua`, `UI/Readings.lua`, `UI/Render.lua`, `Core/Settings.lua`
+- **Status:** Accepted. Implemented in `pipeline/wfi/core/readings.py`, `pipeline/wfi/cmd/readings.py`,
+  `pipeline/wfi/cmd/validate.py` (`rule_readings`, rule 8), `pipeline/wfi/cmd/generate.py`,
+  `pipeline/wfi/emit/lua_writer.py` (`reading_text`), `pipeline/wfi/emit/schema.py` (`reading_relpath`, `TOC_ORDER`),
+  `addon/WoWForeverItalian/Core/Readings.lua`, `UI/Readings.lua`, `UI/Render.lua`, `Core/Settings.lua`
   (`readings.enabled`), `UI/Options.lua`, `UI/Slash.lua`, `data/reading/`. The word-reading box is one of the allowed
   on-screen additions ([principle 3](../architecture/principles.md#3-japanese-by-default-english-one-key-away)). The
   in-game checks of the shipped build are in the readings checklist in [Testing strategy](../testing/strategy.md).
@@ -43,8 +43,8 @@ returns one rectangle per line a span covers, relative to the FontString's `BOTT
    and `generate` leaves it out, so a rejected or withdrawn line never stops a build. A malformed record or a duplicate
    fails `validate` and `generate`.
 5. **Provenance** `machine` (with `model`, source `readings@<batch>`) or `correction`. Machine output never replaces a
-   `correction` reading (kept and reported by `wfj readings import`).
-6. **The model writes readings** through `wfj readings export` → words → `wfj readings import`. No morphological
+   `correction` reading (kept and reported by `wfi readings import`).
+6. **The model writes readings** through `wfi readings export` → words → `wfi readings import`. No morphological
    analyser in the pipeline. Every translation batch also writes its lines' readings. The export leaves out a line
    with nothing to annotate (no kanji and no kana run beyond a bare particle or copula: names joined by a particle, an
    English-only title); `validate` counts a kana-only line as owed.

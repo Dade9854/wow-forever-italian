@@ -1,5 +1,5 @@
-from wfj.core import align
-from wfj.core.align import (
+from wfi.core import align
+from wfi.core.align import (
     allowlist_problems,
     check_names,
     check_numbers,
@@ -180,7 +180,7 @@ def test_duration_units_are_the_units_of_every_duration_string_the_addon_reads()
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[2]
-    lua = (root / "addon/WoWForeverJapanese/Core/UIStringKeys.lua").read_text(encoding="utf-8")
+    lua = (root / "addon/WoWForeverItalian/Core/UIStringKeys.lua").read_text(encoding="utf-8")
     block = re.search(r"UIStrings\.SPELL_DURATIONS = \{(.*?)\}", lua, re.S).group(1)
     keys = set(re.findall(r'"([A-Z_]+)"', block))
     english = {}

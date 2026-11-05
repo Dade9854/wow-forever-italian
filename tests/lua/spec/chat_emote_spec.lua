@@ -74,20 +74,20 @@ local function emote(message, sender)
 end
 
 describe("emote chat lines", function()
-  local WFJ
+  local WFI
   before_each(function()
     secrets, target = {}, nil
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     Stub.installScrollUtil()
     local files = {}
     for i, f in ipairs(H.UI_FILES) do files[i] = f end
     files[#files + 1] = "UI/Errors.lua"
     files[#files + 1] = "UI/ChatSystem.lua"
-    WFJ = H.loadChunks(files)
+    WFI = H.loadChunks(files)
     install()
-    H.uiSetup(WFJ, UI)
-    assert.is_true(WFJ.ChatSystem.init())
+    H.uiSetup(WFI, UI)
+    assert.is_true(WFI.ChatSystem.init())
   end)
   after_each(function()
     H.uiTeardown()
@@ -130,9 +130,9 @@ describe("emote chat lines", function()
     assert.are.equal("12:34 あなたは手を振った。", _G.ChatFrame1:Last())
     emote("[12:34:56] You wave.", "Me")
     assert.are.equal("[12:34:56] あなたは手を振った。", _G.ChatFrame1:Last())
-    assert.are.same({ "12:34 ", "Mad waves." }, { WFJ.ChatSystem.splitStamp("12:34 Mad waves.") })
-    assert.are.same({ "12:34 PM ", "You wave." }, { WFJ.ChatSystem.splitStamp("12:34 PM You wave.") })
-    assert.are.same({ "", "You wave." }, { WFJ.ChatSystem.splitStamp("You wave.") })
+    assert.are.same({ "12:34 ", "Mad waves." }, { WFI.ChatSystem.splitStamp("12:34 Mad waves.") })
+    assert.are.same({ "12:34 PM ", "You wave." }, { WFI.ChatSystem.splitStamp("12:34 PM You wave.") })
+    assert.are.same({ "", "You wave." }, { WFI.ChatSystem.splitStamp("You wave.") })
   end)
 
   it("a line no row matches, a secret line and a SYSTEM line with emote text stay as written", function()
@@ -152,10 +152,10 @@ describe("emote chat lines", function()
     f:Refresh()
     assert.are.equal("あなたは手を振った。", f.visibleLines[1]:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("You wave.", f.visibleLines[1]:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("あなたは手を振った。", f.visibleLines[1]:GetText())
   end)
 end)

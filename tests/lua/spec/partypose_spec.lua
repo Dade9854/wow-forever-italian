@@ -38,8 +38,8 @@ local function load(addon)
 end
 
 describe("the party pose screens on Forever", function()
-  local WFJ
-  before_each(function() WFJ = S.load(FILES, UI) end)
+  local WFI
+  before_each(function() WFI = S.load(FILES, UI) end)
   after_each(function() S.teardown({ "MatchCelebrationPartyPoseFrame", "IslandsPartyPoseFrame" }) end)
 
   local function check()
@@ -53,29 +53,29 @@ describe("the party pose screens on Forever", function()
     assert.are.equal("Close", match.TitleText:GetText())
     assert.are.equal("Queue Again", match.ButtonContainer.ExtraButton:GetText())
     assert.are.equal("Close", match.RewardAnimations.RewardFrame.Name:GetText())
-    assert.is_true(S.unrecorded(WFJ, match.RewardAnimations.RewardFrame.Name))
+    assert.is_true(S.unrecorded(WFI, match.RewardAnimations.RewardFrame.Name))
     island:LoadPartyPose({ won = false })
     assert.are.equal("敗北", island.TitleText:GetText())
     assert.are.equal("島を出る", island.LeaveButton:GetText())
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal("DEFEAT", island.TitleText:GetText())
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
   end
 
   it("addons loaded before the surface starts", function()
     for addon in pairs(WINDOWS) do load(addon) end
-    assert.is_true(WFJ.PartyPose.init())
+    assert.is_true(WFI.PartyPose.init())
     check()
   end)
 
   it("addons loaded on demand; hooks install once", function()
-    assert.is_false(WFJ.PartyPose.init()) -- nothing loaded: nothing touched
+    assert.is_false(WFI.PartyPose.init()) -- nothing loaded: nothing touched
     for addon in pairs(WINDOWS) do
       load(addon)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(addon))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(addon))
     end
     check()
-    WFJ.PartyPose.setup("Blizzard_IslandsPartyPoseUI")
+    WFI.PartyPose.setup("Blizzard_IslandsPartyPoseUI")
     assert.are.equal(1, #Stub.hooks["IslandsPartyPoseFrame:LoadPartyPose"])
   end)
 
@@ -85,7 +85,7 @@ describe("the party pose screens on Forever", function()
     frame.TitleText.text = "VICTORY!"
     Stub.loadedAddons.Blizzard_MatchCelebrationPartyPoseUI = true
     _G.MatchCelebrationPartyPoseFrame = "?"
-    assert.has_no.errors(function() WFJ.PartyPose.init() end)
+    assert.has_no.errors(function() WFI.PartyPose.init() end)
     assert.are.equal("勝利!", frame.TitleText:GetText())
   end)
 end)

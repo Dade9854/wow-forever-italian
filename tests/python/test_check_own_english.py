@@ -1,10 +1,10 @@
 """ADR-019: quest progress / completion are checked and stale-tracked against their own English."""
 
-from wfj.cmd.check import build_scopes, check_type, english_ref
-from wfj.core.hashing import key
-from wfj.core.model import english_line, entry, provenance
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd.check import build_scopes, check_type, english_ref
+from wfi.core.hashing import key
+from wfi.core.model import english_line, entry, provenance
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 PF, VM = "pfquest@7786596", "vmangos@13b49dc"
 PROV = provenance("human", "cqjt@3446c82", "2026-09-13", translator="Tammy")
@@ -103,7 +103,7 @@ def test_title_only_quest_joined_fallback_ignores_progress_completion(tmp_path):
 def test_fallback_hash_is_marked_of_and_ships_no_h1(tmp_path):
     """A quest field checked against another field's English records `of`, and generate writes no
     h1 for it; the addon's live check never compares this field's live English with another field's hash."""
-    from wfj.emit.lua_writer import rows
+    from wfi.emit.lua_writer import rows
 
     scopes = _english(tmp_path, with_vmangos=False)
     out = _check(scopes, _lines())

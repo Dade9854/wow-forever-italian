@@ -9,37 +9,37 @@ local FILES = { "Core/ErrorLog.lua", "Core/Const.lua", "Core/Compat.lua", "Core/
   "Core/BugReport.lua", "UI/Font.lua", "UI/OptionsText.lua", "UI/OptionsWidgets.lua", "UI/ReportWindow.lua" }
 
 local function ours(i)
-  return ("Interface/AddOns/WoWForeverJapanese/UI/A.lua:%d: attempt to call a nil value"):format(i)
+  return ("Interface/AddOns/WoWForeverItalian/UI/A.lua:%d: attempt to call a nil value"):format(i)
 end
 
 local function load(st)
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   F.install()
-  local WFJ = H.loadChunks(FILES)
-  WFJ.Compat.init(function(name) return _G[name] end)
-  WFJ.Settings.load(nil, 1, {})
-  WFJ.Collector.load(nil, H.collectorDeps())
-  WFJ.ErrorLog.setDeps({ clock = function() return st.at end, stack = function() return st.stack end })
-  WFJ.ErrorLog.install(function() return nil end, function(fn) st.handler = fn end)
-  WFJ.ErrorLog.load({})
-  return WFJ
+  local WFI = H.loadChunks(FILES)
+  WFI.Compat.init(function(name) return _G[name] end)
+  WFI.Settings.load(nil, 1, {})
+  WFI.Collector.load(nil, H.collectorDeps())
+  WFI.ErrorLog.setDeps({ clock = function() return st.at end, stack = function() return st.stack end })
+  WFI.ErrorLog.install(function() return nil end, function(fn) st.handler = fn end)
+  WFI.ErrorLog.load({})
+  return WFI
 end
 
 describe("the report window", function()
-  local WFJ, RW, st
+  local WFI, RW, st
 
   before_each(function()
     st = { at = "2026-10-03 14:40:00", stack = "" }
-    WFJ = load(st)
-    RW = WFJ.ReportWindow
+    WFI = load(st)
+    RW = WFI.ReportWindow
   end)
   after_each(function() F.clear() end)
 
-  local function ja(key, ...) return select(2, WFJ.OptionsText.get(key, ...)) end
+  local function ja(key, ...) return select(2, WFI.OptionsText.get(key, ...)) end
   local function shown(w) return (w.frame or w):IsShown() end
 
   it("opens on Bug: the link carries build, version and the errors; I sent it marks them", function()
-    WFJ.ErrorLog.record(ours(1))
+    WFI.ErrorLog.record(ours(1))
     local f = RW.open()
     assert.is_true(f:IsShown())
     assert.are.equal(ja("report.title"), f.title:GetText())
@@ -58,7 +58,7 @@ describe("the report window", function()
     f.sent.scripts.OnClick(f.sent, "LeftButton")
     assert.are.equal(ja("report.marked", 1), f.message.en:GetText())
     assert.is_false(shown(f.sent))
-    assert.are.equal(0, #WFJ.ErrorLog.unsent())
+    assert.are.equal(0, #WFI.ErrorLog.unsent())
   end)
 
   it("with no new errors the link fills build and version only and there is nothing to mark", function()
@@ -70,8 +70,8 @@ describe("the report window", function()
   end)
 
   it("a link too long holds build and version; the errors go in a box to paste", function()
-    st.stack = string.rep("...rface/AddOns/WoWForeverJapanese/UI/A.lua:1: in function <x>\n", 12)
-    for i = 1, 6 do WFJ.ErrorLog.record(ours(i)) end
+    st.stack = string.rep("...rface/AddOns/WoWForeverItalian/UI/A.lua:1: in function <x>\n", 12)
+    for i = 1, 6 do WFI.ErrorLog.record(ours(i)) end
     local f = RW.open()
     assert.are.equal("paste", RW.pack.mode)
     assert.is_nil(f.url:GetText():find("&errors=", 1, true))
@@ -81,19 +81,19 @@ describe("the report window", function()
   end)
 
   it("another addon catching errors: the note replaces the count", function()
-    WFJ.ErrorLog.checkOurs(function() return function() end end)
+    WFI.ErrorLog.checkOurs(function() return function() end end)
     local f = RW.open()
     assert.are.equal(ja("report.summary.other"), f.summary.en:GetText())
   end)
 
   it("Idea links the idea form; the radios are exclusive and switch back", function()
-    WFJ.ErrorLog.record(ours(1))
+    WFI.ErrorLog.record(ours(1))
     local f = RW.open()
     f.idea.scripts.OnClick(f.idea, "LeftButton")
     assert.are.equal("idea", RW.mode)
     assert.is_true(f.idea:GetChecked())
     assert.is_false(f.bug:GetChecked())
-    assert.are.equal(WFJ.BugReport.IDEA_URL, f.url:GetText())
+    assert.are.equal(WFI.BugReport.IDEA_URL, f.url:GetText())
     assert.are.equal(ja("report.summary.idea"), f.summary.en:GetText())
     assert.are.equal(ja("report.idea.step2"), f.step2.en:GetText())
     assert.is_false(shown(f.sent))
@@ -106,11 +106,11 @@ describe("the report window", function()
   end)
 
   it("a report after I sent it holds only errors new since", function()
-    WFJ.ErrorLog.record(ours(1))
+    WFI.ErrorLog.record(ours(1))
     RW.open()
     RW.markSent()
     st.at = "2026-10-03 15:00:00"
-    WFJ.ErrorLog.record(ours(2))
+    WFI.ErrorLog.record(ours(2))
     local f = RW.open()
     assert.are.equal(ja("report.summary.errors", 1), f.summary.en:GetText())
     assert.are.equal(1, #RW.pack.sent)
@@ -131,7 +131,7 @@ describe("the report window", function()
       "report.idea.step2", "report.marked", "send.step1", "send.step4", "send.sent", "about.bug",
       "button.reportBug" }
     for _, key in ipairs(keys) do
-      local en, jp = WFJ.OptionsText.get(key, 30)
+      local en, jp = WFI.OptionsText.get(key, 30)
       assert.is_true(en ~= "" and jp ~= "", key)
       assert.is_true(width(en) <= RW.INNER, key .. " (en) wraps")
       assert.is_true(width(jp) <= RW.INNER, key .. " (ja) wraps")

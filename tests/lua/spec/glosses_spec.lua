@@ -1,4 +1,4 @@
--- The word popup (ADR-039): the read path, the card, the reading-only fallback, the setting and /wfj glosses.
+-- The word popup (ADR-039): the read path, the card, the reading-only fallback, the setting and /wfi glosses.
 -- Meanings are written by the model per sentence (no dictionary ships).
 local H = require("tests.lua.spec.helpers")
 local Stub = require("tests.lua.spec.wow_stub")
@@ -72,26 +72,26 @@ local function extendFrames()
 end
 
 describe("Glosses", function()
-  local WFJ, R, S
+  local WFI, R, S
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     extendFrames()
     _G.UIParent = CreateFrame("Frame", "UIParent")
     _G.GetCursorPosition = function() return Stub.cursor[1], Stub.cursor[2] end
     Stub.cursor = { 0, 0 }
-    WFJ = H.loadChunks(FILES)
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Data.add("reading", { ["quest:456"] = { description = PACKED } })
-    WFJ.Data.add("gloss", GLOSS)
-    R, S = WFJ.Render, WFJ.Settings
+    WFI = H.loadChunks(FILES)
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Data.add("reading", { ["quest:456"] = { description = PACKED } })
+    WFI.Data.add("gloss", GLOSS)
+    R, S = WFI.Render, WFI.Settings
     S.load(nil, 1, {})
     local DATA = { ["quest.description"] = { [456] = { ja = JA, status = "." },
       [999] = { ja = "若きドルイドよ", status = "." } } }
-    R.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    R.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
       marker = function() return false end,
     }))
@@ -134,14 +134,14 @@ describe("Glosses", function()
   -- ── the read path ──────────────────────────────────────────────
 
   it("get parses a meaning row into dictionary form, its reading and the meaning; nil otherwise", function()
-    assert.are.same({ lemma = "倒す", lemmaReading = "たおす", meaning = "defeat" }, WFJ.Glosses.get(1))
-    assert.is_nil(WFJ.Glosses.get(99))
-    assert.is_nil(WFJ.Glosses.get(false))
-    assert.is_nil(WFJ.Glosses.get("1"))
+    assert.are.same({ lemma = "倒す", lemmaReading = "たおす", meaning = "defeat" }, WFI.Glosses.get(1))
+    assert.is_nil(WFI.Glosses.get(99))
+    assert.is_nil(WFI.Glosses.get(false))
+    assert.is_nil(WFI.Glosses.get("1"))
   end)
 
   it("Readings.locate spans carry the word and its meaning number (the fields before are unchanged)", function()
-    local spans = WFJ.Readings.lookup("quest.description", 456, JA)
+    local spans = WFI.Readings.lookup("quest.description", 456, JA)
     assert.are.equal("倒して", spans[2].word)
     assert.are.equal("たおして", spans[2].reading)
     assert.are.equal(1, spans[2].gloss)
@@ -163,8 +163,8 @@ describe("Glosses", function()
     -- laid out like the head line (word, then reading) in its own colours
     assert.are.equal("|cffbfd4f2倒す|r　|cffc9a65aたおす|r", t[3])
     assert.are.equal("defeat", t[4])
-    assert.are.equal(WFJ.ReadingPopup.WIDTH, card.size[1])
-    assert.are.equal(280, WFJ.ReadingPopup.WIDTH)
+    assert.are.equal(WFI.ReadingPopup.WIDTH, card.size[1])
+    assert.are.equal(280, WFI.ReadingPopup.WIDTH)
     assert.is_true(card.clamped)
     -- anchored like the reading box: bottom-centre above the word's first rectangle
     local e = s + #"倒して" - 1
@@ -174,7 +174,7 @@ describe("Glosses", function()
   end)
 
   it("a word already in dictionary form gets no dictionary-form line", function()
-    local _, _, lemma, meaning = WFJ.ReadingPopup.lines({ word = "私", reading = "わたし" }, WFJ.Glosses.get(2))
+    local _, _, lemma, meaning = WFI.ReadingPopup.lines({ word = "私", reading = "わたし" }, WFI.Glosses.get(2))
     assert.is_nil(lemma)
     assert.are.equal("I", meaning)
   end)
@@ -186,59 +186,59 @@ describe("Glosses", function()
   end)
 
   it("a kana word's card shows the word once (it is its own reading)", function()
-    local head, reading = WFJ.ReadingPopup.lines({ word = "いる", reading = "いる" }, WFJ.Glosses.get(3))
+    local head, reading = WFI.ReadingPopup.lines({ word = "いる", reading = "いる" }, WFI.Glosses.get(3))
     assert.are.same({ "いる", "" }, { head, reading })
   end)
 
   it("class and race words the addon fills in get a card with the English name", function()
     local text = "若きドルイドよ、ナイトエルフの町へ。私は倒して。"
-    local spans = WFJ.Readings.withTokenWords(WFJ.Readings.lookup("quest.description", 456, text) or {}, text)
+    local spans = WFI.Readings.withTokenWords(WFI.Readings.lookup("quest.description", 456, text) or {}, text)
     local byWord = {}
     for _, sp in ipairs(spans) do byWord[sp.word] = sp end
     assert.are.same({ lemma = "ドルイド", lemmaReading = "ドルイド", meaning = "Druid (a class)" }, byWord["ドルイド"].card)
     assert.are.equal("Night Elf (a race)", byWord["ナイトエルフ"].card.meaning)
     for i = 2, #spans do assert.is_true(spans[i - 1].first < spans[i].first) end -- text order
     -- a listed word that covers the spot wins: no second span over it
-    local over = WFJ.Readings.withTokenWords({ { first = 1, last = #"ドルイドたち", word = "ドルイドたち" } }, "ドルイドたち")
+    local over = WFI.Readings.withTokenWords({ { first = 1, last = #"ドルイドたち", word = "ドルイドたち" } }, "ドルイドたち")
     assert.are.equal(1, #over)
-    assert.are.same({}, WFJ.Readings.withTokenWords({}, "森"))
+    assert.are.same({}, WFI.Readings.withTokenWords({}, "森"))
   end)
 
   it("a class or race word inside a longer katakana word gets no card", function()
     for _, text in ipairs({ "コントロールする", "パトロール隊", "オークションへ", "プロローグ", "ドルイドー" }) do
-      assert.are.same({}, WFJ.Readings.withTokenWords({}, text), text)
+      assert.are.same({}, WFI.Readings.withTokenWords({}, text), text)
     end
-    assert.are.equal(1, #WFJ.Readings.withTokenWords({}, "トロールの村")) -- a kanji or kana particle next to it is fine
-    assert.are.same({}, WFJ.Readings.withTokenWords({}, "人間の町")) -- 人間 is the common noun "person" in prose
+    assert.are.equal(1, #WFI.Readings.withTokenWords({}, "トロールの村")) -- a kanji or kana particle next to it is fine
+    assert.are.same({}, WFI.Readings.withTokenWords({}, "人間の町")) -- 人間 is the common noun "person" in prose
   end)
 
   it("a listed word never anchors inside a filled-in class or race word", function()
     -- gossip fde1d7c619c766f6: 「…失われた、{race}。エルフの師匠たち…」 with {race} = ナイトエルフ
     local text = "それらは失われた、ナイトエルフ。エルフの師匠たち"
     local words = { "失われた", "うしなわれた", false, "エルフ", "エルフ", false, "師匠たち", "ししょうたち", false }
-    local guards = WFJ.Readings.tokenSpans(text)
+    local guards = WFI.Readings.tokenSpans(text)
     assert.are.equal(1, #guards)
-    local spans = WFJ.Readings.locate(words, text, guards)
+    local spans = WFI.Readings.locate(words, text, guards)
     assert.are.equal(3, #spans)
     local s = text:find("。エルフ", 1, true) + #"。"
     assert.are.same({ s, s + #"エルフ" - 1 }, { spans[2].first, spans[2].last }) -- the prose エルフ, not the race word
     -- without guards the first match wins
-    assert.are.equal(text:find("エルフ", 1, true), WFJ.Readings.locate(words, text)[2].first)
+    assert.are.equal(text:find("エルフ", 1, true), WFI.Readings.locate(words, text)[2].first)
     -- a listed word equal to the filled word is kept where it stands
-    local own = WFJ.Readings.locate({ "ナイトエルフ", "ナイトエルフ", false }, "ナイトエルフの町", WFJ.Readings.tokenSpans("ナイトエルフの町"))
+    local own = WFI.Readings.locate({ "ナイトエルフ", "ナイトエルフ", false }, "ナイトエルフの町", WFI.Readings.tokenSpans("ナイトエルフの町"))
     assert.are.same({ 1, #"ナイトエルフ" }, { own[1].first, own[1].last })
     -- a word running across the filled word's edge is passed over too
     local forest = "ナイトエルフの森、エルフの町"
-    local across = WFJ.Readings.locate({ "エルフの", "エルフの", false }, forest, WFJ.Readings.tokenSpans(forest))
+    local across = WFI.Readings.locate({ "エルフの", "エルフの", false }, forest, WFI.Readings.tokenSpans(forest))
     assert.are.equal(forest:find("、エルフの", 1, true) + #"、", across[1].first)
     -- a word holding the class word whole (ウォリアーたち) is kept
     local held = "ウォリアーたちの霊"
-    local kept = WFJ.Readings.locate({ "ウォリアーたち", "ウォリアーたち", false }, held, WFJ.Readings.tokenSpans(held))
+    local kept = WFI.Readings.locate({ "ウォリアーたち", "ウォリアーたち", false }, held, WFI.Readings.tokenSpans(held))
     assert.are.equal(1, kept[1].first)
     -- a line with no class or race word: no guard, the same spans as without guards
-    assert.are.same({}, WFJ.Readings.tokenSpans(JA))
-    assert.are.same(WFJ.Readings.locate(WFJ.Readings.words("quest.description", 456), JA),
-      WFJ.Readings.lookup("quest.description", 456, JA))
+    assert.are.same({}, WFI.Readings.tokenSpans(JA))
+    assert.are.same(WFI.Readings.locate(WFI.Readings.words("quest.description", 456), JA),
+      WFI.Readings.lookup("quest.description", 456, JA))
   end)
 
   it("a head line wider than the card widens it", function()
@@ -331,29 +331,29 @@ describe("Glosses", function()
   end)
 end)
 
-describe("/wfj glosses", function()
-  local WFJ, S
+describe("/wfi glosses", function()
+  local WFI, S
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI()
-    WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    S = WFJ.Settings
+    WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    S = WFI.Settings
     Stub.prints = {}
   end)
 
   it("sets readings.glosses and prints the state with how many words have a meaning", function()
-    SlashCmdList.WFJ("glosses off")
+    SlashCmdList.WFI("glosses off")
     assert.is_false(S.get("readings.glosses"))
     assert.is_truthy(Stub.prints[#Stub.prints]:find("glosses off · %d+ meanings loaded"))
-    SlashCmdList.WFJ("glosses on")
+    SlashCmdList.WFI("glosses on")
     assert.is_true(S.get("readings.glosses"))
-    SlashCmdList.WFJ("glosses")
+    SlashCmdList.WFI("glosses")
     local line = Stub.prints[#Stub.prints]
     assert.is_truthy(line:find("glosses on", 1, true))
     local n = tonumber(line:match("(%d+) meanings"))
-    assert.is_true(n > 0 and n == WFJ.Data.count("gloss")) -- the shipped Data/Gloss files loaded in TOC order
-    SlashCmdList.WFJ("glosses maybe")
+    assert.is_true(n > 0 and n == WFI.Data.count("gloss")) -- the shipped Data/Gloss files loaded in TOC order
+    SlashCmdList.WFI("glosses maybe")
     assert.is_truthy(Stub.prints[#Stub.prints]:find("expected on|off", 1, true))
     assert.is_true(S.get("readings.glosses"))
   end)

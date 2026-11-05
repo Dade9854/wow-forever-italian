@@ -19,8 +19,8 @@ local NAMES = { "GuildRegistrarFrame", "AvailableServicesText", "GuildRegistrarF
   "GuildRegistrarPurchaseText", "GuildRegistrarCostLabel", "GuildRegistrarFramePurchaseButton",
   "GuildRegistrarFrameNpcNameText", "GuildRegistrarText", "GuildRegistrarFrameEditBox" }
 
-local function patch(WFJ) -- the Core/UIStrings entry this surface needs
-  WFJ.UIStrings.LABELS.TRIAL_RESTRICTED = "wrapped"
+local function patch(WFI) -- the Core/UIStrings entry this surface needs
+  WFI.UIStrings.LABELS.TRIAL_RESTRICTED = "wrapped"
 end
 
 local function install()
@@ -42,15 +42,15 @@ local function install()
 end
 
 describe("the guild master NPC's window on Forever", function()
-  local WFJ
+  local WFI
 
-  before_each(function() WFJ = G.load(FILES, UI, patch) end)
+  before_each(function() WFI = G.load(FILES, UI, patch) end)
   after_each(function() G.clear(NAMES) end)
 
   it("every label translates; the NPC's name, its greeting and the name EditBox stay as written", function()
     local frame = install()
-    WFJ.Labels.forbidNames(WFJ.GuildRegistrar.NEVER_TOUCH)
-    assert.is_true(WFJ.GuildRegistrar.init())
+    WFI.Labels.forbidNames(WFI.GuildRegistrar.NEVER_TOUCH)
+    assert.is_true(WFI.GuildRegistrar.init())
     frame:Show()
     assert.are.equal("利用可能なサービス", _G.AvailableServicesText:GetText())
     assert.are.equal("キャンセル", _G.GuildRegistrarFrameGoodbyeButton:GetText())
@@ -62,17 +62,17 @@ describe("the guild master NPC's window on Forever", function()
     assert.are.equal("Purchase", _G.GuildRegistrarFrameNpcNameText:GetText())
     assert.are.equal("Cancel", _G.GuildRegistrarText:GetText())
     assert.are.equal("Purchase", _G.GuildRegistrarFrameEditBox:GetText())
-    assert.is_true(G.unrecorded(WFJ, _G.GuildRegistrarFrameEditBox))
-    G.alt(WFJ, true)
+    assert.is_true(G.unrecorded(WFI, _G.GuildRegistrarFrameEditBox))
+    G.alt(WFI, true)
     assert.are.equal("Purchase", _G.GuildRegistrarFramePurchaseButton:GetText())
-    G.alt(WFJ, false)
+    G.alt(WFI, false)
     frame:Hide()
     assert.are.equal("Available Services", _G.AvailableServicesText:GetText())
   end)
 
   it("the purchase button's trial tooltip translates inside its colour", function()
     install()
-    assert.is_true(WFJ.GuildRegistrar.init())
+    assert.is_true(WFI.GuildRegistrar.init())
     G.tooltip(_G.GuildRegistrarFramePurchaseButton, { "|cffff2020" .. UI.TRIAL_RESTRICTED[1] .. "|r" })
     assert.are.equal("|cffff2020" .. UI.TRIAL_RESTRICTED[2] .. "|r", G.line(1))
   end)
@@ -82,13 +82,13 @@ describe("the guild master NPC's window on Forever", function()
     _G.AvailableServicesText = 1
     _G.GuildRegistrarButton2 = "x"
     _G.GuildRegistrarFramePurchaseButton = false
-    assert.has_no.errors(function() assert.is_true(WFJ.GuildRegistrar.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.GuildRegistrar.init()) end)
     assert.has_no.errors(function() frame:Show() end)
     assert.are.equal("ギルド設立許可証を購入する", _G.GuildRegistrarButton1:GetText())
-    assert.is_false(WFJ.GuildRegistrar.init())
+    assert.is_false(WFI.GuildRegistrar.init())
   end)
 
   it("no frame: init is false and nothing is touched", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.GuildRegistrar.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.GuildRegistrar.init()) end)
   end)
 end)

@@ -53,11 +53,11 @@ local UI = {
 }
 
 describe("the social window on Forever's camelot FriendsFrame", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -72,14 +72,14 @@ describe("the social window on Forever's camelot FriendsFrame", function()
   local function contactsTitle() return _G.FriendsFrame.TitleContainer.TitleText:GetText() end
 
   local function setup(whoFirst, files)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(files or FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(files or FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     Social.installCamelot()
     if whoFirst then Social.loadWhoList() end
-    assert.is_true(WFJ.Friends.init())
+    assert.is_true(WFI.Friends.init())
   end
 
   after_each(function()
@@ -190,7 +190,7 @@ describe("the social window on Forever's camelot FriendsFrame", function()
         assert.are.equal("最終オンライン: 3日前", Social.rows[2].info:GetText())
         assert.are.equal("Guild", Social.rows[3].info:GetText()) -- a location, outside `only`
         assert.are.equal("Offline", Social.rows[3].name:GetText())
-        assert.are.equal(WFJ.Font.PATH, (Social.rows[1].info:GetFont()))
+        assert.are.equal(WFI.Font.PATH, (Social.rows[1].info:GetFont()))
         for i = 1, 3 do assert.is_true(unrecorded(Social.rows[i].name)) end
         alt(true)
         assert.are.equal("Offline", Social.rows[1].info:GetText())
@@ -250,7 +250,7 @@ describe("the social window on Forever's camelot FriendsFrame", function()
     it("the who list waits for Blizzard_GroupFinder_VanillaStyle's ADDON_LOADED", function()
       Social.loadWhoList() -- the frames exist now; the addon's ADDON_LOADED is forwarded next
       assert.are.equal(UI.WHO_LIST_SEARCH_INSTRUCTIONS[1], _G.WhoFrameEditBox.Instructions:GetText())
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
       assert.are.equal(UI.WHO_LIST_SEARCH_INSTRUCTIONS[2], _G.WhoFrameEditBox.Instructions:GetText())
       Social.who = { total = 2, rows = { { name = "Zone", level = 12, class = "Warrior", zone = "Zone" },
         { name = "Thrall", level = 60, class = "Shaman", zone = "Orgrimmar" } } }
@@ -280,7 +280,7 @@ describe("the social window on Forever's camelot FriendsFrame", function()
     before_each(function()
       _G.Menu = { ModifyMenu = function() end }
       setup(true, MENU_FILES)
-      WFJ.Menus.init()
+      WFI.Menus.init()
     end)
 
     after_each(function() _G.Menu = nil end)
@@ -347,7 +347,7 @@ describe("the social window on Forever's camelot FriendsFrame", function()
       assert.are.equal("60 |4Person:People; Found  (50 displayed)", _G.LFGWhoListFrame.WhoFrameTotals:GetText())
       alt(false)
       assert.are.equal("レベル 21", Social.whoRows[1].Level:GetText())
-      assert.are.equal(0, WFJ.LoadOnDemand.loaded(ADDON)) -- nothing left waiting
+      assert.are.equal(0, WFI.LoadOnDemand.loaded(ADDON)) -- nothing left waiting
     end)
   end)
 end)

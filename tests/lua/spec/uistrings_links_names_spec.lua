@@ -46,8 +46,8 @@ describe("Core/UIStrings: links, plurals, colour-wrapped names", function()
 
   before_each(function()
     local ns = {}
-    H.loadPure("Core/UIStringKeys.lua", "WoWForeverJapanese", ns)
-    H.loadPure("Core/UIStrings.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/UIStringKeys.lua", "WoWForeverItalian", ns)
+    H.loadPure("Core/UIStrings.lua", "WoWForeverItalian", ns)
     UIS = ns.UIStrings
     rows, english = {}, {}
     for key, pair in pairs(UI) do

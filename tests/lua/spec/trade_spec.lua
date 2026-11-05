@@ -18,9 +18,9 @@ local NAMES = { "TradeFrame", "TradeFrameTradeButton", "TradeFrameCancelButton",
 
 local T = {} -- replayed client state: T.playerEnchant / T.targetEnchant = name | nil; T.hasItem
 
-local function patch(WFJ) -- the Core/UIStrings entries this surface needs
-  WFJ.UIStrings.ARGS.TRADE_WARNING_CHANGED_OFFER = { [1] = "text" }
-  WFJ.UIStrings.LABELS.TRADEFRAME_NOT_MODIFIED_TEXT = "wrapped"
+local function patch(WFI) -- the Core/UIStrings entries this surface needs
+  WFI.UIStrings.ARGS.TRADE_WARNING_CHANGED_OFFER = { [1] = "text" }
+  WFI.UIStrings.LABELS.TRADEFRAME_NOT_MODIFIED_TEXT = "wrapped"
 end
 
 local function install()
@@ -52,18 +52,18 @@ local function install()
 end
 
 describe("the trade window on Forever", function()
-  local WFJ
+  local WFI
 
   before_each(function()
-    WFJ = G.load(FILES, UI, patch)
+    WFI = G.load(FILES, UI, patch)
     T.playerEnchant, T.targetEnchant, T.hasItem = nil, nil, true
   end)
   after_each(function() G.clear(NAMES) end)
 
   it("static labels and the enchant slot's fixed word translate; names and item names stay English", function()
     local frame = install()
-    WFJ.Labels.forbidNames(WFJ.Trade.NEVER_TOUCH)
-    assert.is_true(WFJ.Trade.init())
+    WFI.Labels.forbidNames(WFI.Trade.NEVER_TOUCH)
+    assert.is_true(WFI.Trade.init())
     frame:Show()
     assert.are.equal("トレード", _G.TradeFrameTradeButton:GetText())
     assert.are.equal("キャンセル", _G.TradeFrameCancelButton:GetText())
@@ -71,26 +71,26 @@ describe("the trade window on Forever", function()
     assert.are.equal("トレードされません", _G.TradeFrameRecipientEnchantText:GetText())
     assert.are.equal("Trade", _G.TradeFramePlayerNameText:GetText())
     assert.are.equal("Cancel", _G.TradeFrameRecipientNameText:GetText())
-    assert.is_true(G.unrecorded(WFJ, _G.TradeFramePlayerNameText))
+    assert.is_true(G.unrecorded(WFI, _G.TradeFramePlayerNameText))
     for id = 1, 7 do _G.TradeFrame_UpdatePlayerItem(id); _G.TradeFrame_UpdateTargetItem(id) end
     assert.are.equal("|cffffffffアイテムは未変更です|r", _G.TradePlayerItem7Name:GetText())
     assert.are.equal("|cffffffffアイテムは未変更です|r", _G.TradeRecipientItem7Name:GetText())
     assert.are.equal("Item not yet modified", _G.TradePlayerItem3Name:GetText()) -- an item's name
-    assert.is_true(G.unrecorded(WFJ, _G.TradePlayerItem3Name))
+    assert.is_true(G.unrecorded(WFI, _G.TradePlayerItem3Name))
     T.playerEnchant = "Enchant Weapon - Crusader"
     _G.TradeFrame_UpdatePlayerItem(7)
     assert.are.equal("|cff20ff20Enchant Weapon - Crusader|r", _G.TradePlayerItem7Name:GetText())
-    G.alt(WFJ, true)
+    G.alt(WFI, true)
     assert.are.equal("Trade", _G.TradeFrameTradeButton:GetText())
     assert.are.equal("|cffffffffItem not yet modified|r", _G.TradeRecipientItem7Name:GetText())
-    G.alt(WFJ, false)
+    G.alt(WFI, false)
     frame:Hide()
     assert.are.equal("Trade", _G.TradeFrameTradeButton:GetText())
   end)
 
   it("the changed-offer warning tooltip translates around the player's name", function()
     install()
-    assert.is_true(WFJ.Trade.init())
+    assert.is_true(WFI.Trade.init())
     G.tooltip(_G.TradeFrameTradeButton, { UI.TRADE_WARNING_CHANGED_OFFER[1]:format("Thrall") })
     assert.are.equal(UI.TRADE_WARNING_CHANGED_OFFER[2]:format("Thrall"), G.line(1))
     G.tooltip(_G.TradeFrameTradeButton, { "Trade" }) -- not this owner's key
@@ -102,17 +102,17 @@ describe("the trade window on Forever", function()
     _G.TradeFrameCancelButton = 7
     _G.TradeFramePlayerEnchantText = "x"
     _G.TradeFrame_UpdateTargetItem = {}
-    assert.has_no.errors(function() assert.is_true(WFJ.Trade.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Trade.init()) end)
     assert.has_no.errors(function() _G.TradeFrame:Show() end)
     assert.are.equal("トレード", _G.TradeFrameTradeButton:GetText())
-    assert.is_false(WFJ.Trade.init())
+    assert.is_false(WFI.Trade.init())
     assert.are.equal(1, #Stub.hooks["TradeFrame_UpdatePlayerItem"])
     assert.is_nil(Stub.hooks["TradeFrame_UpdateTargetItem"])
   end)
 
   it("no TradeFrame or a TradeFrame of the wrong type: init is false", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.Trade.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Trade.init()) end)
     _G.TradeFrame = 3
-    assert.has_no.errors(function() assert.is_false(WFJ.Trade.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Trade.init()) end)
   end)
 end)

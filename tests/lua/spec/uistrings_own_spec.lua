@@ -4,11 +4,11 @@ local H = require("tests.lua.spec.helpers")
 local function ns()
   H.coreStub()
   local t = {}
-  H.loadChunk("Core/Const.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/Normalize.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/Hash.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/UIStringKeys.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/UIStrings.lua", "WoWForeverJapanese", t)
+  H.loadChunk("Core/Const.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/Normalize.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/Hash.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/UIStringKeys.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/UIStrings.lua", "WoWForeverItalian", t)
   return t
 end
 

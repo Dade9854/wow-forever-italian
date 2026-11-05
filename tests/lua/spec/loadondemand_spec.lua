@@ -6,7 +6,7 @@ describe("UI/LoadOnDemand", function()
 
   before_each(function()
     local ns = {}
-    H.loadChunk("UI/LoadOnDemand.lua", "WoWForeverJapanese", ns)
+    H.loadChunk("UI/LoadOnDemand.lua", "WoWForeverItalian", ns)
     LOD = ns.LoadOnDemand
     loaded = {}
     LOD.init(function(name) return loaded[name] == true end)

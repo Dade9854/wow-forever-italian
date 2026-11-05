@@ -1,12 +1,12 @@
 import subprocess
 import sys
 
-from wfj.cli import VERBS, main
+from wfi.cli import VERBS, main
 
 
 def test_help_lists_every_verb(root):
     out = subprocess.run(
-        [sys.executable, "-m", "wfj", "--help"],
+        [sys.executable, "-m", "wfi", "--help"],
         cwd=root / "pipeline",
         capture_output=True,
         text=True,

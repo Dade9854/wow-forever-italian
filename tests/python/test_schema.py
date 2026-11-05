@@ -1,7 +1,7 @@
 """The emit layout follows model.FIELDS and its status codes are the checked ones."""
 
-from wfj.core import model
-from wfj.emit import schema
+from wfi.core import model
+from wfi.emit import schema
 
 
 def test_slots_follow_model_fields():

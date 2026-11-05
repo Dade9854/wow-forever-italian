@@ -5,16 +5,16 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd.check import build_scopes, check_type, english_hash, run, vanilla_ids
-from wfj.core import report
-from wfj.core.align import check_numbers, load_allowlist
-from wfj.core.model import validate_line
-from wfj.io.jsonl_store import Store
+from wfi.cmd.check import build_scopes, check_type, english_hash, run, vanilla_ids
+from wfi.core import report
+from wfi.core.align import check_numbers, load_allowlist
+from wfi.core.model import validate_line
+from wfi.io.jsonl_store import Store
 
 
 def _seed(root, tmp_path: Path, monkeypatch):
     """A tiny data/ built from the fixtures via the real importers."""
-    from wfj.cmd import import_
+    from wfi.cmd import import_
 
     (tmp_path / "data").mkdir()
     (tmp_path / "data" / "SCHEMA").write_text("1\n")
@@ -118,7 +118,7 @@ def test_check_fixture_run_idempotent_and_valid(root, tmp_path: Path, monkeypatc
 
 
 def test_stats_reads_only(root, tmp_path: Path, monkeypatch, capsys):
-    from wfj.cmd import stats
+    from wfi.cmd import stats
 
     data = _seed(root, tmp_path, monkeypatch)
     assert run([]) == 0
@@ -175,7 +175,7 @@ def test_committed_data_has_no_pending_and_known_corpus_facts(root):
 
 def test_cli_check_and_stats_registered(root):
     out = subprocess.run(
-        [sys.executable, "-m", "wfj", "--help"], cwd=root / "pipeline", capture_output=True, text=True,check=False,
+        [sys.executable, "-m", "wfi", "--help"], cwd=root / "pipeline", capture_output=True, text=True,check=False,
     ).stdout
     assert "check" in out and "stats" in out
     assert check_type([], {}, load_allowlist("")) == []
@@ -186,8 +186,8 @@ def test_stale_is_sticky_across_runs(root, tmp_path: Path, monkeypatch):
     hash is kept) until an audit rewrites it; a numeric change rejects instead."""
     import json
 
-    from wfj.core.hashing import key
-    from wfj.core.normalize import normalize_v1
+    from wfi.core.hashing import key
+    from wfi.core.normalize import normalize_v1
 
     data = _seed(root, tmp_path, monkeypatch)
     assert run([]) == 0

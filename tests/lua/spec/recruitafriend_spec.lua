@@ -134,13 +134,13 @@ local GLOBALS = { "FriendsFrame", "RecruitAFriendFrame", "RecruitAFriendRewardsF
   "RecruitActivityButtonMixin" }
 
 describe("the recruit-a-friend panel on Forever", function()
-  local WFJ
-  before_each(function() WFJ = S.load(FILES, UI, NEEDS) end)
+  local WFI
+  before_each(function() WFI = S.load(FILES, UI, NEEDS) end)
   after_each(function() S.teardown(GLOBALS) end)
 
   it("static labels are Japanese; the recruit count is never taken; Alt shows English", function()
     install()
-    assert.is_true(WFJ.RecruitAFriend.init())
+    assert.is_true(WFI.RecruitAFriend.init())
     local raf = _G.RecruitAFriendFrame
     assert.are.equal("招待したフレンド", raf.RecruitList.Header.RecruitedFriends:GetText())
     assert.are.equal("招待", raf.RecruitmentButton:GetText())
@@ -149,14 +149,14 @@ describe("the recruit-a-friend panel on Forever", function()
     assert.are.equal("すべての報酬を見る", raf.RewardClaiming.ClaimOrViewRewardButton:GetText())
     assert.are.equal("フレンド招待の報酬", _G.RecruitAFriendRewardsFrame.Title.Text:GetText())
     assert.are.equal("(1/10)", raf.RecruitList.Header.Count:GetText())
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal("Recruitment", raf.RecruitmentButton:GetText())
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
   end)
 
   it("the reward writers: fixed texts translate, a title is kept, an item reward's name is never matched", function()
     install()
-    WFJ.RecruitAFriend.init()
+    WFI.RecruitAFriend.init()
     local claiming, rewards = _G.RecruitAFriendFrame.RewardClaiming, _G.RecruitAFriendRewardsFrame
     claiming:UpdateNextReward({ at = 2, of = 3, title = "the Close" })
     assert.are.equal("次の報酬 (2/3か月):", claiming.EarnInfo:GetText())
@@ -187,14 +187,14 @@ describe("the recruit-a-friend panel on Forever", function()
 
   it("recruit rows: the state and the placeholder translate; a recruit's name and last-online text do not", function()
     install()
-    WFJ.RecruitAFriend.init()
+    WFI.RecruitAFriend.init()
     local row = C.recruit(nil, { active = true })
     assert.are.equal("招待保留中", row.Name:GetText())
     assert.are.equal("購読中", row.InfoText:GetText())
     row:SetupRecruit({ name = "Close" }) -- the row's own refresh: a recruit called like a UI word
     assert.are.equal("Close", row.Name:GetText())
     assert.are.equal("Close", row.InfoText:GetText())
-    assert.is_true(S.unrecorded(WFJ, row.Name))
+    assert.is_true(S.unrecorded(WFI, row.Name))
     C.recruit(row, { name = "Thrall", active = true })
     assert.are.equal(1, #Stub.hooks["?:SetupRecruit"]) -- hooked once per row
     assert.are.same({ "Close", "招待したフレンド1人につき、最大3か月分の購読が報酬の対象になります。" },
@@ -208,14 +208,14 @@ describe("the recruit-a-friend panel on Forever", function()
   it("the no-recruits text: Japanese around the link, the link byte-identical; Alt the client's English",
     function()
       install()
-      assert.is_true(WFJ.RecruitAFriend.init())
+      assert.is_true(WFI.RecruitAFriend.init())
       local html = _G.RecruitAFriendFrame.RecruitList.NoRecruitsDesc
       local link = "|HurlIndex:49|h|cff82c5ffVisit our Recruit A Friend Website|r|h"
       assert.are.equal("|cffffd200フレンドを招待して報酬を獲得しよう。|r|n|n詳しくは:|n" .. link, html.shown)
-      assert.are.equal(WFJ.Font.PATH, (html:GetFont("P")))
-      S.alt(WFJ, true)
+      assert.are.equal(WFI.Font.PATH, (html:GetFont("P")))
+      S.alt(WFI, true)
       assert.are.equal(S.en("RAF_NO_RECRUITS_DESC"), html.shown)
-      S.alt(WFJ, false)
+      S.alt(WFI, false)
       _G.RecruitAFriendFrame:SetNoRecruitsText("Something else")
       assert.are.equal("Something else", html.shown)
     end)
@@ -223,7 +223,7 @@ describe("the recruit-a-friend panel on Forever", function()
   it("an activity chest's EmbeddedItemTooltip: the description (recruit's name kept) and the claim line; the "
     .. "quest title and requirements stay; another owner's tooltip is not walked", function()
       install()
-      assert.is_true(WFJ.RecruitAFriend.init())
+      assert.is_true(WFI.RecruitAFriend.init())
       local chest = C.activity("Close", "Jaina", true)
       chest:OnEnter()
       assert.are.equal("Close", _G.EmbeddedItemTooltipTextLeft1:GetText()) -- a quest named like a UI word
@@ -231,9 +231,9 @@ describe("the recruit-a-friend panel on Forever", function()
         _G.EmbeddedItemTooltipTextLeft2:GetText())
       assert.are.equal("Reach level 10", _G.EmbeddedItemTooltipTextLeft3:GetText())
       assert.are.equal("宝箱をクリックして報酬を受け取る", _G.EmbeddedItemTooltipTextLeft4:GetText())
-      S.alt(WFJ, true)
+      S.alt(WFI, true)
       assert.are.equal("Click chest to claim reward", _G.EmbeddedItemTooltipTextLeft4:GetText())
-      S.alt(WFJ, false)
+      S.alt(WFI, false)
       _G.EmbeddedItemTooltip:Hide()
       local tt = _G.EmbeddedItemTooltip -- a world quest's tooltip on the same frame
       tt:SetOwner(CreateFrame("Frame"))
@@ -250,19 +250,19 @@ describe("the recruit-a-friend panel on Forever", function()
     raf.RecruitList.ScrollBox = true
     _G.RecruitAFriendRewardsFrame.rewardPool = "?"
     _G.RecruitAFriendRewardsFrame.Description = 0
-    assert.has_no.errors(function() assert.is_true(WFJ.RecruitAFriend.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.RecruitAFriend.init()) end)
     assert.are.equal("招待", raf.RecruitmentButton:GetText())
-    assert.has_no.errors(function() assert.are.equal(0, WFJ.RecruitAFriend.onRewards()) end)
+    assert.has_no.errors(function() assert.are.equal(0, WFI.RecruitAFriend.onRewards()) end)
   end)
 
   it("hooks install once; without the mainline social window init returns false and touches nothing", function()
-    assert.is_false(WFJ.RecruitAFriend.init())
+    assert.is_false(WFI.RecruitAFriend.init())
     install({ untitled = true })
-    assert.is_false(WFJ.RecruitAFriend.init())
+    assert.is_false(WFI.RecruitAFriend.init())
     assert.are.equal("Recruitment", _G.RecruitAFriendFrame.RecruitmentButton:GetText())
     install()
-    assert.is_true(WFJ.RecruitAFriend.init())
-    assert.is_false(WFJ.RecruitAFriend.init())
+    assert.is_true(WFI.RecruitAFriend.init())
+    assert.is_false(WFI.RecruitAFriend.init())
     assert.are.equal(1, #Stub.hooks["RewardClaiming:UpdateNextReward"])
   end)
 end)

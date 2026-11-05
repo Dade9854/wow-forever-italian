@@ -14,7 +14,7 @@ describe("Core/Objectives: objective and area sources", function()
 
   before_each(function()
     local ns = {}
-    H.loadPure("Core/Objectives.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Objectives.lua", "WoWForeverItalian", ns)
     O = ns.Objectives
   end)
 

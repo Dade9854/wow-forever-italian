@@ -20,34 +20,34 @@ local HTML_LIVE = "<HTML>\n<BODY>\n<P>\nIn memory of my dear mentor.\n</P>\n</BO
 local HTML_JA = "<HTML>\n<BODY>\n<P>\n親愛なる師を偲んで。\n</P>\n</BODY>\n</HTML>"
 
 describe("UI/ItemText: the book window", function()
-  local WFJ, S, SS, IT, html
+  local WFI, S, SS, IT, html
 
-  local function keys(en) return WFJ.Collector.keys(en, PLAYER) end
+  local function keys(en) return WFI.Collector.keys(en, PLAYER) end
   local function keyOf(en)
-    for _, k in ipairs(keys(en)) do if WFJ.Lookup.keyed("book", k) then return k end end
+    for _, k in ipairs(keys(en)) do if WFI.Lookup.keyed("book", k) then return k end end
     return keys(en)[1]
   end
 
   -- rows by stored English: { [en] = ja }
   local function ship(rows)
     local t = {}
-    for en, ja in pairs(rows) do t[WFJ.Hash.key(WFJ.Normalize.v1(en))] = { ja, "." } end
-    WFJ.Data.add("book", t)
+    for en, ja in pairs(rows) do t[WFI.Hash.key(WFI.Normalize.v1(en))] = { ja, "." } end
+    WFI.Data.add("book", t)
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     local _
     _, html = Stub.installItemTextAPI()
-    WFJ = H.loadChunks(FILES)
-    S, SS, IT = WFJ.Settings, WFJ.SurfaceState, WFJ.ItemText
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI = H.loadChunks(FILES)
+    S, SS, IT = WFI.Settings, WFI.SurfaceState, WFI.ItemText
+    WFI.Compat.init(function(name) return _G[name] end)
     S.load(nil, 1, {})
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
-      lookup = WFJ.Lookup.get,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
+      lookup = WFI.Lookup.get,
       marker = function(n) return S.get("marker." .. n) end,
     }))
     assert.is_true(IT.init({ key = keyOf, keys = keys }))
@@ -81,13 +81,13 @@ describe("UI/ItemText: the book window", function()
     Stub.openItemText({ PAGE_LIVE })
     assert.are.equal(PAGE_JA, drawn())
     for _, t in ipairs(Client.TAGS) do
-      assert.are.equal(WFJ.Font.PATH, (html:GetFont(t)), t)
+      assert.are.equal(WFI.Font.PATH, (html:GetFont(t)), t)
       assert.are.same({ Client.PARCHMENT[1], Client.PARCHMENT[2], Client.PARCHMENT[3], 1 }, tag(t).color, t)
     end
     assert.are.same({ PAGE_LIVE, "" }, html.writes) -- the client's write, then ours (emptied)
     -- our FontString, where the SimpleHTML's text starts, as wide, in the P font and colour
     local fs = IT.page.fs
-    assert.are.equal(WFJ.Font.PATH, (fs:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (fs:GetFont()))
     assert.are.same({ Client.PARCHMENT[1], Client.PARCHMENT[2], Client.PARCHMENT[3], 1 }, fs.color)
     assert.are.equal(270, fs.width)
     assert.are.same({ "TOPLEFT", html, "TOPLEFT", 0, 0 }, fs.point)
@@ -111,18 +111,18 @@ describe("UI/ItemText: the book window", function()
     end)
 
   it("an unshipped page is exactly what the client wrote; the missing marker goes above it", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     Stub.openItemText({ PAGE2 })
     assert.are.same({ PAGE2 }, html.writes) -- the client's write only
     assert.are.equal(0, html.calls.SetFont)
     assertClientStyle()
     S.set("marker.missing", true)
-    WFJ.Render.refresh(IT.SURFACE)
+    WFI.Render.refresh(IT.SURFACE)
     -- the client's English under the marker stays in the SimpleHTML, never in our FontString
-    assert.are.equal(WFJ.MARKER_INLINE_COLOR .. WFJ.MARKER.missing .. "|r\n" .. PAGE2, html.text)
+    assert.are.equal(WFI.MARKER_INLINE_COLOR .. WFI.MARKER.missing .. "|r\n" .. PAGE2, html.text)
     assert.is_nil(drawn())
     S.set("marker.missing", false)
-    WFJ.Render.refresh(IT.SURFACE)
+    WFI.Render.refresh(IT.SURFACE)
     assert.are.equal(PAGE2, html.text)
     assert.is_nil(drawn())
     assertClientStyle()
@@ -131,7 +131,7 @@ describe("UI/ItemText: the book window", function()
   it("on an HTML page the missing marker is a paragraph inside the body", function()
     S.set("marker.missing", true)
     Stub.openItemText({ HTML_LIVE })
-    assert.are.equal("<HTML>\n<BODY>\n<P>" .. WFJ.MARKER_INLINE_COLOR .. WFJ.MARKER.missing .. "|r</P>\n<P>\n"
+    assert.are.equal("<HTML>\n<BODY>\n<P>" .. WFI.MARKER_INLINE_COLOR .. WFI.MARKER.missing .. "|r</P>\n<P>\n"
       .. "In memory of my dear mentor.\n</P>\n</BODY>\n</HTML>", html.text)
   end)
 
@@ -140,8 +140,8 @@ describe("UI/ItemText: the book window", function()
       ship({ [PAGE_DATA] = PAGE_JA })
       Stub.openItemText({ PAGE_LIVE })
       local flips = {
-        { function() Stub.keys.alt = true; WFJ.Modifier.refresh() end,
-          function() Stub.keys.alt = false; WFJ.Modifier.refresh() end },
+        { function() Stub.keys.alt = true; WFI.Modifier.refresh() end,
+          function() Stub.keys.alt = false; WFI.Modifier.refresh() end },
         { function() S.set("enabled", false) end, function() S.set("enabled", true) end },
         { function() S.set("area.books", false) end, function() S.set("area.books", true) end },
       }
@@ -153,7 +153,7 @@ describe("UI/ItemText: the book window", function()
         f[2]()
         assert.are.equal(PAGE_JA, drawn())
         assert.are.equal("", html.text)
-        assert.are.equal(WFJ.Font.PATH, (html:GetFont("H1")))
+        assert.are.equal(WFI.Font.PATH, (html:GetFont("H1")))
       end
     end)
 
@@ -166,9 +166,9 @@ describe("UI/ItemText: the book window", function()
     ship({ [PAGE_DATA] = PAGE_JA })
     Stub.openItemText({ PAGE_LIVE })
     Stub.keys.alt = true
-    assert.has_no.errors(function() WFJ.Modifier.refresh() end)
+    assert.has_no.errors(function() WFI.Modifier.refresh() end)
     assert.are.equal(PAGE_LIVE, html.text)
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(PAGE_JA, drawn())
   end)
 
@@ -176,12 +176,12 @@ describe("UI/ItemText: the book window", function()
     Client.stickyObjects = true
     ship({ [PAGE_DATA] = PAGE_JA })
     Stub.openItemText({ PAGE_LIVE })
-    assert.are.equal(WFJ.Font.PATH, (html:GetFont("P")))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    assert.are.equal(WFI.Font.PATH, (html:GetFont("P")))
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(PAGE_LIVE, html.text)
     assertClientStyle()
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
-    assert.are.equal(WFJ.Font.PATH, (html:GetFont("H2")))
+    Stub.keys.alt = false; WFI.Modifier.refresh()
+    assert.are.equal(WFI.Font.PATH, (html:GetFont("H2")))
   end)
 
   it("a refused font is read back (SimpleHTML SetFont returns nothing), counted, kept English-styled and retried",
@@ -190,19 +190,19 @@ describe("UI/ItemText: the book window", function()
       Stub.fontSetFails = true
       Stub.openItemText({ PAGE_LIVE })
       assert.are.equal(PAGE_JA, drawn())
-      assert.are.equal(1, WFJ.Render.pendingFonts())
-      assert.are.equal(1, WFJ.Render.fontFailures)
+      assert.are.equal(1, WFI.Render.pendingFonts())
+      assert.are.equal(1, WFI.Render.fontFailures)
       assertClientStyle()
       Stub.fontSetFails = false
-      assert.are.equal(0, WFJ.Render.retryFonts())
-      for _, t in ipairs(Client.TAGS) do assert.are.equal(WFJ.Font.PATH, (html:GetFont(t)), t) end
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      assert.are.equal(0, WFI.Render.retryFonts())
+      for _, t in ipairs(Client.TAGS) do assert.are.equal(WFI.Font.PATH, (html:GetFont(t)), t) end
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assertClientStyle()
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
     end)
 
   it("turning pages shows each page's own text, never the previous page's", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     ship({ [PAGE_DATA] = PAGE_JA })
     Stub.openItemText({ PAGE_LIVE, PAGE2 })
     assert.are.equal(PAGE_JA, drawn())
@@ -210,8 +210,8 @@ describe("UI/ItemText: the book window", function()
     assert.are.equal(PAGE2, html.text)
     assert.is_nil(drawn()) -- the client's write takes the page back from our FontString
     assertClientStyle()
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(PAGE2, html.text)
     Stub.itemTextPage(1)
     assert.are.equal(PAGE_JA, drawn())
@@ -223,10 +223,10 @@ describe("UI/ItemText: the book window", function()
     Stub.openItemText({ PAGE_LIVE })
     Stub.openItemText({ PAGE_LIVE })
     assert.are.equal(PAGE_JA, drawn())
-    assert.are.equal(WFJ.Font.PATH, (html:GetFont("P")))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    assert.are.equal(WFI.Font.PATH, (html:GetFont("P")))
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assertClientStyle()
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("a page whose SimpleHTML does not hold the text the getters build is left alone", function()
@@ -265,13 +265,13 @@ describe("UI/ItemText: the book window", function()
       assert.are.equal(PAGE_JA, drawn())
       local _, pSize = html:GetFont("P")
       local _, h1Size = html:GetFont("H1")
-      assert.are.equal(WFJ.Font.PATH, (html:GetFont("H1")))
+      assert.are.equal(WFI.Font.PATH, (html:GetFont("H1")))
       assert.are.equal(pSize * 48 / Client.CLIENT_FONT.size, h1Size)
       assert.are.same({ Client.TITLE[1], Client.TITLE[2], Client.TITLE[3], 1 }, tag("H2").color)
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(PAGE_LIVE, html.text)
       assertClientStyle("ParchmentLarge")
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
     end)
 
   it("every write re-measures the scroll child (our FontString's page by its own height)", function()
@@ -284,10 +284,10 @@ describe("UI/ItemText: the book window", function()
     -- the Japanese fits the frame (15 + its height < 355): no scrolling, whatever the English needed
     assert.are.same({ 1, 355 + 120 + 30, 1 }, child.heights)
     Stub.itemText.range = 0
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(3, _G.ItemTextScrollFrame.calls.UpdateScrollChildRect)
     assert.are.equal(1, child.height)
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("a Japanese page taller than the frame makes the scroll child tall enough to hold it", function()
@@ -314,7 +314,7 @@ describe("UI/ItemText: the book window", function()
     local fs, child = IT.page.fs, _G.ItemTextScrollFrame:GetScrollChild()
     function fs.GetStringHeight() return 600 end
     Stub.fontSetFails = false
-    assert.are.equal(0, WFJ.Render.retryFonts())
+    assert.are.equal(0, WFI.Render.retryFonts())
     assert.are.equal(15 + 600 + 30, child.height)
   end)
 
@@ -335,7 +335,7 @@ describe("UI/ItemText: the book window", function()
     local info = IT.inspect()
     assert.is_true(info.open)
     assert.are.same(keys(PAGE_LIVE), info.keys)
-    assert.are.equal(WFJ.Hash.key(WFJ.Normalize.v1(PAGE_DATA)), info.shipped)
+    assert.are.equal(WFI.Hash.key(WFI.Normalize.v1(PAGE_DATA)), info.shipped)
     assert.is_table(info.record)
   end)
 end)

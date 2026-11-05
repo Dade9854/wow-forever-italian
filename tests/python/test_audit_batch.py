@@ -5,9 +5,9 @@ import json
 
 import pytest
 
-from wfj.core import readings
-from wfj.dev import audit_batch
-from wfj.io.jsonl_store import Store
+from wfi.core import readings
+from wfi.dev import audit_batch
+from wfi.io.jsonl_store import Store
 
 HUMAN = {"class": "human", "translator": "Tammy", "source": "cqjt@3446c82", "imported": "2026-09-13"}
 MACHINE = {"class": "machine", "model": "m", "source": "draft-q-sg9@2026-09-23", "imported": "2026-09-23"}

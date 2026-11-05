@@ -1,14 +1,14 @@
 # ADR-043: Included text spliced into the draft, icons copied, branch variants chosen by the live line
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/core/align.py` (`expand_inclusions`,
+- **Status:** Accepted. Implemented in `pipeline/wfi/core/align.py` (`expand_inclusions`,
   `included_spells`, `icon_indices`, `branching`, `ja_variants`, `indistinguishable`, `never_shown`,
-  `MAX_INCLUDE_DEPTH` = 4, `MAX_VARIANTS` = 16), `pipeline/wfj/core/english_text.py` (`model_english`, moved from
-  `dev/translate_batch`), `pipeline/wfj/cmd/check.py` (`Included`, `current_baseline(…, includes)`),
-  `pipeline/wfj/core/status.py` (`decide(…, includes_changed)`), `pipeline/wfj/cmd/generate.py` (`branch_variants`),
-  `pipeline/wfj/emit/lua_writer.py` (`variants_literal`), `pipeline/wfj/cmd/validate.py` (rule 4 reads `includes`),
-  `pipeline/wfj/dev/translate_batch.py` (`expand_included`, `_annotate_branches`, `<batch>.dropped.jsonl`),
-  `pipeline/wfj/dev/translate_lint.py` (`_check_branches`, `_icon_problems`), `pipeline/wfj/dev/apply_review.py`
-  (`--scope templates`), `addon/WoWForeverJapanese/Core/Align.lua` (`textures`, `$I` in `fill`, `checkVariants`),
+  `MAX_INCLUDE_DEPTH` = 4, `MAX_VARIANTS` = 16), `pipeline/wfi/core/english_text.py` (`model_english`, moved from
+  `dev/translate_batch`), `pipeline/wfi/cmd/check.py` (`Included`, `current_baseline(…, includes)`),
+  `pipeline/wfi/core/status.py` (`decide(…, includes_changed)`), `pipeline/wfi/cmd/generate.py` (`branch_variants`),
+  `pipeline/wfi/emit/lua_writer.py` (`variants_literal`), `pipeline/wfi/cmd/validate.py` (rule 4 reads `includes`),
+  `pipeline/wfi/dev/translate_batch.py` (`expand_included`, `_annotate_branches`, `<batch>.dropped.jsonl`),
+  `pipeline/wfi/dev/translate_lint.py` (`_check_branches`, `_icon_problems`), `pipeline/wfi/dev/apply_review.py`
+  (`--scope templates`), `addon/WoWForeverItalian/Core/Align.lua` (`textures`, `$I` in `fill`, `checkVariants`),
   `Core/Lookup.lua` (table slot → `variants` / `shapes`), `Core/Translator.lua` (`alignVariants`, `T.variants`),
   `Main.lua`, `UI/Slash.lua`; the style guide. Tally: [inclusions and branches](../research/2026-09-27-inclusions-and-branches.md).
 - **Date:** 2026-09-27

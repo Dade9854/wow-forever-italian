@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from wfj.core.hashing import M1, M2, MAX_INTERMEDIATE, P1, P2, hash32x2, key, key_from_pair
-from wfj.core.normalize import normalize_v1
+from wfi.core.hashing import M1, M2, MAX_INTERMEDIATE, P1, P2, hash32x2, key, key_from_pair
+from wfi.core.normalize import normalize_v1
 
 
 def test_empty():
@@ -87,9 +87,9 @@ def test_a_quest_line_filled_from_live_values_ships_a_masked_h1():
     """`Collect $1oa Moss` is hashed with its numbers masked, and the addon masks the live
     line's digits the same way (collector_spec holds the Lua side to this key), so the count never reads as a
     rewording and a rewording still does."""
-    from wfj.cmd.generate import masked_fields
-    from wfj.core.normalize import mask_values
-    from wfj.emit import lua_writer
+    from wfi.cmd.generate import masked_fields
+    from wfi.core.normalize import mask_values
+    from wfi.emit import lua_writer
 
     en = "Collect $1oa Lady's Tear Moss, $N."
     assert mask_values(normalize_v1(en)) == "Collect # Lady's Tear Moss, {name}."
@@ -109,7 +109,7 @@ def test_a_quest_line_filled_from_live_values_ships_a_masked_h1():
 
 
 def test_the_mask_reads_a_number_with_separators_as_one():
-    from wfj.core.normalize import mask_values
+    from wfi.core.normalize import mask_values
 
     assert mask_values("Collect $1oa or 1,000 or 2.5 of 7 things.") == "Collect # or # or # of # things."
     assert mask_values("Slay $1997w wolves.") == "Slay # wolves."
@@ -117,7 +117,7 @@ def test_the_mask_reads_a_number_with_separators_as_one():
 
 def test_one_place_decides_the_client_template_canon():
     """The hash, the batch English and the checks read a client template the same way."""
-    from wfj.core.normalize import normalize_for
+    from wfi.core.normalize import normalize_for
 
     en = "Fear all Demons within $r yards, surrounded by $n balls."
     assert normalize_for("spell", en) == normalize_v1(en, player_tokens=False)

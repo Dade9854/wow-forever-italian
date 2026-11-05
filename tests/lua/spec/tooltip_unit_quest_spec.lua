@@ -27,7 +27,7 @@ local QUESTS = {
 }
 
 describe("UI/TooltipUnit: quest titles and line kinds", function()
-  local WFJ, tt, inLog
+  local WFI, tt, inLog
 
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
   local function kinds(list)
@@ -45,23 +45,23 @@ describe("UI/TooltipUnit: quest titles and line kinds", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.Enum.TooltipDataLineType = LINE_TYPES
     _G.UIParent = _G.UIParent or CreateFrame("Frame", "UIParent")
     inLog = {}
     _G.C_QuestLog = { GetLogIndexForQuestID = function(id) return inLog[id] end }
-    WFJ = H.loadChunks(FILES)
-    local function h1(en) return (WFJ.Hash.h32x2(WFJ.Normalize.v1(WFJ.Collector.text(en)))) end
+    WFI = H.loadChunks(FILES)
+    local function h1(en) return (WFI.Hash.h32x2(WFI.Normalize.v1(WFI.Collector.text(en)))) end
     local titles = {}
-    WFJ.Data = { quest = {} }
+    WFI.Data = { quest = {} }
     for id, q in pairs(QUESTS) do
-      WFJ.Data.quest[id] = true
+      WFI.Data.quest[id] = true
       if q[2] then titles[id] = { ja = q[2], status = ".", h1 = h1(q[1]) } end
     end
-    WFJ.Lookup = { get = function(kind, id) if kind == "quest.title" then return titles[id] end end }
-    H.uiSetup(WFJ, UI, { lookup = function(kind, id) if kind == "quest.title" then return titles[id] end end })
-    WFJ.HelpTooltip.init()
+    WFI.Lookup = { get = function(kind, id) if kind == "quest.title" then return titles[id] end end }
+    H.uiSetup(WFI, UI, { lookup = function(kind, id) if kind == "quest.title" then return titles[id] end end })
+    WFI.HelpTooltip.init()
     tt = _G.GameTooltip
   end)
 
@@ -75,49 +75,49 @@ describe("UI/TooltipUnit: quest titles and line kinds", function()
     it("names each row's kind from the client's lineIndex", function()
       local data = { lines = { { lineIndex = 1, type = 2 }, { lineIndex = 3, type = 17 }, { type = 8 },
         { lineIndex = 4 } } }
-      assert.are.same({ [1] = "UnitName", [3] = "QuestTitle" }, WFJ.TooltipUnit.lineKinds(data))
+      assert.are.same({ [1] = "UnitName", [3] = "QuestTitle" }, WFI.TooltipUnit.lineKinds(data))
     end)
 
     it("no data, no lines or no enum: no kinds", function()
-      assert.are.same({}, WFJ.TooltipUnit.lineKinds(nil))
-      assert.are.same({}, WFJ.TooltipUnit.lineKinds({}))
+      assert.are.same({}, WFI.TooltipUnit.lineKinds(nil))
+      assert.are.same({}, WFI.TooltipUnit.lineKinds({}))
       _G.Enum.TooltipDataLineType = nil
-      assert.are.same({}, WFJ.TooltipUnit.lineKinds(kinds({ "UnitName" })))
+      assert.are.same({}, WFI.TooltipUnit.lineKinds(kinds({ "UnitName" })))
     end)
   end)
 
   describe("questFor", function()
     it("a title only one quest has", function()
-      assert.are.equal(5, WFJ.TooltipUnit.questFor("Wolf Pelts"))
+      assert.are.equal(5, WFI.TooltipUnit.questFor("Wolf Pelts"))
     end)
 
     it("a title several quests share with the same Japanese: any of them", function()
-      local id = WFJ.TooltipUnit.questFor("The Balance of Nature")
+      local id = WFI.TooltipUnit.questFor("The Balance of Nature")
       assert.is_true(id == 11 or id == 12)
     end)
 
     it("a title shared with different Japanese: the one in the quest log, else none", function()
-      local id, why = WFJ.TooltipUnit.questFor("Report to Goldshire")
+      local id, why = WFI.TooltipUnit.questFor("Report to Goldshire")
       assert.is_nil(id)
       assert.are.equal("quests sharing the title differ", why)
       inLog[22] = 3
-      assert.are.equal(22, WFJ.TooltipUnit.questFor("Report to Goldshire"))
+      assert.are.equal(22, WFI.TooltipUnit.questFor("Report to Goldshire"))
       inLog[21] = 1 -- both held: still not told apart
-      assert.is_nil(WFJ.TooltipUnit.questFor("Report to Goldshire"))
+      assert.is_nil(WFI.TooltipUnit.questFor("Report to Goldshire"))
     end)
 
     it("an unknown, empty, missing or secret title: none, with the reason", function()
-      assert.are.same({ nil, "no quest with that title" }, { WFJ.TooltipUnit.questFor("Some Other Quest") })
-      assert.are.same({ nil, "no readable title" }, { WFJ.TooltipUnit.questFor("") })
-      assert.are.same({ nil, "no readable title" }, { WFJ.TooltipUnit.questFor(nil) })
+      assert.are.same({ nil, "no quest with that title" }, { WFI.TooltipUnit.questFor("Some Other Quest") })
+      assert.are.same({ nil, "no readable title" }, { WFI.TooltipUnit.questFor("") })
+      assert.are.same({ nil, "no readable title" }, { WFI.TooltipUnit.questFor(nil) })
       _G.issecretvalue = function(v) return v == "Wolf Pelts" end
-      assert.are.same({ nil, "no readable title" }, { WFJ.TooltipUnit.questFor("Wolf Pelts") })
+      assert.are.same({ nil, "no readable title" }, { WFI.TooltipUnit.questFor("Wolf Pelts") })
       _G.issecretvalue = nil
     end)
   end)
 
   describe("the Unit post-call", function()
-    before_each(function() assert.is_true(WFJ.TooltipUnit.init()) end)
+    before_each(function() assert.is_true(WFI.TooltipUnit.init()) end)
 
     it("a QuestTitle row shows its quest's Japanese; the name row and an unknown title stay", function()
       hover({ "Young Thistle Boar", "Level 2", "Wolf Pelts", "0/4 Young Thistle Boar slain", "Untranslated Errand" },
@@ -127,12 +127,12 @@ describe("UI/TooltipUnit: quest titles and line kinds", function()
       assert.are.equal("狼の毛皮", left(3))
       assert.is_truthy(left(4):find("Young Thistle Boarを倒す: 0/4", 1, true))
       assert.are.equal("Untranslated Errand", left(5))
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Wolf Pelts", left(3))
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("狼の毛皮", left(3))
       tt:Hide()
-      assert.are.equal(0, WFJ.SurfaceState.count(WFJ.TooltipUnit.SURFACE))
+      assert.are.equal(0, WFI.SurfaceState.count(WFI.TooltipUnit.SURFACE))
     end)
 
     it("a title on a row the client did not tag QuestTitle is read as a unit line, not a quest", function()
@@ -149,13 +149,13 @@ describe("UI/TooltipUnit: quest titles and line kinds", function()
     end)
 
     it("the trace names the row's quest, or why it has none", function()
-      WFJ.Tooltip.trace = {}
+      WFI.Tooltip.trace = {}
       hover({ "Young Thistle Boar", "Report to Goldshire", "Wolf Pelts" },
         kinds({ "UnitName", "QuestTitle", "QuestTitle" }))
-      local last = WFJ.Tooltip.trace[#WFJ.Tooltip.trace]
+      local last = WFI.Tooltip.trace[#WFI.Tooltip.trace]
       assert.is_truthy(last:find("row 2 quest title: quests sharing the title differ", 1, true), last)
       assert.is_truthy(last:find("row 3 quest title: quest 5", 1, true), last)
-      WFJ.Tooltip.trace = nil
+      WFI.Tooltip.trace = nil
     end)
   end)
 
@@ -163,48 +163,48 @@ describe("UI/TooltipUnit: quest titles and line kinds", function()
     local BLOCK = "|cffffffffInnkeeper Allison|r\nWolf Pelts\n|cffffffff- 2/7 Young Nightsaber slain"
 
     it("the name is kept, the title and the objective are Japanese, colour codes stay, gold goes first", function()
-      local ja, notes = WFJ.TooltipUnit.minimapBlock("Innkeeper Allison\nWolf Pelts|cffffffff\n"
+      local ja, notes = WFI.TooltipUnit.minimapBlock("Innkeeper Allison\nWolf Pelts|cffffffff\n"
         .. "- 2/7 Young Nightsaber slain")
       assert.are.equal("|cffffd100Innkeeper Allison\n狼の毛皮|cffffffff\n- Young Nightsaberを倒す: 2/7", ja)
       assert.are.same({ "title quest 5" }, notes)
     end)
 
     it("a block that opens with its own colour code takes no gold", function()
-      local ja = WFJ.TooltipUnit.minimapBlock(BLOCK)
+      local ja = WFI.TooltipUnit.minimapBlock(BLOCK)
       assert.are.equal("|cffffffffInnkeeper Allison|r\n狼の毛皮\n|cffffffff- Young Nightsaberを倒す: 2/7", ja)
     end)
 
     it("nothing to change, one line only, or a secret block: nil", function()
-      assert.is_nil((WFJ.TooltipUnit.minimapBlock("Innkeeper Allison\nUntranslated Errand\n- Run")))
-      assert.is_nil(WFJ.TooltipUnit.minimapBlock("Wolf Pelts"))
-      assert.is_nil(WFJ.TooltipUnit.minimapBlock(nil))
+      assert.is_nil((WFI.TooltipUnit.minimapBlock("Innkeeper Allison\nUntranslated Errand\n- Run")))
+      assert.is_nil(WFI.TooltipUnit.minimapBlock("Wolf Pelts"))
+      assert.is_nil(WFI.TooltipUnit.minimapBlock(nil))
       _G.issecretvalue = function(v) return v == BLOCK end
-      assert.is_nil(WFJ.TooltipUnit.minimapBlock(BLOCK))
+      assert.is_nil(WFI.TooltipUnit.minimapBlock(BLOCK))
       _G.issecretvalue = nil
     end)
 
     it("a quest ready to turn in: its title alone on one line is Japanese only on the minimap mouseover", function()
-      assert.are.equal("|cffffd100狼の毛皮", (WFJ.TooltipUnit.minimapBlock("Wolf Pelts", true)))
-      assert.is_nil((WFJ.TooltipUnit.minimapBlock("Wolf Pelts"))) -- a unit's one line is its name
-      assert.is_nil((WFJ.TooltipUnit.minimapBlock("Innkeeper Allison", true))) -- a name is never a title
+      assert.are.equal("|cffffd100狼の毛皮", (WFI.TooltipUnit.minimapBlock("Wolf Pelts", true)))
+      assert.is_nil((WFI.TooltipUnit.minimapBlock("Wolf Pelts"))) -- a unit's one line is its name
+      assert.is_nil((WFI.TooltipUnit.minimapBlock("Innkeeper Allison", true))) -- a name is never a title
       _G.Enum.TooltipDataType.MinimapMouseover = 22
-      assert.is_true(WFJ.TooltipUnit.init())
-      WFJ.TooltipUnit.onUnit(_G.GameTooltip, { type = 2 })
+      assert.is_true(WFI.TooltipUnit.init())
+      WFI.TooltipUnit.onUnit(_G.GameTooltip, { type = 2 })
       _G.GameTooltip:ClearLines(); _G.GameTooltip:AddLine("Wolf Pelts")
-      WFJ.TooltipUnit.onUnit(_G.GameTooltip, { type = 2 })
+      WFI.TooltipUnit.onUnit(_G.GameTooltip, { type = 2 })
       assert.are.equal("Wolf Pelts", left(1)) -- a unit tooltip with one line: left as written
-      WFJ.TooltipUnit.onUnit(_G.GameTooltip, { type = 22 })
+      WFI.TooltipUnit.onUnit(_G.GameTooltip, { type = 22 })
       assert.are.equal("|cffffd100狼の毛皮", left(1))
     end)
 
     it("a one-line tooltip holding the block is written whole; the modifier held leaves the client's", function()
-      assert.is_true(WFJ.TooltipUnit.init())
+      assert.is_true(WFI.TooltipUnit.init())
       hover({ BLOCK })
       assert.are.equal("|cffffffffInnkeeper Allison|r\n狼の毛皮\n|cffffffff- Young Nightsaberを倒す: 2/7", left(1))
-      assert.is_true(WFJ.Font.dressed(_G.GameTooltipTextLeft1)) -- the Japanese face, outside any record
-      WFJ.TooltipUnit.release()
-      assert.is_false(WFJ.Font.dressed(_G.GameTooltipTextLeft1))
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      assert.is_true(WFI.Font.dressed(_G.GameTooltipTextLeft1)) -- the Japanese face, outside any record
+      WFI.TooltipUnit.release()
+      assert.is_false(WFI.Font.dressed(_G.GameTooltipTextLeft1))
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       hover({ BLOCK })
       assert.are.equal(BLOCK, left(1))
     end)
@@ -215,16 +215,16 @@ describe("UI/TooltipUnit: quest titles and line kinds", function()
       function()
         _G.Enum.TooltipDataType.MinimapMouseover = 22
         _G.Enum.TooltipDataType.Object = 33
-        assert.is_true(WFJ.TooltipUnit.init())
-        assert.are.equal(WFJ.TooltipUnit.onUnit, Stub.tooltipPostCalls[2][1])
-        assert.are.equal(WFJ.TooltipUnit.onUnit, Stub.tooltipPostCalls[22][1])
-        assert.are.equal(WFJ.TooltipUnit.onUnit, Stub.tooltipPostCalls[33][1])
+        assert.is_true(WFI.TooltipUnit.init())
+        assert.are.equal(WFI.TooltipUnit.onUnit, Stub.tooltipPostCalls[2][1])
+        assert.are.equal(WFI.TooltipUnit.onUnit, Stub.tooltipPostCalls[22][1])
+        assert.are.equal(WFI.TooltipUnit.onUnit, Stub.tooltipPostCalls[33][1])
         -- Corpse is a type this client does not have: nothing else is registered
         local types = {}
         for t, list in pairs(Stub.tooltipPostCalls) do if #list > 0 then types[#types + 1] = t end end
         table.sort(types)
         assert.are.same({ 2, 22, 33 }, types)
-        assert.is_true(WFJ.TooltipUnit.init()) -- once only
+        assert.is_true(WFI.TooltipUnit.init()) -- once only
         assert.are.equal(1, #Stub.tooltipPostCalls[22])
       end)
   end)

@@ -41,17 +41,17 @@ local OBJECTIVES = {
 local QUEST = { title = "Burning Archives", description = "Burn it.", objectives = "Burn the archive.", level = 20 }
 
 describe("UI/QuestMap: objective lines", function()
-  local WFJ, SS, QM, Q, DATA, registry
+  local WFI, SS, QM, Q, DATA, registry
 
   local function objectiveRows()
     local rows = {}
-    local function h1(text) return (WFJ.Hash.h32x2(WFJ.Normalize.v1(text))) end
+    local function h1(text) return (WFI.Hash.h32x2(WFI.Normalize.v1(text))) end
     for id, pair in pairs(OBJECTIVES) do rows[id] = { pair[2], h1(pair[1]), "." } end
     return rows, h1
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     Q = QStub.install()
     Q.quests[9] = { title = QUEST.title, description = QUEST.description, objectives = QUEST.objectives, level = 20,
@@ -61,15 +61,15 @@ describe("UI/QuestMap: objective lines", function()
     registry = { cbs = {} }
     function registry:RegisterCallback(event, fn, owner) self.cbs[event] = function(...) return fn(owner, ...) end end
     _G.EventRegistry = registry
-    WFJ = H.loadChunks(FILES)
+    WFI = H.loadChunks(FILES)
     DATA = {}
-    H.uiSetup(WFJ, UI, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
+    H.uiSetup(WFI, UI, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
     local rows, h1 = objectiveRows()
     DATA.objective = {}
     for id, row in pairs(rows) do DATA.objective[id] = { ja = row[1], status = row[3] } end
-    WFJ.ObjectiveIndex = WFJ.Objectives.build({ rows = rows, hash = h1 })
-    SS, QM = WFJ.SurfaceState, WFJ.QuestMap
-    assert.is_true(WFJ.QuestFrame.init())
+    WFI.ObjectiveIndex = WFI.Objectives.build({ rows = rows, hash = h1 })
+    SS, QM = WFI.SurfaceState, WFI.QuestMap
+    assert.is_true(WFI.QuestFrame.init())
     assert.is_true(QM.init())
   end)
 
@@ -113,7 +113,7 @@ describe("UI/QuestMap: objective lines", function()
       assert.are.equal("0/1 Tower Marked", lines[1].Text:GetText())
       assert.are.equal("Find the lost relic", lines[2].Text:GetText())
       assert.are.equal(0, SS.count(QM.TRACKER_OBJECTIVES))
-      assert.are.equal(2, WFJ.ObjectiveIndex.counts.ambiguous)
+      assert.are.equal(2, WFI.ObjectiveIndex.counts.ambiguous)
     end)
 
     it("an area row is read as an objective line, its count kept; a fingerprint shared with an objective"
@@ -124,7 +124,7 @@ describe("UI/QuestMap: objective lines", function()
       rows[380901] = nil -- "Tower Marked" is now one objective row, made ambiguous only by the area row
       DATA.objective[380901] = nil
       DATA.area = { [62] = { ja = area[62][1], status = "." }, [2240] = { ja = area[2240][1], status = "." } }
-      WFJ.ObjectiveIndex = WFJ.Objectives.build({ hash = h1,
+      WFI.ObjectiveIndex = WFI.Objectives.build({ hash = h1,
         sources = { { type = "objective", rows = rows }, { type = "area", rows = area } } })
       Q.quests[9].leaderboard = { { text = "0/1 Scout through the Fargodeep Mine" }, { text = "0/1 Tower Marked" },
         { text = "0/1 Archive Burned" } }
@@ -132,41 +132,41 @@ describe("UI/QuestMap: objective lines", function()
       assert.are.equal("0/1 Fargodeep Mineを偵察する", lines[1].Text:GetText())
       assert.are.equal("0/1 Tower Marked", lines[2].Text:GetText())
       assert.are.equal("0/1 Archiveを焼き払う", lines[3].Text:GetText())
-      assert.are.equal(2, WFJ.ObjectiveIndex.counts.ambiguous)
-      assert.are.same({ objective = 2, area = 2 }, WFJ.ObjectiveIndex.counts.byType)
+      assert.are.equal(2, WFI.ObjectiveIndex.counts.ambiguous)
+      assert.are.same({ objective = 2, area = 2 }, WFI.ObjectiveIndex.counts.byType)
     end)
 
     it("a quest with no counted objectives: its whole objective text on one line is the quest's Japanese", function()
-      local h1 = (WFJ.Hash.h32x2(WFJ.Normalize.v1(QUEST.objectives)))
+      local h1 = (WFI.Hash.h32x2(WFI.Normalize.v1(QUEST.objectives)))
       DATA["quest.objectives"] = { [9] = { ja = "記録庫を焼き払え。", status = ".", h1 = h1 } }
-      WFJ.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
+      WFI.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
       -- Main's reading of the quest's own English (fingerprints against h1 / h1f), as the live check reads it
-      WFJ.IsQuestFieldEnglish = function(id, field, text)
+      WFI.IsQuestFieldEnglish = function(id, field, text)
         local e = DATA["quest." .. field] and DATA["quest." .. field][id]
-        return e ~= nil and WFJ.Hash.h32x2(WFJ.Normalize.v1(text)) == e.h1
+        return e ~= nil and WFI.Hash.h32x2(WFI.Normalize.v1(text)) == e.h1
       end
       Q.quests[9].leaderboard = { { text = QUEST.objectives }, { text = "Burn something else." } }
       local _, lines = trackerLines()
       assert.are.equal("記録庫を焼き払え。", lines[1].Text:GetText())
       assert.are.equal("Burn something else.", lines[2].Text:GetText()) -- not the quest's text: as written
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(QUEST.objectives, lines[1].Text:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
     end)
 
     it("a quest's completion log line is its keyed text (quest-cache text keyed like NPC dialogue)", function()
       local log = "Speak with Deathguard Billmuth at Tyr's Watch."
       DATA.gossip = { k1 = { ja = "Tyr's WatchのDeathguard Billmuthと話す。", status = "." } }
-      local shipped = WFJ.ShippedGossipKey
-      WFJ.ShippedGossipKey = function(text) if text == log then return "k1" end end
-      WFJ.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
+      local shipped = WFI.ShippedGossipKey
+      WFI.ShippedGossipKey = function(text) if text == log then return "k1" end end
+      WFI.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
       Q.quests[9].leaderboard = { { text = log } }
       local _, lines = trackerLines()
       assert.are.equal("Tyr's WatchのDeathguard Billmuthと話す。", lines[1].Text:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(log, lines[1].Text:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
-      WFJ.ShippedGossipKey = shipped
+      Stub.keys.alt = false; WFI.Modifier.refresh()
+      WFI.ShippedGossipKey = shipped
     end)
 
     it("the block's height follows the line's height change, and the modifier restores the English", function()
@@ -174,12 +174,12 @@ describe("UI/QuestMap: objective lines", function()
       local block, lines = trackerLines()
       assert.are.equal(lines[1]:GetHeight(), lines[1].Text:GetHeight()) -- the line is sized to the Japanese
       local laid, ja = block.laidOut, lines[1].Text:GetHeight()
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("0/1 Archive Burned", lines[1].Text:GetText())
       assert.are.equal(lines[1]:GetHeight(), lines[1].Text:GetHeight())
       assert.are_not.equal(ja, lines[1].Text:GetHeight()) -- the stub wraps the Japanese onto a second line
       assert.are.equal(laid + (lines[1].Text:GetHeight() - ja), block.laidOut)
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("0/1 Archiveを焼き払う", lines[1].Text:GetText())
     end)
 
@@ -193,12 +193,12 @@ describe("UI/QuestMap: objective lines", function()
 
     it("a finished quest's list row (its completion text, the whole objective text) is the quest's Japanese",
     function()
-      local h1 = (WFJ.Hash.h32x2(WFJ.Normalize.v1(QUEST.objectives)))
+      local h1 = (WFI.Hash.h32x2(WFI.Normalize.v1(QUEST.objectives)))
       DATA["quest.objectives"] = { [9] = { ja = "記録庫を焼き払え。", status = ".", h1 = h1 } }
-      WFJ.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
-      WFJ.IsQuestFieldEnglish = function(id, field, text)
+      WFI.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
+      WFI.IsQuestFieldEnglish = function(id, field, text)
         local e = DATA["quest." .. field] and DATA["quest." .. field][id]
-        return e ~= nil and WFJ.Hash.h32x2(WFJ.Normalize.v1(text)) == e.h1
+        return e ~= nil and WFI.Hash.h32x2(WFI.Normalize.v1(text)) == e.h1
       end
       Q.quests[9].leaderboard = { { text = QUEST.objectives } }
       Q.updateList()
@@ -304,22 +304,22 @@ describe("UI/QuestMap: objective lines", function()
 
     it("Alt shows every translated line's English after the redraw, and release the Japanese", function()
       appendAndShow((hover()))
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(QUEST.title, line(1))
       assert.are.equal(QUEST.objectives, line(3))
       assert.are.equal("- 3/10 Kobold Vermin slain", line(5))
       assert.are.equal("<Click to view Quest Details>", line(7))
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal(OBJ_JA, line(3))
       assert.are.equal("- Kobold Verminを倒す: 3/10", line(5))
     end)
 
     it("a redraw while Alt is held keeps every line ours: release shows the Japanese", function()
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       appendAndShow((hover()))
       assert.are.equal(QUEST.objectives, line(3))
       assert.are.equal("- 3/10 Kobold Vermin slain", line(5))
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("燃える書庫", line(1))
       assert.are.equal(OBJ_JA, line(3))
       assert.are.equal("- Kobold Verminを倒す: 3/10", line(5))
@@ -327,9 +327,9 @@ describe("UI/QuestMap: objective lines", function()
     end)
 
     it("hovered while Alt is held, with no redraw after: release shows every line in Japanese", function()
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       hover()
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("燃える書庫", line(1))
       assert.are.equal(OBJ_JA, line(3))
       assert.are.equal("- Kobold Verminを倒す: 3/10", line(5))
@@ -376,10 +376,10 @@ describe("UI/QuestMap: objective lines", function()
       assert.are.equal(QUEST.title, _G.GameTooltipTextLeft1:GetText())
       assert.are.equal(icon .. "クエストへのフォーカスを切り替え", _G.GameTooltipTextLeft2:GetText())
       assert.are.equal(icon .. "その他", _G.GameTooltipTextLeft3:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(icon .. "Toggle Focus on Quest", _G.GameTooltipTextLeft2:GetText())
       assert.are.equal(icon .. "More", _G.GameTooltipTextLeft3:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal(icon .. "クエストへのフォーカスを切り替え", _G.GameTooltipTextLeft2:GetText())
     end)
   end)
@@ -391,9 +391,9 @@ describe("UI/QuestMap: objective lines", function()
       local b = Q.rows()[9]
       assert.are.equal("(エリート)", b.TagText:GetText())
       assert.are.equal("[20+] Burning Archives", b.Text:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("(Elite)", b.TagText:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
     end)
 
     it("the title button grows with a wrapped Japanese objective, and the list is laid out again",
@@ -416,10 +416,10 @@ describe("UI/QuestMap: objective lines", function()
         assert.are_not.equal(english, b:GetHeight()) -- the Japanese rows are taller
         assert.are.equal(expected(b), b:GetHeight())
         assert.are.equal(before + 1, contents.layouts) -- once for the whole update
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal(english, b:GetHeight())
         assert.are.equal(expected(b), b:GetHeight())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         assert.are.equal(expected(b), b:GetHeight())
       end)
 
@@ -451,9 +451,9 @@ describe("UI/QuestMap: objective lines", function()
       assert.are.equal("- 0/1 Archiveを焼き払う", _G.GameTooltipTextLeft3:GetText())
       assert.are.equal("- Find the lost relic", _G.GameTooltipTextLeft4:GetText())
       assert.are.equal("<クリックでクエストの詳細を表示>", _G.GameTooltipTextLeft5:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("- 3/10 Kobold Vermin slain", _G.GameTooltipTextLeft2:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("- 0/1 Archiveを焼き払う", _G.GameTooltipTextLeft3:GetText())
       tt:Hide()
       assert.are.equal("- 0/1 Archive Burned", _G.GameTooltipTextLeft3:GetText())
@@ -500,7 +500,7 @@ describe("UI/QuestMap: objective lines", function()
           block:SetHeight(block.height)
           return block
         end
-        WFJ.QuestMap.hookTrackers()
+        WFI.QuestMap.hookTrackers()
         local block = module:Process(1001, "Elite", _G.CONTENT_TRACKING_RETRIEVING_INFO)
         assert.are.equal("|cffff0000情報を取得中...|r", block.usedLines[1].Text:GetText())
         assert.are.equal("Elite", block.HeaderText:GetText()) -- a tracked thing named like a dictionary word
@@ -511,18 +511,18 @@ describe("UI/QuestMap: objective lines", function()
         assert.are.equal("|cffff0000経路が不明です|r", block.usedLines[2].Text:GetText())
         block = module:Process(1001, "Hogger", "Defeat Hogger", "Elwynn Forest. Near the lake. (Optional)")
         assert.are.equal("Elwynn Forest. Near the lake.(任意)", block.usedLines[2].Text:GetText())
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("Elwynn Forest. Near the lake. (Optional)", block.usedLines[2].Text:GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         _G.AdventureObjectiveTracker = nil
       end)
   end)
 
   describe("the tracker's Quests header on a fresh launch", function()
-    it("a font the client refuses at load is applied by the retry (as a real /wfj debug showed: 1 failure, 0 pending)",
+    it("a font the client refuses at load is applied by the retry (as a real /wfi debug showed: 1 failure, 0 pending)",
       function()
         -- the module's OnLoad wrote "Quests" before the addon loaded; the bundled font file is not ready yet
-        Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc") -- a fresh client: nothing shown yet
+        Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc") -- a fresh client: nothing shown yet
         Stub.installQuestAPI(); Stub.installTooltipAPI()
         QStub.install()
         Stub.fontSetFails = true

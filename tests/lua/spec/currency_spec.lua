@@ -69,7 +69,7 @@ C.suite(getfenv(1), {
   title = "the Currency tab on Forever", module = "Currency", file = "UI/Currency.lua",
   root = "TokenFrame", ui = UI, build = build, globals = GLOBALS,
   cases = {
-    { "the detail pane's checkboxes, transfer button, empty prompt and pooled rows are Japanese", function(_, WFJ)
+    { "the detail pane's checkboxes, transfer button, empty prompt and pooled rows are Japanese", function(_, WFI)
       local detail = _G.TokenDetailFrame
       assert.are.equal("未使用", detail.InactiveCheckbox.Label:GetText())
       assert.are.equal("バッグに表示", detail.BackpackCheckbox.Label:GetText())
@@ -80,9 +80,9 @@ C.suite(getfenv(1), {
       detail:Refresh()
       local row = detail.rowPools:EnumerateActive()()
       assert.are.equal("上限", row.Label:GetText())
-      C.alt(WFJ, true)
+      C.alt(WFI, true)
       assert.are.equal("Maximum", row.Label:GetText())
-      C.alt(WFJ, false)
+      C.alt(WFI, false)
     end },
     { "tooltips: the checkboxes, a list entry and its account icon, a watched currency on the backpack",
       function(frame)
@@ -102,14 +102,14 @@ C.suite(getfenv(1), {
         assert.are.equal("<Shiftクリックで追跡を解除>", _G.GameTooltipTextLeft2:GetText())
       end },
     { "the description pane is a CurrencyDescription row's Japanese; other text stays English",
-      function(_, WFJ)
+      function(_, WFI)
         local detail = _G.TokenDetailFrame
         detail:SetDescription(DESC)
         assert.are.equal("敵プレイヤーを倒すと獲得できる。", detail.Description:GetText())
         assert.are.equal(detail.Description.fs:GetStringHeight(), detail.Description.container.height)
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal(DESC, detail.Description:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         assert.are.equal("敵プレイヤーを倒すと獲得できる。", detail.Description:GetText())
         detail:SetDescription("Unused") -- a dictionary word and a category's English, but no description row
         assert.are.equal("Unused", detail.Description:GetText())
@@ -117,7 +117,7 @@ C.suite(getfenv(1), {
         assert.are.equal("A currency nobody translated.", detail.Description:GetText())
       end },
     { "list headers: a CurrencyCategory row's Japanese, the sub-header's colour kept; others English",
-      function(frame, WFJ)
+      function(frame, WFI)
         local misc, dungeon = headerRow("Miscellaneous"), headerRow("Dungeon and Raid")
         frame.ScrollBox:initFrame(misc, {})
         frame.ScrollBox:initFrame(dungeon, {})
@@ -135,10 +135,10 @@ C.suite(getfenv(1), {
         local shown = headerRow("Show on Backpack") -- a dictionary word that is no CurrencyCategory row
         frame.ScrollBox:initFrame(shown, {})
         assert.are.equal("Show on Backpack", shown.Name:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Miscellaneous", misc.Name:GetText())
         assert.are.equal("|cffffffffPlayer vs. Player|r", pvp.Text:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         assert.are.equal("|cffffffffPvP|r", pvp.Text:GetText())
       end },
     { "an entry's tooltip shows the currency description line in Japanese, the name kept", function(frame)
@@ -150,12 +150,12 @@ C.suite(getfenv(1), {
       assert.are.equal("<クリックでオプションを表示>", _G.GameTooltipTextLeft3:GetText())
     end },
   },
-  name = function(_, WFJ)
+  name = function(_, WFI)
     local title = _G.TokenDetailFrame.Title
     _G.TokenDetailFrame:Refresh()
     assert.are.equal("Unused", title:GetText())
-    assert.are.equal(0, WFJ.Labels.show("currency", "x", title))
-    assert.is_true(C.unrecorded(WFJ, title))
+    assert.are.equal(0, WFI.Labels.show("currency", "x", title))
+    assert.is_true(C.unrecorded(WFI, title))
   end,
   wrong = function()
     local detail = _G.TokenDetailFrame

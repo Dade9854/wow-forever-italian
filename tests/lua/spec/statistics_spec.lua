@@ -20,11 +20,11 @@ local UI = {
 }
 
 describe("the Statistics tab on Forever", function()
-  local WFJ, SS, box
+  local WFI, SS, box
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
   local function unrecorded(widget)
     for _, bucket in pairs(SS.surfaces()) do
@@ -60,11 +60,11 @@ describe("the Statistics tab on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end
 
   after_each(function()
@@ -77,8 +77,8 @@ describe("the Statistics tab on Forever", function()
     before_each(function()
       load()
       install()
-      WFJ.Labels.forbidNames(WFJ.Statistics.NEVER_TOUCH)
-      assert.is_true(WFJ.Statistics.init())
+      WFI.Labels.forbidNames(WFI.Statistics.NEVER_TOUCH)
+      assert.is_true(WFI.Statistics.init())
     end)
 
     it("a header row's category name is Japanese; Alt shows English; a name no row has stays", function()
@@ -130,16 +130,16 @@ describe("the Statistics tab on Forever", function()
     end)
 
     it("hooks install once", function()
-      assert.is_false(WFJ.Statistics.init())
+      assert.is_false(WFI.Statistics.init())
       assert.are.equal(1, #box.initCallbacks)
     end)
 
     it("rows of the wrong shape degrade to English with no error", function()
       assert.has_no.errors(function()
-        WFJ.Statistics.onRow(WFJ.Statistics, "moved")
-        WFJ.Statistics.onRow(WFJ.Statistics, { Name = 7 }, node({}))
-        WFJ.Statistics.onRow({ Content = { Name = "x" } }, { GetData = "x" })
-        WFJ.Statistics.onRow({ Content = {} })
+        WFI.Statistics.onRow(WFI.Statistics, "moved")
+        WFI.Statistics.onRow(WFI.Statistics, { Name = 7 }, node({}))
+        WFI.Statistics.onRow({ Content = { Name = "x" } }, { GetData = "x" })
+        WFI.Statistics.onRow({ Content = {} })
       end)
     end)
   end)
@@ -150,15 +150,15 @@ describe("the Statistics tab on Forever", function()
     local row = CreateFrame("Button")
     row.Name = Stub.fontString("Character")
     box:initFrame(row, node({ id = 1 }))
-    assert.is_true(WFJ.Statistics.init())
+    assert.is_true(WFI.Statistics.init())
     assert.are.equal("キャラクター", row.Name:GetText())
   end)
 
   it("no StatisticsFrame, or a moved ScrollBox: init is false and nothing is hooked", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.Statistics.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Statistics.init()) end)
     load()
     install().ScrollBox = "moved"
-    assert.has_no.errors(function() assert.is_false(WFJ.Statistics.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Statistics.init()) end)
   end)
 end)

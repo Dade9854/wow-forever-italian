@@ -7,11 +7,11 @@
   names and branches removed from the shared surface files, and the client-detection guards removed (`Main.lua`, the
   TOC, `UI/*.lua`); `UI/Tooltip.lua` (one hook path), `UI/Trainer.lua`
   (no greeting), `UI/Bags.lua` (7 container frames), `UI/ItemText.lua` (Forever's book writer); `Core/Data.lua`,
-  `Core/Lookup.lua` (no `trainer_greeting`); `pipeline/wfj/cmd/served.py`, `cmd/check.py` (baseline kept),
+  `Core/Lookup.lua` (no `trainer_greeting`); `pipeline/wfi/cmd/served.py`, `cmd/check.py` (baseline kept),
   `cmd/import_.py`, `cmd/import_english.py`, `io/vmangos.py`, `emit/schema.py`, `emit/lua_writer.py`,
   `dev/ui_inventory.py` (Forever only), the `Makefile` (`import-served`, `ui-inventory`); `pipeline/ui_inventory.txt`
   (the Forever inventory, renamed), `pipeline/ui_keys.txt`, `pipeline/ui_exclusions.txt`; `data/english/` pruned,
-  `data/trainer_greeting/` and `data/english/trainer_greeting/` deleted, `addon/WoWForeverJapanese/Data/` regenerated;
+  `data/trainer_greeting/` and `data/english/trainer_greeting/` deleted, `addon/WoWForeverItalian/Data/` regenerated;
   `tests/python/test_forever_only.py`, `tests/python/test_import_served.py`.
 - **Date:** 2026-09-22
 - **Supersedes in part:** [ADR-025](025-guarded-surface-init-and-runtime-tooltip-path.md) (the Classic tooltip path),
@@ -56,7 +56,7 @@ machine lines, ADR-022 / ADR-023) had no consumer on the target client.
 3. **One tooltip path.** `Tooltip.path` is `"dataprocessor"` or `"none"`. The `OnTooltipSetItem` / `OnTooltipSetSpell`
    `HookScript` path and the aura method-hook fallback are removed. The guarded init of ADR-025 stays.
 4. **The download is defined by Forever's own tables, not by where the English came from.** A new step,
-   `wfj import english served \<QuestV2.csv> \<questcache.wdb> \<ItemSparse.csv> \<SpellName.csv> [--map-cache WDB]...
+   `wfi import english served \<QuestV2.csv> \<questcache.wdb> \<ItemSparse.csv> \<SpellName.csv> [--map-cache WDB]...
    [--dry-run]` (`make import-served`), runs last in `make import` and `make import-english`, after every client, with
    Forever's client folder (named, not "the last client"). It prunes `data/english`:
    - quest: kept when the id is in QuestV2 or in the Forever quest cache;
@@ -76,7 +76,7 @@ machine lines, ADR-022 / ADR-023) had no consumer on the target client.
    server had not answered them in the harvest yet, so their English still comes from Classic Era. They are real
    Forever quests and keep shipping.
 5. **The Japanese stays in `data/`.** Only the English store is narrowed. A Japanese line whose English was pruned is
-   rejected as `no_english_id` at the next `wfj check` and is not generated; when a later harvest lists the id, its
+   rejected as `no_english_id` at the next `wfi check` and is not generated; when a later harvest lists the id, its
    English returns and the line ships again with no data edit. Some of these lines are irreplaceable human
    translations.
 6. **`check` keeps the last English baseline of a `no_english_id` line.** Before, the line's `english` (hash + src)
@@ -101,7 +101,7 @@ machine lines, ADR-022 / ADR-023) had no consumer on the target client.
 
 ## Consequences
 
-- Each surface file has one hook shape. `/wfj debug`'s unresolved list carries no Era names as expected misses.
+- Each surface file has one hook shape. `/wfi debug`'s unresolved list carries no Era names as expected misses.
 - The download shrinks (about 630 quests, 260 items, 30 spells and 100 UI keys Forever never shows, and the trainer
   greetings). On Forever nothing a player sees changes.
 - **Books translate on Forever.** Removing the Era shapes showed that `UI/ItemText.lua` still matched the Classic

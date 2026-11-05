@@ -1,32 +1,32 @@
 local H = require("tests.lua.spec.helpers")
 
 describe("Hash.h32x2 (Lua twin of hash32x2)", function()
-  local WFJ = {}
+  local WFI = {}
   setup(function()
     H.coreStub()
-    H.loadChunk("Core/Normalize.lua", "WoWForeverJapanese", WFJ)
-    H.loadChunk("Core/Hash.lua", "WoWForeverJapanese", WFJ)
+    H.loadChunk("Core/Normalize.lua", "WoWForeverItalian", WFI)
+    H.loadChunk("Core/Hash.lua", "WoWForeverItalian", WFI)
   end)
 
   it("hashes the empty string to zero", function()
-    local h1, h2 = WFJ.Hash.h32x2("")
+    local h1, h2 = WFI.Hash.h32x2("")
     assert.are.equal(0, h1); assert.are.equal(0, h2)
-    assert.are.equal("0000000000000000", WFJ.Hash.key(""))
+    assert.are.equal("0000000000000000", WFI.Hash.key(""))
   end)
 
   it("formats hex without string.format", function()
-    assert.are.equal("00000001", WFJ.Hash.hex8(1))
-    assert.are.equal("ffffffff", WFJ.Hash.hex8(4294967295))
+    assert.are.equal("00000001", WFI.Hash.hex8(1))
+    assert.are.equal("ffffffff", WFI.Hash.hex8(4294967295))
   end)
 
   it("matches every shared vector (h1, h2, key) and keyOf(raw, player)", function()
     local V = H.vectors()
     for _, c in ipairs(V.cases) do
-      local h1, h2 = WFJ.Hash.h32x2(c.norm)
+      local h1, h2 = WFI.Hash.h32x2(c.norm)
       assert.are.equal(c.h1, h1, c.id .. " h1")
       assert.are.equal(c.h2, h2, c.id .. " h2")
-      assert.are.equal(c.key, WFJ.Hash.key(c.norm), c.id .. " key")
-      assert.are.equal(c.key, WFJ.Hash.keyOf(c.raw, c.player), c.id .. " keyOf")
+      assert.are.equal(c.key, WFI.Hash.key(c.norm), c.id .. " key")
+      assert.are.equal(c.key, WFI.Hash.keyOf(c.raw, c.player), c.id .. " keyOf")
     end
   end)
 
@@ -36,9 +36,9 @@ describe("Hash.h32x2 (Lua twin of hash32x2)", function()
     for _, c in ipairs(V.cases) do if c.id == "big-01" then big = c end end
     assert.is_not_nil(big)
     local dbg = {}
-    WFJ.Hash.DEBUG_MAX_INTERMEDIATE = dbg
-    WFJ.Hash.h32x2(big.norm)
-    WFJ.Hash.DEBUG_MAX_INTERMEDIATE = nil
+    WFI.Hash.DEBUG_MAX_INTERMEDIATE = dbg
+    WFI.Hash.h32x2(big.norm)
+    WFI.Hash.DEBUG_MAX_INTERMEDIATE = nil
     assert.is_true(dbg.max < 2 ^ 45, tostring(dbg.max))
     assert.is_true(dbg.max > 2 ^ 32)
   end)

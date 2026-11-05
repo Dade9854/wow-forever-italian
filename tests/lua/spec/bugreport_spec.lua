@@ -3,7 +3,7 @@ local H = require("tests.lua.spec.helpers")
 
 local function load()
   local ns = {}
-  H.loadPure("Core/BugReport.lua", "WoWForeverJapanese", ns)
+  H.loadPure("Core/BugReport.lua", "WoWForeverItalian", ns)
   -- the two things it borrows from the collector send: the encoder and the link limit
   ns.CollectorSend = { URL_BUDGET = 6000, percentEncode = function(s)
     return (s:gsub("[^%w%-_]", function(c) return ("%%%02X"):format(c:byte()) end))
@@ -20,7 +20,7 @@ local function params(url)
   return out
 end
 
-local ERR = { msg = "Interface/AddOns/WoWForeverJapanese/UI/A.lua:1: x", stack = "line 1\nline 2", n = 3,
+local ERR = { msg = "Interface/AddOns/WoWForeverItalian/UI/A.lua:1: x", stack = "line 1\nline 2", n = 3,
   first = "2026-10-03 14:40:00", last = "2026-10-03 14:45:00" }
 
 describe("Core/BugReport", function()
@@ -74,6 +74,6 @@ describe("Core/BugReport", function()
   it("reports whether the errors reached the log, and links the idea form", function()
     local B = load()
     assert.is_false(B.pack({ errors = {}, ours = false }).ours)
-    assert.are.equal("https://github.com/zyaga/wow-forever-japanese/issues/new?template=idea.yml", B.IDEA_URL)
+    assert.are.equal("https://github.com/zyaga/wow-forever-italian/issues/new?template=idea.yml", B.IDEA_URL)
   end)
 end)

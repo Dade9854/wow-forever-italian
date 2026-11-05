@@ -1,4 +1,4 @@
-"""`/wfj debug ui` on the Forever client, computed from the repo.
+"""`/wfi debug ui` on the Forever client, computed from the repo.
 
 `UIStrings.build` (addon Core/UIStrings.lua) admits a shipped row only when the client's English for its key hashes
 to the row's h1; otherwise the key is `mismatched` (the English moved: the line is never shown), `unresolved` (the
@@ -16,10 +16,10 @@ from pathlib import Path
 
 from local_inputs import forever_build
 
-from wfj.core import specifiers
-from wfj.core.model import ui_family
-from wfj.emit.lua_writer import shipped
-from wfj.io.jsonl_store import Store
+from wfi.core import specifiers
+from wfi.core.model import ui_family
+from wfi.emit.lua_writer import shipped
+from wfi.io.jsonl_store import Store
 
 FOREVER_SRC = f"db2@{forever_build()}"
 FINGERPRINTED = ("ItemSubClass:", "SpellItemEnchantment:", "SpellSubtext:")  # no client string: matched by the live line's hash
@@ -49,10 +49,10 @@ def forever_counters(root: Path) -> dict[str, list[str]]:
     exact_ja: dict[str, str] = {}  # h1 of an admitted exact English → its Japanese
     # a key that owns its Japanese (Core/UIStrings.lua OWN) stays out of the by-English buckets, as
     # UIStrings.build keeps it out of the index
-    from wfj.cmd import validate as _validate
+    from wfi.cmd import validate as _validate
 
     try:
-        own = _validate.ui_own(root / "addon/WoWForeverJapanese")
+        own = _validate.ui_own(root / "addon/WoWForeverItalian")
     except ValueError:  # a test tree's UIStrings.lua without the table
         own = set()
     buckets: dict[bool, dict[str, dict[str, set]]] = {False: defaultdict(dict), True: defaultdict(dict)}

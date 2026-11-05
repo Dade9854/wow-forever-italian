@@ -94,11 +94,11 @@ local function loadInspect(shape)
 end
 
 describe("the inspect window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -109,11 +109,11 @@ describe("the inspect window on Forever", function()
   end
 
   local function boot()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     C.level, C.spec, C.class, C.guild, C.faction, C.members = 42, nil, "Warrior", "Close", "Horde", 12
     C.season, C.rank, C.rankTitle, C.points, C.next, C.lifetime, C.today = 1, 1, "Scout", 150, 500, 37, 4
   end
@@ -122,11 +122,11 @@ describe("the inspect window on Forever", function()
     boot()
     if loadedFirst then
       loadInspect()
-      assert.is_true(WFJ.Inspect.init())
+      assert.is_true(WFI.Inspect.init())
     else
-      assert.is_false(WFJ.Inspect.init()) -- waits for the addon
+      assert.is_false(WFI.Inspect.init()) -- waits for the addon
       loadInspect()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -167,7 +167,7 @@ describe("the inspect window on Forever", function()
         assert.are.equal("通算: 37", m.LifetimeHKsField:GetText())
         assert.are.equal("今日: 4", m.TodayHKsField:GetText())
         assert.are.equal("1", m.RankProgressBarDisplay.NextRewardLevel.LevelLabel:GetText())
-        assert.is_true(WFJ.Labels.forbidden(m.RankProgressBarDisplay.NextRewardLevel.LevelLabel))
+        assert.is_true(WFI.Labels.forbidden(m.RankProgressBarDisplay.NextRewardLevel.LevelLabel))
         alt(true)
         assert.are.equal(" Season 1", m.CurrentSeasonField:GetText())
         assert.are.equal("Rank 1 - Scout", m.CurrentRankField:GetText())
@@ -194,7 +194,7 @@ describe("the inspect window on Forever", function()
         local m = _G.InspectPVPFrame.MainInfoFrame
         m.TodayHKsField.text = "Lifetime: 3"
         m.LifetimeHKsField.text = "Close"
-        WFJ.Inspect.onPvP()
+        WFI.Inspect.onPvP()
         assert.are.equal("Lifetime: 3", m.TodayHKsField:GetText())
         assert.are.equal("Close", m.LifetimeHKsField:GetText())
       end)
@@ -214,8 +214,8 @@ describe("the inspect window on Forever", function()
       it("the title is the player's name: never touched, whatever it says", function()
         _G.InspectFrame:SetTitle("Close")
         assert.are.equal("Close", _G.InspectFrame.TitleContainer.TitleText:GetText())
-        assert.is_true(WFJ.Labels.forbidden(_G.InspectFrame.TitleContainer.TitleText))
-        assert.are.equal(0, WFJ.Labels.show("inspect", "x", _G.InspectFrame.TitleContainer.TitleText))
+        assert.is_true(WFI.Labels.forbidden(_G.InspectFrame.TitleContainer.TitleText))
+        assert.are.equal(0, WFI.Labels.show("inspect", "x", _G.InspectFrame.TitleContainer.TitleText))
         assert.are.equal("Close", _G.InspectFrame.TitleContainer.TitleText:GetText())
       end)
 
@@ -241,7 +241,7 @@ describe("the inspect window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.Inspect.setup())
+    assert.is_false(WFI.Inspect.setup())
     assert.are.equal(1, #Stub.hooks["InspectPaperDollFrame:SetLevel"])
     assert.are.equal(1, #Stub.hooks["InspectPVPFrame:Update"])
     assert.are.equal(1, #Stub.hooks["InspectGuildFrame_Update"])
@@ -250,7 +250,7 @@ describe("the inspect window on Forever", function()
   it("without InspectPVPFrame the rest still sets up", function()
     boot()
     loadInspect("noPvP")
-    assert.is_true(WFJ.Inspect.init())
+    assert.is_true(WFI.Inspect.init())
     assert.is_nil(Stub.hooks["InspectPVPFrame:Update"])
     _G.InspectGuildFrame_Update()
     assert.are.equal("ギルドメンバー 12人", _G.InspectGuildFrame.guildNumMembers:GetText())
@@ -263,24 +263,24 @@ describe("the inspect window on Forever", function()
     _G.InspectGuildFrame.guildLevel = "x"
     _G.InspectPVPFrame.MainInfoFrame.TodayHKsField = "x"
     _G.InspectPVPFrame.MainInfoFrame.CurrentRankField = 3
-    assert.has_no.errors(function() WFJ.Inspect.init() end)
+    assert.has_no.errors(function() WFI.Inspect.init() end)
     assert.has_no.errors(function() _G.InspectPaperDollFrame:SetLevel() end)
-    assert.has_no.errors(function() WFJ.Inspect.onPvP() end)
+    assert.has_no.errors(function() WFI.Inspect.onPvP() end)
     assert.has_no.errors(function() _G.InspectGuildFrame_Update() end)
     assert.are.equal("ギルドメンバー 12人", _G.InspectGuildFrame.guildNumMembers:GetText())
     boot()
     loadInspect()
     _G.InspectPaperDollFrame = "InspectPaperDollFrame"
-    assert.has_no.errors(function() WFJ.Inspect.init() end)
+    assert.has_no.errors(function() WFI.Inspect.init() end)
     assert.is_nil(Stub.hooks["InspectPaperDollFrame:SetLevel"])
   end)
 
   it("without the Forever inspect frame nothing is set up (no InspectPaperDollFrame, or no frame at all)", function()
     boot()
-    assert.is_false(WFJ.Inspect.init()) -- not loaded
-    assert.is_false(WFJ.Inspect.setup()) -- no InspectFrame
+    assert.is_false(WFI.Inspect.init()) -- not loaded
+    assert.is_false(WFI.Inspect.setup()) -- no InspectFrame
     loadInspect("bare")
-    assert.is_false(WFJ.Inspect.setup())
+    assert.is_false(WFI.Inspect.setup())
     assert.is_nil(Stub.hooks["InspectPVPFrame:Update"])
     assert.is_nil(Stub.hooks["InspectGuildFrame_Update"])
   end)

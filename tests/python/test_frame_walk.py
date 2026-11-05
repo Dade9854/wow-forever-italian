@@ -17,7 +17,7 @@ def _code(line):
 
 
 def test_only_frames_lists_regions_and_children(root):
-    addon = root / "addon" / "WoWForeverJapanese"
+    addon = root / "addon" / "WoWForeverItalian"
     hits = []
     for path in sorted(addon.rglob("*.lua")):
         rel = path.relative_to(addon).as_posix()

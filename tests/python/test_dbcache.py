@@ -7,8 +7,8 @@ import pytest
 from casc_fixture import PRODUCT, build
 from db2_fixture import wdc5
 
-from wfj.dev import client_tables as cli
-from wfj.io import casc, client_tables, dbcache
+from wfi.dev import client_tables as cli
+from wfi.io import casc, client_tables, dbcache
 
 SPELLNAME_HASH = 0x46C66698  # SpellName's table hash on 1.15.9.69722
 

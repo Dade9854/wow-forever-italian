@@ -1,6 +1,6 @@
 """Manual line breaks in hand-written tooltip Japanese are joined when generated (ADR-049)."""
 
-from wfj.core import tooltip_text
+from wfi.core import tooltip_text
 
 HUMAN = {"class": "human", "translator": "t", "source": "x", "imported": "2026-01-01"}
 MACHINE = {"class": "machine", "model": "m", "source": "draft-x", "imported": "2026-01-01"}

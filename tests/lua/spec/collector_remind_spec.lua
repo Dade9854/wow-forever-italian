@@ -44,7 +44,7 @@ describe("Core/CollectorRemind.due", function()
 end)
 
 describe("Core/CollectorRemind.run", function()
-  local WFJ, R, C, printed, db
+  local WFI, R, C, printed, db
 
   local function record(n)
     for i = 1, n do C.record("quest", 1000 + i, "title", "A Quest Title " .. i) end
@@ -52,10 +52,10 @@ describe("Core/CollectorRemind.run", function()
   local function say(count) printed[#printed + 1] = count end
 
   before_each(function()
-    WFJ = load()
-    R, C = WFJ.CollectorRemind, WFJ.Collector
-    WFJ.Modifier = { setKey = function() end } -- Settings.load applies every setting, the hold key too
-    WFJ.Settings.load(nil, 1, {})
+    WFI = load()
+    R, C = WFI.CollectorRemind, WFI.Collector
+    WFI.Modifier = { setKey = function() end } -- Settings.load applies every setting, the hold key too
+    WFI.Settings.load(nil, 1, {})
     printed, db = {}, {}
   end)
 
@@ -81,9 +81,9 @@ describe("Core/CollectorRemind.run", function()
     record(9)
     assert.is_nil(R.run(db, 5 * DAY, say, false))
     record(1)
-    WFJ.Settings.set("collector.remind", false)
+    WFI.Settings.set("collector.remind", false)
     assert.is_nil(R.run(db, 5 * DAY, say, false))
-    WFJ.Settings.set("collector.remind", true)
+    WFI.Settings.set("collector.remind", true)
     on = false
     assert.is_nil(R.run(db, 5 * DAY, say, false))
     assert.are.same({}, printed)
@@ -105,7 +105,7 @@ describe("Core/CollectorRemind.run", function()
       lookup = function(kind, id) return shipped[kind] and shipped[kind][id] end }))
     record(5)
     shipped["quest.title"] = { [1001] = { ja = "x", status = ".",
-      h1 = (WFJ.Hash.h32x2(WFJ.Normalize.v1("A Quest Title 1"))) } }
+      h1 = (WFI.Hash.h32x2(WFI.Normalize.v1("A Quest Title 1"))) } }
     assert.are.equal(4, C.unsentCount())
     assert.are.equal(#C.pending(), C.unsentCount())
     assert.are.equal(4, C.status().unsent)
@@ -119,12 +119,12 @@ describe("Core/CollectorRemind.run", function()
 
   it("the setting is on by default and carries both languages", function()
     local def
-    for _, d in ipairs(WFJ.Settings.list()) do if d.id == "collector.remind" then def = d end end
+    for _, d in ipairs(WFI.Settings.list()) do if d.id == "collector.remind" then def = d end end
     assert.are.equal("boolean", def.kind)
     assert.is_true(def.default)
     assert.is_truthy(def.label:find("Remind", 1, true))
     assert.is_truthy(def.ja:find("知らせる", 1, true))
-    assert.is_true(WFJ.Settings.get("collector.remind"))
+    assert.is_true(WFI.Settings.get("collector.remind"))
   end)
 end)
 
@@ -137,17 +137,17 @@ describe("the reminder at PLAYER_ENTERING_WORLD", function()
   after_each(function() F.clear() end)
 
   local function boot(saved)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     F.install() -- the tool window templates
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI()
-    _G.WFJ_Collector = saved
-    _G.WFJ_DB = { schema = 1, settings = {} }
-    local WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    _G.WFI_Collector = saved
+    _G.WFI_DB = { schema = 1, settings = {} }
+    local WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     opened = 0
-    local open = WFJ.CollectorReminder.open
-    WFJ.CollectorReminder.open = function(count) opened = opened + 1; return open(count) end
-    return WFJ
+    local open = WFI.CollectorReminder.open
+    WFI.CollectorReminder.open = function(count) opened = opened + 1; return open(count) end
+    return WFI
   end
   local function reminders() return opened end
 
@@ -157,14 +157,14 @@ describe("the reminder at PLAYER_ENTERING_WORLD", function()
       entries["quest:" .. (3000 + i) .. ":title"] = { t = "quest", i = 3000 + i, f = "title",
         h = ("%016x"):format(i), e = "Quest " .. i, b = 1 }
     end
-    local WFJ = boot({ version = 1, builds = { "1.60.1.70205" }, entries = entries, bytes = 100, disclosed = true })
+    local WFI = boot({ version = 1, builds = { "1.60.1.70205" }, entries = entries, bytes = 100, disclosed = true })
     Stub.prints = {}
     Stub.fireAll("PLAYER_ENTERING_WORLD", false, false) -- a zone change
     assert.are.equal(0, reminders())
     Stub.fireAll("PLAYER_ENTERING_WORLD", true, false) -- login
     assert.are.equal(1, reminders())
-    assert.are.same({}, WFJ.initErrors)
-    assert.is_number(_G.WFJ_DB.collectorReminded)
+    assert.are.same({}, WFI.initErrors)
+    assert.is_number(_G.WFI_DB.collectorReminded)
     Stub.fireAll("PLAYER_ENTERING_WORLD", false, true) -- a reload the same day
     assert.are.equal(1, reminders())
   end)
@@ -185,18 +185,18 @@ end)
 describe("UI/CollectorReminder, the popup", function()
   local Stub = require("tests.lua.spec.wow_stub")
   local Loader = require("tests.lua.spec.loader")
-  local WFJ, R
+  local WFI, R
   local F = require("tests.lua.spec.stub_fixwindow")
   after_each(function() F.clear() end)
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     F.install() -- the tool window templates
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI()
-    _G.WFJ_DB = { schema = 1, settings = {} }
-    WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    R = WFJ.CollectorReminder
+    _G.WFI_DB = { schema = 1, settings = {} }
+    WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    R = WFI.CollectorReminder
   end)
 
   it("shows the count in Japanese, and English with the reveal key held", function()
@@ -205,15 +205,15 @@ describe("UI/CollectorReminder, the popup", function()
     assert.are.equal("未翻訳の英語", f.title:GetText())
     assert.is_truthy(f.saved.en:GetText():find("23", 1, true))
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.is_truthy(f.saved.en:GetText():find("collected |cffffd20023|r English lines", 1, true))
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end)
 
   it("Send closes it and opens the send window; Later closes it", function()
     local opened
-    WFJ.CollectorSendWindow.open = function(all) opened = all end
+    WFI.CollectorSendWindow.open = function(all) opened = all end
     local f = R.open(12)
     f.send.scripts.OnClick(f.send, "LeftButton")
     assert.is_false(f:IsShown())
@@ -227,10 +227,10 @@ describe("UI/CollectorReminder, the popup", function()
     local f = R.open(12)
     f.stop:SetChecked(true)
     f.stop.scripts.OnClick(f.stop)
-    assert.is_false(WFJ.Settings.get("collector.remind"))
-    assert.is_true(WFJ.Settings.get("collector.enabled"))
+    assert.is_false(WFI.Settings.get("collector.remind"))
+    assert.is_true(WFI.Settings.get("collector.enabled"))
     f.stop:SetChecked(false)
     f.stop.scripts.OnClick(f.stop)
-    assert.is_true(WFJ.Settings.get("collector.remind"))
+    assert.is_true(WFI.Settings.get("collector.remind"))
   end)
 end)

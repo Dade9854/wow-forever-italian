@@ -42,7 +42,7 @@ jobs:
       # "## Unreleased" in CHANGELOG.md; released sections stay as they were (docs/operations/release.md).
       - name: Changelog
         if: github.event_name == 'pull_request'
-        run: wfj release changelog-gate --base "origin/$BASE_REF"
+        run: wfi release changelog-gate --base "origin/$BASE_REF"
         env:
           BASE_REF: ${{ github.base_ref }}
       # Pull requests that change data/: what the English source gained, lost or changed, and which translation
@@ -55,7 +55,7 @@ jobs:
             {
               echo "## Data delta against $BASE_REF"
               echo '```'
-              wfj stats --delta "origin/$BASE_REF" || echo "(the delta could not be computed; see this step's log)"
+              wfi stats --delta "origin/$BASE_REF" || echo "(the delta could not be computed; see this step's log)"
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
           fi
@@ -103,6 +103,6 @@ jobs:
         with:
           python-version: "3.14"
       - name: Pull request text
-        run: cd pipeline && python -m wfj public-check pr
+        run: cd pipeline && python -m wfi public-check pr
         env:
           BASE_REF: ${{ github.base_ref }}

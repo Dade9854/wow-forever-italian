@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import check, import_english, served
-from wfj.cmd import import_ as imp
-from wfj.core.model import UI_FAMILIES, validate_line
-from wfj.io import client_tables, wago
-from wfj.io.jsonl_store import Store
+from wfi.cmd import check, import_english, served
+from wfi.cmd import import_ as imp
+from wfi.core.model import UI_FAMILIES, validate_line
+from wfi.io import client_tables, wago
+from wfi.io.jsonl_store import Store
 
 BUILD = "1.60.1.70170"
 TEXT_TABLES = (

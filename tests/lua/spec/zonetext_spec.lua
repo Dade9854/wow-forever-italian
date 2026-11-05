@@ -36,12 +36,12 @@ local function install()
 end
 
 describe("the zone banner's PvP line on Forever", function()
-  local WFJ
+  local WFI
   before_each(function()
     P = { zone = "Sanctuary", pvp = "sanctuary" }
-    WFJ = X.load("UI/ZoneText.lua", UI, { args = ARGS, before = install })
-    WFJ.Labels.forbidNames(WFJ.ZoneText.NEVER_TOUCH)
-    assert.is_true(WFJ.ZoneText.init())
+    WFI = X.load("UI/ZoneText.lua", UI, { args = ARGS, before = install })
+    WFI.Labels.forbidNames(WFI.ZoneText.NEVER_TOUCH)
+    assert.is_true(WFI.ZoneText.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
@@ -49,11 +49,11 @@ describe("the zone banner's PvP line on Forever", function()
     _G.SetZoneText(true)
     assert.are.equal("（聖域）", _G.PVPInfoTextString:GetText())
     assert.are.equal("Sanctuary", _G.ZoneTextString:GetText())
-    assert.is_true(X.unrecorded(WFJ, _G.ZoneTextString))
-    assert.are.equal(0, WFJ.Labels.show("zonetext", "x", _G.ZoneTextString)) -- forbidden whoever asks
-    X.alt(WFJ, true)
+    assert.is_true(X.unrecorded(WFI, _G.ZoneTextString))
+    assert.are.equal(0, WFI.Labels.show("zonetext", "x", _G.ZoneTextString)) -- forbidden whoever asks
+    X.alt(WFI, true)
     assert.are.equal("(Sanctuary)", _G.PVPInfoTextString:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     P.pvp = "contested"
     _G.SetZoneText(true)
     assert.are.equal("（紛争地域）", _G.PVPInfoTextString:GetText())
@@ -76,7 +76,7 @@ describe("the zone banner's PvP line on Forever", function()
   end)
 
   it("hooks once; a wrong-typed name and a missing frame both leave English and raise nothing", function()
-    assert.is_false(WFJ.ZoneText.init())
+    assert.is_false(WFI.ZoneText.init())
     assert.are.equal(1, #Stub.hooks["SetZoneText"])
     X.teardown(NAMES)
     local wrong = X.load("UI/ZoneText.lua", UI, { args = ARGS, before = function()

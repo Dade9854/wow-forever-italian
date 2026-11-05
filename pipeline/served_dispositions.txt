@@ -1,6 +1,6 @@
 # What each text column the client serves is (pipeline/served_columns.txt): the surface that ships it in
 # Japanese, or why it is left out. One `<table>.f<field>  <disposition>  # evidence` per column; the kinds are
-# described in pipeline/wfj/dev/served_dispositions.py. tests/python/test_served_inventory.py fails on a served
+# described in pipeline/wfi/dev/served_dispositions.py. tests/python/test_served_inventory.py fails on a served
 # column with no line here, a line for a column no longer served, and internal / no-display / covered-by
 # without evidence. Field numbers are the DB2 field index; the wago.tools column name is given where known.
 

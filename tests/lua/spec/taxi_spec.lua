@@ -25,34 +25,34 @@ local function install()
 end
 
 describe("the flight master's map on Forever", function()
-  local WFJ
+  local WFI
 
-  before_each(function() WFJ = G.load(FILES, UI) end)
+  before_each(function() WFI = G.load(FILES, UI) end)
   after_each(function() G.clear(NAMES) end)
 
   it("the title is re-shown on every show; Alt shows English; hide restores", function()
     local frame = install()
-    assert.is_true(WFJ.Taxi.init())
+    assert.is_true(WFI.Taxi.init())
     frame:Show()
     assert.are.equal("飛行マップ", frame.TitleText:GetText())
     frame:Hide()
     assert.are.equal("Flight Map", frame.TitleText:GetText())
     frame:Show()
     assert.are.equal("飛行マップ", frame.TitleText:GetText())
-    G.alt(WFJ, true)
+    G.alt(WFI, true)
     assert.are.equal("Flight Map", frame.TitleText:GetText())
   end)
 
   it("the node tooltip: 'You are here' translates; the node's name (even a dictionary word) stays English",
     function()
       install()
-      assert.is_true(WFJ.Taxi.init())
+      assert.is_true(WFI.Taxi.init())
       local button = CreateFrame("Button", "TaxiButton1")
       button.node, button.current = "World", true -- a node named like a dictionary word
       _G.TaxiNodeOnButtonEnter(button)
       assert.are.equal("World", G.line(1))
       assert.are.equal("現在地", G.line(2))
-      assert.is_false(WFJ.HelpTooltip.registered(button)) -- walked once; the owner is not left registered
+      assert.is_false(WFI.HelpTooltip.registered(button)) -- walked once; the owner is not left registered
       _G.TaxiButton1 = nil
     end)
 
@@ -60,13 +60,13 @@ describe("the flight master's map on Forever", function()
     local frame = install()
     _G.TaxiNodeOnButtonEnter = 4
     frame.TitleText = "x"
-    assert.has_no.errors(function() assert.is_true(WFJ.Taxi.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Taxi.init()) end)
     assert.has_no.errors(function() frame:Show() end)
-    assert.is_false(WFJ.Taxi.init())
+    assert.is_false(WFI.Taxi.init())
   end)
 
   it("no TaxiFrame: init is false and nothing is touched", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.Taxi.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Taxi.init()) end)
     assert.is_nil(Stub.hooks["TaxiNodeOnButtonEnter"])
   end)
 end)

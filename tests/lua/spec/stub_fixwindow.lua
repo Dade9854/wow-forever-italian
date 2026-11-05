@@ -169,8 +169,8 @@ function F.clear()
   for _, name in ipairs({ "CreateScrollBoxListLinearView", "CreateDataProvider", "ScrollBoxConstants",
       "ButtonFrameTemplate_HidePortrait",
       "CreateFramePool", "UISpecialFrames", "time", "UIParent", "Minimap", "GetCursorPosition",
-      "MenuUtil", "WFJFixWindow",
-      "WFJMinimapButton", "WFJMinimapButtonIcon", "WFJMinimapTooltip" }) do
+      "MenuUtil", "WFIFixWindow",
+      "WFIMinimapButton", "WFIMinimapButtonIcon", "WFIMinimapTooltip" }) do
     _G[name] = nil
   end
 end

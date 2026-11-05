@@ -1,12 +1,12 @@
 # ADR-045: Player fix reports: from the game to data/ through a pasted report
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/Core/RecentLines.lua`,
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/Core/RecentLines.lua`,
   `Core/Reports.lua`, `Core/ReportText.lua`, `UI/FixWindow.lua`, `UI/MinimapButton.lua`, `UI/Render.lua` (the
   `noteRecent` hook), `UI/OptionsWidgets.lua` (`W.scrollList` / `W.scrollText`, the one-language `W.pick` / `W.relabel`), `UI/OptionsText.lua`,
   `UI/Options.lua`, `UI/Slash.lua`, `Core/Settings.lua` (`minimapButton`), `Main.lua` (the addon-dropdown handlers),
-  the TOC (`AddonCompartmentFunc` lines); `pipeline/wfj/core/fix_report.py`, `pipeline/wfj/cmd/fix_report.py`
-  (`wfj report check|intake|apply`), `pipeline/wfj/core/model.py` (`report` / `model` provenance),
-  `pipeline/wfj/dev/gen_attribution.py` (Correctors), `pipeline/wfj/dev/gen_report_vectors.py`,
+  the TOC (`AddonCompartmentFunc` lines); `pipeline/wfi/core/fix_report.py`, `pipeline/wfi/cmd/fix_report.py`
+  (`wfi report check|intake|apply`), `pipeline/wfi/core/model.py` (`report` / `model` provenance),
+  `pipeline/wfi/dev/gen_attribution.py` (Correctors), `pipeline/wfi/dev/gen_report_vectors.py`,
   `vectors/report_vectors.{jsonl,lua}`,
   `.github/ISSUE_TEMPLATE/translation-report.yml`, `.github/workflows/report-check.yml`, `Makefile`
   (`report-intake`, `report-apply`).
@@ -36,7 +36,7 @@ Constraints:
    minimap (the TOC's `AddonCompartmentFunc`), with the same two clicks, so hiding the button never locks the player
    out. Nothing is added to Blizzard's game frames; the fix window is a tool window the player opens.
 2. **Clicks only; typing optional.** Opening the window, picking a line, picking a reason, saving and copying are
-   all clicks. The optional note and the optional Japanese are the only boxes that take typing. `/wfj fix` and an
+   all clicks. The optional note and the optional Japanese are the only boxes that take typing. `/wfi fix` and an
    About-page button are further ways in, never the only one.
 3. **One language at a time.** The fix window, the button's tooltip and its menu, the settings pages and the AddOn
    List tooltip show the addon's own copy (`UI/OptionsText`) in Japanese; when translation is off or while the reveal key (default Alt) is held
@@ -68,7 +68,7 @@ Constraints:
    (ui), each capped at 100 on its own, so a window full of labels never pushes quest lines out; the list filters by
    group (All first and the default, then Quests & NPCs, Tooltips, Windows). Lines one surface writes within 1 second of each other are one burst; the list
    shows the newest burst first and each burst in written order, the on-screen order.
-6. **Report grammar, version 1.** A plain-text block framed so a cut paste is detectable: `WFJ-REPORT 1`, an
+6. **Report grammar, version 1.** A plain-text block framed so a cut paste is detectable: `WFI-REPORT 1`, an
    `addon … client …` line, one `fix <type> <id> <field> <ja_hash> <reason>` line per fix with optional `note` and
    `ja` lines, and `end <count>`. A report holds at most 25 fixes, the number the addon keeps; the parser refuses
    more. The grammar is in [Fix reports](../systems/fix-reports.md); the Lua serializer and
@@ -79,7 +79,7 @@ Constraints:
 7. **GitHub side.** An issue form (`translation-report`) takes the report (required), an optional "Credit me as" and
    a required licence consent. The `report-check` workflow (read-only by default; its one job gets `contents: read`,
    `issues: write`, the one exception to [ADR-046](046-one-action-release.md) §6's "the release job alone writes",
-   limited to the issue it reads, never contents; its actions pinned to commits like every workflow's) runs `wfj report
+   limited to the issue it reads, never contents; its actions pinned to commits like every workflow's) runs `wfi report
    check` on the body when an issue with that label is opened or edited, writes a summary as its one comment on the
    issue (an edit of the issue rewrites that comment) and labels `report-ok` or `report-broken`. **It only checks the paste** (that it reads, that each fix names a real line, and whether a line
    changed since), never whether a translation is right. The body reaches the parser through an env var and a file,
@@ -129,7 +129,7 @@ Constraints:
   misapplied. A cut paste is caught by the workflow within a minute, before the maintainer looks.
 - From issue to PR is one intake command, one drafting pass and one apply command; readings and meanings of the
   changed lines never go stale.
-- The addon writes `WFJ_DB.reports` (at most 25 pending fixes) and `WFJ_DB.minimap.angle`, both created only when
+- The addon writes `WFI_DB.reports` (at most 25 pending fixes) and `WFI_DB.minimap.angle`, both created only when
   first used; older versions ignore both.
 - A player's poor or hostile Japanese never ships unjudged: the drafting pass reads each against the English and the
   style guide, `keep` / `rewrite` are allowed, and nothing ships before the maintainer's merge.

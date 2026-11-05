@@ -36,18 +36,18 @@ local function row(f, text)
 end
 
 describe("the Event Log's message rows and tooltip", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end)
 
   after_each(function()
@@ -58,7 +58,7 @@ describe("the Event Log's message rows and tooltip", function()
 
   it("a message row's text is Japanese with its id, dashes and colours kept; Alt shows English", function()
     local f = install()
-    assert.is_true(WFJ.EventTrace.init())
+    assert.is_true(WFI.EventTrace.init())
     local r = row(f, line("001", "Log started"))
     assert.are.equal(line("001", "ログ開始"), r.LeftLabel:GetText())
     local m = row(f, line("002", "Marker"))
@@ -75,7 +75,7 @@ describe("the Event Log's message rows and tooltip", function()
 
   it("EventTraceTooltip: the timestamp and argument labels translate; the event name and values stay", function()
     install()
-    WFJ.EventTrace.init()
+    WFI.EventTrace.init()
     local tt = _G.EventTraceTooltip
     tt:SetOwner(_G.EventTrace)
     tt:ClearLines()

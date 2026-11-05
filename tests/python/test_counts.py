@@ -3,7 +3,7 @@
 import sqlite3
 from pathlib import Path
 
-from wfj.dev import counts, letter_pages
+from wfi.dev import counts, letter_pages
 
 
 def test_the_readme_and_curseforge_counts_are_current(root: Path):

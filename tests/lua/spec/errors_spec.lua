@@ -83,10 +83,10 @@ local function install()
 end
 
 describe("the UI errors frame", function()
-  local WFJ
+  local WFI
   before_each(function()
-    WFJ = X.load("UI/Errors.lua", UI, { before = install })
-    assert.is_true(WFJ.Errors.init())
+    WFI = X.load("UI/Errors.lua", UI, { before = install })
+    assert.is_true(WFI.Errors.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
@@ -105,13 +105,13 @@ describe("the UI errors frame", function()
       -- AddMessage still names the previous line of that id; the new line is the id's only on the next frame
       local f, queue, next = _G.UIErrorsFrame, {}, {}
       _G.C_Timer = { After = function(_, fn) queue[#queue + 1] = fn end }
-      WFJ.Compat.declare(WFJ.Errors.SURFACE, "timer", { "C_Timer" }) -- resolved again, now with the timer
+      WFI.Compat.declare(WFI.Errors.SURFACE, "timer", { "C_Timer" }) -- resolved again, now with the timer
       function f:AddMessage(text, _, _, _, _, id)
         local fs = Stub.fontString(text)
         self.order[#self.order + 1] = fs
         if id then next[id] = fs end
       end
-      hooksecurefunc(f, "AddMessage", WFJ.Errors.onAddMessage) -- this frame's AddMessage, hooked as init does
+      hooksecurefunc(f, "AddMessage", WFI.Errors.onAddMessage) -- this frame's AddMessage, hooked as init does
       local function frame()
         for id, fs in pairs(next) do f.lines[id] = fs end
         next = {}
@@ -129,10 +129,10 @@ describe("the UI errors frame", function()
       assert.are.equal("バッグがいっぱいです。", f.order[2]:GetText())
       assert.are.equal("バッグがいっぱいです。", f.order[3]:GetText())
       Stub.keys.alt = true
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       for i = 1, 3 do assert.are.equal("Inventory is full.", f.order[i]:GetText()) end -- a record per line
       Stub.keys.alt = false
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
     end)
 
   it("text that is neither the key's English nor an exact dictionary English stays as written",
@@ -140,7 +140,7 @@ describe("the UI errors frame", function()
       local f = _G.UIErrorsFrame
       f:TryDisplayMessage(6, "You are facing the wrong way!") -- a key with no Japanese, and no entry has that English
       assert.are.equal("You are facing the wrong way!", f.lines[6]:GetText())
-      assert.is_true(X.unrecorded(WFJ, f.lines[6]))
+      assert.is_true(X.unrecorded(WFI, f.lines[6]))
       f:TryDisplayMessage(99, "Some other addon's line") -- GetGameMessageInfo → nil, not an entry
       assert.are.equal("Some other addon's line", f.lines[99]:GetText())
       f:TryDisplayMessage(1, "Out of range for real") -- under the range id, not its English, not an entry
@@ -162,9 +162,9 @@ describe("the UI errors frame", function()
       assert.are.equal("Some other addon's line", f.order[#f.order]:GetText())
       f:AddMessage("Kobold Vermin slain: 1/2", 1, 1, 0, 1) -- an error template, not a Lua one: never tried here
       assert.are.equal("Kobold Vermin slain: 1/2", f.order[#f.order]:GetText())
-      X.alt(WFJ, true)
+      X.alt(WFI, true)
       assert.are.equal("Inventory is full.", f.order[1]:GetText())
-      X.alt(WFJ, false)
+      X.alt(WFI, false)
       assert.are.equal("バッグがいっぱいです。", f.order[1]:GetText())
     end)
 
@@ -177,9 +177,9 @@ describe("the UI errors frame", function()
     assert.are.equal("先に入場資格を得る必要があります。", f.lines[99]:GetText())
     f:TryDisplayMessage(5, "You must complete the attunement first.") -- the pass-through wrapper's id
     assert.are.equal("先に入場資格を得る必要があります。", f.lines[5]:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("You must be level 45 to enter Molten Core.", f.order[1]:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     assert.are.equal("モルテン・コアに入るにはレベル45が必要です。", f.order[1]:GetText())
     f:AddMessage("Out of Range", 1, 0.1, 0.1, 1)
     assert.are.equal("Out of Range", f.order[#f.order]:GetText())
@@ -217,9 +217,9 @@ describe("the UI errors frame", function()
 
   it("the modifier shows the live English; releasing it shows the Japanese", function()
     _G.UIErrorsFrame:TryDisplayMessage(1, "Out of range.")
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Out of range.", _G.UIErrorsFrame.lines[1]:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     assert.are.equal("範囲外です。", _G.UIErrorsFrame.lines[1]:GetText())
   end)
 
@@ -239,7 +239,7 @@ describe("the UI errors frame", function()
       assert.are.equal(3, f.sounds)
       assert.are.equal("マナが足りません", f.lines[2]:GetText())
       -- with the modifier held the line is English, and the client's own comparison already holds
-      X.alt(WFJ, true)
+      X.alt(WFI, true)
       f:TryDisplayMessage(1, "Out of range.")
       assert.are.equal("Out of range.", f.lines[1]:GetText())
       assert.are.equal(3, f.flashed)
@@ -255,7 +255,7 @@ describe("the UI errors frame", function()
 
   it("an id GetGameMessageInfo raises on is taken as an unresolved id", function()
     _G.GetGameMessageInfo = function(id) if id == 9 then error("bad id") end return IDS[id] end
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI.Compat.init(function(name) return _G[name] end)
     assert.has_no.errors(function() _G.UIErrorsFrame:AddMessage("Some other addon's line", 1, 0, 0, 1, 9) end)
     assert.are.equal("Some other addon's line", _G.UIErrorsFrame.lines[9]:GetText())
     _G.UIErrorsFrame:AddMessage("Out of range.", 1, 0, 0, 1, 9)
@@ -263,55 +263,55 @@ describe("the UI errors frame", function()
   end)
 
   it("init hooks once; no frame or no GetGameMessageInfo → false", function()
-    assert.is_false(WFJ.Errors.init())
+    assert.is_false(WFI.Errors.init())
     _G.UIErrorsFrame:TryDisplayMessage(1, "Out of range.")
     assert.are.equal(1, _G.UIErrorsFrame.lines[1].calls.addonSetText) -- one hook, one write
     X.teardown(NAMES)
-    WFJ = X.load("UI/Errors.lua", UI)
-    assert.is_false(WFJ.Errors.init())
+    WFI = X.load("UI/Errors.lua", UI)
+    assert.is_false(WFI.Errors.init())
     _G.UIErrorsFrame = { AddMessage = function() end }
-    WFJ = X.load("UI/Errors.lua", UI, { before = function() _G.UIErrorsFrame = { AddMessage = function() end } end })
-    assert.is_false(WFJ.Errors.init()) -- GetGameMessageInfo missing
+    WFI = X.load("UI/Errors.lua", UI, { before = function() _G.UIErrorsFrame = { AddMessage = function() end } end })
+    assert.is_false(WFI.Errors.init()) -- GetGameMessageInfo missing
   end)
 
   it("a wrong-typed call raises nothing", function()
     assert.has_no.errors(function()
-      WFJ.Errors.onAddMessage(nil)
-      WFJ.Errors.onAddMessage(_G.UIErrorsFrame, "x", 1, 1, 1, 1, "id")
-      WFJ.Errors.onAddMessage({}, "x", 1, 1, 1, 1, 1)
+      WFI.Errors.onAddMessage(nil)
+      WFI.Errors.onAddMessage(_G.UIErrorsFrame, "x", 1, 1, 1, 1, "id")
+      WFI.Errors.onAddMessage({}, "x", 1, 1, 1, 1, 1)
     end)
   end)
 end)
 
 describe("the error keys in the UI index", function()
-  local WFJ
-  before_each(function() WFJ = X.load("UI/Errors.lua", UI, { before = install }) end)
+  local WFI
+  before_each(function() WFI = X.load("UI/Errors.lua", UI, { before = install }) end)
   after_each(function() X.teardown(NAMES) end)
 
   it("an undeclared error template is matched only by key, its %s as text", function()
-    assert.is_nil((WFJ.UIIndex:match("Kobold Vermin slain: 3/10")))
-    local key, args = WFJ.UIIndex:matchOnly("Kobold Vermin slain: 3/10", { "ERR_QUEST_ADD_KILL_SII" })
+    assert.is_nil((WFI.UIIndex:match("Kobold Vermin slain: 3/10")))
+    local key, args = WFI.UIIndex:matchOnly("Kobold Vermin slain: 3/10", { "ERR_QUEST_ADD_KILL_SII" })
     assert.are.equal("ERR_QUEST_ADD_KILL_SII", key)
     assert.are.equal("Kobold Vermin", args[1])
-    assert.are.equal("text", WFJ.UIStrings.argKinds("SPELL_FAILED_ANYTHING")[1])
-    assert.is_nil(WFJ.UIStrings.argKinds("QUEST_MONSTERS_KILLED_ANYTHING"))
+    assert.are.equal("text", WFI.UIStrings.argKinds("SPELL_FAILED_ANYTHING")[1])
+    assert.is_nil(WFI.UIStrings.argKinds("QUEST_MONSTERS_KILLED_ANYTHING"))
   end)
 
   it("a declared error key is still matched only by key, unless it is one of the shared ones", function()
-    assert.is_nil((WFJ.UIIndex:match("Can't attack while Stunned.")))
-    assert.is_true(WFJ.UIStrings.keyOnly("ERR_ATTACK_PREVENTED_BY_MECHANIC_S"))
-    assert.is_false(WFJ.UIStrings.keyOnly("ERR_USE_LOCKED_WITH_ITEM_S"))
+    assert.is_nil((WFI.UIIndex:match("Can't attack while Stunned.")))
+    assert.is_true(WFI.UIStrings.keyOnly("ERR_ATTACK_PREVENTED_BY_MECHANIC_S"))
+    assert.is_false(WFI.UIStrings.keyOnly("ERR_USE_LOCKED_WITH_ITEM_S"))
   end)
 
   it("a declared error key keeps its kinds and its unrestricted match", function()
-    local key, args = WFJ.UIIndex:match("Your Guild has been flagged for a rename.")
+    local key, args = WFI.UIIndex:match("Your Guild has been flagged for a rename.")
     assert.are.equal("ERR_CLUB_FINDER_ERROR_TYPE_FLAGGED_RENAME", key)
-    assert.are.equal("あなたのギルドは改名が必要です。", WFJ.UIIndex:fill(WFJ.UIIndex.rows[key][1], args))
-    assert.is_nil((WFJ.UIIndex:match("Your Kobold has been flagged for a rename."))) -- `word`: an entry only
+    assert.are.equal("あなたのギルドは改名が必要です。", WFI.UIIndex:fill(WFI.UIIndex.rows[key][1], args))
+    assert.is_nil((WFI.UIIndex:match("Your Kobold has been flagged for a rename."))) -- `word`: an entry only
     -- "Requires %s" sorts under ERR_USE_LOCKED_WITH_ITEM_S now; it carries ITEM_REQ_SKILL's `skill`, unrestricted
-    key, args = WFJ.UIIndex:match("Requires Herbalism")
+    key, args = WFI.UIIndex:match("Requires Herbalism")
     assert.is_not_nil(key)
-    assert.are.equal("Herbalismが必要", WFJ.UIIndex:fill(WFJ.UIIndex.rows[key][1], args))
-    assert.is_nil((WFJ.UIIndex:match("Requires Level 40")))
+    assert.are.equal("Herbalismが必要", WFI.UIIndex:fill(WFI.UIIndex.rows[key][1], args))
+    assert.is_nil((WFI.UIIndex:match("Requires Level 40")))
   end)
 end)

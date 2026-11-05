@@ -42,14 +42,14 @@ local function install()
 end
 
 describe("UI/FriendsTooltip: the friends list's zone / realm line", function()
-  local WFJ, enter
+  local WFI, enter
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     enter = install()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_true(WFJ.FriendsTooltip.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_true(WFI.FriendsTooltip.init())
   end)
 
   after_each(function() H.uiTeardown() end)
@@ -63,7 +63,7 @@ describe("UI/FriendsTooltip: the friends list's zone / realm line", function()
     assert.is_truthy(line:GetText():find("Durotar", 1, true))
     assert.is_truthy(line:GetText():find("ゾーン", 1, true))
     tip:Hide()
-    assert.are.equal(0, WFJ.SurfaceState.count(WFJ.FriendsTooltip.SURFACE))
+    assert.are.equal(0, WFI.SurfaceState.count(WFI.FriendsTooltip.SURFACE))
   end)
 
   it("a line that is not the zone / realm line (a character's rich presence) stays as written", function()

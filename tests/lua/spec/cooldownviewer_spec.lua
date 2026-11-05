@@ -54,11 +54,11 @@ local function ja(key) return UI[key][2] end
 local function en(key) return UI[key][1] end
 
 describe("the Cooldown Settings window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -97,11 +97,11 @@ describe("the Cooldown Settings window on Forever", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     CV.install()
-    WFJ = load()
-    SS = WFJ.SurfaceState
+    WFI = load()
+    SS = WFI.SurfaceState
     -- H.uiSetup sets the English globals, which the replayed OnLoad reads: install again now that they exist
     CV.uninstall()
     CV.install()
@@ -110,8 +110,8 @@ describe("the Cooldown Settings window on Forever", function()
       { title = en("COOLDOWN_VIEWER_SETTINGS_CATEGORY_EQUIP_ACTIVE"), items = {} },
       { title = en("COOLDOWN_VIEWER_SETTINGS_CATEGORY_NOT_IN_BAR"), items = {} },
     }
-    WFJ.Labels.forbidNames(WFJ.CooldownViewer.NEVER_TOUCH)
-    assert.is_true(WFJ.CooldownViewer.init())
+    WFI.Labels.forbidNames(WFI.CooldownViewer.NEVER_TOUCH)
+    assert.is_true(WFI.CooldownViewer.init())
   end)
 
   after_each(function()
@@ -142,10 +142,10 @@ describe("the Cooldown Settings window on Forever", function()
     alt(false)
     -- the client's formatter runs again (a disable: OnDisable → RunCustomTextFormatter), the other atlas
     undo:SetText("Revert |A:common-icon-undo-disable:0:0|a")
-    WFJ.CooldownViewer.onUndoText()
+    WFI.CooldownViewer.onUndoText()
     assert.are.equal("元に戻す |A:common-icon-undo-disable:0:0|a", undo:GetText())
-    assert.is_true(WFJ.Labels.forbidden(settings().LayoutDropdown.Text))
-    assert.is_true(WFJ.Labels.forbidden(settings().SearchBox))
+    assert.is_true(WFI.Labels.forbidden(settings().LayoutDropdown.Text))
+    assert.is_true(WFI.Labels.forbidden(settings().SearchBox))
   end)
 
   it("RefreshLayout: the pooled category headers render, keyed by widget, and follow a reshuffled pool", function()
@@ -239,7 +239,7 @@ describe("the Cooldown Settings window on Forever", function()
     assert.are.equal("Error", a.PayloadDropdown.Text:GetText()) -- a sound's name, a dictionary word elsewhere
     assert.are.equal("Flash", a.Name:GetText()) -- a spell's name that is also a visual alert's label
     assert.is_true(unrecorded(a.Name))
-    assert.is_true(WFJ.Labels.forbidden(a.Name))
+    assert.is_true(WFI.Labels.forbidden(a.Name))
     -- the player picks Visual, then an event: the client reruns SetupDropdowns / UpdateText
     CV.alert = { type = "visual", event = en("COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_ON_COOLDOWN"),
       payload = en("CDMVIS_FLASH_BLUE") }
@@ -309,9 +309,9 @@ describe("the Cooldown Settings window on Forever", function()
   end)
 
   it("hooks install once; a client without the window is skipped without error", function()
-    assert.is_false(WFJ.CooldownViewer.init())
+    assert.is_false(WFI.CooldownViewer.init())
     assert.are.equal(1, #Stub.hooks["CooldownViewerSettings:RefreshLayout"])
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     CV.uninstall()
     local bare = load()

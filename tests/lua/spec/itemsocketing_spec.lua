@@ -39,13 +39,13 @@ C.suite(getfenv(1), {
   file = "UI/ItemSocketing.lua", addon = "Blizzard_ItemSocketingUI", root = "ItemSocketingFrame", ui = UI,
   build = build, globals = { "ItemSocketingFrame", "ItemSocketingDescriptionTextLeft1" },
   cases = {
-    { "the unnamed title and the apply button are Japanese; Alt shows English", function(frame, WFJ)
+    { "the unnamed title and the apply button are Japanese; Alt shows English", function(frame, WFI)
       frame:Show()
       assert.are.equal("ソケット装着", title(frame):GetText())
       assert.are.equal("適用", frame.SocketingContainer.ApplySocketsButton:GetText())
-      C.alt(WFJ, true)
+      C.alt(WFI, true)
       assert.are.equal("Item Socketing", title(frame):GetText())
-      C.alt(WFJ, false)
+      C.alt(WFI, false)
     end },
     { "the colour-blind socket words follow the container's Update, keyed by widget; hide releases them",
       function(frame)
@@ -63,12 +63,12 @@ C.suite(getfenv(1), {
         assert.are.equal("Prismatic", a:GetText())
       end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Show()
     local line = _G.ItemSocketingDescriptionTextLeft1
     assert.are.equal("Apply", line:GetText())
-    assert.are.equal(0, WFJ.Labels.show("itemsocketing", "x", line))
-    assert.is_true(C.unrecorded(WFJ, line))
+    assert.are.equal(0, WFI.Labels.show("itemsocketing", "x", line))
+    assert.is_true(C.unrecorded(WFI, line))
   end,
   wrong = function(frame)
     frame.SocketingContainer.SocketFrames = "sockets"

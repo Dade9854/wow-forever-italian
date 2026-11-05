@@ -6,10 +6,10 @@
   lines, the SocialUI card view and composite lines. Each needs a final disposition: listed with the surface and form
   that shows it, or excluded with a true `permanent:` reason. Which, and what has to be built?
 - **Client:** World of Warcraft: Forever beta, UI extract and GlobalStrings at build **1.60.1.69913**. The camelot
-  load set is the one `python -m wfj.dev.client_addons --files` reads from the client's own TOCs (3,228 files of the
+  load set is the one `python -m wfi.dev.client_addons --files` reads from the client's own TOCs (3,228 files of the
   `login` / `lod` addons).
 - **Citations:** `path:line`, paths relative to the extract's `interface/addons/` root, lowercased as extracted,
-  unless they are repo paths (`UI/…`, `Core/…` under `addon/WoWForeverJapanese/`; `pipeline/…`). The extract is not
+  unless they are repo paths (`UI/…`, `Core/…` under `addon/WoWForeverItalian/`; `pipeline/…`). The extract is not
   committed; short quotations from it are.
 - **Decisions:** [ADR-038](../adr/038-menus-callouts-and-composite-forms.md).
 
@@ -69,7 +69,7 @@ is H, including the ones that also carry markup. The counts are the table's:
 
 ## Disposition table
 
-One row per key. `surface / form`: for `list`, the owning file(s) under `addon/WoWForeverJapanese/` and the form (an
+One row per key. `surface / form`: for `list`, the owning file(s) under `addon/WoWForeverItalian/` and the form (an
 existing one: `exact`, `template` with its `ARGS` kinds, `wrapped`, `binding`, `colon`, `colonPrefix`, `icon`,
 `prefix`, an `entry` / `words` argument of another key; or a new one from "Forms and hooks"); for `permanent`, the
 exact reason in `pipeline/ui_exclusions.txt`. `[in-game: …]` marks a reachability check. A `|` inside a cell is
@@ -509,7 +509,7 @@ written `\|` (unescape it when reading the table).
 | ABSORB_TRAILER | V | list | UI/CombatText.lua AddMessage hook · the `affix` form (CombatText.TRAILERS), the existing line kept | blizzard_combattext/shared/combattext.lua:166–182 |
 | ACHIEVEMENTS_COMPLETED_CATEGORY | V | list | UI/Achievement.lua comparison status bar title (post-hook) · template ARGS {[1] = text} [in-game: achievements game rule] | blizzard_achievementui/mainline/blizzard_achievementui.lua:880–892 |
 | ACHIEVEMENT_META_COMPLETED_DATE | V | list | UI/Achievement.lua meta-criteria owners · template ARGS {[1] = text} (FormatShortDate kept) [in-game: achievements game rule] | blizzard_achievementui/mainline/blizzard_achievementui.lua:2772–2779 |
-| ACTION_SWING | V | permanent | permanent: shown only as the label of an \|Haction link (TEXT_MODE_A_STRING_ACTION "\|Haction:%s\|h%s\|h", blizzard_deathrecap/mainline/blizzard_deathrecap.lua:106–147); a link label is never translated: the whole \|H…\|h…\|h link is one verbatim markup token (pipeline/wfj/core/markup.py; ADR-031 §4) | blizzard_deathrecap/mainline/blizzard_deathrecap.lua:106–147 |
+| ACTION_SWING | V | permanent | permanent: shown only as the label of an \|Haction link (TEXT_MODE_A_STRING_ACTION "\|Haction:%s\|h%s\|h", blizzard_deathrecap/mainline/blizzard_deathrecap.lua:106–147); a link label is never translated: the whole \|H…\|h…\|h link is one verbatim markup token (pipeline/wfi/core/markup.py; ADR-031 §4) | blizzard_deathrecap/mainline/blizzard_deathrecap.lua:106–147 |
 | ALREADY_FRIEND_FMT | V | list | UI/Menus.lua TAGS MENU_PROFESSIONS_CUSTOMER_ORDER_FORM tooltips · template ARGS {[1] = text} [in-game: crafting orders] | blizzard_professionscustomerorders/blizzard_professionscustomerordersform.lua:286 |
 | ALSO_QUEUED_FOR | V | permanent | permanent: not displayed on Forever: a Raid Finder queue line (LE_LFG_CATEGORY_RF, blizzard_queuestatusframe/mainline/queuestatusframe.lua:914–917); the dungeon finder (Blizzard_GroupFinder) is not loaded on camelot, which opens the Vanilla-style listing finder (blizzard_queuestatusframe/camelot/queuestatusframeoverrides.lua:3–11) | blizzard_queuestatusframe/mainline/queuestatusframe.lua:914–917 |
 | ARCANE_CHARGES | V | permanent | permanent: not displayed on Forever: a class power no Forever class has; combat text names it only in its energize branch (blizzard_combattext/shared/combattext.lua:199–211) and camelot excludes its power bar (blizzard_unitframe/blizzard_unitframe.toc:112–113 ExcludeLoadGameType camelot) | blizzard_combattext/shared/combattext.lua:199–211 |
@@ -895,7 +895,7 @@ forms that go through `Labels.show` (menus, tooltips, labels) live in `Core/UISt
 
 - **Shape:** `|A…|a` counted as one verbatim token (a Japanese that drops or changes it is `markup_changed`); the listing ban (`test_ui_keys.py:118–123`) lifted. `|cnNAME:` counted as an opener too (the 8 rows marked "|cn markup counted", and 31 shipped lines).
 - **Keys (2):** `HUD_EDIT_MODE_COLLAPSE_OPTIONS`, `HUD_EDIT_MODE_EXPAND_OPTIONS`
-- **Owner:** pipeline/wfj/core/markup.py, tests/python/test_ui_keys.py
+- **Owner:** pipeline/wfi/core/markup.py, tests/python/test_ui_keys.py
 - **Source:** blizzard_editmode/shared/editmodemanager.lua:2916–2918
 
 ### `static_links`

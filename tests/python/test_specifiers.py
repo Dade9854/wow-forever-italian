@@ -2,7 +2,7 @@
 
 import pytest
 
-from wfj.core import specifiers
+from wfi.core import specifiers
 
 
 def test_parse_plain_positional_and_literal_percent():

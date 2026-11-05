@@ -3,9 +3,9 @@ variants, each renumbered to its own reading order, with its shape; every other 
 
 import pytest
 
-from wfj.cmd import generate
-from wfj.emit import lua_writer
-from wfj.io.jsonl_store import Store
+from wfi.cmd import generate
+from wfi.emit import lua_writer
+from wfi.io.jsonl_store import Store
 
 SRC = "db2@1.60.1.70009"
 EN = "Absorbs $s1 Fire damage$?s11094[ and grants a $s2% chance to reflect Fire spells][]. Lasts $d."
@@ -85,7 +85,7 @@ def test_a_keyed_line_ships_its_keys_and_an_expandkey_line_both_variants(root):
          "en": "You have $sk43/$<sc> skill in $@spellname1296663.\r\n$@expandkey[\r\nLevel ${$PL+1}: ${$<hdp1>}%\r\n]"},
         {"id": 1296663, "field": "name", "hash": "0123456789abcdef", "src": SRC, "en": "Swords"},
     ])
-    from wfj.core import align
+    from wfi.core import align
     keyed = _line("$?s436895[与える全てのダメージが$N1%増加する。][与えるダメージが$N2%増加する。]", 16902)
     table = _line("Swordsのスキルは$N1/$N2。\r\n$?expandkey[\r\nレベル$N3：$N4%\r\n][]", 1296663)
     word = _line("$?a1[$zへ戻る。][家へ戻る。]", 9)

@@ -1,16 +1,16 @@
-"""`wfj import english served` drops English for ids the target client (Forever) does not serve."""
+"""`wfi import english served` drops English for ids the target client (Forever) does not serve."""
 
 import shutil
 from pathlib import Path
 
 import pytest
 
-from wfj.cmd.import_ import run
-from wfj.core.hashing import key
-from wfj.core.model import english_line, entry
-from wfj.core.normalize import normalize_v1
-from wfj.io import wago
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.core.hashing import key
+from wfi.core.model import english_line, entry
+from wfi.core.normalize import normalize_v1
+from wfi.io import wago
+from wfi.io.jsonl_store import Store
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 FOREVER_WDB = FIXTURES / "wdb-forever" / "questcache.wdb"  # build 69913: quests 1665 …, objective 465191 (92596)

@@ -140,11 +140,11 @@ local function loadAchievementUI()
 end
 
 describe("the achievement window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -157,22 +157,22 @@ describe("the achievement window on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
     load()
     if loadedFirst then
       loadAchievementUI()
-      assert.is_true(WFJ.Achievement.init())
+      assert.is_true(WFI.Achievement.init())
     else
-      assert.is_false(WFJ.Achievement.init()) -- waits for the addon
+      assert.is_false(WFI.Achievement.init()) -- waits for the addon
       loadAchievementUI()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -299,7 +299,7 @@ describe("the achievement window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.Achievement.setup())
+    assert.is_false(WFI.Achievement.setup())
     assert.are.equal(1, #Stub.hooks["AchievementFrame_RefreshView"])
     assert.are.equal(1, #Stub.hooks["AchievementFrameCategories_OnCategoryChanged"])
     assert.are.equal(1, #_G.AchievementFrameAchievements.ScrollBox.initCallbacks)
@@ -313,11 +313,11 @@ describe("the achievement window on Forever", function()
     _G.AchievementFrameTab1 = true
     _G.AchievementFrame_RefreshView = "nope"
     _G.AchievementFrameCategories.ScrollBox = false
-    assert.has_no.errors(function() assert.is_true(WFJ.Achievement.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Achievement.init()) end)
     assert.are.equal("ギルド", _G.AchievementFrameTab2:GetText()) -- the rest still works
     assert.has_no.errors(function()
-      WFJ.Achievement.onAchievement({ Tracked = 1, Shield = "x" })
-      WFJ.Achievement.onCategory({ Button = 7 })
+      WFI.Achievement.onAchievement({ Tracked = 1, Shield = "x" })
+      WFI.Achievement.onCategory({ Button = 7 })
     end)
   end)
 
@@ -325,10 +325,10 @@ describe("the achievement window on Forever", function()
     load()
     local before = 0
     for _ in pairs(Stub.hooks) do before = before + 1 end
-    assert.is_false(WFJ.Achievement.init())
+    assert.is_false(WFI.Achievement.init())
     Stub.loadedAddons[ADDON] = true -- the addon name loaded, but no AchievementFrame
-    assert.is_false(WFJ.Achievement.init())
-    assert.is_false(WFJ.Achievement.setup())
+    assert.is_false(WFI.Achievement.init())
+    assert.is_false(WFI.Achievement.setup())
     local after = 0
     for _ in pairs(Stub.hooks) do after = after + 1 end
     assert.are.equal(before, after)
@@ -341,7 +341,7 @@ end)
 -- (AchievementStatTemplateMixin:Init, lua:2339–2400), the comparison rows (lua:2909–2911), the summary category bars
 -- (lua:2490–2495) and a meta criteria's Label (lua:2124). A name that is no row of the family stays English.
 describe("the achievement window's client-table text on Forever", function()
-  local WFJ, SS, frames
+  local WFI, SS, frames
 
   local ROWS = {}
   for k, v in pairs(UI) do ROWS[k] = v end
@@ -355,7 +355,7 @@ describe("the achievement window's client-table text on Forever", function()
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
   local function unrecorded(widget)
     for _, bucket in pairs(SS.surfaces()) do
@@ -400,14 +400,14 @@ describe("the achievement window's client-table text on Forever", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, ROWS)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, ROWS)
     loadAchievementUI()
     frames = addClientTableFrames()
-    assert.is_true(WFJ.Achievement.init())
+    assert.is_true(WFI.Achievement.init())
   end)
 
   after_each(function()

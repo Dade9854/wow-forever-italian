@@ -114,17 +114,17 @@ local TOC_ORDER = {}
 for _, f in ipairs(HEAD) do TOC_ORDER[#TOC_ORDER + 1] = f end
 for _, f in ipairs(TAIL) do TOC_ORDER[#TOC_ORDER + 1] = f end
 
-describe("addon loads in TOC order and answers /wfj version", function()
-  local meta, WFJ
+describe("addon loads in TOC order and answers /wfi version", function()
+  local meta, WFI
 
   setup(function()
-    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    WFJ = Loader.load("WoWForeverJapanese")
+    WFI = Loader.load("WoWForeverItalian")
   end)
 
   it("lists the files in dependency order, generated block between Data and Lookup", function()
-    local files = Loader.tocFiles(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    local files = Loader.tocFiles(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     for i, f in ipairs(HEAD) do assert.are.equal(f, files[i]) end
     for i, f in ipairs(TAIL) do assert.are.equal(f, files[#files - #TAIL + i]) end
     local generated = {}
@@ -136,10 +136,10 @@ describe("addon loads in TOC order and answers /wfj version", function()
   end)
 
   it("exposes the namespace after load", function()
-    assert.are.equal("WoWForeverJapanese", WFJ.ADDON)
-    assert.are.equal(meta.Version, WFJ.VERSION)
-    assert.is_function(WFJ.Normalize.v1)
-    assert.is_function(WFJ.Hash.key)
+    assert.are.equal("WoWForeverItalian", WFI.ADDON)
+    assert.are.equal(meta.Version, WFI.VERSION)
+    assert.is_function(WFI.Normalize.v1)
+    assert.is_function(WFI.Hash.key)
     for _, m in ipairs({ "Compat", "Data", "Lookup", "Align", "Tooltip", "State", "Settings", "Modifier", "Translator",
       "SurfaceState", "Collector", "UIStrings", "ButtonText", "Labels", "GameMenu", "Gossip", "Scan",
       "Font", "Render", "Voice", "VoicePlayer",
@@ -147,17 +147,17 @@ describe("addon loads in TOC order and answers /wfj version", function()
       "Reputation", "Skills", "SpellBook", "Talents", "Trainer", "GossipChrome", "Merchant", "Bank", "Bags",
       "Mail", "Friends", "Raid", "MicroMenu", "ItemText",
       "OptionsText", "OptionsWidgets", "KeyCapture", "RevealBinding", "AddonListButton" }) do
-      assert.is_table(WFJ[m], m)
+      assert.is_table(WFI[m], m)
     end
   end)
 
   it("builds the UI index on load from the client's globals and hooks the game menu", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
     _G.ACCEPT = "Accept"
     _G.QUEST_LOG = "Quest Log (changed)" -- not the English the Japanese was drafted from
-    local ns = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    local ns = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     _G.ACCEPT, _G.QUEST_LOG = nil, nil
     local c = ns.UIIndex.counts
     assert.are.equal(ns.Data.count("ui"), c.shipped)
@@ -167,24 +167,24 @@ describe("addon loads in TOC order and answers /wfj version", function()
     assert.are.equal(3, c.mismatched)
     assert.are.equal("ACCEPT", (ns.UIIndex:match("Accept")))
     assert.are.equal(1, #(Stub.hooks["GameMenuFrame:InitButtons"] or {}))
-    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    WFJ = Loader.load("WoWForeverJapanese")
+    WFI = Loader.load("WoWForeverItalian")
   end)
 
   it("registers the slash command on ADDON_LOADED for its own name only", function()
     Stub.fireAll("ADDON_LOADED", "SomeOtherAddon")
-    assert.is_nil(SlashCmdList.WFJ)
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    assert.is_function(SlashCmdList.WFJ)
-    assert.are.equal("/wfj", SLASH_WFJ1)
+    assert.is_nil(SlashCmdList.WFI)
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    assert.is_function(SlashCmdList.WFI)
+    assert.are.equal("/wfi", SLASH_WFI1)
   end)
 
-  it("creates WFJ_DB at the current schema and registers the options panel on load", function()
-    assert.is_table(WFJ_DB)
-    assert.are.equal(WFJ.SCHEMA, WFJ_DB.schema)
+  it("creates WFI_DB at the current schema and registers the options panel on load", function()
+    assert.is_table(WFI_DB)
+    assert.are.equal(WFI.SCHEMA, WFI_DB.schema)
     assert.are.equal("RegisterCanvasLayoutCategory", Stub.settingsCalls[1][1])
-    assert.are.equal("WoW Forever Japanese", Stub.settingsCalls[1][3])
+    assert.are.equal("WoW Forever Italian", Stub.settingsCalls[1][3])
   end)
 
   it("installs the quest surfaces on load: writer post-hooks and OnHide releases", function()
@@ -193,10 +193,10 @@ describe("addon loads in TOC order and answers /wfj version", function()
     assert.is_function(QuestFrameProgressPanel.scripts.OnShow)
     Stub.quest = { id = 2, title = "T", description = "", objectives = "", progress = "P", completion = "" }
     QuestFrameProgressPanel:Show() -- the frame script is wrapped: our hook captures the progress fields
-    assert.is_table(WFJ.SurfaceState.get("questframe.progress", "progress"))
-    WFJ.Render.release("questframe.progress")
+    assert.is_table(WFI.SurfaceState.get("questframe.progress", "progress"))
+    WFI.Render.release("questframe.progress")
     assert.is_function(QuestFrame.scripts.OnHide)
-    assert.are.same({}, outsideWindows(WFJ.Compat.unresolved()))
+    assert.are.same({}, outsideWindows(WFI.Compat.unresolved()))
     -- the gossip surface subscribes to the ScrollBox and post-hooks Update; the greeting writer by name
     assert.are.equal(1, #(Stub.hooks["GossipFrame:Update"] or {}))
     -- two subscribers: the option rows (UI/Gossip) and the grey-quest suffix (UI/GossipChrome)
@@ -211,21 +211,21 @@ describe("addon loads in TOC order and answers /wfj version", function()
   end)
 
   it("a missing writer on the client does not break load and shows in Compat.unresolved", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
     _G.QuestInfo_Display = nil
-    local ns = Loader.load("WoWForeverJapanese")
-    assert.has_no.errors(function() Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese") end)
+    local ns = Loader.load("WoWForeverItalian")
+    assert.has_no.errors(function() Stub.fireAll("ADDON_LOADED", "WoWForeverItalian") end)
     assert.are.same({ "questframe.display" }, outsideWindows(ns.Compat.unresolved()))
     -- restore the shared state the later cases read
-    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
   end)
 
   it("fonts refused at load are retried after PLAYER_ENTERING_WORLD until none is pending", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
     local ticks = {}
     _G.C_Timer = { NewTicker = function(_, fn)
@@ -235,10 +235,10 @@ describe("addon loads in TOC order and answers /wfj version", function()
       return t
     end }
     CreateFrame("Frame", "UIParent") -- the client always has it; the probe hangs off it
-    _G.WFJ_DB = { schema = 1, settings = {} } -- not a first install: the intro window stays out of this test
-    local ns = Loader.load("WoWForeverJapanese")
+    _G.WFI_DB = { schema = 1, settings = {} } -- not a first install: the intro window stays out of this test
+    local ns = Loader.load("WoWForeverItalian")
     Stub.fontSetFails = true -- a fresh launch: the bundled font file is not loaded yet
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     assert.is_true(ns.Render.pendingFonts() > 0 or ns.Font.retryPending() > 0)
     -- the font retry is the one ticker started on entering the world
     local before = #ticks
@@ -262,19 +262,19 @@ describe("addon loads in TOC order and answers /wfj version", function()
     _G.C_Timer = nil
   end)
 
-  it("keeps a problem log: a session on load, a blocked action naming this addon, /wfj log prints it", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  it("keeps a problem log: a session on load, a blocked action naming this addon, /wfi log prints it", function()
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    assert.are.equal(1, WFJ_Log.version)
-    assert.are.equal("session", WFJ_Log.entries[#WFJ_Log.entries].kind)
+    Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    assert.are.equal(1, WFI_Log.version)
+    assert.are.equal("session", WFI_Log.entries[#WFI_Log.entries].kind)
     Stub.prints = {}
     Stub.fireAll("ADDON_ACTION_BLOCKED", "SomeOtherAddon", "CastSpellByName()")
-    Stub.fireAll("ADDON_ACTION_BLOCKED", "WoWForeverJapanese", "MainActionBar:SetPointBase()")
-    Stub.fireAll("ADDON_ACTION_BLOCKED", "WoWForeverJapanese", "MainActionBar:SetPointBase()")
+    Stub.fireAll("ADDON_ACTION_BLOCKED", "WoWForeverItalian", "MainActionBar:SetPointBase()")
+    Stub.fireAll("ADDON_ACTION_BLOCKED", "WoWForeverItalian", "MainActionBar:SetPointBase()")
     local blocked, kinds = nil, {}
-    for _, e in ipairs(WFJ_Log.entries) do
+    for _, e in ipairs(WFI_Log.entries) do
       if e.kind == "blocked" then blocked = e end
       kinds[e.kind] = (kinds[e.kind] or 0) + 1
     end
@@ -283,8 +283,8 @@ describe("addon loads in TOC order and answers /wfj version", function()
     assert.are.equal(1, kinds.taint) -- the taint watch scans once, at the first block of the session
     assert.are.equal(1, #Stub.prints) -- one chat line per session
     Stub.prints = {}
-    SlashCmdList.WFJ("log 5")
-    assert.are.equal("WFJ: errors: 0 recorded, 0 not sent (/wfj bug)", Stub.prints[#Stub.prints])
+    SlashCmdList.WFI("log 5")
+    assert.are.equal("WFI: errors: 0 recorded, 0 not sent (/wfi bug)", Stub.prints[#Stub.prints])
     local shown = false
     for _, line in ipairs(Stub.prints) do
       if line:find("MainActionBar:SetPointBase()", 1, true) and line:find("×2", 1, true) then shown = true end
@@ -293,83 +293,83 @@ describe("addon loads in TOC order and answers /wfj version", function()
   end)
 
   it("gives an error caught before the log loaded the load time (the clock is wired after compat)", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
     _G.date = function() return "2026-10-04 07:00:00" end
-    local W = Loader.load("WoWForeverJapanese")
-    W.ErrorLog.recordCaught("Interface/AddOns/WoWForeverJapanese/Data/Quest/Quest_0001.lua:3: unexpected symbol")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    local W = Loader.load("WoWForeverItalian")
+    W.ErrorLog.recordCaught("Interface/AddOns/WoWForeverItalian/Data/Quest/Quest_0001.lua:3: unexpected symbol")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     _G.date = nil
-    local e = WFJ_Log.errors[1]
+    local e = WFI_Log.errors[1]
     assert.are.same({ "2026-10-04 07:00:00", "2026-10-04 07:00:00" }, { e.first, e.last })
   end)
 
-  it("creates WFJ_Collector on load and discloses once, on the first PLAYER_ENTERING_WORLD", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  it("creates WFI_Collector on load and discloses once, on the first PLAYER_ENTERING_WORLD", function()
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     assert.are.same({ version = 1, disclosed = false, builds = {}, bytes = 0, capped = false, entries = {},
       sent = {} },
-      WFJ_Collector)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+      WFI_Collector)
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     Stub.prints = {}
     Stub.fireAll("PLAYER_ENTERING_WORLD")
     assert.are.equal(2, #Stub.prints)
-    assert.is_truthy(Stub.prints[2]:find("/wfj collector off", 1, true))
-    assert.is_true(WFJ_Collector.disclosed)
+    assert.is_truthy(Stub.prints[2]:find("/wfi collector off", 1, true))
+    assert.is_true(WFI_Collector.disclosed)
     Stub.fireAll("PLAYER_ENTERING_WORLD")
     assert.are.equal(2, #Stub.prints)
     -- next session: the saved table is already disclosed
-    local saved = WFJ_Collector
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    local saved = WFI_Collector
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    _G.WFJ_Collector = saved
-    Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    _G.WFI_Collector = saved
+    Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     Stub.prints = {}
     Stub.fireAll("PLAYER_ENTERING_WORLD")
     assert.are.equal(0, #Stub.prints)
     -- collector off before first run: nothing printed, not marked disclosed
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    _G.WFJ_DB = { schema = 1, settings = { ["collector.enabled"] = false } }
-    Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    _G.WFI_DB = { schema = 1, settings = { ["collector.enabled"] = false } }
+    Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     Stub.prints = {}
     Stub.fireAll("PLAYER_ENTERING_WORLD")
     assert.are.equal(0, #Stub.prints)
-    assert.is_false(WFJ_Collector.disclosed)
+    assert.is_false(WFI_Collector.disclosed)
     -- restore the shared state the later cases read
-    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    meta = Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
   end)
 
   it("routes MODIFIER_STATE_CHANGED and PLAYER_ENTERING_WORLD to Modifier.refresh", function()
     Stub.keys.alt = true
     Stub.fireAll("MODIFIER_STATE_CHANGED", "LALT", 1)
-    assert.is_true(WFJ.State.modifierHeld)
+    assert.is_true(WFI.State.modifierHeld)
     Stub.keys.alt = false
     Stub.fireAll("PLAYER_ENTERING_WORLD")
-    assert.is_false(WFJ.State.modifierHeld)
+    assert.is_false(WFI.State.modifierHeld)
   end)
 
   it("wires Lookup into the Translator: a trusted quest title renders through Render.show", function()
     -- quest 7 (quest 2's title is the item name "Sharptalon's Claw", English letters by rule)
     local fs = Stub.fontString("Kobold Camp Cleanup", "Fonts\\FRIZQT__.TTF", 12, "")
-    WFJ.Render.show("quest", "title", fs, "Kobold Camp Cleanup", "quests", "quest.title", 7)
+    WFI.Render.show("quest", "title", fs, "Kobold Camp Cleanup", "quests", "quest.title", 7)
     assert.are.equal("Koboldキャンプの掃討", fs:GetText())
-    WFJ.Render.release("quest")
+    WFI.Render.release("quest")
     assert.are.equal("Kobold Camp Cleanup", fs:GetText())
-    local itemId = next(WFJ.Data.item)
-    local action, payload = WFJ.Translator.new({
+    local itemId = next(WFI.Data.item)
+    local action, payload = WFI.Translator.new({
       enabled = function() return true end, areaEnabled = function() return true end,
-      modifierHeld = function() return false end, lookup = WFJ.Lookup.get, marker = function() return false end,
+      modifierHeld = function() return false end, lookup = WFI.Lookup.get, marker = function() return false end,
     }).resolve("items", "item", itemId)
     assert.are.equal("none", action)
     assert.are.equal("unaligned_ungated", payload.reason)
@@ -379,9 +379,9 @@ describe("addon loads in TOC order and answers /wfj version", function()
     -- quest 791 completion: "実にいいね、{name}。あらゆる本物の{class}は…\n\nHordeの名の下に…" (the two-paragraph variant
     -- ships: completeness is checked against VMaNGOS's two-paragraph reward text)
     local fs = Stub.fontString("Good.", "Fonts\\FRIZQT__.TTF", 12, "")
-    WFJ.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
+    WFI.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
     assert.are.equal("実にいいね、Reyn。あらゆる本物のハンターは戦場でのこのバッグの使い方を知ってるものさ。\n\nHordeの名の下に戦わんとするお前の意志に敬礼！", fs:GetText())
-    WFJ.Render.release("quest")
+    WFI.Render.release("quest")
     assert.are.equal("Good.", fs:GetText())
   end)
 
@@ -391,18 +391,18 @@ describe("addon loads in TOC order and answers /wfj version", function()
     _G.UnitSex, _G.UnitClass = nil, nil
     local title = Stub.fontString("Kobold Camp Cleanup", "Fonts\\FRIZQT__.TTF", 12, "")
     assert.has_no.errors(function()
-      WFJ.Render.show("quest", "title", title, "Kobold Camp Cleanup", "quests", "quest.title", 7)
+      WFI.Render.show("quest", "title", title, "Kobold Camp Cleanup", "quests", "quest.title", 7)
     end)
     assert.are.equal("Koboldキャンプの掃討", title:GetText())
     local fs = Stub.fontString("Good.", "Fonts\\FRIZQT__.TTF", 12, "")
     assert.has_no.errors(function()
-      WFJ.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
+      WFI.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
     end)
     assert.are.equal("実にいいね、Reyn。あらゆる本物の{class}は戦場でのこのバッグの使い方を知ってるものさ。\n\nHordeの名の下に戦わんとするお前の意志に敬礼！", fs:GetText())
-    WFJ.Render.release("quest")
+    WFI.Render.release("quest")
     -- the collector reads the same guarded reader: a missing UnitClass is a refusal, not an error
-    WFJ.Settings.set("collector.enabled", true)
-    assert.are.same({ "refused", "no_player" }, { WFJ.Collector.record("quest", 7, "description", "Kill ten boars.") })
+    WFI.Settings.set("collector.enabled", true)
+    assert.are.same({ "refused", "no_player" }, { WFI.Collector.record("quest", 7, "description", "Kill ten boars.") })
     _G.UnitSex, _G.UnitClass = sex, class
   end)
 
@@ -411,30 +411,30 @@ describe("addon loads in TOC order and answers /wfj version", function()
     local unknown = _G.UNKNOWNOBJECT
     _G.UNKNOWNOBJECT = "Reyn" -- the stub's player name plays the client's placeholder name
     local fs = Stub.fontString("Good.", "Fonts\\FRIZQT__.TTF", 12, "")
-    WFJ.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
+    WFI.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
     assert.are.equal("実にいいね、{name}。あらゆる本物のハンターは戦場でのこのバッグの使い方を知ってるものさ。\n\nHordeの名の下に戦わんとするお前の意志に敬礼！", fs:GetText())
-    WFJ.Render.release("quest")
-    WFJ.Settings.set("collector.enabled", true)
-    assert.are.same({ "refused", "no_player" }, { WFJ.Collector.record("quest", 8, "description", "Kill ten wolves.") })
+    WFI.Render.release("quest")
+    WFI.Settings.set("collector.enabled", true)
+    assert.are.same({ "refused", "no_player" }, { WFI.Collector.record("quest", 8, "description", "Kill ten wolves.") })
     _G.UNKNOWNOBJECT = unknown
   end)
 
   it("the shipped gossip key of quest text: asked again until the player is known, and per character", function()
-    local keyed = WFJ.Lookup.keyed
+    local keyed = WFI.Lookup.keyed
     local text = "Well met, Reyn. Go now."
-    local want = WFJ.Collector.key(text, { name = "Reyn", class = "Hunter", race = "Night Elf" })
-    WFJ.Lookup.keyed = function(type_, k) return type_ == "gossip" and k == want and { ja = "x" } or nil end
+    local want = WFI.Collector.key(text, { name = "Reyn", class = "Hunter", race = "Night Elf" })
+    WFI.Lookup.keyed = function(type_, k) return type_ == "gossip" and k == want and { ja = "x" } or nil end
     local unknown = _G.UNKNOWNOBJECT
     _G.UNKNOWNOBJECT = "Reyn" -- the player record has not loaded: the name is the client's placeholder
-    assert.is_nil(WFJ.ShippedGossipKey(text))
+    assert.is_nil(WFI.ShippedGossipKey(text))
     _G.UNKNOWNOBJECT = unknown
-    assert.are.equal(want, WFJ.ShippedGossipKey(text)) -- the early miss was not kept
+    assert.are.equal(want, WFI.ShippedGossipKey(text)) -- the early miss was not kept
     local name = _G.UnitName
     _G.UnitName = function() return "Ostara" end -- another character: its own keys
-    assert.is_nil(WFJ.ShippedGossipKey(text))
+    assert.is_nil(WFI.ShippedGossipKey(text))
     _G.UnitName = name
-    assert.are.equal(want, WFJ.ShippedGossipKey(text))
-    WFJ.Lookup.keyed = keyed
+    assert.are.equal(want, WFI.ShippedGossipKey(text))
+    WFI.Lookup.keyed = keyed
   end)
 
   it("fills an unaligned item's placeholders from the live tooltip, on the real shards", function()
@@ -444,10 +444,10 @@ describe("addon loads in TOC order and answers /wfj version", function()
     -- renderer has nothing and a `$D<k>` line fails closed to English. That is the right failure, and is
     -- what every other spec in this file sees (ADR-028).
     _G.INT_SPELL_DURATION_SEC, _G.INT_SPELL_DURATION_MIN = "%d sec", "%d min"
-    WFJ.BuildUIIndex()
+    WFI.BuildUIIndex()
     finally(function()
       _G.INT_SPELL_DURATION_SEC, _G.INT_SPELL_DURATION_MIN = nil, nil
-      WFJ.BuildUIIndex()
+      WFI.BuildUIIndex()
     end)
     -- item 117 Tough Jerky, with the value and the duration as placeholders:
     --   "$D1かけて体力を$N1回復します。回復中は座っている必要があります。"
@@ -476,22 +476,22 @@ describe("addon loads in TOC order and answers /wfj version", function()
     tt:Hide()
   end)
 
-  it("prints the TOC version on /wfj version", function()
+  it("prints the TOC version on /wfi version", function()
     Stub.prints = {}
-    SlashCmdList.WFJ("version")
+    SlashCmdList.WFI("version")
     assert.are.equal(1, #Stub.prints)
     assert.is_truthy(Stub.prints[1]:find(meta.Version, 1, true))
   end)
 
   it("reports unknown verbs without erroring", function()
     Stub.prints = {}
-    SlashCmdList.WFJ("bogus")
+    SlashCmdList.WFI("bogus")
     assert.is_truthy(Stub.prints[1]:find("unknown command 'bogus'", 1, true))
   end)
 
   it("ships no legacy InterfaceOptions branch anywhere in the addon", function()
     for _, rel in ipairs(TOC_ORDER) do
-      local src = H.readFile("addon/WoWForeverJapanese/" .. rel)
+      local src = H.readFile("addon/WoWForeverItalian/" .. rel)
       assert.is_nil(src:find("InterfaceOptions_AddCategory", 1, true), rel)
       assert.is_nil(src:find("InterfaceOptionsFrame", 1, true), rel)
     end

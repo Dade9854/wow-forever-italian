@@ -35,13 +35,13 @@ local function tutorial(name, title, lines)
 end
 
 describe("the Options window's tutorial windows on Forever", function()
-  local WFJ, plates, ping
+  local WFI, plates, ping
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   local function remove() _G.NamePlatesTutorial, _G.PingSystemTutorial = nil, nil end
@@ -51,7 +51,7 @@ describe("the Options window's tutorial windows on Forever", function()
     plates = tutorial("NamePlatesTutorial", _G.NAMEPLATES_LABEL, { _G.UNIT_NAMEPLATES_TUTORIAL_ENEMY_FRIENDLY })
     ping = tutorial("PingSystemTutorial", _G.PING_SYSTEM_TUTORIAL_LABEL,
       { _G.PING_SYSTEM_TUTORIAL_MACRO_3, "|cnNORMAL_FONT_COLOR:/ping [@target] Ping Type|r", "Layout" })
-    assert.is_true(WFJ.SettingsTutorials.init())
+    assert.is_true(WFI.SettingsTutorials.init())
   end)
 
   after_each(function()
@@ -83,10 +83,10 @@ describe("the Options window's tutorial windows on Forever", function()
         ping:Show()
       end
     end)
-    assert.is_false(WFJ.SettingsTutorials.init())
+    assert.is_false(WFI.SettingsTutorials.init())
     load()
     remove()
     _G.NamePlatesTutorial = "text"
-    assert.has_no.errors(function() assert.is_false(WFJ.SettingsTutorials.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.SettingsTutorials.init()) end)
   end)
 end)

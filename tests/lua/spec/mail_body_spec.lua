@@ -32,11 +32,11 @@ local function served(template, name)
 end
 
 describe("the open letter's body on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function html() return _G.OpenMailBodyText end
@@ -49,7 +49,7 @@ describe("the open letter's body on Forever", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     MailStub.installCamelot()
     -- the SimpleHTML as the client has it: SetText(text, ignoreMarkup), a font per text type, no GetText
@@ -66,11 +66,11 @@ describe("the open letter's body on Forever", function()
       update(self)
       _G.OpenMailBodyText:SetText(MailStub.letter.body or "", true)
     end
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI, { expand = function(ja)
-      return (WFJ.Placeholders.expand(ja, { name = _G.UnitName("player") }))
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI, { expand = function(ja)
+      return (WFI.Placeholders.expand(ja, { name = _G.UnitName("player") }))
     end })
-    assert.is_true(WFJ.Mail.init())
+    assert.is_true(WFI.Mail.init())
   end)
 
   after_each(function()
@@ -84,7 +84,7 @@ describe("the open letter's body on Forever", function()
       open(en))
     local last = html().writes[#html().writes]
     assert.is_true(last[2]) -- the client's call shape: SetText(text, true)
-    assert.are.equal(WFJ.Font.PATH, (html():GetFont("P")))
+    assert.are.equal(WFI.Font.PATH, (html():GetFont("P")))
     alt(true)
     assert.are.equal(en, html().text)
     assert.is_true(html().writes[#html().writes][2])
@@ -96,7 +96,7 @@ describe("the open letter's body on Forever", function()
   it("a letter with no name token and a lowercase $n with a short name match too", function()
     assert.are.equal("ごきげんよう、友よ！\n\nザンザの祝福があらんことを！\nヴィンチャクサ", open(served(THANKS, "Reyn")))
     _G.UnitName = function() return "Bo" end
-    WFJ.Compat.declare("mail", "unitName", { "UnitName" }) -- forget the name function Compat resolved at init
+    WFI.Compat.declare("mail", "unitName", { "UnitName" }) -- forget the name function Compat resolved at init
     assert.are.equal("よく来た、Bo。\nこれを受け取れ。", open(served(SHORT, "Bo")))
   end)
 
@@ -105,9 +105,9 @@ describe("the open letter's body on Forever", function()
       for _, text in ipairs({ "Thanks for the help yesterday, see you in Ironforge!", "Close",
         served(GREETING, "Anduin") }) do
         assert.are.equal(text, open(text))
-        assert.is_nil(WFJ.SurfaceState.get("mail", "body"))
+        assert.is_nil(WFI.SurfaceState.get("mail", "body"))
       end
-      assert.is_nil(WFJ.UIIndex:match(served(THANKS, "Reyn"))) -- the family only where the body names it
+      assert.is_nil(WFI.UIIndex:match(served(THANKS, "Reyn"))) -- the family only where the body names it
     end)
 
   it("the next letter replaces the Japanese; the master switch puts the English back", function()
@@ -115,15 +115,15 @@ describe("the open letter's body on Forever", function()
     local mine = "Meet me at the bank."
     assert.are.equal(mine, open(mine))
     assert.are.equal("ごきげんよう、友よ！\n\nザンザの祝福があらんことを！\nヴィンチャクサ", open(served(THANKS, "Reyn")))
-    WFJ.Settings.set("area.interface", false)
+    WFI.Settings.set("area.interface", false)
     assert.are.equal(served(THANKS, "Reyn"), html().text)
-    WFJ.Settings.set("area.interface", true)
+    WFI.Settings.set("area.interface", true)
     assert.are.equal("ごきげんよう、友よ！\n\nザンザの祝福があらんことを！\nヴィンチャクサ", html().text)
   end)
 
   it("the body is not a never-touch widget; a client without the SimpleHTML is skipped without error", function()
-    for _, path in ipairs(WFJ.Mail.NEVER_TOUCH) do assert.are_not.equal("OpenMailBodyText", path) end
-    WFJ.Mail.body.html = nil
-    assert.are.equal(0, WFJ.Mail.showBody())
+    for _, path in ipairs(WFI.Mail.NEVER_TOUCH) do assert.are_not.equal("OpenMailBodyText", path) end
+    WFI.Mail.body.html = nil
+    assert.are.equal(0, WFI.Mail.showBody())
   end)
 end)

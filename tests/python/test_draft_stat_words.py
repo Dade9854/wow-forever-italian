@@ -2,7 +2,7 @@
 
 import pytest
 
-from wfj.dev import draft_stat_words as dsw
+from wfi.dev import draft_stat_words as dsw
 
 
 def _line(ja, cls="machine", status="unaligned", model="model-a", id_=1, field="description"):

@@ -4,12 +4,12 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from wfj.cmd import generate, validate
-from wfj.core.model import english_line, entry, provenance
-from wfj.emit import schema
-from wfj.io.jsonl_store import Store
+from wfi.cmd import generate, validate
+from wfi.core.model import english_line, entry, provenance
+from wfi.emit import schema
+from wfi.io.jsonl_store import Store
 
-ADDON = "addon/WoWForeverJapanese"
+ADDON = "addon/WoWForeverItalian"
 PROV = provenance(
     "human", "cqjt@3446c82", "2026-09-13", translator="T", origins=["cqjt@3446c82#1"]
 )
@@ -21,7 +21,7 @@ def test_committed_repo_validates(root, plan_report):
 
 
 def test_hand_edit_of_a_shard_or_the_toc_block_fails(root, tmp_path, planned):
-    addon = tmp_path / "WoWForeverJapanese"
+    addon = tmp_path / "WoWForeverItalian"
     shutil.copytree(root / ADDON, addon, ignore=shutil.ignore_patterns("Fonts"))
     shard = addon / "Data/Quest/Quest_0000.lua"
     shard.write_text(
@@ -47,7 +47,7 @@ def test_hand_edit_of_a_shard_or_the_toc_block_fails(root, tmp_path, planned):
 def test_rule_regenerate_uses_a_given_plan(root, tmp_path, planned):
     """A caller that holds the plan passes it; the rule then compares the addon against that plan and
     plans nothing itself."""
-    addon = tmp_path / "WoWForeverJapanese"
+    addon = tmp_path / "WoWForeverItalian"
     shutil.copytree(root / ADDON, addon, ignore=shutil.ignore_patterns("Fonts"))
     other = dict(planned, **{"Data/Quest/Quest_0000.lua": "-- another plan\n"})
     problems = validate.rule_regenerate(root / "data", Store(root / "data"), addon, other)
@@ -130,14 +130,14 @@ def test_a_stale_line_keeps_its_old_version_without_failing_generate(root, tmp_p
     lines[0]["english"]["src"] = "pfquest@1111111"
     lines[1]["english"]["src"] = "pfquest@0000000"
     data = _tree(tmp_path, lines, en)
-    from wfj.cmd import generate
+    from wfi.cmd import generate
 
     planned = generate.plan(Store(data), generate.vectors_rows(root / "data"))
     assert 'pfquest = "1111111"' in planned["Data/Meta.lua"] and "0000000" not in planned["Data/Meta.lua"]
 
 
 def test_dotfiles_under_data_are_ignored(root, tmp_path, planned):
-    addon = tmp_path / "WoWForeverJapanese"
+    addon = tmp_path / "WoWForeverItalian"
     shutil.copytree(root / ADDON, addon, ignore=shutil.ignore_patterns("Fonts"))
     (addon / "Data/Quest/.DS_Store").write_bytes(b"\x00")
     assert validate.rule_regenerate(root / "data", Store(root / "data"), addon, planned) == []
@@ -254,7 +254,7 @@ def test_bad_base_ref_is_a_problem_not_a_traceback(root):
 
 
 def test_duplicated_toc_block_is_a_problem(root, tmp_path, planned):
-    addon = tmp_path / "WoWForeverJapanese"
+    addon = tmp_path / "WoWForeverItalian"
     shutil.copytree(root / ADDON, addon, ignore=shutil.ignore_patterns("Fonts"))
     toc = addon / generate.TOC_NAME
     toc.write_text(
@@ -271,8 +271,8 @@ def test_duplicated_toc_block_is_a_problem(root, tmp_path, planned):
 
 
 def _fingerprinted(id_, ja, en):
-    from wfj.core.hashing import key
-    from wfj.core.normalize import normalize_v1
+    from wfi.core.hashing import key
+    from wfi.core.normalize import normalize_v1
 
     ln = entry(id_, "text", ja, prov={"class": "machine", "model": "m", "source": "draft-x-sg9@2026-09-27",
                                       "imported": "2026-09-27"})

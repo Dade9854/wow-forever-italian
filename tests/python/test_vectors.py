@@ -1,6 +1,6 @@
 """Drift guard: the committed vectors equal a regeneration (both files)."""
 
-from wfj.dev import gen_vectors
+from wfi.dev import gen_vectors
 
 REQUIRED_PREFIXES = {
     "ascii", "ja", "color", "tex", "link", "newline", "brk", "ph", "gender", "fwdigit", "ws", "empty", "big", "nfc",

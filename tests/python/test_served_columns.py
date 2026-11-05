@@ -9,8 +9,8 @@ from pathlib import Path
 import pytest
 from db2_fixture import wdc5
 
-from wfj.dev import served_columns as sc
-from wfj.io import client_tables, db2, dbcache
+from wfi.dev import served_columns as sc
+from wfi.io import client_tables, db2, dbcache
 
 
 def test_dense_text_fields_are_the_string_columns():

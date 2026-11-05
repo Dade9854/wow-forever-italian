@@ -9,8 +9,8 @@ local UI = { FAILED = { "Failed", "失敗" }, INTERRUPTED = { "Interrupted", "�
   SPELL_INTERRUPTED_BY = { "Interrupted: %s", "中断: %s" }, RESET = { "Reset", "リセット" } }
 local NAMES = { "PlayerCastingBarFrame", "issecretvalue" }
 
-local function patch(WFJ) -- the Core/UIStrings entry this surface needs
-  WFJ.UIStrings.ARGS.SPELL_INTERRUPTED_BY = { [1] = "text" }
+local function patch(WFI) -- the Core/UIStrings entry this surface needs
+  WFI.UIStrings.ARGS.SPELL_INTERRUPTED_BY = { [1] = "text" }
 end
 
 local function install()
@@ -31,26 +31,26 @@ local function install()
 end
 
 describe("the player's casting bar on Forever", function()
-  local WFJ
+  local WFI
 
-  before_each(function() WFJ = G.load(FILES, UI, patch) end)
+  before_each(function() WFI = G.load(FILES, UI, patch) end)
   after_each(function() G.clear(NAMES) end)
 
   it("Failed / Interrupted translate; the interrupter's name and every spell name stay English", function()
     local bar = install()
-    WFJ.Labels.forbidNames(WFJ.CastingBar.NEVER_TOUCH)
-    assert.is_true(WFJ.CastingBar.init())
+    WFI.Labels.forbidNames(WFI.CastingBar.NEVER_TOUCH)
+    assert.is_true(WFI.CastingBar.init())
     bar:fire("UNIT_SPELLCAST_START", "player", "Reset") -- a spell named like a dictionary word
     assert.are.equal("Reset", bar.Text:GetText())
-    assert.is_true(G.unrecorded(WFJ, bar.Text))
+    assert.is_true(G.unrecorded(WFI, bar.Text))
     bar:fire("UNIT_SPELLCAST_FAILED", "player")
     assert.are.equal("失敗", bar.Text:GetText())
-    G.alt(WFJ, true)
+    G.alt(WFI, true)
     assert.are.equal("Failed", bar.Text:GetText())
-    G.alt(WFJ, false)
+    G.alt(WFI, false)
     bar:fire("UNIT_SPELLCAST_START", "player", "Frostbolt") -- the next cast: the record and the font go at once
     assert.are.equal("Frostbolt", bar.Text:GetText())
-    assert.is_true(G.unrecorded(WFJ, bar.Text))
+    assert.is_true(G.unrecorded(WFI, bar.Text))
     assert.are.equal("Fonts\\FRIZQT__.TTF", (bar.Text:GetFont()))
     bar:fire("UNIT_SPELLCAST_INTERRUPTED", "player")
     assert.are.equal("中断", bar.Text:GetText())
@@ -62,7 +62,7 @@ describe("the player's casting bar on Forever", function()
   it("a text the client flags as secret is never read further", function()
     local bar = install()
     _G.issecretvalue = function() return true end
-    assert.is_true(WFJ.CastingBar.init())
+    assert.is_true(WFI.CastingBar.init())
     bar:fire("UNIT_SPELLCAST_FAILED", "player")
     assert.are.equal("Failed", bar.Text:GetText())
   end)
@@ -70,15 +70,15 @@ describe("the player's casting bar on Forever", function()
   it("wrong-typed names degrade without error; the hook installs once", function()
     local bar = install()
     _G.issecretvalue = 3
-    assert.has_no.errors(function() assert.is_true(WFJ.CastingBar.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.CastingBar.init()) end)
     bar.Text = "x"
     assert.has_no.errors(function() bar:fire("UNIT_SPELLCAST_FAILED", "player") end)
-    assert.is_false(WFJ.CastingBar.init())
+    assert.is_false(WFI.CastingBar.init())
   end)
 
   it("no bar or a wrong-typed one: init is false and nothing is touched", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.CastingBar.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.CastingBar.init()) end)
     _G.PlayerCastingBarFrame = 1
-    assert.has_no.errors(function() assert.is_false(WFJ.CastingBar.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.CastingBar.init()) end)
   end)
 end)

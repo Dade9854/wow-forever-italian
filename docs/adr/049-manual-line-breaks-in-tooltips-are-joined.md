@@ -1,6 +1,6 @@
 # ADR-049: Manual line breaks in tooltip text are joined when generated
 
-- **Status:** Accepted. Code: `pipeline/wfj/core/tooltip_text.py`, applied by `generate` to item and spell lines.
+- **Status:** Accepted. Code: `pipeline/wfi/core/tooltip_text.py`, applied by `generate` to item and spell lines.
 - **Date:** 2026-10-01
 
 ## Context

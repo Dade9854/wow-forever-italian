@@ -120,7 +120,7 @@ quest, so these cost nothing on screen; a rule for 21 quests is not worth its up
 
 1. Full scan and sweep in game, Exit Game, `make wdb-copy`.
 2. Group the cache's ids by membership in Forever's and Era's `QuestV2` (Era's from `python -m
-   wfj.dev.client_tables --product wow_classic_era --tables QuestV2 QuestSort` into a scratch folder).
+   wfi.dev.client_tables --product wow_classic_era --tables QuestV2 QuestSort` into a scratch folder).
 3. Profile the fixed part: for every 4-byte offset below the objective count, the distinct values, minimum,
    maximum and how many are negative. The zone field is the one whose negatives are all `QuestSort` ids.
 4. Map the positives against `AreaTable` as in finding 2.

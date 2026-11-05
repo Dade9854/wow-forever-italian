@@ -13,12 +13,12 @@ from types import SimpleNamespace
 import pytest
 from test_voice_ship import _raw
 
-from wfj import cli
-from wfj.cmd import voice_ship, voice_store
-from wfj.core import casting, voice
-from wfj.core import voice_packs as vp
-from wfj.emit import voice_pack
-from wfj.io import aivis, curseforge, forever_vo, vmangos
+from wfi import cli
+from wfi.cmd import voice_ship, voice_store
+from wfi.core import casting, voice
+from wfi.core import voice_packs as vp
+from wfi.emit import voice_pack
+from wfi.io import aivis, curseforge, forever_vo, vmangos
 
 # ---- the engine client -------------------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ def test_upload_streams_multipart_and_returns_the_file_id(monkeypatch, tmp_path)
     assert sent["url"] == f"{curseforge.SITE}/api/projects/7/upload-file"
     assert sent["length"] == len(sent["body"]) and b"PK" * 10 in sent["body"]
     assert b'name="metadata"\r\n\r\n{"displayName": "x"}' in sent["body"]
-    assert sent["kind"].startswith("multipart/form-data; boundary=wfj")
+    assert sent["kind"].startswith("multipart/form-data; boundary=wfi")
     monkeypatch.setattr(curseforge.urllib.request, "urlopen", lambda req, timeout: _Answer(b"uploaded"))
     assert curseforge.upload(7, z, {}, "t0k") == 0  # an answer with no id still means it went up
 
@@ -303,9 +303,9 @@ def test_voice_rules_at_their_edges():
 
 def test_the_pack_table_refuses_bad_rows_and_finds_a_folder():
     t = vp.parse(_raw())
-    assert t.by_folder("WoWForeverJapanese_VoiceB").slug == "b"
+    assert t.by_folder("WoWForeverItalian_VoiceB").slug == "b"
     with pytest.raises(KeyError):
-        t.by_folder("WoWForeverJapanese_VoiceZ")
+        t.by_folder("WoWForeverItalian_VoiceZ")
     for change, message in [
         (lambda r: r["pack"][0].pop("title"), r"pack 1: `title` is missing"),
         (lambda r: r["pack"][0].update(slug="Not A Slug"), "is not a CurseForge slug"),
@@ -331,7 +331,7 @@ def test_register_text_writes_the_error_table():
 
 
 def test_the_toc_must_name_an_interface(tmp_path):
-    toc = tmp_path / "addon" / "WoWForeverJapanese" / "WoWForeverJapanese.toc"
+    toc = tmp_path / "addon" / "WoWForeverItalian" / "WoWForeverItalian.toc"
     toc.parent.mkdir(parents=True)
     toc.write_text("## Title: x\n", encoding="utf-8")
     with pytest.raises(ValueError, match="no ## Interface line"):

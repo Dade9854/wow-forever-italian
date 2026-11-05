@@ -165,11 +165,11 @@ local GUILD_COLUMNS = { "COMMUNITIES_ROSTER_COLUMN_TITLE_LEVEL", "COMMUNITIES_RO
   "COMMUNITIES_ROSTER_COLUMN_TITLE_RANK", "COMMUNITIES_ROSTER_COLUMN_TITLE_NOTE" }
 
 describe("the Communities guild view on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -190,19 +190,19 @@ describe("the Communities guild view on Forever", function()
   end
 
   local function setup(loadedFirst)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     C.online, C.total, C.challenges = 3, 12, false
     if loadedFirst then
       loadCommunities()
-      assert.is_true(WFJ.Communities.init())
+      assert.is_true(WFI.Communities.init())
     else
-      assert.is_false(WFJ.Communities.init()) -- waits for the addon
+      assert.is_false(WFI.Communities.init()) -- waits for the addon
       loadCommunities()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -331,7 +331,7 @@ describe("the Communities guild view on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.Communities.setup())
+    assert.is_false(WFI.Communities.setup())
     assert.are.equal(1, #Stub.hooks["MemberList:UpdateMemberCount"])
     assert.are.equal(1, #Stub.hooks["ColumnDisplay:LayoutColumns"])
     assert.are.equal(1, #Stub.hooks["GuildMemberDetailFrame:DisplayMember"])

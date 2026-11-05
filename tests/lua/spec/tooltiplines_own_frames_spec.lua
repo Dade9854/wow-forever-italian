@@ -14,11 +14,11 @@ local NAMES = { "EventTraceTooltip", "EventTraceTooltipTextLeft1" }
 local function text(tt, side, i) return _G[tt:GetName() .. "Text" .. side .. i]:GetText() end
 
 describe("the Event Log tooltip through TooltipLines.follow", function()
-  local WFJ, tt
+  local WFI, tt
   before_each(function()
-    WFJ = X.load("UI/TooltipLines.lua", UI)
+    WFI = X.load("UI/TooltipLines.lua", UI)
     tt = Stub.tooltipFrame("EventTraceTooltip")
-    assert.is_true(WFJ.TooltipLines.follow("eventtrace.tooltip", tt,
+    assert.is_true(WFI.TooltipLines.follow("eventtrace.tooltip", tt,
       { only = { "EVENTTRACE_TIMESTAMP", "EVENTTRACE_ARG_FMT" } }))
   end)
   after_each(function() X.teardown(NAMES) end)
@@ -39,9 +39,9 @@ describe("the Event Log tooltip through TooltipLines.follow", function()
     assert.are.equal("1234.5", text(tt, "Right", 2))
     assert.are.equal("引数1:", text(tt, "Left", 3))
     assert.are.equal("Accept", text(tt, "Right", 3))
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Timestamp:", text(tt, "Left", 2))
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     assert.are.equal("タイムスタンプ:", text(tt, "Left", 2))
   end)
 
@@ -50,16 +50,16 @@ describe("the Event Log tooltip through TooltipLines.follow", function()
     tt:Hide()
     assert.are.equal(0, (function()
       local n = 0
-      for _ in pairs(WFJ.SurfaceState.records("eventtrace.tooltip")) do n = n + 1 end
+      for _ in pairs(WFI.SurfaceState.records("eventtrace.tooltip")) do n = n + 1 end
       return n
     end)())
-    assert.is_false(WFJ.TooltipLines.follow("eventtrace.tooltip", tt, { only = {} }))
-    assert.is_false(WFJ.TooltipLines.follow("x", nil, { only = {} }))
+    assert.is_false(WFI.TooltipLines.follow("eventtrace.tooltip", tt, { only = {} }))
+    assert.is_false(WFI.TooltipLines.follow("x", nil, { only = {} }))
   end)
 
   it("a GameTooltip help walk is unaffected by a watched frame", function()
     local owner = {}
-    WFJ.HelpTooltip.register(owner)
+    WFI.HelpTooltip.register(owner)
     _G.GameTooltip:SetOwner(owner)
     _G.GameTooltip:SetText("Accept")
     assert.are.equal("承諾", _G.GameTooltipTextLeft1:GetText())

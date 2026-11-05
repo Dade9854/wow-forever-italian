@@ -1,6 +1,6 @@
 # ADR-016: Whole-window interface coverage: static labels before first show, help tooltips by owner, load-on-demand hooks, richer templates, restricted matching, never-touch widgets
 
-- **Status:** Accepted. Implemented in `Core/UIStrings.lua` and `Core/UIStringKeys.lua`, `UI/Labels.lua`, `UI/ButtonText.lua`, `UI/Tooltip.lua`, `UI/HelpTooltip.lua`, `UI/LoadOnDemand.lua`, one module per window (`UI/Character.lua`, `Reputation`, `Skills`, `Honor`, `SpellBook`, `Talents`, `Trainer`, `GossipChrome`, `Merchant`, `Bank`, `Bags`, `Mail`, `Friends`, `Guild`, `Raid`, `MicroMenu`, `Tutorial`), `Main.lua`, `UI/Slash.lua`; pipeline `wfj/core/markup.py`, `core/status.py`, `core/model.py`, `cmd/validate.py`, `cmd/import_.py`, `io/wago.py`, `dev/ui_inventory.py`, `dev/enchant_drafts.py`, `Makefile` (`ui-source`, `ui-inventory`). In-game verification is checklist 13.
+- **Status:** Accepted. Implemented in `Core/UIStrings.lua` and `Core/UIStringKeys.lua`, `UI/Labels.lua`, `UI/ButtonText.lua`, `UI/Tooltip.lua`, `UI/HelpTooltip.lua`, `UI/LoadOnDemand.lua`, one module per window (`UI/Character.lua`, `Reputation`, `Skills`, `Honor`, `SpellBook`, `Talents`, `Trainer`, `GossipChrome`, `Merchant`, `Bank`, `Bags`, `Mail`, `Friends`, `Guild`, `Raid`, `MicroMenu`, `Tutorial`), `Main.lua`, `UI/Slash.lua`; pipeline `wfi/core/markup.py`, `core/status.py`, `core/model.py`, `cmd/validate.py`, `cmd/import_.py`, `io/wago.py`, `dev/ui_inventory.py`, `dev/enchant_drafts.py`, `Makefile` (`ui-source`, `ui-inventory`). In-game verification is checklist 13.
 - **Date:** 2026-09-14
 - **Extends:** [ADR-015](015-ui-text-surfaces.md) (targeted post-hooks over one dictionary) and [ADR-014](014-machine-drafted-text-and-ui-dictionary.md) (the `ui` type).
 
@@ -30,7 +30,7 @@ The source research ([whole-UI window inventory](../research/2026-09-14-whole-ui
 9. **Dropdown button text.** `Labels.dropdown(surface, recKey, dropdown)` post-hooks the instance's `UpdateText` and shows `dropdown.Text`. `dropdown:SetText` is a Lua override that writes `self.text` and is never called. Instances: `ClassTrainerFrame.FilterDropdown`, `WhoFrameDropdown`.
 10. **Plural and markup templates** (`Core/UIStrings`).
     - A template with `|4singular:plural;` is indexed three times: all-singular, all-plural and raw. Whether `FontString:GetText()` returns the resolved or raw form is unknown.
-    - More than 4 groups → not indexed, counted `unsupported` (shown by `/wfj debug ui`). The cap of 4 fits `TIME_DAYHOURMINUTESECOND`, the `/played` duration and the only listed key with 4 groups.
+    - More than 4 groups → not indexed, counted `unsupported` (shown by `/wfi debug ui`). The cap of 4 fits `TIME_DAYHOURMINUTESECOND`, the `/played` duration and the only listed key with 4 groups.
     - Colour codes inside a template are literal text.
     - Pipeline: `check` rejects `markup_changed:<detail>` when the Japanese does not keep the English's multiset of `|cAARRGGBB`, `|r` and line breaks, or carries a malformed `|4`. A `|4` group may be dropped in Japanese. A template with no words outside its specifiers and colour codes (`(%s)`, `%s (|cffffffff%d|r)`) needs no kana or kanji in its Japanese. Validate rule 7's ambiguity check compares the Japanese normalized the way the English is (colour codes stripped), so `Level %d` / `Level |cffffffff%d|r` with `レベル %d` / `レベル |cffffffff%d|r` are one meaning, not ambiguous.
     - Curation admits `|c` and `|4` in a key's English. `|H`, `|T`, `|A`, `|K` and `$` stay barred.
@@ -65,14 +65,14 @@ The source research ([whole-UI window inventory](../research/2026-09-14-whole-ui
     - タレント for talents (following `TOOLTIP_TALENT_TIER_POINTS`);
     - フォーカス for Focus;
     - 承諾 for Accept;
-    - label before number with a half-width space, e.g. enchant lines `炎呪文ダメージ +3` from a 33-phrase table (`python -m wfj.dev.enchant_drafts`);
+    - label before number with a half-width space, e.g. enchant lines `炎呪文ダメージ +3` from a 33-phrase table (`python -m wfi.dev.enchant_drafts`);
     - pet book titles ペット / 悪魔;
     - the standings of ADR-014 §10 for reputation bars.
 
 ## Consequences
 - **Dictionary:** window and help strings are machine-drafted `ui` rows; the `SpellItemEnchantment:<id>` lines are generated from the phrase table (`draft-ui-enchant`).
 - **Inventory:** one surface per window; every inventoried key is either listed or excluded with a reason.
-- New coverage on these windows is dictionary rows plus a module line. A window whose Blizzard addon is absent (Communities guild UI, a client without `BankFramePurchaseButton`) is skipped. `/wfj debug`'s unresolved list shows window names that are absent until a load-on-demand addon loads.
+- New coverage on these windows is dictionary rows plus a module line. A window whose Blizzard addon is absent (Communities guild UI, a client without `BankFramePurchaseButton`) is skipped. `/wfi debug`'s unresolved list shows window names that are absent until a load-on-demand addon loads.
 - **Records never released on hide.** Character, Reputation, Skills, Honor, Bank, Bags, Mail, Friends, Guild and Raid keep their records, because their writers run while the frame is hidden. A record whose widget the client rewrote without a hook is dropped by `Render.refresh` (ADR-015's stale rule). Gossip, Merchant, SpellBook, Talents and Trainer release their dynamic surface on `OnHide`.
 - **Performance to watch:** the inbox row's `OnUpdate` re-runs its tooltip every frame while hovered, so the help walk re-matches up to two lines per frame (memoised). The Main Menu performance tooltip rebuilds about once a second.
 - **Left English** (each excluded or never-touch, with its reason):

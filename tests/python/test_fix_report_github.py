@@ -28,7 +28,7 @@ def test_issue_form_fields(root):
 
 
 def test_form_labels_match_what_intake_reads(root):
-    from wfj.cmd import fix_report
+    from wfi.cmd import fix_report
 
     form = _read(root, ".github/ISSUE_TEMPLATE/translation-report.yml")
     assert "label: Credit me as" in form
@@ -44,7 +44,7 @@ def test_workflow_runs_only_on_reports_with_least_permissions(root):
     assert [ln.strip() for ln in perms.splitlines()] == ["contents: read"]
     job = re.search(r"^    permissions:\n((?:      .*\n)+)", wf, re.M).group(1)
     assert sorted(ln.strip() for ln in job.splitlines()) == ["contents: read", "issues: write"]
-    assert "python -m wfj report check --body-file" in wf
+    assert "python -m wfi report check --body-file" in wf
 
 
 def test_workflow_never_puts_the_issue_text_in_a_script(root):

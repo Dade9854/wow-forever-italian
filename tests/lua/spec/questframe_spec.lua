@@ -26,7 +26,7 @@ local DETAIL, PROGRESS, REWARD = "questframe.detail", "questframe.progress", "qu
 local MORPHEUS, FRIZ = { "Fonts\\MORPHEUS.TTF", 18, "" }, { "Fonts\\FRIZQT__.TTF", 13, "" }
 
 describe("UI/QuestFrame: accept / progress / turn-in windows", function()
-  local WFJ, S, SS, QF, lookups
+  local WFI, S, SS, QF, lookups
 
   local function setQuest(id)
     Stub.quest = { id = id, title = "Sharptalon's Claw", description = "Kill Sharptalon at Silverwind Refuge.",
@@ -46,17 +46,17 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    S, SS, QF = WFJ.Settings, WFJ.SurfaceState, WFJ.QuestFrame
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI = H.loadChunks(FILES)
+    S, SS, QF = WFI.Settings, WFI.SurfaceState, WFI.QuestFrame
+    WFI.Compat.init(function(name) return _G[name] end)
     S.load(nil, 1, {})
     lookups = {}
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id)
         lookups[#lookups + 1] = { kind, id }
         return DATA[kind] and DATA[kind][id]
@@ -80,22 +80,22 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
 
   it("a conditional description (this character's wording) is its keyed text, not the quest's own", function()
     DATA.gossip = { k1 = { ja = "条件付きの説明文", status = "." } }
-    WFJ.ShippedGossipKey = function(text) if text == Stub.quest.description then return "k1" end end
+    WFI.ShippedGossipKey = function(text) if text == Stub.quest.description then return "k1" end end
     Stub.showDetail()
     assert.are.equal("条件付きの説明文", QuestInfoDescriptionText:GetText())
     assert.are.equal("gossip", SS.get(DETAIL, "description").meta.kind)
     assert.are.equal("Sharptalonの鉤爪", QuestInfoTitleHeader:GetText()) -- the other fields by the quest id
-    WFJ.ShippedGossipKey, DATA.gossip = nil, nil
+    WFI.ShippedGossipKey, DATA.gossip = nil, nil
   end)
 
   it("a repeated quest's progress with no Japanese of its own takes the text keyed by its English", function()
     DATA.gossip = { kp = { ja = "良い焚き火は、あらゆる良いキャンプの土台です。", status = "." } }
     local recorded = {}
-    local record = WFJ.Collector.record
-    WFJ.Collector.record = function(kind, id, field, en) recorded[#recorded + 1] = { kind, id, field, en } end
-    WFJ.ShippedGossipKey = function(text) if text == "A good campfire is the foundation to any good camp." then
+    local record = WFI.Collector.record
+    WFI.Collector.record = function(kind, id, field, en) recorded[#recorded + 1] = { kind, id, field, en } end
+    WFI.ShippedGossipKey = function(text) if text == "A good campfire is the foundation to any good camp." then
       return "kp" end end
-    WFJ.IsQuestFieldEnglish = function(id) return id == 2 end -- quest 2 has its own translation
+    WFI.IsQuestFieldEnglish = function(id) return id == 2 end -- quest 2 has its own translation
     setQuest(9)
     Stub.quest.progress = "A good campfire is the foundation to any good camp."
     Stub.showProgress()
@@ -104,11 +104,11 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     -- the quest's own translation wins where it has one
     setQuest(2)
     Stub.quest.progress = "Did you get it?"
-    WFJ.ShippedGossipKey = function() return "kp" end
+    WFI.ShippedGossipKey = function() return "kp" end
     Stub.showProgress()
     assert.are.equal("まだか？", QuestProgressText:GetText())
-    WFJ.ShippedGossipKey, WFJ.IsQuestFieldEnglish, DATA.gossip = nil, nil, nil
-    WFJ.Collector.record = record
+    WFI.ShippedGossipKey, WFI.IsQuestFieldEnglish, DATA.gossip = nil, nil, nil
+    WFI.Collector.record = record
   end)
 
   it("detail window translates title / description / objectives by field with the API id; refit runs",
@@ -117,10 +117,10 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.equal("Sharptalonの鉤爪", QuestInfoTitleHeader:GetText())
     assert.are.equal("Silverwind Refugeの説明文", QuestInfoDescriptionText:GetText())
     assert.are.equal("Sharptalonを倒せ", QuestInfoObjectivesText:GetText()) -- no inline marker: the banner has it
-    assert.are.equal(WFJ.MARKER.stale, QF.banner:GetText())
+    assert.are.equal(WFI.MARKER.stale, QF.banner:GetText())
     assert.is_true(QF.banner:IsShown())
-    assert.are.same({ WFJ.Font.PATH, 18, "" }, { QuestInfoTitleHeader:GetFont() })
-    assert.are.same({ WFJ.Font.PATH, 13, "" }, { QuestInfoDescriptionText:GetFont() })
+    assert.are.same({ WFI.Font.PATH, 18, "" }, { QuestInfoTitleHeader:GetFont() })
+    assert.are.same({ WFI.Font.PATH, 13, "" }, { QuestInfoDescriptionText:GetFont() })
     for _, key in ipairs({ "title", "description", "objectives" }) do
       local rec = SS.get(DETAIL, key)
       assert.is_table(rec, key)
@@ -140,7 +140,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.equal("Silverwind Refugeの説明文", QuestInfoDescriptionText:GetText())
     assert.are.equal("Sharptalonを倒せ", QuestInfoObjectivesText:GetText())
     assert.are.equal(3, SS.count(DETAIL))
-    assert.are.equal(WFJ.MARKER.stale, QF.banner:GetText())
+    assert.are.equal(WFI.MARKER.stale, QF.banner:GetText())
     -- the records still release to the client's English
     QuestFrame:Hide()
     assert.are.equal("Sharptalon's Claw", QuestInfoTitleHeader:GetText())
@@ -165,7 +165,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     Stub.showProgress()
     assert.are.equal("Sharptalonの鉤爪", QuestProgressTitleText:GetText())
     assert.are.equal("まだか？", QuestProgressText:GetText())
-    assert.are.equal(WFJ.Font.PATH, (QuestProgressTitleText:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (QuestProgressTitleText:GetFont()))
     assert.are.equal(2, SS.count(PROGRESS))
     assert.is_true(QuestProgressScrollFrame.calls.UpdateScrollChildRect >= 1)
     assert.is_nil(Stub.hooks.QuestFrameProgressPanel_OnShow) -- never hooked as a global (XML-bound)
@@ -173,7 +173,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     Stub.showReward()
     assert.are.equal("Sharptalonの鉤爪", QuestInfoTitleHeader:GetText())
     assert.are.equal("よくやった", QuestInfoRewardText:GetText())
-    assert.are.equal(WFJ.Font.PATH, (QuestInfoTitleHeader:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (QuestInfoTitleHeader:GetFont()))
     assert.are.equal(2, SS.count(REWARD))
     assert.is_true(QuestRewardScrollFrame.calls.UpdateScrollChildRect >= 1)
   end)
@@ -191,13 +191,13 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
   end)
 
   it("the reward window's stale banner follows the live check (match → none, mismatch → shown)", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
-    local function h1(t) return (WFJ.Hash.h32x2(WFJ.Normalize.v1(t))) end
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    local function h1(t) return (WFI.Hash.h32x2(WFI.Normalize.v1(t))) end
     local entry = { ja = "よくやった", status = ".", h1 = h1("Well done.") }
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return kind == "quest.completion" and id == 2 and entry or nil end,
       marker = function(n) return S.get("marker." .. n) end,
       fingerprints = function(t) return { h1(t) } end,
@@ -208,7 +208,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     Stub.quest.completion = "Well done, hero."
     Stub.showReward()
     assert.are.equal("よくやった", QuestInfoRewardText:GetText())
-    assert.are.equal(WFJ.MARKER.stale, QF.banner:GetText())
+    assert.are.equal(WFI.MARKER.stale, QF.banner:GetText())
     assert.is_true(QF.banner:IsShown())
   end)
 
@@ -223,10 +223,10 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.same(FRIZ, { QuestProgressText:GetFont() })
     -- the modifier now touches only the reward panel
     local before = counts()
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(before[QuestProgressTitleText][1], QuestProgressTitleText.calls.SetText)
     assert.are.equal("Sharptalon's Claw", QuestInfoTitleHeader:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
 
     QuestFrame:Hide()
     for _, fs in ipairs({ QuestInfoTitleHeader, QuestInfoRewardText, QuestProgressTitleText, QuestProgressText }) do
@@ -239,7 +239,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
 
   it("modifier and toggles restore / reapply; nothing written while held", function()
     Stub.showDetail()
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Sharptalon's Claw", QuestInfoTitleHeader:GetText())
     assert.are.equal("Kill Sharptalon at Silverwind Refuge.", QuestInfoDescriptionText:GetText())
     assert.are.equal("Bring Sharptalon's Claw to Senani Thunderheart.", QuestInfoObjectivesText:GetText())
@@ -254,7 +254,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
       assert.are.equal(before[fs][2], fs.calls.SetFont, fs.name)
     end
 
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("Sharptalonの鉤爪", QuestInfoTitleHeader:GetText())
     S.set("area.quests", false)
     assert.are.equal("Sharptalon's Claw", QuestInfoTitleHeader:GetText())
@@ -279,7 +279,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.same(FRIZ, { QuestInfoObjectivesText:GetFont() })
     -- after release the modifier does nothing to these widgets
     local before = counts()
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(before[QuestInfoTitleHeader][1], QuestInfoTitleHeader.calls.SetText)
   end)
 
@@ -289,7 +289,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.equal(300, QF.banner.width)
     -- the mainline ButtonFrameTemplate (Forever): its parchment starts at -62, so the banner takes the stone strip
     -- right of the portrait, where the gossip window's banner sits
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     rawset(_G.QuestFrame, "TopTileStreaks", {})
     local W = H.loadChunks(FILES)
@@ -306,7 +306,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
   end)
 
   it("an untranslated quest is left untouched; the missing marker rides the live English", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     setQuest(999)
     local before = counts()
     Stub.showDetail()
@@ -321,9 +321,9 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     S.set("marker.missing", true)
     assert.are.equal("Sharptalon's Claw", QuestInfoTitleHeader:GetText()) -- the English is never touched …
     assert.are.same(MORPHEUS, { QuestInfoTitleHeader:GetFont() }) -- … nor its font
-    assert.are.equal(WFJ.MARKER.missing, QF.banner:GetText()) -- the message sits in the band under the NPC name
+    assert.are.equal(WFI.MARKER.missing, QF.banner:GetText()) -- the message sits in the band under the NPC name
     assert.is_true(QF.banner:IsShown())
-    assert.are.same({ WFJ.Font.PATH, 18 - 4, "" }, { QF.banner:GetFont() })
+    assert.are.same({ WFI.Font.PATH, 18 - 4, "" }, { QF.banner:GetFont() })
     assert.are.equal(QuestFrame, QF.bannerFrame.parent) -- on our own frame …
     assert.is_true(QF.bannerFrame:GetFrameLevel() > QuestFrame:GetFrameLevel() + 1) -- … raised above the panels
     S.set("marker.missing", false)
@@ -337,7 +337,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
   it("a translated quest followed by an untranslated one on the same widgets → English, original font",
   function()
     Stub.showDetail()
-    assert.are.equal(WFJ.Font.PATH, (QuestInfoDescriptionText:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (QuestInfoDescriptionText:GetFont()))
     setQuest(999)
     Stub.quest.description = "A different quest."
     Stub.showDetail()
@@ -365,8 +365,8 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.equal("Unknown quest", QuestInfoTitleHeader:GetText())
     assert.are.same(MORPHEUS, { QuestInfoTitleHeader:GetFont() }) -- carried font reset
     local n = QuestInfoTitleHeader.calls.SetText
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(n, QuestInfoTitleHeader.calls.SetText) -- nothing restored over the client's text
     assert.are.equal("Unknown quest", QuestInfoTitleHeader:GetText())
   end)
@@ -386,7 +386,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.same(MORPHEUS, { header:GetFont() }) -- our font came off with the dropped record
     assert.is_table(SS.get(DETAIL, "description"))
     assert.are.equal("Silverwind Refugeの説明文", QuestInfoDescriptionText:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Sharptalon's Claw (decorated)", header:GetText()) -- never restored over the client's text
     assert.are.equal("Kill Sharptalon at Silverwind Refuge.", QuestInfoDescriptionText:GetText())
   end)
@@ -411,7 +411,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
   it("init is idempotent and degrades when the progress panel is missing (reported by Compat.unresolved)",
   function()
     assert.is_false(QF.init()) -- already hooked
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     _G.QuestFrameProgressPanel = nil
     local ns = H.loadChunks(FILES)
@@ -423,12 +423,12 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
 
   describe("feeds the Collector", function()
     it("records every non-empty field's API English and the quest giver, whatever is shown", function()
-      local db = WFJ.Collector.load(nil, H.collectorDeps())
+      local db = WFI.Collector.load(nil, H.collectorDeps())
       Stub.units.questnpc = { name = "Senani Thunderheart", guid = "Creature-0-4372-0-17-3100-0000A1B2C3" }
       S.set("enabled", false)
       Stub.showDetail()
       Stub.keys.alt = true
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       Stub.showProgress()
       Stub.quest.completion = "" -- empty English is never recorded
       Stub.showReward()
@@ -445,7 +445,7 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     end)
 
     it("a quest id of 0 records nothing; an item-started quest has no giver to record", function()
-      local db = WFJ.Collector.load(nil, H.collectorDeps())
+      local db = WFI.Collector.load(nil, H.collectorDeps())
       Stub.quest.id = 0
       Stub.showDetail()
       assert.is_nil(next(db.entries))
@@ -457,17 +457,17 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     end)
 
     it("a failing collector never stops the window from rendering", function()
-      WFJ.Collector.load(nil, H.collectorDeps({ lookup = function() error("collector boom") end }))
+      WFI.Collector.load(nil, H.collectorDeps({ lookup = function() error("collector boom") end }))
       Stub.showDetail()
       assert.are.equal("Sharptalonの鉤爪", QuestInfoTitleHeader:GetText())
-      assert.are.equal(3, WFJ.Collector.status().errors)
+      assert.are.equal(3, WFI.Collector.status().errors)
       QuestFrame:Hide()
     end)
   end)
 end)
 
 describe("UI/QuestFrame: player tokens in the quest window", function()
-  local WFJ, SS
+  local WFI, SS
   -- the main block's files plus Core/Placeholders (the surfaces feed Core/Collector)
   local FILES_P = { "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua", "Core/Modifier.lua",
     "Core/Placeholders.lua", "Core/Translator.lua", "Core/SurfaceState.lua", "Core/Normalize.lua", "Core/Hash.lua",
@@ -479,26 +479,26 @@ describe("UI/QuestFrame: player tokens in the quest window", function()
   }
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES_P)
-    SS = WFJ.SurfaceState
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Settings.load(nil, 1, {})
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI = H.loadChunks(FILES_P)
+    SS = WFI.SurfaceState
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Settings.load(nil, 1, {})
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return TOKENS[kind] and TOKENS[kind][id] end,
-      marker = function(n) return WFJ.Settings.get("marker." .. n) end,
+      marker = function(n) return WFI.Settings.get("marker." .. n) end,
       expand = function(ja) -- as Main.lua injects it, over the stub's UnitName / UnitClass / UnitRace / UnitSex
         local className, classFile = UnitClass("player")
         local raceName, raceFile = UnitRace("player")
-        return (WFJ.Placeholders.expand(ja, { name = UnitName("player"), className = className, classFile = classFile,
+        return (WFI.Placeholders.expand(ja, { name = UnitName("player"), className = className, classFile = classFile,
           raceName = raceName, raceFile = raceFile, sex = UnitSex("player") }))
       end,
     }))
-    assert.is_true(WFJ.QuestFrame.init())
+    assert.is_true(WFI.QuestFrame.init())
     Stub.quest = { id = 7, title = "The Balance of Nature",
       description = "Greetings, Reyn. Young hunter, show the strength of the night elves.",
       objectives = "", progress = "", completion = "" }
@@ -509,47 +509,47 @@ describe("UI/QuestFrame: player tokens in the quest window", function()
     assert.are.equal("ナイトエルフのハンターへ", QuestInfoTitleHeader:GetText())
     assert.are.equal("御機嫌よう、Reyn。若きハンターよ、ナイトエルフの力を見せてくれ。", QuestInfoDescriptionText:GetText())
 
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("The Balance of Nature", QuestInfoTitleHeader:GetText())
     assert.are.equal(Stub.quest.description, QuestInfoDescriptionText:GetText())
 
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("御機嫌よう、Reyn。若きハンターよ、ナイトエルフの力を見せてくれ。", QuestInfoDescriptionText:GetText())
 
     local writes = QuestInfoDescriptionText.calls.SetText
-    assert.are.equal(0, WFJ.Render.refresh()) -- the expansion is deterministic: nothing to rewrite
+    assert.are.equal(0, WFI.Render.refresh()) -- the expansion is deterministic: nothing to rewrite
     assert.are.equal(writes, QuestInfoDescriptionText.calls.SetText)
     assert.is_table(SS.get("questframe.detail", "description"))
   end)
 end)
 
 describe("UI/QuestFrame: the greeting panel's NPC text is gossip", function()
-  local WFJ, SS, QF, data, db
+  local WFI, SS, QF, data, db
   local FILES_G = { "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua", "Core/Modifier.lua",
     "Core/Translator.lua", "Core/SurfaceState.lua", "Core/Normalize.lua", "Core/Hash.lua", "Core/Collector.lua",
     "UI/Font.lua", "UI/Frames.lua", "UI/Render.lua", "UI/ButtonText.lua", "UI/Labels.lua", "UI/QuestFrame.lua" }
   local PLAYER = { name = "Reyn", class = "Hunter", race = "Night Elf" }
   local GREETING = "Hail, Reyn. I have work for a hunter like you."
 
-  local function key(en) return WFJ.Collector.key(en, PLAYER) end
+  local function key(en) return WFI.Collector.key(en, PLAYER) end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES_G)
-    SS, QF = WFJ.SurfaceState, WFJ.QuestFrame
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Settings.load(nil, 1, {})
+    WFI = H.loadChunks(FILES_G)
+    SS, QF = WFI.SurfaceState, WFI.QuestFrame
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Settings.load(nil, 1, {})
     data = { gossip = {}, ["quest.title"] = { [2] = { ja = "Sharptalonの鉤爪", status = "." } } }
-    db = WFJ.Collector.load(nil, H.collectorDeps({
+    db = WFI.Collector.load(nil, H.collectorDeps({
       lookup = function(kind, id) return data[kind] and data[kind][id] end,
     }))
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return data[kind] and data[kind][id] end,
-      marker = function(n) return WFJ.Settings.get("marker." .. n) end,
+      marker = function(n) return WFI.Settings.get("marker." .. n) end,
     }))
     assert.is_true(QF.init({ key = key }))
     Stub.greeting = GREETING
@@ -560,12 +560,12 @@ describe("UI/QuestFrame: the greeting panel's NPC text is gossip", function()
   it("translates GreetingText by its gossip key through OnShow; the stale marker goes to the banner", function()
     Stub.showGreeting()
     assert.are.equal("ようこそ、{name}。仕事がある。", GreetingText:GetText())
-    assert.are.equal(WFJ.Font.PATH, (GreetingText:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (GreetingText:GetFont()))
     local rec = SS.get(QF.GREETING, "greeting")
     assert.are.equal("gossip", rec.meta.kind)
     assert.are.equal(key(GREETING), rec.meta.id)
     assert.is_true(QuestGreetingScrollFrame.calls.UpdateScrollChildRect >= 1)
-    assert.are.equal(WFJ.MARKER.stale, QF.banner:GetText())
+    assert.are.equal(WFI.MARKER.stale, QF.banner:GetText())
     assert.is_true(QF.banner:IsShown())
     -- the handler reached a second time with no client write in between: no second write
     local writes = GreetingText.calls.addonSetText
@@ -589,7 +589,7 @@ describe("UI/QuestFrame: the greeting panel's NPC text is gossip", function()
     assert.are.equal(0, SS.count(QF.GREETING))
     assert.are.equal(GREETING, GreetingText:GetText())
     assert.are.same({ "Fonts\\FRIZQT__.TTF", 13, "" }, { GreetingText:GetFont() })
-    assert.is_nil(QF.banner:GetText():find(WFJ.MARKER.stale, 1, true)) -- the hidden greeting no longer counts
+    assert.is_nil(QF.banner:GetText():find(WFI.MARKER.stale, 1, true)) -- the hidden greeting no longer counts
     assert.are.equal("Sharptalonの鉤爪", QuestInfoTitleHeader:GetText())
     Stub.showGreeting()
     assert.are.equal(0, SS.count("questframe.detail"))

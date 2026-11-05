@@ -17,10 +17,10 @@ local UI = {
 }
 
 describe("UI/QuestMap's story header, story tooltip and events tab", function()
-  local WFJ, list
+  local WFI, list
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     for key, pair in pairs(UI) do _G[key] = pair[1] end
     Q.install()
@@ -35,10 +35,10 @@ describe("UI/QuestMap's story header, story tooltip and events tab", function()
     local tab = CreateFrame("Button")
     tab.tooltipText = _G.EVENT_SCHEDULER_FRAME_LABEL
     _G.QuestMapFrame.EventsTab = tab
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    WFJ.QuestFrame.init()
-    assert.is_true(WFJ.QuestMap.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    WFI.QuestFrame.init()
+    assert.is_true(WFI.QuestMap.init())
   end)
 
   after_each(function()

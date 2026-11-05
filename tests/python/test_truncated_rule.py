@@ -1,8 +1,8 @@
 """The completeness rule inside the decision table, and the report."""
 
-from wfj.core import report
-from wfj.core.dedupe import Candidate, resolve, source_rank
-from wfj.core.status import Scope, decide
+from wfi.core import report
+from wfi.core.dedupe import Candidate, resolve, source_rank
+from wfi.core.status import Scope, decide
 
 # quest 456's real pfQuest English (497 chars, three paragraphs); the shipped one-paragraph Japanese is 70
 EN_RAW = (

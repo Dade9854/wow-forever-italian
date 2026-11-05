@@ -50,18 +50,18 @@ local QUEST6 = { title = "The Lost Tome", description = "A book is missing.", ob
 local QUEST7 = { title = "Untranslated Errand", description = "Nobody wrote this.", objectives = "Run.", level = 3 }
 
 describe("UI/QuestMap: the camelot quest log", function()
-  local WFJ, SS, QM, Q
+  local WFI, SS, QM, Q
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     Q = QStub.install()
     local function copy(t) local c = {}; for k, v in pairs(t) do c[k] = v end; return c end
     Q.quests[5], Q.quests[6], Q.quests[7] = copy(QUEST5), copy(QUEST6), copy(QUEST7)
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
-    SS, QM = WFJ.SurfaceState, WFJ.QuestMap
-    assert.is_true(WFJ.QuestFrame.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
+    SS, QM = WFI.SurfaceState, WFI.QuestMap
+    assert.is_true(WFI.QuestFrame.init())
     assert.is_true(QM.init())
   end)
 
@@ -104,7 +104,7 @@ describe("UI/QuestMap: the camelot quest log", function()
       assert.is_false(QM.makeBanner()) -- once
       Q.showDetails(7)
       assert.are.equal("Untranslated Errand", QuestInfoTitleHeader:GetText())
-      assert.are.equal(WFJ.MARKER.missing, QM.banner:GetText())
+      assert.are.equal(WFI.MARKER.missing, QM.banner:GetText())
       assert.are.equal("\n", QM.banner.markerSep) -- both markers do not fit on one line beside the button
       assert.is_true(QM.banner:IsShown())
       assert.are.same({ "LEFT", back, "RIGHT", QM.BANNER_GAP, 0 }, QM.bannerFrame.point)
@@ -133,7 +133,7 @@ describe("UI/QuestMap: the camelot quest log", function()
     end)
 
     it("an untranslated quest shows the client's English; no selection records nothing", function()
-      WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+      WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
       Q.showDetails(5)
       Q.showDetails(7)
       assert.are.equal("Untranslated Errand", QuestInfoTitleHeader:GetText())
@@ -157,15 +157,15 @@ describe("UI/QuestMap: the camelot quest log", function()
 
     it("the modifier shows the English and lets go back to the Japanese", function()
       Q.showDetails(5)
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Wolf Pelts", QuestInfoTitleHeader:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("狼の毛皮", QuestInfoTitleHeader:GetText())
     end)
 
     it("feeds the Collector the API English of every field", function()
       local seen = {}
-      WFJ.Collector.record = function(kind, id, field, en) seen[#seen + 1] = { kind, id, field, en } end
+      WFI.Collector.record = function(kind, id, field, en) seen[#seen + 1] = { kind, id, field, en } end
       Q.showDetails(5)
       assert.are.same({ "quest", 5, "title", "Wolf Pelts" }, seen[1])
       assert.are.same({ "quest", 5, "description", QUEST5.description }, seen[3])
@@ -258,9 +258,9 @@ describe("UI/QuestMap: the camelot quest log", function()
       assert.are.equal("[10] 狼の毛皮", rows[5].Text:GetText())
       assert.are.equal("[12+] 失われた書物", rows[6].Text:GetText())
       assert.are.equal("[3] Untranslated Errand", rows[7].Text:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("[10] Wolf Pelts", rows[5].Text:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("[10] 狼の毛皮", rows[5].Text:GetText())
     end)
 
@@ -298,9 +298,9 @@ describe("UI/QuestMap: the camelot quest log", function()
         local row = Q.rows()[6]
         assert.are.equal(c[2], row.TagText:GetText())
         assert.are.equal("[12+] 失われた書物", row.Text:GetText())
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal(c[3], row.TagText:GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         assert.are.equal(c[2], row.TagText:GetText())
       end
     end)
@@ -329,9 +329,9 @@ describe("UI/QuestMap: the camelot quest log", function()
       Q.trackerLevel = false
       Q.updateTracker()
       assert.are.equal("|cffffff00狼の毛皮|r", blocks[5].HeaderText:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("|cffffff00Wolf Pelts|r", blocks[5].HeaderText:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("|cffffff00狼の毛皮|r", blocks[5].HeaderText:GetText())
     end)
 
@@ -348,9 +348,9 @@ describe("UI/QuestMap: the camelot quest log", function()
         Q.quests[6].tag = c[1]
         Q.updateTracker()
         assert.are.equal("|cffffff00[12+] 失われた書物 " .. c[2] .. "|r", blocks[6].HeaderText:GetText())
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("|cffffff00[12+] The Lost Tome " .. c[3] .. "|r", blocks[6].HeaderText:GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         assert.are.equal("|cffffff00[12+] 失われた書物 " .. c[2] .. "|r", blocks[6].HeaderText:GetText())
       end
       -- a quest with no Japanese title keeps its whole header English, tag included
@@ -386,11 +386,11 @@ describe("UI/QuestMap: the camelot quest log", function()
       local ja = block.HeaderText:GetHeight()
       assert.are.equal("狼の毛皮", block.HeaderText:GetText())
       assert.are.equal(ja + Q.OBJECTIVE_HEIGHT, block.laidOut)
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       local en = block.HeaderText:GetHeight()
       assert.are_not.equal(ja, en) -- the bundled font measures differently
       assert.are.equal(en + Q.OBJECTIVE_HEIGHT, block.laidOut)
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal(ja + Q.OBJECTIVE_HEIGHT, block.laidOut)
     end)
 
@@ -400,9 +400,9 @@ describe("UI/QuestMap: the camelot quest log", function()
       local tracker, block = _G.QuestObjectiveTracker, _G.QuestObjectiveTracker.usedBlocks[5]
       assert.are.equal(block.height, tracker.contentsHeight)
       assert.are.equal(block.laidOut, tracker.frameHeight)
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(block.laidOut, tracker.frameHeight)
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
     end)
 
     it("the addon never assigns a tracker block's height field (the client's own layout writes it)", function()
@@ -411,15 +411,15 @@ describe("UI/QuestMap: the camelot quest log", function()
     end)
 
     it("a block built before the addon hooked is translated after the layout, its height corrected", function()
-      Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+      Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
       Stub.installQuestAPI(); Stub.installTooltipAPI()
       Q = QStub.install()
       Q.quests[5] = { title = "Wolf Pelts", description = "d", objectives = "o", level = 10 }
       Q.log, Q.watched = { 5 }, { [5] = true }
       Q.updateTracker() -- the client built the block in English before we loaded
-      WFJ = H.loadChunks(FILES)
-      H.uiSetup(WFJ, UI, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
-      WFJ.QuestFrame.init(); WFJ.QuestMap.init()
+      WFI = H.loadChunks(FILES)
+      H.uiSetup(WFI, UI, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
+      WFI.QuestFrame.init(); WFI.QuestMap.init()
       Q.updateTracker() -- no GetBlock hook fired for this block's SetHeader: UpdateSingle's late path
       local block = _G.QuestObjectiveTracker.usedBlocks[5]
       assert.are.equal("狼の毛皮", block.HeaderText:GetText())
@@ -505,7 +505,7 @@ describe("UI/QuestMap: the camelot quest log", function()
 
     it("the Back button takes BACK only: a dictionary with the cloak slot's \"Back\" never reaches it", function()
       local back = _G.QuestMapFrame.QuestsFrame.DetailsFrame.BackFrame.BackButton
-      assert.are.equal("INVTYPE_CLOAK", (WFJ.UIIndex:match("Back"))) -- the collision is real in this dictionary
+      assert.are.equal("INVTYPE_CLOAK", (WFI.UIIndex:match("Back"))) -- the collision is real in this dictionary
       Q.showDetails(5)
       Q.setWatched(5, true)
       Q.showDetails(5)
@@ -520,15 +520,15 @@ describe("UI/QuestMap: the camelot quest log", function()
       assert.are.equal("すべての目標", _G.ObjectiveTrackerFrame.Header.Text:GetText())
       _G.QuestObjectiveTracker:SetHeader("Quests")
       assert.are.equal("クエスト", _G.QuestObjectiveTracker.Header.Text:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("All Objectives", _G.ObjectiveTrackerFrame.Header.Text:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("すべての目標", _G.ObjectiveTrackerFrame.Header.Text:GetText())
     end)
 
     it("the waypoint buttons' tooltips (help surface, each its own key); released on the tooltip's OnHide", function()
       local d = _G.QuestMapFrame.QuestsFrame.DetailsFrame
-      assert.is_true(WFJ.HelpTooltip.registered(d.DestinationMapButton))
+      assert.is_true(WFI.HelpTooltip.registered(d.DestinationMapButton))
       Q.hoverPath(d.DestinationMapButton)
       assert.are.equal("最終目的地を表示", _G.GameTooltipTextLeft1:GetText())
       Q.hoverPath(d.WaypointMapButton)
@@ -538,7 +538,7 @@ describe("UI/QuestMap: the camelot quest log", function()
     end)
 
     it("the search box itself is never ours", function()
-      assert.is_true(WFJ.Labels.forbidden(_G.QuestScrollFrame.SearchBox))
+      assert.is_true(WFI.Labels.forbidden(_G.QuestScrollFrame.SearchBox))
     end)
   end)
 end)
@@ -547,18 +547,18 @@ end)
 -- SetTitle(MAP_AND_QUEST_LOG) from OnLoad and after every minimize, and SetTitle(WORLD_MAP) when maximized
 -- [blizzard_worldmap/blizzard_worldmap.lua:14–15, 22–30].
 describe("UI/QuestMap: the window title", function()
-  local WFJ, SS, QM, border
+  local WFI, SS, QM, border
 
   local TITLES = {
     MAP_AND_QUEST_LOG = { "Map & Quest Log", "マップ＆クエストログ" }, WORLD_MAP = { "Map", "マップ" },
     QUEST_LOG = { "Quest Log", "クエストログ" }, REWARDS = { "Rewards", "報酬" },
   }
   local function title() return border.TitleContainer.TitleText end
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
 
   -- `shape` builds the map before the addon loads: a camelot-shaped one by default.
   local function setup(shape)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     QStub.install()
     local map = CreateFrame("Frame", "WorldMapFrame")
@@ -567,11 +567,11 @@ describe("UI/QuestMap: the window title", function()
     function border.SetTitle(self, t) self.TitleContainer.TitleText.text = t end
     map.BorderFrame = border
     if shape then shape(map) end
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, TITLES)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, TITLES)
     border:SetTitle(_G.MAP_AND_QUEST_LOG) -- WorldMapMixin:SetupTitle, from OnLoad
-    SS, QM = WFJ.SurfaceState, WFJ.QuestMap
-    WFJ.QuestFrame.init()
+    SS, QM = WFI.SurfaceState, WFI.QuestMap
+    WFI.QuestFrame.init()
     QM.init()
   end
 
@@ -584,7 +584,7 @@ describe("UI/QuestMap: the window title", function()
     function()
       setup()
       assert.are.equal("マップ＆クエストログ", title():GetText())
-      assert.are.equal(WFJ.Font.PATH, (title():GetFont()))
+      assert.are.equal(WFI.Font.PATH, (title():GetFont()))
       border:SetTitle(_G.WORLD_MAP) -- SynchronizeDisplayState, maximized
       assert.are.equal("マップ", title():GetText())
       border:SetTitle(_G.MAP_AND_QUEST_LOG) -- minimized again: a second SetTitle keeps the Japanese
@@ -632,13 +632,13 @@ describe("UI/QuestMap: the window title", function()
   end)
 
   it("without a world map nothing is hooked or shown", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     _G.WorldMapFrame = nil
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, TITLES)
-    assert.has_no.errors(function() WFJ.QuestFrame.init(); WFJ.QuestMap.init() end)
-    assert.are.equal(0, WFJ.QuestMap.showMapTitle())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, TITLES)
+    assert.has_no.errors(function() WFI.QuestFrame.init(); WFI.QuestMap.init() end)
+    assert.are.equal(0, WFI.QuestMap.showMapTitle())
     assert.is_nil(Stub.hooks["?:SetTitle"])
   end)
 end)

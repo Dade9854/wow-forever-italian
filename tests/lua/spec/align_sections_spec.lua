@@ -5,13 +5,13 @@ local Stub = require("tests.lua.spec.wow_stub")
 local Loader = require("tests.lua.spec.loader")
 
 describe("sectioned lines (Camp Benefits)", function()
-  local WFJ, sec
+  local WFI, sec
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    sec = WFJ.Lookup.get("spell.aura", 1229741).sections
+    WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    sec = WFI.Lookup.get("spell.aura", 1229741).sections
   end)
 
   local HEAD = "Gained the following camp benefits:"
@@ -24,19 +24,19 @@ describe("sectioned lines (Camp Benefits)", function()
   end)
 
   it("the heading and any set of paragraphs, each filled from its own values, in the client's order", function()
-    local ok, text = WFJ.Align.sections(sec, { live("Mana Well: Restores 25 Mana every 5 seconds.",
+    local ok, text = WFI.Align.sections(sec, { live("Mana Well: Restores 25 Mana every 5 seconds.",
       "Sharpening Wheel: Strength increased by 3.", "Faction Banner: Spirit increased by 4.") })
     assert.is_true(ok)
     assert.are.equal("以下のキャンプの恩恵を得ています：\n\nMana Well：5秒ごとにマナを25回復します。\n\n"
       .. "Sharpening Wheel：筋力が3増加します。\n\nFaction Banner：精神が4増加します。", text)
-    ok, text = WFJ.Align.sections(sec, { live("Fish Bowl: All stats increased by 2%.") })
+    ok, text = WFI.Align.sections(sec, { live("Fish Bowl: All stats increased by 2%.") })
     assert.is_true(ok)
     assert.are.equal("以下のキャンプの恩恵を得ています：\n\nFish Bowl：すべての能力値が2%増加します。", text)
   end)
 
   it("an unknown paragraph, a changed heading or a paragraph that does not fit leaves the English", function()
-    assert.is_false(WFJ.Align.sections(sec, { live("Hot Tub: Agility increased by 5.") }))
-    assert.is_false(WFJ.Align.sections(sec, { "Gained these camp benefits:\n\nFish Bowl: All stats increased by 2%." }))
-    assert.is_false(WFJ.Align.sections(sec, { live("Sharpening Wheel: Strength increased by 3 and 4.") }))
+    assert.is_false(WFI.Align.sections(sec, { live("Hot Tub: Agility increased by 5.") }))
+    assert.is_false(WFI.Align.sections(sec, { "Gained these camp benefits:\n\nFish Bowl: All stats increased by 2%." }))
+    assert.is_false(WFI.Align.sections(sec, { live("Sharpening Wheel: Strength increased by 3 and 4.") }))
   end)
 end)

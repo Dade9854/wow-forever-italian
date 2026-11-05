@@ -2,11 +2,11 @@
 from the name baseline changes no status; after it, changed tooltip English marks the line stale (it still ships
 and is still gated in-game, ADR-007). And what the new hash means for the collector."""
 
-from wfj.cmd.check import build_scopes, check_type
-from wfj.core.hashing import key
-from wfj.core.model import english_line, entry, provenance
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd.check import build_scopes, check_type
+from wfi.core.hashing import key
+from wfi.core.model import english_line, entry, provenance
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 WAGO = "wago@1.15.9.69722"
 PROV = provenance("human", "ctjt@84db736", "2026-09-13", translator="WoWJapanizer")
@@ -80,7 +80,7 @@ def test_collector_known_check_matches_only_a_template_without_variables(vectors
     """The addon's collector skips a rendered line whose h1 equals the shipped h1; the Lua and Python hashes
     agree on the shared vectors (test_vectors). With tooltip English as the baseline, a description with no `$`
     variable hashes like its rendered line (not recorded again); a template with variables does not."""
-    from wfj.emit.lua_writer import h1_literal
+    from wfi.emit.lua_writer import h1_literal
 
     # the shipped h1 is the first 32 bits of the key the Lua side recomputes on the same vectors (test_vectors)
     assert vectors and all(h1_literal(r["key"]) == f"0x{r['h1']:08x}" for r in vectors)
@@ -94,7 +94,7 @@ def test_collector_known_check_matches_only_a_template_without_variables(vectors
 def test_area_english_is_its_own_scope_and_never_joins_the_quest_scope(tmp_path):
     """Area text is its own type keyed by the quest id, checked in its
     own scope; the quest scope (names, numbers, the joined hash) never sees it, and quest `area` is no field."""
-    from wfj.core.model import ENGLISH_FIELDS, validate_line
+    from wfi.core.model import ENGLISH_FIELDS, validate_line
 
     store = Store(tmp_path, english=True)
     title, area = "Stonetalon Standstill", "Scout the gazebo"
@@ -157,7 +157,7 @@ def test_a_hand_written_variant_taking_over_keeps_the_stale_baseline(tmp_path):
 def test_a_change_to_an_included_spell_marks_the_line_stale(tmp_path):
     """The line a player reads splices spell 434's text in, so the baseline records that spell's
     hash (`english.includes`), and a change to it makes the line stale like a change to its own English."""
-    from wfj.cmd.check import Included
+    from wfi.cmd.check import Included
 
     en = "$@spelldesc434 Well fed."
     store = Store(tmp_path, english=True)
@@ -182,7 +182,7 @@ def test_a_change_to_an_included_spell_marks_the_line_stale(tmp_path):
 def test_a_name_list_tail_after_a_multi_line_head_records_no_includes(tmp_path):
     """The names in a list tail are copied from the live line, never translated, so a change to one of
     those spells does not make the line stale: only the head's inclusions are recorded."""
-    from wfj.cmd.check import Included
+    from wfi.cmd.check import Included
 
     en = "Allows you to ride.\r\n\r\nKnown abilities:$?s824[\r\n$@spellname824][]$?s825[\r\n$@spellname825][]"
     store = Store(tmp_path, english=True)

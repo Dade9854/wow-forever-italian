@@ -2,11 +2,11 @@
 
 - **Status:** Accepted. Amends [ADR-043](043-included-text-icons-and-branch-variants.md) (inclusions and branch
   variants) and [ADR-033](033-level-1-gaps-name-list-tails-and-untagged-menus.md) (name-list tails). Implemented in
-  `pipeline/wfj/core/align.py` (`INCLUSION`, `_INCLUDED_FIELD`, `NULL`, `_EXPANDKEY`, `parse_branches`,
+  `pipeline/wfi/core/align.py` (`INCLUSION`, `_INCLUDED_FIELD`, `NULL`, `_EXPANDKEY`, `parse_branches`,
   `NAME_LIST_TAIL`, `split_tail`, `tail_problems`, `indistinguishable`, `variant_key`, `variant_keys`),
-  `pipeline/wfj/cmd/generate.py` (`_branch_refusal`), `pipeline/wfj/emit/lua_writer.py` (`variants_literal`),
-  `pipeline/wfj/dev/translate_batch.py`, `pipeline/wfj/dev/translate_lint.py`, `pipeline/wfj/dev/coverage.py`
-  (`template_reason`), `addon/WoWForeverJapanese/Core/Align.lua` (`splitTail`, `variantKey`, `checkVariants`);
+  `pipeline/wfi/cmd/generate.py` (`_branch_refusal`), `pipeline/wfi/emit/lua_writer.py` (`variants_literal`),
+  `pipeline/wfi/dev/translate_batch.py`, `pipeline/wfi/dev/translate_lint.py`, `pipeline/wfi/dev/coverage.py`
+  (`template_reason`), `addon/WoWForeverItalian/Core/Align.lua` (`splitTail`, `variantKey`, `checkVariants`);
   `vectors/align_vectors.jsonl` (`variantKey` rows). Tally: [inclusions and
   branches](../research/2026-09-27-inclusions-and-branches.md).
 - **Date:** 2026-10-12

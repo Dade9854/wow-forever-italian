@@ -1,4 +1,4 @@
-"""`wfj.dev.vocal_errors`: each game voice id's kind of error, read from its sound files' names, with the
+"""`wfi.dev.vocal_errors`: each game voice id's kind of error, read from its sound files' names, with the
 archive and the table reader stood in."""
 
 from __future__ import annotations
@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from wfj.dev import vocal_errors as ve
-from wfj.io.db2 import Db2Table
+from wfi.dev import vocal_errors as ve
+from wfi.io.db2 import Db2Table
 
 # VocalUISounds: (voice id, race, class, the male and female sound kits)
 VOCAL = {1: (1, 1, 0, (100, 101)), 2: (1, 2, 0, (102, 0)), 3: (2, 1, 0, (103, 104)), 4: (3, 1, 0, (105, 0))}

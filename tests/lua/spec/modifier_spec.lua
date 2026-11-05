@@ -4,68 +4,68 @@ local Stub = require("tests.lua.spec.wow_stub")
 local CORE = { "Core/Const.lua", "Core/State.lua", "Core/Settings.lua", "Core/Modifier.lua" }
 
 describe("Modifier: polled truth, event as invalidation", function()
-  local WFJ, fires
+  local WFI, fires
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(CORE)
-    WFJ.Settings.load(nil, 1, {})
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(CORE)
+    WFI.Settings.load(nil, 1, {})
     fires = 0
-    WFJ.State.on("modifier", function() fires = fires + 1 end)
+    WFI.State.on("modifier", function() fires = fires + 1 end)
   end)
 
   it("isDown follows the configured key only", function()
-    assert.are.equal("alt", WFJ.Modifier.key())
-    assert.is_false(WFJ.Modifier.isDown())
+    assert.are.equal("alt", WFI.Modifier.key())
+    assert.is_false(WFI.Modifier.isDown())
     Stub.keys.alt = true
-    assert.is_true(WFJ.Modifier.isDown())
+    assert.is_true(WFI.Modifier.isDown())
     Stub.keys.alt = false; Stub.keys.ctrl = true
-    assert.is_false(WFJ.Modifier.isDown())
-    WFJ.Settings.set("modifier", "ctrl")
-    assert.is_true(WFJ.Modifier.isDown())
+    assert.is_false(WFI.Modifier.isDown())
+    WFI.Settings.set("modifier", "ctrl")
+    assert.is_true(WFI.Modifier.isDown())
     Stub.keys.ctrl = false; Stub.keys.shift = true
-    WFJ.Settings.set("modifier", "shift")
-    assert.is_true(WFJ.Modifier.isDown())
+    WFI.Settings.set("modifier", "shift")
+    assert.is_true(WFI.Modifier.isDown())
   end)
 
   it("refresh fires the modifier event once per change and never when unchanged", function()
-    assert.is_false(WFJ.Modifier.refresh())
+    assert.is_false(WFI.Modifier.refresh())
     assert.are.equal(0, fires)
     Stub.keys.alt = true
-    assert.is_true(WFJ.Modifier.refresh())
-    assert.is_false(WFJ.Modifier.refresh())
+    assert.is_true(WFI.Modifier.refresh())
+    assert.is_false(WFI.Modifier.refresh())
     assert.are.equal(1, fires)
-    assert.is_true(WFJ.State.modifierHeld)
+    assert.is_true(WFI.State.modifierHeld)
     Stub.keys.alt = false
-    assert.is_true(WFJ.Modifier.refresh())
+    assert.is_true(WFI.Modifier.refresh())
     assert.are.equal(2, fires)
-    assert.is_false(WFJ.State.modifierHeld)
+    assert.is_false(WFI.State.modifierHeld)
   end)
 
   it("changing the key while the old one is held drops to not-held and fires once", function()
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
-    assert.is_true(WFJ.State.modifierHeld)
+    WFI.Modifier.refresh()
+    assert.is_true(WFI.State.modifierHeld)
     fires = 0
-    WFJ.Settings.set("modifier", "ctrl")
-    assert.is_false(WFJ.State.modifierHeld)
+    WFI.Settings.set("modifier", "ctrl")
+    assert.is_false(WFI.State.modifierHeld)
     assert.are.equal(1, fires)
   end)
 
   it("ignores an unknown key name", function()
-    WFJ.Modifier.setKey("meta")
-    assert.are.equal("alt", WFJ.Modifier.key())
+    WFI.Modifier.setKey("meta")
+    assert.are.equal("alt", WFI.Modifier.key())
   end)
 end)
 
 describe("Modifier grammar and held state for side / bound keys", function()
-  local WFJ, M, fires
+  local WFI, M, fires
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(CORE)
-    WFJ.Settings.load(nil, 1, {})
-    M = WFJ.Modifier
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(CORE)
+    WFI.Settings.load(nil, 1, {})
+    M = WFI.Modifier
     fires = {}
-    WFJ.State.on("modifier", function(v) fires[#fires + 1] = v end)
+    WFI.State.on("modifier", function(v) fires[#fires + 1] = v end)
   end)
 
   it("normalize canonicalizes keys and refuses what can never be the modifier", function()
@@ -85,7 +85,7 @@ describe("Modifier grammar and held state for side / bound keys", function()
 
   it("a side value follows only its own side's poll", function()
     for _, side in ipairs({ "lalt", "ralt", "lctrl", "rctrl", "lshift", "rshift" }) do
-      WFJ.Settings.set("modifier", side)
+      WFI.Settings.set("modifier", side)
       local other = side:sub(1, 1) == "l" and ("r" .. side:sub(2)) or ("l" .. side:sub(2))
       Stub.keys[other] = true
       Stub.keys[side:sub(2)] = true -- the either poll is irrelevant to a side value
@@ -98,7 +98,7 @@ describe("Modifier grammar and held state for side / bound keys", function()
   end)
 
   it("a bound key is held only after the binding's down edge while the key polls down", function()
-    WFJ.Settings.set("modifier", "q")
+    WFI.Settings.set("modifier", "q")
     assert.are.equal("Q", M.bindingKey())
     Stub.pressed.Q = true
     assert.is_false(M.isDown()) -- typing q in chat: IsKeyDown true, no binding edge
@@ -113,14 +113,14 @@ describe("Modifier grammar and held state for side / bound keys", function()
   end)
 
   it("a mouse button polls IsMouseButtonDown, not IsKeyDown", function()
-    WFJ.Settings.set("modifier", "button4")
+    WFI.Settings.set("modifier", "button4")
     Stub.pressed.BUTTON4 = true
     M.bindingEdge(true)
     assert.is_false(M.isDown())
     Stub.mouse.Button4 = true
     M.bindingEdge(true)
     assert.is_true(M.isDown())
-    WFJ.Settings.set("modifier", "BUTTON3")
+    WFI.Settings.set("modifier", "BUTTON3")
     Stub.mouse.MiddleButton = true
     M.bindingEdge(true)
     assert.is_true(M.isDown())
@@ -128,9 +128,9 @@ describe("Modifier grammar and held state for side / bound keys", function()
 
   it("setKey fires revealKey with the canonical key on every apply", function()
     local keys = {}
-    WFJ.State.on("revealKey", function(k) keys[#keys + 1] = k end)
-    WFJ.Settings.set("modifier", "f5")
-    WFJ.Settings.set("modifier", "alt")
+    WFI.State.on("revealKey", function(k) keys[#keys + 1] = k end)
+    WFI.Settings.set("modifier", "f5")
+    WFI.Settings.set("modifier", "alt")
     assert.are.same({ "F5", "alt" }, keys)
   end)
 end)

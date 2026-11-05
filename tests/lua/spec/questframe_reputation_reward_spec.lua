@@ -14,15 +14,15 @@ local UI = {
 }
 
 describe("UI/QuestFrame's reputation reward row", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     -- the client's mixin, as questinfo.lua defines it before any addon loads
     _G.QuestInfoReputationRewardButtonMixin = {}
@@ -38,9 +38,9 @@ describe("UI/QuestFrame's reputation reward row", function()
       tt:AddLine(string.format(_G.QUEST_REPUTATION_REWARD_TOOLTIP, self.rewardAmount, self.factionName))
       tt:Show()
     end
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_true(WFJ.QuestFrame.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_true(WFI.QuestFrame.init())
   end)
 
   after_each(function()
@@ -56,7 +56,7 @@ describe("UI/QuestFrame's reputation reward row", function()
     row:SetUpMajorFactionReputationReward({ name = "Argent Dawn", rewardAmount = 250 })
     assert.are.equal("Argent Dawnの評価", row.Name:GetText())
     -- the window's display pass runs after the rows are built and forgets its own records, never the row's
-    WFJ.Render.forget(WFJ.QuestFrame.SPELL_HEADERS)
+    WFI.Render.forget(WFI.QuestFrame.SPELL_HEADERS)
     assert.are.equal("Argent Dawnの評価", row.Name:GetText())
     row:OnEnter()
     assert.are.equal("Argent Dawnの評価", _G.GameTooltipTextLeft1:GetText())
@@ -69,6 +69,6 @@ describe("UI/QuestFrame's reputation reward row", function()
     -- a reward whose name is not a faction ("Reputation" alone) is never this template
     row.Name:SetText("Reputation")
     assert.are.equal(0,
-      WFJ.Labels.show("questframe", "x", row.Name, nil, { only = { "QUEST_REPUTATION_REWARD_TITLE" } }))
+      WFI.Labels.show("questframe", "x", row.Name, nil, { only = { "QUEST_REPUTATION_REWARD_TITLE" } }))
   end)
 end)

@@ -48,7 +48,7 @@ local function installCombatText()
 end
 
 describe("the floating combat text on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
     local ns = H.loadChunks(FILES)
@@ -59,7 +59,7 @@ describe("the floating combat text on Forever", function()
   local function fresh()
     H.uiTeardown()
     _G.CombatText, _G.CombatText_LoadUI, _G.issecretvalue = nil, nil, nil
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.CombatText_LoadUI = function() end
     _G.issecretvalue = function(v) return v == SECRET end
@@ -69,7 +69,7 @@ describe("the floating combat text on Forever", function()
 
   before_each(function()
     fresh()
-    WFJ = load()
+    WFI = load()
   end)
 
   after_each(function()
@@ -81,7 +81,7 @@ describe("the floating combat text on Forever", function()
   it("addon already loaded: words translate; numbers, names and fragments stay as written", function()
     installCombatText()
     Stub.loadedAddons["Blizzard_CombatText"] = true
-    assert.is_true(WFJ.CombatText.init())
+    assert.is_true(WFI.CombatText.init())
     _G.CombatText:AddMessage(en("COMBAT_TEXT_MISS"))
     assert.are.equal(ja("COMBAT_TEXT_MISS"), last():GetText())
     _G.CombatText:AddMessage(en("ENTERING_COMBAT"))
@@ -130,7 +130,7 @@ describe("the floating combat text on Forever", function()
   it("a number joined to a trailer keeps the number and shows the trailer in Japanese", function()
     installCombatText()
     Stub.loadedAddons["Blizzard_CombatText"] = true
-    WFJ.CombatText.init()
+    WFI.CombatText.init()
     _G.CombatText:AddMessage("-152  (40 blocked)") -- combattext.lua:237: "-"..data.." "..format(BLOCK_TRAILER, arg3)
     assert.are.equal("-152 （40ブロック）", last():GetText())
     _G.CombatText:AddMessage("+1,240  (12 absorbed)")
@@ -138,10 +138,10 @@ describe("the floating combat text on Forever", function()
     _G.CombatText:AddMessage("-9  (3 resisted)")
     assert.are.equal("-9 （3抵抗）", last():GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("-9  (3 resisted)", last():GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     _G.CombatText:AddMessage(SECRET) -- a secret amount is never read
     assert.are.equal(SECRET, last():GetText())
   end)
@@ -149,27 +149,27 @@ describe("the floating combat text on Forever", function()
   it("a reused FontString forgets its word: Alt never puts it back over a number or a secret", function()
     installCombatText()
     Stub.loadedAddons["Blizzard_CombatText"] = true
-    WFJ.CombatText.init()
+    WFI.CombatText.init()
     _G.CombatText:AddMessage(en("COMBAT_TEXT_DODGE"))
     local first = last()
     _G.CombatText:AddMessage(en("COMBAT_TEXT_ABSORB"))
     _G.CombatText:AddMessage("-152") -- reuses `first`
     assert.are.equal(first, last())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("-152", first:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("-152", first:GetText())
     assert.has_no.errors(function() _G.CombatText:AddMessage(SECRET) end)
     assert.are.equal(SECRET, last():GetText())
   end)
 
   it("addon loaded later: the hook goes in on ADDON_LOADED", function()
-    assert.is_false(WFJ.CombatText.init())
+    assert.is_false(WFI.CombatText.init())
     installCombatText()
     Stub.loadedAddons["Blizzard_CombatText"] = true
-    WFJ.LoadOnDemand.loaded("Blizzard_CombatText")
+    WFI.LoadOnDemand.loaded("Blizzard_CombatText")
     _G.CombatText:AddMessage(en("LEAVING_COMBAT"))
     assert.are.equal(ja("LEAVING_COMBAT"), last():GetText())
     assert.are.equal(1, #Stub.hooks["CombatText:AddMessage"])
@@ -179,7 +179,7 @@ describe("the floating combat text on Forever", function()
     local frame = installCombatText()
     frame.activeFontStrings = "moved"
     Stub.loadedAddons["Blizzard_CombatText"] = true
-    assert.has_no.errors(function() assert.is_false(WFJ.CombatText.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.CombatText.init()) end)
     fresh()
     local ns = load()
     frame = installCombatText()

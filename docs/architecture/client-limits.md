@@ -1,6 +1,6 @@
 # Client limits
 
-> What the World of Warcraft: Forever client keeps from addons, what that means for the addon, and where each fact comes from ([ADR-051](../adr/051-hidden-tooltip-passes-translate-the-clients-data.md) records the decision behind the tooltip rows). The client marks some values **secret**: an addon may hold one, pass it on and put it on the screen, but may not read, compare, concatenate or index with it (`issecretvalue` tells one apart; `type()` still answers). Every claim here cites the client's own files, read from the 1.60.1.70170 extract (`blizzard_apidocumentationgenerated`), or an in-game trace (`/wfj debug tooltip`).
+> What the World of Warcraft: Forever client keeps from addons, what that means for the addon, and where each fact comes from ([ADR-051](../adr/051-hidden-tooltip-passes-translate-the-clients-data.md) records the decision behind the tooltip rows). The client marks some values **secret**: an addon may hold one, pass it on and put it on the screen, but may not read, compare, concatenate or index with it (`issecretvalue` tells one apart; `type()` still answers). Every claim here cites the client's own files, read from the 1.60.1.70170 extract (`blizzard_apidocumentationgenerated`), or an in-game trace (`/wfi debug tooltip`).
 
 | Limit | What the client hides | What the addon does | Source |
 |---|---|---|---|
@@ -22,4 +22,4 @@
 - A frame's regions and children are listed only through `UI/Frames` (`Frames.regions`, `Frames.children`), never with a bare `:GetRegions()` or `:GetChildren()`. A static test fails on any such call in shipped Lua outside `UI/Frames.lua` (`tests/python/test_frame_walk.py`).
 - `taintLog` is never turned on. A blocked action is traced with the problem log ([Diagnostics](../systems/diagnostics.md#tracing-a-blocked-action)).
 - Nothing is learnt or remembered to work around a limit. A surface the client hides is left in the client's English until the client shows it, and shows Japanese again on its own then.
-- A new limit, or one that lifts (the client's rules move between builds), is found by the trace: `/wfj debug tooltip on`, the hover, `/wfj debug tooltip`. The entry of a hidden pass names every data row, the row map and the duration object.
+- A new limit, or one that lifts (the client's rules move between builds), is found by the trace: `/wfi debug tooltip on`, the hover, `/wfi debug tooltip`. The entry of a hidden pass names every data row, the row map and the duration object.

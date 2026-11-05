@@ -7,7 +7,7 @@ happened to see straight into the Japanese, so the line is right for one item an
 English on a fully translated client. No re-import can fix it; the English never
 changed.
 
-`wfj.dev.rule_baked_numbers` records the decision the ADR-012 way, and `translate_batch cut --held-back`
+`wfi.dev.rule_baked_numbers` records the decision the ADR-012 way, and `translate_batch cut --held-back`
 then reaches the tooltip kinds as it already reached quest completion text.
 """
 
@@ -15,10 +15,10 @@ import json
 
 import pytest
 
-from wfj.core import decisions
-from wfj.dev import rule_baked_numbers as rbn
-from wfj.dev import translate_batch as tb
-from wfj.io.jsonl_store import Store
+from wfi.core import decisions
+from wfi.dev import rule_baked_numbers as rbn
+from wfi.dev import translate_batch as tb
+from wfi.io.jsonl_store import Store
 
 HUMAN = {"class": "human", "translator": "Tammy", "source": "cqjt@3446c82", "imported": "2026-09-13"}
 MACHINE = {"class": "machine", "model": "m", "source": "draft-x-sg5@2026-09-18", "imported": "2026-09-18"}
@@ -200,7 +200,7 @@ def test_a_redraft_of_a_ruled_line_carries_accept():
     assert rbn.accept_redrafts([ruled, unruled, plain], "the maintainer", "2026-09-18") == 1
     assert ruled["ruling"]["ruling"] == "accept" and ruled["ruling"]["note"] == rbn.NOTE_ACCEPT
     assert "ruling" not in unruled and "ruling" not in plain
-    from wfj.core.model import validate_line
+    from wfi.core.model import validate_line
 
     assert validate_line("item", ruled) == []
 

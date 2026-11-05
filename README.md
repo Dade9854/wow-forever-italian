@@ -1,6 +1,6 @@
 <img src="docs/images/logo.png" alt="The 字 medallion, the addon's icon" width="96" align="right">
 
-# WoW Forever Japanese (日本語化)
+# WoW Forever Italian (日本語化)
 
 An addon that shows World of Warcraft: Forever in Japanese: quests, NPC dialogue, books, item and spell tooltips,
 and the game's interface. Hold **Alt** and the game's own English comes back; let go and the Japanese returns. Alt
@@ -34,40 +34,40 @@ Website: [foreverjapanese.com](https://foreverjapanese.com)
 
 ### With the CurseForge app
 
-1. Open the CurseForge app, choose **World of Warcraft**, and search for **WoW Forever Japanese**.
+1. Open the CurseForge app, choose **World of Warcraft**, and search for **WoW Forever Italian**.
 2. Make sure your **Forever** install is the one selected at the top of the game page.
 3. Click **Install**.
 
 ### By hand
 
 1. Download the zip of the latest release from the
-   [releases page](https://github.com/zyaga/wow-forever-japanese/releases).
+   [releases page](https://github.com/zyaga/wow-forever-italian/releases).
 2. Find your Forever client's folder: open the Battle.net app, choose World of Warcraft, pick the Forever version,
    and use **Show in Explorer** (Windows) or **Show in Finder** (macOS) from the gear menu next to the Play button.
    Inside it, open `Interface`, then `AddOns` (create `AddOns` if it is not there yet).
    - Windows: `<World of Warcraft>\<Forever folder>\Interface\AddOns`
    - macOS: `<World of Warcraft>/<Forever folder>/Interface/AddOns`
 3. Unzip the download into that `AddOns` folder.
-4. Check the folder name: `AddOns` must hold a folder called exactly `WoWForeverJapanese` (not a folder inside
+4. Check the folder name: `AddOns` must hold a folder called exactly `WoWForeverItalian` (not a folder inside
    another folder).
 
 ### Turn it on in the game
 
-At the character select screen, click **AddOns**, make sure **WoW Forever Japanese** is ticked, and log in.
+At the character select screen, click **AddOns**, make sure **WoW Forever Italian** is ticked, and log in.
 
-![The AddOns list at character select with WoW Forever Japanese ticked](docs/images/addon-list.jpg)
+![The AddOns list at character select with WoW Forever Italian ticked](docs/images/addon-list.jpg)
 
 ### Add the Japanese voice
 
 The voice is a separate, free download of about 1.1 GB, so installing the addon never pulls it in. It needs the
 addon: installing it from the CurseForge app brings the addon too, and the game never loads the voice without it.
 
-- **With the CurseForge app:** install the addon first, then search for **WoW Forever Japanese Voice** and click
+- **With the CurseForge app:** install the addon first, then search for **WoW Forever Italian Voice** and click
   **Install**. The app installs every voice pack with it and keeps them up to date. In the game, the packs show as
   extra rows under the addon in the AddOns list; leave them ticked.
-- **By hand:** on the [releases page](https://github.com/zyaga/wow-forever-japanese/releases), open the latest
+- **By hand:** on the [releases page](https://github.com/zyaga/wow-forever-italian/releases), open the latest
   release whose name starts with **Voice**, download the zip whose name ends in `-all-` and a date, and unzip it into
-  the same `AddOns` folder. It holds `WoWForeverJapanese_Voice` and one folder per voice pack.
+  the same `AddOns` folder. It holds `WoWForeverItalian_Voice` and one folder per voice pack.
 
 The addon's **About & Help** page says whether the voice is installed and which packs loaded. One setting on its
 **Voice** page turns the voice off; removing the voice folders removes it, and the addon keeps working. The voices
@@ -110,7 +110,7 @@ them. A line nobody has recorded yet has no Japanese, so it stays in English wit
 marker. The addon notes such lines as you play (see below), and once someone sends them in, a later update
 translates them.
 
-**Settings.** Open **Esc > Options > AddOns > WoW Forever Japanese**, or type `/wfj config`. You can turn the whole
+**Settings.** Open **Esc > Options > AddOns > WoW Forever Italian**, or type `/wfi config`. You can turn the whole
 translation on or off, turn each area on or off (quests, NPC talk, tooltips, the interface, books), change the key
 you hold for English, set a key that switches translation on and off, and turn the markers, the popup dictionary and
 the minimap button on or off. With the voice installed, the **Voice** page sets what is read aloud and how the voice
@@ -125,7 +125,7 @@ default, the addon says so in chat the first time, and you can turn it off under
 settings.
 
 **Sending the English it noted.** On the **English Collector** settings page, click **Send English** (or type
-`/wfj collector send`). A window packs the lines you have not sent yet into one link: copy it (click it, then
+`/wfi collector send`). A window packs the lines you have not sent yet into one link: copy it (click it, then
 Ctrl+C), open it in your web browser, and a GitHub issue form opens already filled in. If the window shows a second
 box, the text was too long for the link: copy it into the form's box too. Submit the issue, then click **I sent it**
 in the game, so the next send holds only new lines. Lines that have a translation by then are left out. When the
@@ -134,7 +134,7 @@ window says the text is too long even to paste, it asks you to zip the saved fil
 
 **A reminder to send it.** When 10 or more lines are waiting to be sent, a small window opens at login or reload with
 how many, a **Send English** button and **Later**, at most once a day. To stop it, tick **Don't remind me again** in that
-window, type `/wfj collector remind off`, or turn off **Remind me when collected English is waiting to be sent** on the
+window, type `/wfi collector remind off`, or turn off **Remind me when collected English is waiting to be sent** on the
 **English Collector** page. While any line is waiting, the minimap button's right-click
 menu also has **Send collected English**, with the count.
 
@@ -142,7 +142,7 @@ menu also has **Send collected English**, with the count.
 
 ## Reporting a bad translation
 
-1. Click the **字** button on the minimap (or type `/wfj fix`).
+1. Click the **字** button on the minimap (or type `/wfi fix`).
 
    ![The 字 button on the minimap](docs/images/report-minimap.jpg)
 
@@ -151,7 +151,7 @@ menu also has **Send collected English**, with the count.
 
    ![The report window with a line picked](docs/images/report-window.jpg)
 
-3. Open a [translation report](https://github.com/zyaga/wow-forever-japanese/issues/new?template=translation-report.yml)
+3. Open a [translation report](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml)
    and paste it. A check reads it within a minute. If your Japanese is used, you are credited by the name you
    choose. The issue and the credit are public.
 
@@ -159,7 +159,7 @@ menu also has **Send collected English**, with the count.
 
 ## Reporting a bug or an idea
 
-Type `/wfj bug` (or right-click the **字** button and choose **Report a bug or idea**, or use the button on the
+Type `/wfi bug` (or right-click the **字** button and choose **Report a bug or idea**, or use the button on the
 About page of the settings). A window opens with a link: copy it (click it, then Ctrl+C) and open it in your web
 browser. The bug report form opens with the game build, the addon version and any Lua errors raised in the addon's own
 files already filled in. Write what happened and submit the issue, then click **I sent it** in the game, so the next report holds
@@ -243,31 +243,31 @@ World of Warcraft: Forever を日本語で遊べるようにするアドオン�
 
 #### CurseForge アプリで
 
-1. CurseForge アプリで **World of Warcraft** を選び、**WoW Forever Japanese** を検索します。
+1. CurseForge アプリで **World of Warcraft** を選び、**WoW Forever Italian** を検索します。
 2. ゲームのページ上部で **Forever** のインストール先が選ばれていることを確認します。
 3. **Install** を押します。
 
 #### 手動で
 
-1. [リリースページ](https://github.com/zyaga/wow-forever-japanese/releases)から最新版の zip をダウンロードします。
+1. [リリースページ](https://github.com/zyaga/wow-forever-italian/releases)から最新版の zip をダウンロードします。
 2. Battle.net アプリで World of Warcraft を選び、Forever のバージョンを選んで、「プレイ」ボタン横の歯車メニューから **エクスプローラーで表示**（Windows）または **Finder で表示**（macOS）を開きます。その中の `Interface`、`AddOns` の順にフォルダを開きます（`AddOns` がなければ作成）。
    - Windows: `<World of Warcraft>\<Forever のフォルダ>\Interface\AddOns`
    - macOS: `<World of Warcraft>/<Forever のフォルダ>/Interface/AddOns`
 3. ダウンロードした zip をその `AddOns` フォルダに展開します。
-4. `AddOns` の中に `WoWForeverJapanese` という名前のフォルダがあることを確認します（フォルダの中にさらにフォルダが入っていないこと）。
+4. `AddOns` の中に `WoWForeverItalian` という名前のフォルダがあることを確認します（フォルダの中にさらにフォルダが入っていないこと）。
 
 #### ゲーム内で有効にする
 
-キャラクター選択画面で **AddOns** を押し、**WoW Forever Japanese** にチェックが入っていることを確認してからログインします。
+キャラクター選択画面で **AddOns** を押し、**WoW Forever Italian** にチェックが入っていることを確認してからログインします。
 
-![キャラクター選択画面の AddOns 一覧で WoW Forever Japanese にチェックが入っている画面](docs/images/addon-list.jpg)
+![キャラクター選択画面の AddOns 一覧で WoW Forever Italian にチェックが入っている画面](docs/images/addon-list.jpg)
 
 #### 日本語音声を追加する
 
 音声は約 1.1 GB の無料の別ダウンロードで、アドオンをインストールしても音声は入りません。音声にはアドオンが必要です。CurseForge アプリで音声を入れるとアドオンも一緒に入り、ゲームもアドオンなしで音声を読み込むことはありません。
 
-- **CurseForge アプリで:** 先にアドオンを入れてから、**WoW Forever Japanese Voice** を検索して **Install** を押します。すべての音声パックが一緒に入り、更新もアプリが行います。ゲーム内の AddOns 一覧では、アドオンの下に音声パックの行が並びます。チェックは入れたままにしてください。
-- **手動で:** [リリースページ](https://github.com/zyaga/wow-forever-japanese/releases)で名前が **Voice** で始まる最新のリリースを開き、名前が `-all-` と日付で終わる zip をダウンロードして、同じ `AddOns` フォルダに展開します。中身は `WoWForeverJapanese_Voice` と音声パックごとのフォルダです。
+- **CurseForge アプリで:** 先にアドオンを入れてから、**WoW Forever Italian Voice** を検索して **Install** を押します。すべての音声パックが一緒に入り、更新もアプリが行います。ゲーム内の AddOns 一覧では、アドオンの下に音声パックの行が並びます。チェックは入れたままにしてください。
+- **手動で:** [リリースページ](https://github.com/zyaga/wow-forever-italian/releases)で名前が **Voice** で始まる最新のリリースを開き、名前が `-all-` と日付で終わる zip をダウンロードして、同じ `AddOns` フォルダに展開します。中身は `WoWForeverItalian_Voice` と音声パックごとのフォルダです。
 
 アドオンの **情報とヘルプ** ページに、音声が入っているか、どのパックが読み込まれたかが表示されます。**音声** ページの設定ひとつで音声をオフにできます。音声のフォルダを削除すれば音声はなくなり、アドオンはそのまま動きます。音声は、メンテナーのコンピューター上で AivisSpeech Engine と [`ATTRIBUTION.md`](ATTRIBUTION.md) に記載した音声モデルを使って作りました。
 
@@ -291,21 +291,21 @@ World of Warcraft: Forever を日本語で遊べるようにするアドオン�
 
 **英語のまま残るテキスト。** NPC の会話、クエストの進行中や報告時の文章、チャットに出る NPC のセリフなど、一部の英語はゲームのファイルに入っておらず、プレイヤーが目にしたときにだけサーバーから届きます。まだ誰も記録していない行には日本語訳がないため、**[未翻訳 / Not Translated]** マーカー付きの英語のまま表示されます。アドオンはこうした行をプレイ中に記録します（下記）。誰かが送ってくれれば、以降の更新で翻訳されます。
 
-**設定。** **Esc > オプション > AddOns > WoW Forever Japanese**、または `/wfj config` で開きます。翻訳全体や項目ごとのオン・オフ、英語表示キーの変更、翻訳を切り替えるキーの設定、マーカー・ポップアップ辞書・ミニマップボタンの表示を切り替えられます。音声を入れている場合は、**音声** ページで読み上げる内容と音声パネルの見た目を設定できます。
+**設定。** **Esc > オプション > AddOns > WoW Forever Italian**、または `/wfi config` で開きます。翻訳全体や項目ごとのオン・オフ、英語表示キーの変更、翻訳を切り替えるキーの設定、マーカー・ポップアップ辞書・ミニマップボタンの表示を切り替えられます。音声を入れている場合は、**音声** ページで読み上げる内容と音声パネルの見た目を設定できます。
 
 ![アドオンの設定画面](docs/images/settings.jpg)
 
 **まだ翻訳のない英語の記録。** ゲームに表示された英語のうち、アドオンに日本語訳がないもの（クエスト本文、NPC のセリフとその NPC の ID、アイテムと呪文の説明、NPC の名前）は、あとで翻訳できるようにアドオンの設定ファイルに記録されます。クラスと種族は保存されます。ゲームの文章の一部がそれによって変わるためです。キャラクター名、アカウント、レルム、位置は保存されません。自分で送らない限り、どこにも送信されません。初期設定ではオンで、最初にチャットでお知らせします。設定の **英語テキスト収集** でオフにできます。
 
-**記録した英語の送り方。** 設定の **英語テキスト収集** ページで **英語を送る** をクリックします（`/wfj collector send` と入力しても同じです）。まだ送っていない行が 1 つのリンクにまとめられたウィンドウが開きます。リンクをコピーして（クリックして Ctrl+C）ブラウザで開くと、入力済みの GitHub の Issue フォームが開きます。ウィンドウに 2 つ目の欄があるときは、リンクに入りきらない長さです。その文字列もフォームの欄に貼り付けてください。Issue を送信したら、ゲーム内で **送信しました** をクリックします。次回は新しい行だけを送ります。その時点で翻訳がある行は除かれます。貼り付けられないほど長いとウィンドウに表示されたときは、保存ファイルを zip にして同じフォームにドラッグするよう案内されます（ログイン後に遊んだ場合は先に `/reload` してください）。
+**記録した英語の送り方。** 設定の **英語テキスト収集** ページで **英語を送る** をクリックします（`/wfi collector send` と入力しても同じです）。まだ送っていない行が 1 つのリンクにまとめられたウィンドウが開きます。リンクをコピーして（クリックして Ctrl+C）ブラウザで開くと、入力済みの GitHub の Issue フォームが開きます。ウィンドウに 2 つ目の欄があるときは、リンクに入りきらない長さです。その文字列もフォームの欄に貼り付けてください。Issue を送信したら、ゲーム内で **送信しました** をクリックします。次回は新しい行だけを送ります。その時点で翻訳がある行は除かれます。貼り付けられないほど長いとウィンドウに表示されたときは、保存ファイルを zip にして同じフォームにドラッグするよう案内されます（ログイン後に遊んだ場合は先に `/reload` してください）。
 
-**送信待ちのお知らせ。** まだ送っていない行が 10 以上あると、ログイン時と /reload 時に小さなウィンドウが開き、その数と **英語を送る**・**あとで** ボタンが表示されます（1 日 1 回まで）。止めるには、そのウィンドウの **今後は知らせない** にチェックを入れるか、`/wfj collector remind off` と入力するか、**英語テキスト収集** ページの **集めた英語が送信待ちのときに知らせる** をオフにします。送っていない行があるあいだは、ミニマップボタンの右クリックメニューにも件数付きの **集めた英語を送る** が表示されます。
+**送信待ちのお知らせ。** まだ送っていない行が 10 以上あると、ログイン時と /reload 時に小さなウィンドウが開き、その数と **英語を送る**・**あとで** ボタンが表示されます（1 日 1 回まで）。止めるには、そのウィンドウの **今後は知らせない** にチェックを入れるか、`/wfi collector remind off` と入力するか、**英語テキスト収集** ページの **集めた英語が送信待ちのときに知らせる** をオフにします。送っていない行があるあいだは、ミニマップボタンの右クリックメニューにも件数付きの **集めた英語を送る** が表示されます。
 
 ![英語テキスト収集の設定画面。手順と「英語を送る」ボタンがある](docs/images/collector-ja.jpg)
 
 ### 翻訳の問題を報告する
 
-1. ミニマップの **字** ボタン（または `/wfj fix`）を押します。
+1. ミニマップの **字** ボタン（または `/wfi fix`）を押します。
 
    ![ミニマップの字ボタンとそのツールチップ](docs/images/report-minimap.jpg)
 
@@ -313,13 +313,13 @@ World of Warcraft: Forever を日本語で遊べるようにするアドオン�
 
    ![行を選んで理由を選ぶ報告ウィンドウ](docs/images/report-window.jpg)
 
-3. [翻訳の報告フォーム](https://github.com/zyaga/wow-forever-japanese/issues/new?template=translation-report.yml)に貼り付けます。1 分以内に自動チェックの結果がコメントされます。あなたの日本語が採用された場合は、指定した名前でクレジットに載ります（Issue とクレジットは公開されます）。
+3. [翻訳の報告フォーム](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml)に貼り付けます。1 分以内に自動チェックの結果がコメントされます。あなたの日本語が採用された場合は、指定した名前でクレジットに載ります（Issue とクレジットは公開されます）。
 
    ![GitHub の翻訳の報告フォーム](docs/images/report-issue.jpg)
 
 ### 不具合や提案を送る
 
-`/wfj bug` と入力します（**字** ボタンを右クリックして **不具合・提案を報告** を選ぶか、設定の About ページのボタンでも開けます）。リンクが入ったウィンドウが開きます。リンクをコピーして（クリックして Ctrl+C）ブラウザで開くと、ゲームのビルド、アドオンのバージョン、アドオン自身のファイルで起きた Lua エラーが入力済みの不具合報告フォームが開きます。起きたことを書いて Issue を送信したら、ゲーム内で **送信しました** をクリックします。次回は新しいエラーだけを送ります。ウィンドウに 2 つ目の欄があるときは、その文字列をフォームの Lua エラー欄に貼り付けてください。ウィンドウ上部で **提案** を選ぶと、提案フォームへのリンクになります。GitHub アカウントが必要で、Issue は公開されます。BugSack などのアドオンを使っている場合は、そちらが先に Lua エラーを取得します。ウィンドウにその旨が表示されるので、そこからこのアドオンのエラーを貼り付けてください。
+`/wfi bug` と入力します（**字** ボタンを右クリックして **不具合・提案を報告** を選ぶか、設定の About ページのボタンでも開けます）。リンクが入ったウィンドウが開きます。リンクをコピーして（クリックして Ctrl+C）ブラウザで開くと、ゲームのビルド、アドオンのバージョン、アドオン自身のファイルで起きた Lua エラーが入力済みの不具合報告フォームが開きます。起きたことを書いて Issue を送信したら、ゲーム内で **送信しました** をクリックします。次回は新しいエラーだけを送ります。ウィンドウに 2 つ目の欄があるときは、その文字列をフォームの Lua エラー欄に貼り付けてください。ウィンドウ上部で **提案** を選ぶと、提案フォームへのリンクになります。GitHub アカウントが必要で、Issue は公開されます。BugSack などのアドオンを使っている場合は、そちらが先に Lua エラーを取得します。ウィンドウにその旨が表示されるので、そこからこのアドオンのエラーを貼り付けてください。
 
 ### よくある質問
 

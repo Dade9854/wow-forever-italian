@@ -99,7 +99,7 @@ stay English; the in-game checklist records what happens.
 ### Guards
 
 - The aura handler is `pcall`-wrapped as a whole. It runs from the buff frame's `OnUpdate`, so an error would repeat
-  every frame; instead it is counted in `Tooltip.auraErrors`, `/wfj debug` prints `aura errors: N` after
+  every frame; instead it is counted in `Tooltip.auraErrors`, `/wfi debug` prints `aura errors: N` after
   `aura hooks: N`, and the tooltip is left as the client wrote it.
 - On Forever, line 2 is taken only when it is within the client's own line count (`tooltipData.lines`). A line
   another addon appended (an id line, the PTR reporter's hint) is past that count and is never the aura text. On

@@ -16,20 +16,20 @@ local UI = {
 }
 
 describe("the colour picker on Forever", function()
-  local WFJ, frame, opacity
+  local WFI, frame, opacity
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   before_each(function()
     load()
     frame, opacity = S.installColorPicker()
-    WFJ.Labels.forbidNames(WFJ.ColorPicker.NEVER_TOUCH)
-    assert.is_true(WFJ.ColorPicker.init())
+    WFI.Labels.forbidNames(WFI.ColorPicker.NEVER_TOUCH)
+    assert.is_true(WFI.ColorPicker.init())
   end)
 
   after_each(function()
@@ -58,13 +58,13 @@ describe("the colour picker on Forever", function()
           frame:Show()
         end
       end)
-      assert.is_false(WFJ.ColorPicker.init())
+      assert.is_false(WFI.ColorPicker.init())
       load()
       S.removeColorPicker()
       local bare = CreateFrame("Frame", "ColorPickerFrame") -- no Content
-      assert.has_no.errors(function() assert.is_false(WFJ.ColorPicker.init()) end)
+      assert.has_no.errors(function() assert.is_false(WFI.ColorPicker.init()) end)
       assert.is_truthy(bare)
       S.removeColorPicker()
-      assert.has_no.errors(function() assert.is_false(WFJ.ColorPicker.init()) end)
+      assert.has_no.errors(function() assert.is_false(WFI.ColorPicker.init()) end)
     end)
 end)

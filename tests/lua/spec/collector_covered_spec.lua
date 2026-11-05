@@ -13,9 +13,9 @@ local function loadCollector()
 end
 
 describe("Core/Collector covered lines", function()
-  local WFJ, C, shipped, aligned, alignCalls
+  local WFI, C, shipped, aligned, alignCalls
 
-  -- `aligned(entry, lines)` stands in for the addon's align gate (Main wires WFJ.Align)
+  -- `aligned(entry, lines)` stands in for the addon's align gate (Main wires WFI.Align)
   local function deps(o)
     o = o or {}
     local d = {
@@ -34,7 +34,7 @@ describe("Core/Collector covered lines", function()
   end
 
   local function h1Of(e)
-    return (WFJ.Hash.h32x2(WFJ.Normalize.v1(e)))
+    return (WFI.Hash.h32x2(WFI.Normalize.v1(e)))
   end
 
   local function keysOf(list)
@@ -44,8 +44,8 @@ describe("Core/Collector covered lines", function()
   end
 
   local function entry(t, i, f, e, p)
-    local h1, h2 = WFJ.Hash.h32x2(WFJ.Normalize.v1(e))
-    return { t = t, i = i, f = f, h = WFJ.Hash.hex8(h1) .. WFJ.Hash.hex8(h2), e = e, b = 1, p = p }
+    local h1, h2 = WFI.Hash.h32x2(WFI.Normalize.v1(e))
+    return { t = t, i = i, f = f, h = WFI.Hash.hex8(h1) .. WFI.Hash.hex8(h2), e = e, b = 1, p = p }
   end
 
   local function saved(list, sent)
@@ -55,8 +55,8 @@ describe("Core/Collector covered lines", function()
   end
 
   before_each(function()
-    WFJ = loadCollector()
-    C = WFJ.Collector
+    WFI = loadCollector()
+    C = WFI.Collector
     shipped, alignCalls = {}, {}
     aligned = function() return false end
   end)
@@ -154,8 +154,8 @@ describe("Core/Collector covered lines", function()
     end)
 
     it("a line filled from live values matches its masked hash with the race written out", function()
-      local norm = C.mask(WFJ.Normalize.v1("Bring me 10 night elf tails."))
-      shipped["quest.objectives"] = { [8] = { ja = "$N1本", status = ".", h1 = (WFJ.Hash.h32x2(norm)) } }
+      local norm = C.mask(WFI.Normalize.v1("Bring me 10 night elf tails."))
+      shipped["quest.objectives"] = { [8] = { ja = "$N1本", status = ".", h1 = (WFI.Hash.h32x2(norm)) } }
       C.load(nil, deps())
       assert.are.equal("known", C.record("quest", 8, "objectives", "Bring me 7 night elf tails."))
     end)
@@ -293,7 +293,7 @@ describe("Core/Collector covered lines", function()
   end)
 
   it("Main wires the align gate and prunes after the UI index is built", function()
-    local src = H.readFile("addon/WoWForeverJapanese/Main.lua")
+    local src = H.readFile("addon/WoWForeverItalian/Main.lua")
     local index = src:find('step("uiindex"', 1, true)
     local prune = src:find('step("collectorprune"', 1, true)
     assert.is_number(index)

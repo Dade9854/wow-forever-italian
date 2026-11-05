@@ -26,22 +26,22 @@ local UI = {
 }
 
 describe("the merchant on the Forever client", function()
-  local WFJ, SS
+  local WFI, SS
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
   local function title() return _G.MerchantFrame.TitleContainer.TitleText end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     for key, pair in pairs(UI) do _G[key] = pair[1] end -- the client's GlobalStrings
     CI.install()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
-    WFJ.Labels.forbidNames(WFJ.Merchant.NEVER_TOUCH)
-    assert.is_true(WFJ.Merchant.init())
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
+    WFI.Labels.forbidNames(WFI.Merchant.NEVER_TOUCH)
+    assert.is_true(WFI.Merchant.init())
   end)
 
   after_each(function()
@@ -55,8 +55,8 @@ describe("the merchant on the Forever client", function()
     assert.are.equal("買い戻し", _G.MerchantFrameTab2:GetText())
     local prev = select(2, _G.MerchantPrevPageButton:GetRegions())
     assert.are.equal("前へ", prev:GetText())
-    assert.is_nil(WFJ.Compat.get("merchant", "repairText"))
-    assert.are.equal(_G.MerchantFrame.TitleContainer.TitleText, WFJ.Compat.get("merchant", "nameText"))
+    assert.is_nil(WFI.Compat.get("merchant", "repairText"))
+    assert.are.equal(_G.MerchantFrame.TitleContainer.TitleText, WFI.Compat.get("merchant", "nameText"))
   end)
 
   it("the merchant tab's title is the NPC name (a dictionary word) and stays English; the page text is Japanese;"
@@ -126,10 +126,10 @@ describe("the merchant on the Forever client", function()
 
   it("a moved dropdown or title degrades to English with no error (type guards)", function()
     _G.MerchantFrame.FilterDropdown.Text = "moved"
-    assert.are.equal(0, WFJ.Merchant.onFilterText())
+    assert.are.equal(0, WFI.Merchant.onFilterText())
     _G.MerchantFrame.TitleContainer = "moved"
-    WFJ.Compat.declare("merchant", "nameText", { "MerchantNameText", "MerchantFrameTitleText",
+    WFI.Compat.declare("merchant", "nameText", { "MerchantNameText", "MerchantFrameTitleText",
       "MerchantFrame.TitleContainer.TitleText" })
-    assert.are.equal(0, WFJ.Merchant.onBuybackInfo())
+    assert.are.equal(0, WFI.Merchant.onBuybackInfo())
   end)
 end)

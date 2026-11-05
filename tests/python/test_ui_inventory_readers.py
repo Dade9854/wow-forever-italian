@@ -4,8 +4,8 @@ ruling that keeps a UI line in English letters, and the exclusion hygiene."""
 import re
 from pathlib import Path
 
-from wfj.core.status import Scope, decide
-from wfj.dev import ui_inventory
+from wfi.core.status import Scope, decide
+from wfi.dev import ui_inventory
 
 ROOT = Path(__file__).resolve().parents[2]
 STRINGS = {
@@ -79,7 +79,7 @@ def test_bindings_reader_takes_camelot_and_a_loaded_addons_bindings(tmp_path, mo
 def test_the_dressing_room_callout_is_listed_and_shown_by_helptips():
     listed = (ROOT / "pipeline/ui_keys.txt").read_text(encoding="utf-8")
     assert re.search(r"^LINK_TRANSMOG_CUSTOM_SET_HELPTIP\b", listed, re.M)
-    lua = (ROOT / "addon/WoWForeverJapanese/UI/HelpTips.lua").read_text(encoding="utf-8")
+    lua = (ROOT / "addon/WoWForeverItalian/UI/HelpTips.lua").read_text(encoding="utf-8")
     assert '"LINK_TRANSMOG_CUSTOM_SET_HELPTIP"' in lua
 
 
@@ -117,7 +117,7 @@ def test_every_countdown_unit_word_has_a_shipped_line():
     # whole countdown English (the busted spec stubs the rows, so it cannot see this)
     import json
 
-    lua = (ROOT / "addon/WoWForeverJapanese/UI/Popups.lua").read_text(encoding="utf-8")
+    lua = (ROOT / "addon/WoWForeverItalian/UI/Popups.lua").read_text(encoding="utf-8")
     units = re.findall(r'"([A-Z]+)"', re.search(r"local UNITS = \{([^}]*)\}", lua).group(1))
     assert units == ["SECONDS", "MINUTES"]
     lines = {}

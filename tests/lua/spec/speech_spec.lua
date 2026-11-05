@@ -99,7 +99,7 @@ local function install()
 end
 
 local function load()
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
   Stub.installScrollUtil()
   local files = {}
@@ -107,29 +107,29 @@ local function load()
   for _, f in ipairs({ "Core/Lookup.lua", "UI/Errors.lua", "UI/ChatSystem.lua", "UI/Speech.lua" }) do
     files[#files + 1] = f
   end
-  local WFJ = H.loadChunks(files)
+  local WFI = H.loadChunks(files)
   install()
-  H.uiSetup(WFJ, UI)
-  WFJ.Data = WFJ.Data or {}
-  WFJ.Data.gossip = {}
-  for en, row in pairs(GOSSIP) do WFJ.Data.gossip[KEY[en]] = { row[1], row[2] } end
-  return WFJ
+  H.uiSetup(WFI, UI)
+  WFI.Data = WFI.Data or {}
+  WFI.Data.gossip = {}
+  for en, row in pairs(GOSSIP) do WFI.Data.gossip[KEY[en]] = { row[1], row[2] } end
+  return WFI
 end
 
-local function alt(WFJ, down)
+local function alt(WFI, down)
   Stub.keys.alt = down
-  WFJ.Modifier.refresh()
+  WFI.Modifier.refresh()
 end
 
 describe("NPC speech", function()
-  local WFJ
+  local WFI
   before_each(function()
     secrets, bubbles, clock = {}, {}, 0
-    WFJ = load()
-    WFJ.State.setArea("gossip", true) -- the NPC talk setting (Settings' area.gossip, on by default)
-    assert.is_true(WFJ.ChatSystem.init())
+    WFI = load()
+    WFI.State.setArea("gossip", true) -- the NPC talk setting (Settings' area.gossip, on by default)
+    assert.is_true(WFI.ChatSystem.init())
     local expand = function(ja) return (ja:gsub("{name}", "Testplayer")) end
-    assert.is_true(WFJ.Speech.init({ key = keyOf, expand = expand }))
+    assert.is_true(WFI.Speech.init({ key = keyOf, expand = expand }))
   end)
   after_each(function()
     H.uiTeardown()
@@ -161,7 +161,7 @@ describe("NPC speech", function()
 
   it("every NPC line goes to the Collector with its speaker, translated or not; a secret line does not", function()
     local recorded = {}
-    WFJ.Collector = { recordGossip = function(text, guid) recorded[#recorded + 1] = { text, guid } end }
+    WFI.Collector = { recordGossip = function(text, guid) recorded[#recorded + 1] = { text, guid } end }
     local f = _G.ChatFrame1
     npc(f, SAY, "%s says: ", "Something no one translated!", "Lyreena", "Creature-0-1-2-3-216000-00001")
     npc(f, SAY, "%s says: ", "Stay close, Testplayer!", "Ralph", "Creature-0-1-2-3-1234-00002")
@@ -184,7 +184,7 @@ describe("NPC speech", function()
     assert.are.equal("Elune guide you.", recorded[4][1])
     _G.GetNumLanguages, _G.GetLanguageByIndex = nil, nil
     _G.UnitName = nil
-    WFJ.Collector = nil
+    WFI.Collector = nil
   end)
 
   it("a stale row, a draft that lost %s, or a secret line stays English", function()
@@ -203,13 +203,13 @@ describe("NPC speech", function()
     npc(f, SAY, "%s says: ", "Stay close, Testplayer!", "Ralph")
     f:Refresh()
     local line = f.visibleLines[1]
-    alt(WFJ, true)
+    alt(WFI, true)
     assert.are.equal("Ralph says: Stay close, Testplayer!", line:GetText())
-    alt(WFJ, false)
+    alt(WFI, false)
     assert.are.equal("Ralphの発言: 離れるな、Testplayer！", line:GetText())
-    WFJ.State.setArea("gossip", false)
+    WFI.State.setArea("gossip", false)
     assert.are.equal("Ralph says: Stay close, Testplayer!", line:GetText())
-    WFJ.State.setArea("gossip", true)
+    WFI.State.setArea("gossip", true)
   end)
 
   it("a player's say gets the prefix's words; the player's own text is never touched", function()
@@ -227,16 +227,16 @@ describe("NPC speech", function()
     bubbles[1] = { GetChildren = function() return child end, IsForbidden = function() return false end }
     npc(f, SAY, "%s says: ", "Stay close, Testplayer!", "Ralph")
     string:SetText("Stay close, Testplayer!") -- the client makes the bubble after the line
-    assert.are.equal(1, WFJ.Speech.scanBubbles())
+    assert.are.equal(1, WFI.Speech.scanBubbles())
     assert.are.equal("離れるな、Testplayer！", string:GetText())
-    assert.are.equal(WFJ.Font.PATH, string.font.path)
-    alt(WFJ, true)
+    assert.are.equal(WFI.Font.PATH, string.font.path)
+    alt(WFI, true)
     assert.are.equal("Stay close, Testplayer!", string:GetText())
     assert.are.equal("Fonts\\FRIZQT__.TTF", string.font.path) -- its own font back while English shows
-    alt(WFJ, false)
-    assert.are.equal(WFJ.Font.PATH, string.font.path)
+    alt(WFI, false)
+    assert.are.equal(WFI.Font.PATH, string.font.path)
     string:SetText("Another line entirely") -- the client reuses the pooled string for a later bubble
-    WFJ.Speech.refresh()
+    WFI.Speech.refresh()
     assert.are.equal("Fonts\\FRIZQT__.TTF", string.font.path) -- in game: the bundled face stayed on reused bubbles
   end)
 
@@ -267,7 +267,7 @@ describe("NPC speech", function()
     local function say(msg) return "Ralph says: " .. msg end
     -- the hook called as the client would, without the line in the frame's history
     local function hook(frame, typeId, line, event, eventArgs, formatter)
-      return WFJ.Speech.onAddMessage(frame, line, 1, 1, 0.6, typeId, nil, nil, event, eventArgs, formatter)
+      return WFI.Speech.onAddMessage(frame, line, 1, 1, 0.6, typeId, nil, nil, event, eventArgs, formatter)
     end
     local function only(reason, key)
       local log = speechLog()
@@ -276,7 +276,7 @@ describe("NPC speech", function()
       assert.are.equal(key, log[1].key)
       return log[1]
     end
-    local function fresh() db = WFJ.Diag.load(nil) end
+    local function fresh() db = WFI.Diag.load(nil) end
 
     before_each(function()
       fresh()
@@ -370,9 +370,9 @@ describe("NPC speech", function()
     end)
 
     it("the trace records the target's shape and the Collector's answer, never a name", function()
-      local collector, unitName = WFJ.Collector, _G.UnitName
-      finally(function() WFJ.Collector, _G.UnitName = collector, unitName end)
-      WFJ.Collector = { recordGossip = function() return "recorded" end }
+      local collector, unitName = WFI.Collector, _G.UnitName
+      finally(function() WFI.Collector, _G.UnitName = collector, unitName end)
+      WFI.Collector = { recordGossip = function() return "recorded" end }
       _G.UnitName = function() return "Testplayer" end
       npc(f, SAY, "%s says: ", SHIPPED, "Ralph", nil, "Testplayer-Liongard") -- a Forever full name
       local e = lines()[1]
@@ -388,7 +388,7 @@ describe("NPC speech", function()
       e = lines()[2]
       assert.are.equal("me", e.target)
       assert.are.equal("recorded", e.collector)
-      WFJ.Collector.recordGossip = function() return "error", "boom on Stay close to me" end
+      WFI.Collector.recordGossip = function() return "error", "boom on Stay close to me" end
       npc(f, SAY, "%s says: ", "Keep your blade sharp and your wits sharper.", "Ralph", nil, "Testplayer")
       local last = lines()[#lines()]
       assert.are.equal("error", last.collector) -- the error's message never reaches the log
@@ -404,21 +404,21 @@ describe("NPC speech", function()
 
     it("a line printed while another is handled leaves the outer line's outcome", function()
       local inner = true
-      local orig = WFJ.Collector and WFJ.Collector.recordGossip
-      WFJ.Collector = WFJ.Collector or {}
-      WFJ.Collector.recordGossip = function()
+      local orig = WFI.Collector and WFI.Collector.recordGossip
+      WFI.Collector = WFI.Collector or {}
+      WFI.Collector.recordGossip = function()
         if inner then
           inner = false
-          WFJ.Speech.onAddMessage(f, "WFJ: notice", 1, 1, 1, nil)
+          WFI.Speech.onAddMessage(f, "WFI: notice", 1, 1, 1, nil)
         end
       end
       npc(f, SAY, "%s says: ", SHIPPED, "Ralph")
-      WFJ.Collector.recordGossip = orig
+      WFI.Collector.recordGossip = orig
       assert.are.equal("translated " .. keyOf(SHIPPED), lines()[1].msg)
     end)
 
     it("the NPC talk setting off", function()
-      WFJ.State.setArea("gossip", false)
+      WFI.State.setArea("gossip", false)
       hook(f, SAY, say(SHIPPED), "CHAT_MSG_MONSTER_SAY", args(SHIPPED), say)
       only("NPC talk off", keyOf(SHIPPED))
     end)
@@ -442,10 +442,10 @@ describe("NPC speech", function()
       hook(f, SAY, "Stay close", "CHAT_MSG_MONSTER_SAY", args(SHIPPED), function() return "Stay close" end)
       only("line unchanged", keyOf(SHIPPED))
       fresh()
-      local remember = WFJ.ChatSystem.remember
-      WFJ.ChatSystem.remember = function() return false end
+      local remember = WFI.ChatSystem.remember
+      WFI.ChatSystem.remember = function() return false end
       npc(f, SAY, "%s says: ", SHIPPED, "Ralph")
-      WFJ.ChatSystem.remember = remember
+      WFI.ChatSystem.remember = remember
       only("remember refused", keyOf(SHIPPED))
       fresh()
       assert.are.equal(1, hook(f, SAY, say(SHIPPED), "CHAT_MSG_MONSTER_SAY", args(SHIPPED), say))

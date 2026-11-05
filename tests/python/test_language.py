@@ -1,4 +1,4 @@
-from wfj.core.language import SIMPLIFIED_ONLY, has_simplified, is_japanese
+from wfi.core.language import SIMPLIFIED_ONLY, has_simplified, is_japanese
 
 
 def test_prose_japanese():

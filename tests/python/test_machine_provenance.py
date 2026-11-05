@@ -8,11 +8,11 @@ from pathlib import Path
 import pytest
 from test_corrections import CORRECTION, _repos
 
-from wfj.cmd import import_predecessor as imp
-from wfj.cmd import validate
-from wfj.core.model import english_line, validate_line
-from wfj.core.status import Scope, decide
-from wfj.io.jsonl_store import Store
+from wfi.cmd import import_predecessor as imp
+from wfi.cmd import validate
+from wfi.core.model import english_line, validate_line
+from wfi.core.status import Scope, decide
+from wfi.io.jsonl_store import Store
 
 MACHINE = {
     "class": "machine",

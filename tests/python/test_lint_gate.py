@@ -32,7 +32,7 @@ def test_gate_passes_on_clean_core(root, tmp_path: Path):
 
 
 def test_gate_passes_on_delivered_tree(root):
-    assert run_gate(root, root / "addon" / "WoWForeverJapanese") == 0
+    assert run_gate(root, root / "addon" / "WoWForeverItalian") == 0
 
 
 def test_no_english_gate(root, tmp_path: Path):

@@ -89,11 +89,11 @@ local function loadClickBinding()
 end
 
 describe("the Click Cast Bindings window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -106,25 +106,25 @@ describe("the Click Cast Bindings window on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
     -- "%s (Default)" wraps a dictionary entry (Core/UIStrings ARGS; granted here until the shared table carries it)
-    WFJ.UIStrings.ARGS.CLICK_BINDING_INTERACTION_TITLE = WFJ.UIStrings.ARGS.CLICK_BINDING_INTERACTION_TITLE
+    WFI.UIStrings.ARGS.CLICK_BINDING_INTERACTION_TITLE = WFI.UIStrings.ARGS.CLICK_BINDING_INTERACTION_TITLE
       or { [1] = "entry" }
-    H.uiSetup(WFJ, UI)
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
     load()
     if loadedFirst then
       loadClickBinding()
-      assert.is_true(WFJ.ClickBinding.init())
+      assert.is_true(WFI.ClickBinding.init())
     else
-      assert.is_false(WFJ.ClickBinding.init()) -- waits for the addon
+      assert.is_false(WFI.ClickBinding.init()) -- waits for the addon
       loadClickBinding()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -170,7 +170,7 @@ describe("the Click Cast Bindings window on Forever", function()
         assert.are.equal("呪文やマクロをマウスクリックに割り当てます", f.TutorialFrame.SummaryText:GetText())
         assert.are.equal("Thrall", f.TutorialFrame.ThrallName:GetText())
         assert.is_true(unrecorded(f.TutorialFrame.ThrallName))
-        assert.is_true(WFJ.Labels.forbidden(f.TutorialFrame.ThrallName))
+        assert.is_true(WFI.Labels.forbidden(f.TutorialFrame.ThrallName))
       end)
 
       it("list rows: headers, default interactions, macro titles and mouse buttons translate; spell and macro names "
@@ -213,7 +213,7 @@ describe("the Click Cast Bindings window on Forever", function()
           assert.are.equal("左ボタン", row.BindingText:GetText())
           -- a direct Init, no ScrollBox callback
           function row.Init(self) self.BindingText.text = "SHIFT-Left Button" end
-          WFJ.ClickBinding.onRow(row) -- first sight hooks the row's own Init
+          WFI.ClickBinding.onRow(row) -- first sight hooks the row's own Init
           row:Init()
           assert.are.equal("SHIFT-左ボタン", row.BindingText:GetText())
         end)
@@ -242,7 +242,7 @@ describe("the Click Cast Bindings window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.ClickBinding.setup())
+    assert.is_false(WFI.ClickBinding.setup())
     assert.are.equal(1, #Stub.hooks["ClickBindingFrame:SetTitle"])
     assert.are.equal(1, #Stub.hooks["TutorialFrame:SetTitle"])
     assert.are.equal(1, #_G.ClickBindingFrame.ScrollBox.initCallbacks)
@@ -255,19 +255,19 @@ describe("the Click Cast Bindings window on Forever", function()
     f.ScrollBox = 42
     f.SaveButton = true
     f.EnableMouseoverCastCheckbox = false
-    assert.has_no.errors(function() assert.is_true(WFJ.ClickBinding.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.ClickBinding.init()) end)
     assert.are.equal("バインドを追加", f.AddBindingButton:GetText()) -- the rest still works
-    assert.has_no.errors(function() WFJ.ClickBinding.onRow("x") end)
+    assert.has_no.errors(function() WFI.ClickBinding.onRow("x") end)
   end)
 
   it("a client without the window: init returns false and hooks nothing", function()
     load()
     local before = 0
     for _ in pairs(Stub.hooks) do before = before + 1 end
-    assert.is_false(WFJ.ClickBinding.init())
+    assert.is_false(WFI.ClickBinding.init())
     Stub.loadedAddons[ADDON] = true -- the addon name loaded, but no ClickBindingFrame
-    assert.is_false(WFJ.ClickBinding.init())
-    assert.is_false(WFJ.ClickBinding.setup())
+    assert.is_false(WFI.ClickBinding.init())
+    assert.is_false(WFI.ClickBinding.setup())
     local after = 0
     for _ in pairs(Stub.hooks) do after = after + 1 end
     assert.are.equal(before, after)

@@ -75,7 +75,7 @@ local function ja(key) return UI[key][2] end
 local function en(key) return UI[key][1] end
 
 describe("the Forever micro menu and game menu", function()
-  local WFJ, tt
+  local WFI, tt
 
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
   local function tipLines()
@@ -83,20 +83,20 @@ describe("the Forever micro menu and game menu", function()
     for i = 1, tt:NumLines() do out[i] = left(i):GetText() end
     return out
   end
-  local function records() return WFJ.SurfaceState.count("help") end
+  local function records() return WFI.SurfaceState.count("help") end
   local function lineOf(text)
     for i = 1, tt:NumLines() do if left(i):GetText() == text then return i end end
     return nil
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     MM.installForever()
-    WFJ.Tooltip.init()
-    WFJ.MicroMenu.init()
+    WFI.Tooltip.init()
+    WFI.MicroMenu.init()
     tt = _G.GameTooltip
   end)
 
@@ -104,10 +104,10 @@ describe("the Forever micro menu and game menu", function()
 
   it("registers every Forever micro button that exists, and MainMenuMicroButton as the latency owner", function()
     for _, spec in ipairs(MM.FOREVER_MICRO) do
-      assert.is_true(WFJ.HelpTooltip.registered(_G[spec[1]]), spec[1])
+      assert.is_true(WFI.HelpTooltip.registered(_G[spec[1]]), spec[1])
     end
     local latency = {}
-    for _, name in ipairs(WFJ.MicroMenu.LATENCY_OWNERS) do latency[name] = true end
+    for _, name in ipairs(WFI.MicroMenu.LATENCY_OWNERS) do latency[name] = true end
     assert.is_true(latency.MainMenuMicroButton)
   end)
 
@@ -135,7 +135,7 @@ describe("the Forever micro menu and game menu", function()
           MM.hover(_G[name])
           local suffix = key and (" |cffffd200(" .. key .. ")|r") or ""
           assert.are.equal(ja(titleKey) .. suffix, left(1):GetText(), name)
-          assert.are.equal(WFJ.Font.PATH, (left(1):GetFont()))
+          assert.are.equal(WFI.Font.PATH, (left(1):GetFont()))
           MM.leave(_G[name])
           assert.are.equal(en(titleKey) .. suffix, left(1):GetText(), name) -- released on hide
         end
@@ -156,7 +156,7 @@ describe("the Forever micro menu and game menu", function()
     -- the binding form is a per-key whitelist in Core/UIStrings; the Forever-only title keys are checked here
     -- once they join it
     hoverAll(function(titleKey, key)
-      local ok = key ~= nil and WFJ.UIIndex:has(titleKey, "binding")
+      local ok = key ~= nil and WFI.UIIndex:has(titleKey, "binding")
       if ok then checked = checked + 1 end
       return ok
     end)
@@ -243,15 +243,15 @@ describe("the Forever micro menu and game menu", function()
         assert.are.equal("|cffffd200Tired|r\n|cffffffff通常の50%の経験値を\nモンスターから獲得|r", lines[2])
         assert.are.equal(ja("XP_TEXT_BANKED_XP_HEADER"), lines[5])
         assert.are.equal(ja("TRIAL_CAP_BANKED_XP_TOOLTIP"), lines[6])
-        assert.are.equal(WFJ.Font.PATH, (left(2):GetFont()))
-        assert.is_false(WFJ.HelpTooltip.registered(_G.UIParent)) -- walked once, never registered
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        assert.are.equal(WFI.Font.PATH, (left(2):GetFont()))
+        assert.is_false(WFI.HelpTooltip.registered(_G.UIParent)) -- walked once, never registered
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal(en("XP_TEXT_BANKED_XP_HEADER"), left(5):GetText())
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         assert.are.equal(ja("XP_TEXT_BANKED_XP_HEADER"), left(5):GetText())
         MM.leave(tick)
         assert.are.equal(en("XP_TEXT_BANKED_XP_HEADER"), left(5):GetText()) -- released on OnHide
-        assert.are.equal(0, WFJ.SurfaceState.count("help"))
+        assert.are.equal(0, WFI.SurfaceState.count("help"))
       end)
 
     it("the rest hint (EXHAUST_TOOLTIP2) is its own line on Forever", function()
@@ -281,13 +281,13 @@ describe("the Forever micro menu and game menu", function()
       MM.leave(MM.ticks[1])
       unrelated()
       assert.are.same({ en("XP_TEXT_BANKED_XP_HEADER"), en("MAINMENU_BUTTON") }, linesOf())
-      assert.are.equal(0, WFJ.SurfaceState.count("help"))
+      assert.are.equal(0, WFI.SurfaceState.count("help"))
     end)
 
     it("a tooltip the writer did not anchor to UIParent is left to the usual walk", function()
       tt:SetOwner(_G.CharacterMicroButton, "ANCHOR_RIGHT")
       tt:SetText(en("EXHAUST_TOOLTIP2"))
-      assert.are.equal(0, WFJ.MicroMenu.onExhaustionTooltip())
+      assert.are.equal(0, WFI.MicroMenu.onExhaustionTooltip())
     end)
   end)
 
@@ -303,7 +303,7 @@ describe("the Forever micro menu and game menu", function()
       tt:SetOwner(b, "ANCHOR_RIGHT")
       tt:SetText(en("CHARACTER_BUTTON"))
       tt:AddLine(en("MAINMENU_BUTTON"))
-      assert.are.equal(1, WFJ.HelpTooltip.walkAs(tt, { only = { "CHARACTER_BUTTON" } }))
+      assert.are.equal(1, WFI.HelpTooltip.walkAs(tt, { only = { "CHARACTER_BUTTON" } }))
       tt:Hide()
       tt:SetOwner(b, "ANCHOR_RIGHT") -- unrestricted again
       tt:SetText(en("CHARACTER_BUTTON"))
@@ -313,10 +313,10 @@ describe("the Forever micro menu and game menu", function()
     end)
 
     it("no tooltip or no owner: 0, nothing registered", function()
-      assert.are.equal(0, WFJ.HelpTooltip.walkAs({}, { only = { "CHARACTER_BUTTON" } }))
+      assert.are.equal(0, WFI.HelpTooltip.walkAs({}, { only = { "CHARACTER_BUTTON" } }))
       tt:Hide(); tt:ClearLines()
       if tt.owner then tt.owner = nil end
-      assert.has_no.errors(function() WFJ.HelpTooltip.walkAs(nil, nil) end)
+      assert.has_no.errors(function() WFI.HelpTooltip.walkAs(nil, nil) end)
     end)
   end)
 
@@ -412,9 +412,9 @@ describe("the Forever micro menu and game menu", function()
       MM.setPetAction(1, { token = "PET_ACTION_ATTACK" })
       MM.hover(MM.pets[1]) -- tooltipName .. NORMAL_FONT_COLOR_CODE .. " (" .. key .. ")" .. "|r"
       assert.are.same({ "攻撃|cffffd200 (Ctrl-1)|r" }, tipLines())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.same({ "Attack|cffffd200 (Ctrl-1)|r" }, tipLines())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.same({ "攻撃|cffffd200 (Ctrl-1)|r" }, tipLines())
       MM.leave(MM.pets[1])
       MM.bindings.BONUSACTIONBUTTON4 = "Ctrl-4"
@@ -434,7 +434,7 @@ describe("the Forever micro menu and game menu", function()
       assert.are.equal("待機", left(1):GetText())
       assert.are.equal(writes + 1, left(1).calls.SetText) -- the client's English was replaced again
       assert.are.equal(1, tt.calls.Show) -- one refit
-      assert.are.equal("Stay", WFJ.SurfaceState.get("help", "L1").en)
+      assert.are.equal("Stay", WFI.SurfaceState.get("help", "L1").en)
     end)
 
     it("the possess bar's cancel button translates; the possessed spell does not", function()
@@ -466,7 +466,7 @@ describe("the Forever micro menu and game menu", function()
         assert.are.equal(0, records())
         assert.are.equal("Worn Shortsword", left(1):GetText())
         assert.are.equal("装備時にソウルバウンド", left(2):GetText())
-        assert.is_not_nil(WFJ.SurfaceState.get("tooltip.GameTooltip", "ui.L2"))
+        assert.is_not_nil(WFI.SurfaceState.get("tooltip.GameTooltip", "ui.L2"))
       end)
   end)
 
@@ -479,7 +479,7 @@ describe("the Forever micro menu and game menu", function()
   end)
 
   it("the game menu renders LOG_OUT, GAMEMENU_EXTERNALEVENT and GAME_MENU_SHOW_REWARDS", function()
-    assert.is_true(WFJ.GameMenu.init())
+    assert.is_true(WFI.GameMenu.init())
     Stub.gameMenuLabels = { en("GAMEMENU_EXTERNALEVENT"), en("GAMEMENU_OPTIONS"), en("GAME_MENU_SHOW_REWARDS"),
       en("LOG_OUT"), en("EXIT_GAME"), en("RETURN_TO_GAME") }
     GameMenuFrame:Show()

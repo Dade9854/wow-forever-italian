@@ -10,17 +10,17 @@ local UI = {
 }
 
 describe("Labels.title", function()
-  local WFJ, SS, frame
+  local WFI, SS, frame
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function text() return frame.TitleContainer.TitleText:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(H.UI_FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(H.UI_FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     frame = CreateFrame("Frame")
     frame.name = "TitledFrame"
     frame.TitleContainer = { TitleText = Stub.fontString("") }
@@ -35,9 +35,9 @@ describe("Labels.title", function()
   it("shows the title already written, and again after each SetTitle; a second SetTitle keeps the Japanese",
     function()
       frame:SetTitle("Inbox")
-      assert.are.equal(1, WFJ.Labels.title("t", frame))
+      assert.are.equal(1, WFI.Labels.title("t", frame))
       assert.are.equal("受信箱", text())
-      assert.are.equal(WFJ.Font.PATH, (frame.TitleContainer.TitleText:GetFont()))
+      assert.are.equal(WFI.Font.PATH, (frame.TitleContainer.TitleText:GetFont()))
       frame:SetTitle("Send Mail")
       assert.are.equal("メール送信", text())
       frame:SetTitle("Send Mail") -- the client rewrites the same title
@@ -50,10 +50,10 @@ describe("Labels.title", function()
     end)
 
   it("hooks a frame once, however often it is asked, and returns the current title's 1 | 0", function()
-    assert.are.equal(0, WFJ.Labels.title("t", frame)) -- an empty title
+    assert.are.equal(0, WFI.Labels.title("t", frame)) -- an empty title
     frame:SetTitle("Inbox")
-    assert.are.equal(1, WFJ.Labels.title("t", frame))
-    assert.are.equal(1, WFJ.Labels.title("t", frame)) -- already ours
+    assert.are.equal(1, WFI.Labels.title("t", frame))
+    assert.are.equal(1, WFI.Labels.title("t", frame)) -- already ours
     assert.are.equal(1, #Stub.hooks["TitledFrame:SetTitle"])
   end)
 
@@ -61,7 +61,7 @@ describe("Labels.title", function()
     function()
       local opts = { only = { "MERCHANT_BUYBACK" } }
       frame:SetTitle("Buyback")
-      assert.are.equal(1, WFJ.Labels.title("t", frame, opts, "ui.title"))
+      assert.are.equal(1, WFI.Labels.title("t", frame, opts, "ui.title"))
       assert.are.equal("買い戻し", text())
       assert.is_table(SS.get("t", "ui.title"))
       frame:SetTitle("Raid") -- an NPC, a guild or a bag called "Raid": a dictionary word, not this title's
@@ -73,48 +73,48 @@ describe("Labels.title", function()
 
   it("a title that is no dictionary word stays as written", function()
     frame:SetTitle("Grimtooth")
-    assert.are.equal(0, WFJ.Labels.title("t", frame))
+    assert.are.equal(0, WFI.Labels.title("t", frame))
     assert.are.equal("Grimtooth", text())
     assert.are.equal(0, frame.TitleContainer.TitleText.calls.SetText)
   end)
 
   it("a forbidden title widget is never written", function()
-    WFJ.Labels.forbid(frame.TitleContainer.TitleText)
+    WFI.Labels.forbid(frame.TitleContainer.TitleText)
     frame:SetTitle("Inbox")
-    assert.are.equal(0, WFJ.Labels.title("t", frame))
+    assert.are.equal(0, WFI.Labels.title("t", frame))
     frame:SetTitle("Send Mail")
     assert.are.equal("Send Mail", text())
   end)
 
   it("no TitleContainer: 0, and nothing is hooked", function()
     frame.TitleContainer = nil
-    assert.are.equal(0, WFJ.Labels.title("t", frame))
+    assert.are.equal(0, WFI.Labels.title("t", frame))
     assert.is_nil(Stub.hooks["TitledFrame:SetTitle"])
     frame.TitleContainer = { TitleText = nil }
-    assert.are.equal(0, WFJ.Labels.title("t", frame))
+    assert.are.equal(0, WFI.Labels.title("t", frame))
     assert.is_nil(Stub.hooks["TitledFrame:SetTitle"])
   end)
 
   it("a title widget without SetTitle is shown once and not hooked", function()
     frame.TitleContainer.TitleText.text = "Inbox"
     frame.SetTitle = nil
-    assert.are.equal(1, WFJ.Labels.title("t", frame))
+    assert.are.equal(1, WFI.Labels.title("t", frame))
     assert.are.equal("受信箱", text())
     assert.is_nil(Stub.hooks["TitledFrame:SetTitle"])
   end)
 
   it("wrong types degrade to 0 with no error and no hook", function()
     assert.has_no.errors(function()
-      assert.are.equal(0, WFJ.Labels.title("t", nil))
-      assert.are.equal(0, WFJ.Labels.title("t", "moved"))
-      assert.are.equal(0, WFJ.Labels.title("t", 7))
+      assert.are.equal(0, WFI.Labels.title("t", nil))
+      assert.are.equal(0, WFI.Labels.title("t", "moved"))
+      assert.are.equal(0, WFI.Labels.title("t", 7))
       frame.TitleContainer = "moved"
-      assert.are.equal(0, WFJ.Labels.title("t", frame))
+      assert.are.equal(0, WFI.Labels.title("t", frame))
       frame.TitleContainer = { TitleText = "moved" }
-      assert.are.equal(0, WFJ.Labels.title("t", frame))
+      assert.are.equal(0, WFI.Labels.title("t", frame))
       frame.TitleContainer = { TitleText = {} } -- a table that is no text widget
       frame.SetTitle = "moved"
-      assert.are.equal(0, WFJ.Labels.title("t", frame))
+      assert.are.equal(0, WFI.Labels.title("t", frame))
     end)
     assert.is_nil(Stub.hooks["TitledFrame:SetTitle"])
     assert.are.equal(0, SS.count("t"))
@@ -123,11 +123,11 @@ describe("Labels.title", function()
   it("a secret text (a unit tooltip line in combat) is left as the client wrote it, never compared", function()
     local fs = Stub.fontString("Inbox")
     _G.issecretvalue = function(v) return v == "Inbox" end
-    assert.are.equal(0, WFJ.Labels.show("t", "secret", fs))
+    assert.are.equal(0, WFI.Labels.show("t", "secret", fs))
     assert.are.equal("Inbox", fs:GetText())
     assert.is_nil(SS.get("t", "secret"))
     _G.issecretvalue = nil
-    assert.are.equal(1, WFJ.Labels.show("t", "secret", fs))
+    assert.are.equal(1, WFI.Labels.show("t", "secret", fs))
     assert.are.equal("受信箱", fs:GetText())
   end)
 end)

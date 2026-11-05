@@ -1,13 +1,13 @@
-"""`wfj stats` lists collected gossip keys by how many NPCs say them (the blast radius)."""
+"""`wfi stats` lists collected gossip keys by how many NPCs say them (the blast radius)."""
 
 from pathlib import Path
 
-from wfj.cmd import stats
-from wfj.core import report
-from wfj.core.hashing import key
-from wfj.core.model import english_line, entry, provenance
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd import stats
+from wfi.core import report
+from wfi.core.hashing import key
+from wfi.core.model import english_line, entry, provenance
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 SRC = "collector@1.15.9.69722"
 
@@ -134,7 +134,7 @@ def _dump(path: Path, entries: dict[tuple[int, str], str]) -> Path:
         e = en.replace("\\", "\\\\").replace('"', '\\"')
         rows.append(f'["quest:{id_}:{field}"] = {{ t = "quest", i = {id_}, f = "{field}", h = "{h}", e = "{e}", b = 1 }},')
     path.write_text(
-        'WFJ_Collector = { version = 1, builds = { "1.15.9.69722" }, entries = {\n' + "\n".join(rows) + "\n} }\n",
+        'WFI_Collector = { version = 1, builds = { "1.15.9.69722" }, entries = {\n' + "\n".join(rows) + "\n} }\n",
         encoding="utf-8",
     )
     return path
@@ -150,7 +150,7 @@ def test_stale_report_reads_a_dump_where_a_curated_source_has_the_field(tmp_path
     Store(data, english=True).save("quest", [_e(9, "completion", "Well done.", VM), _e(9, "progress", "Not yet?", VM)])
     Store(data).save("quest", [_q(9, "completion", "よくやった", "trusted", "Well done."),
                                _q(9, "progress", "まだか", "trusted", "Not yet?")])
-    dump = _dump(tmp_path / "WoWForeverJapanese.lua", {(9, "completion"): "Well done, hero.", (9, "progress"): "Not yet?"})
+    dump = _dump(tmp_path / "WoWForeverItalian.lua", {(9, "completion"): "Well done, hero.", (9, "progress"): "Not yet?"})
     out = tmp_path / "stale.jsonl"
     assert stats.run(["--stale", str(out)]) == 0
     assert out.read_text() == ""

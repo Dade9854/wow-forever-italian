@@ -137,10 +137,10 @@ local function install()
 end
 
 describe("the StaticPopup dialogs on Forever", function()
-  local WFJ
+  local WFI
   before_each(function()
     C.discord, C.other, C.gamepad, C.combat, C.regional = nil, nil, nil, nil, nil
-    WFJ = X.load("UI/Popups.lua", UI, { before = install })
+    WFI = X.load("UI/Popups.lua", UI, { before = install })
     local D = _G.StaticPopupDialogs
     D.DELETE_ITEM = { text = _G.DELETE_ITEM, button1 = _G.YES, button2 = _G.NO }
     D.CONFIRM_BINDER = { text = _G.CONFIRM_BINDER, button1 = _G.YES, button2 = _G.NO }
@@ -196,7 +196,7 @@ describe("the StaticPopup dialogs on Forever", function()
           end
         end
       end }
-    assert.is_true(WFJ.Popups.init())
+    assert.is_true(WFI.Popups.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
@@ -205,9 +205,9 @@ describe("the StaticPopup dialogs on Forever", function()
       string.format(_G.REMOVE_TITLE_FRIEND_CONFIRMATION, "Reyn"))
     assert.are.equal("ReynをWoWフレンドから外しますか？", d.Text:GetText())
     assert.are.equal("はい", d.ButtonContainer.Buttons[1]:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Are you sure you want to remove Reyn as a WoW friend?", d.Text:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.StaticPopup1.shown = false
     local e = _G.StaticPopup_Show("CONFIRM_REMOVE_BN_FRIEND",
       string.format(_G.BATTLETAG_REMOVE_FRIEND_CONFIRMATION, "Wind Mami#1234"))
@@ -223,9 +223,9 @@ describe("the StaticPopup dialogs on Forever", function()
   it("the community invite dialog's sub-text follows the line its OnShow writes; Alt shows English", function()
     local d = _G.StaticPopup_Show("INVITE_COMMUNITY_MEMBER", "", nil, { bnet = true })
     assert.are.equal(UI.INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BNET_FRIEND[2], d.SubText:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal(UI.INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_BNET_FRIEND[1], d.SubText:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.StaticPopup1.shown = false
     C.regional = true
     local e = _G.StaticPopup_Show("INVITE_COMMUNITY_MEMBER", "", nil, { bnet = false })
@@ -242,9 +242,9 @@ describe("the StaticPopup dialogs on Forever", function()
   it("the typed confirmation line: the word to type stays as written; gamepad mode's line; none is blank", function()
     local d = _G.StaticPopup_Show("CONFIRM_DESTROY_COMMUNITY", nil, nil, { name = "Wind Mami's Club", bnet = true })
     assert.are.equal("確認のため、欄に「DELETE」と入力してください。", d.ConfirmText:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Type \"DELETE\" into the field to confirm.", d.ConfirmText:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.StaticPopup1.shown = false
     C.gamepad = true
     local e = _G.StaticPopup_Show("CONFIRM_DESTROY_COMMUNITY", nil, nil, { name = "Reyn", bnet = false })
@@ -252,26 +252,26 @@ describe("the StaticPopup dialogs on Forever", function()
     _G.StaticPopup1.shown = false
     local f = _G.StaticPopup_Show("CONFIRM_RESET_INSTANCES")
     assert.are.equal("", f.ConfirmText:GetText())
-    assert.is_true(X.unrecorded(WFJ, f.ConfirmText))
+    assert.is_true(X.unrecorded(WFI, f.ConfirmText))
   end)
 
   it("the confirmation line takes only its two keys; a dialog with no ConfirmText raises nothing", function()
     local d = _G.StaticPopup_Show("CONFIRM_RESET_INSTANCES")
     d.ConfirmText:SetText(_G.YES) -- a dictionary English that is not a confirmation prompt
-    WFJ.Popups.onShow(d)
+    WFI.Popups.onShow(d)
     assert.are.equal("Yes", d.ConfirmText:GetText())
     d.ConfirmText = nil
-    assert.has_no.errors(function() WFJ.Popups.onShow(d) end)
+    assert.has_no.errors(function() WFI.Popups.onShow(d) end)
   end)
 
   it("the community delete: OnShow's line with the community's name kept; Alt shows English", function()
     local d = _G.StaticPopup_Show("CONFIRM_DESTROY_COMMUNITY", nil, nil, { name = "Wind Mami's Club", bnet = true })
     assert.are.equal("グループ「Wind Mami's Club」を削除しますか？元に戻すことはできません。", d.Text:GetText())
     assert.are.equal("承諾", d.ButtonContainer.Buttons[1]:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Are you sure you want to delete the group \"Wind Mami's Club\"? This can't be undone.",
       d.Text:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.StaticPopup1.shown = false
     local e = _G.StaticPopup_Show("CONFIRM_DESTROY_COMMUNITY", nil, nil, { name = "Reyn", bnet = false })
     assert.are.equal("コミュニティ「Reyn」を削除しますか？元に戻すことはできません。", e.Text:GetText())
@@ -284,9 +284,9 @@ describe("the StaticPopup dialogs on Forever", function()
     C.combat = true
     b1:OnEnter()
     assert.are.equal(UI.SHARD_TRANSFER_COMBAT[2], _G.GameTooltipTextLeft1:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal(UI.SHARD_TRANSFER_COMBAT[1], _G.GameTooltipTextLeft1:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     local tt = _G.GameTooltip -- another dialog's button1 tooltip with a dictionary word: untouched
     tt:SetOwner(_G.StaticPopup3.ButtonContainer.Buttons[1])
     tt:ClearLines()
@@ -309,15 +309,15 @@ describe("the StaticPopup dialogs on Forever", function()
       _G.AddFriendFrame = { GetRegions = function() return end,
         GetChildren = function() return unpack(parts) end }
       _G.StaticPopupSpecial_Show = function() end
-      WFJ.Popups.onSpecial(_G.AddFriendFrame)
+      WFI.Popups.onSpecial(_G.AddFriendFrame)
       assert.are.equal(UI.BATTLETAG_DESCRIPTION[2], desc:GetText())
       assert.are.equal(UI.ERR_REAL_ID_FRIEND_REQUESTS_DISABLED[2], err:GetText())
       assert.are.equal(UI.WOW_FRIEND_DESCRIPTION[2], right:GetText())
       assert.are.equal("BattleTag", title:GetText()) -- a product name
       assert.are.equal("Enter name or BattleTag", old:GetText()) -- no longer written by the client
-      X.alt(WFJ, true)
+      X.alt(WFI, true)
       assert.are.equal(UI.BATTLETAG_DESCRIPTION[1], desc:GetText())
-      X.alt(WFJ, false)
+      X.alt(WFI, false)
     end)
 
   it("a plain dialog and its buttons translate; Alt shows the live English", function()
@@ -325,10 +325,10 @@ describe("the StaticPopup dialogs on Forever", function()
     assert.are.equal("すべてのインスタンスをリセットしますか？", d.Text:GetText())
     assert.are.equal("はい", d.ButtonContainer.Buttons[1]:GetText())
     assert.are.equal("いいえ", d.ButtonContainer.Buttons[2]:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Do you really want to reset all of your instances?", d.Text:GetText())
     assert.are.equal("Yes", d.ButtonContainer.Buttons[1]:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     assert.are.equal("すべてのインスタンスをリセットしますか？", d.Text:GetText())
   end)
 
@@ -337,10 +337,10 @@ describe("the StaticPopup dialogs on Forever", function()
       local d = _G.StaticPopup_Show("AGE_VERIFICATION_RESTRICTED_MINOR")
       assert.are.equal("ソーシャル機能は利用できません", d.Text:GetText())
       assert.are.equal(UI.SOCIAL_FEATURES_UNAVAILABLE_DESCRIPTION[2], d.SubText:GetText())
-      X.alt(WFJ, true)
+      X.alt(WFI, true)
       assert.are.equal("Social Features Unavailable", d.Text:GetText())
       assert.are.equal(UI.SOCIAL_FEATURES_UNAVAILABLE_DESCRIPTION[1], d.SubText:GetText())
-      X.alt(WFJ, false)
+      X.alt(WFI, false)
     end)
 
   it("a name inside the dialog is copied as the English showed it, even a dictionary word", function()
@@ -354,12 +354,12 @@ describe("the StaticPopup dialogs on Forever", function()
   it("a dialog whose text is not its definition's (computed, server text) stays as written", function()
     local d = _G.StaticPopup_Show("SERVER", "Something the server said.")
     assert.are.equal("Something the server said.", d.Text:GetText())
-    assert.is_true(X.unrecorded(WFJ, d.Text))
+    assert.is_true(X.unrecorded(WFI, d.Text))
     assert.are.equal("はい", d.ButtonContainer.Buttons[1]:GetText())
     _G.StaticPopup1.shown = false
     local e = _G.StaticPopup_Show("CONFIRM_RESET_INSTANCES")
     e.Text:SetText("Do you really want to reset all of your instances? (2 left)") -- rewritten by the client
-    WFJ.Popups.onUpdate(e)
+    WFI.Popups.onUpdate(e)
     assert.are.equal("Do you really want to reset all of your instances? (2 left)", e.Text:GetText())
   end)
 
@@ -399,7 +399,7 @@ describe("the StaticPopup dialogs on Forever", function()
     local d = _G.StaticPopup_Show("GENERIC_CONFIRMATION", nil, nil, data)
     d.Text:SetText(data.text) -- shareddialogdefs.lua:1-8: OnShow writes the caller's text and YES / NO
     d.ButtonContainer.Buttons[1]:SetText("Yes")
-    WFJ.Popups.onShow(d)
+    WFI.Popups.onShow(d)
     assert.are.equal("すべてのインスタンスをリセットしますか？", d.Text:GetText())
     assert.are.equal("はい", d.ButtonContainer.Buttons[1]:GetText())
     d.ButtonContainer.Buttons[1]:SetText("Yes") -- an accept delay ended: the English label back
@@ -410,9 +410,9 @@ describe("the StaticPopup dialogs on Forever", function()
   it("the party invite: the caller's line with the inviter's name, and the queue paragraph", function()
     local d = _G.StaticPopup_Show("PARTY_INVITE", string.format(_G.INVITATION, "Wind Mami"))
     assert.are.equal("Wind Mamiがあなたをグループに招待しています。", d.Text:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Wind Mami invites you to a group.", d.Text:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.StaticPopup1.shown = false
     local e = _G.StaticPopup_Show("PARTY_INVITE",
       string.format(_G.INVITATION, "Yes") .. "\n\n" .. _G.ACCEPTING_INVITE_WILL_REMOVE_QUEUE)
@@ -434,10 +434,10 @@ describe("the StaticPopup dialogs on Forever", function()
     local en = UI.VOICE_CHAT_JOIN_GROUP_TEXT[1] .. "\n\n" .. UI.VOICE_CHAT_JOIN_GROUP_DISCORD_TEXT[1]
     assert.are.equal(UI.VOICE_CHAT_JOIN_GROUP_TEXT[2] .. "\n\n" .. UI.VOICE_CHAT_JOIN_GROUP_DISCORD_TEXT[2],
       e.Text:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal(en, e.Text:GetText())
     assert.are.equal("Join Voice Chat", e.ButtonContainer.Buttons[1]:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.StaticPopup1.shown, _G.StaticPopup2.shown = false, false
     C.other = "A line this file does not know."
     local f = _G.StaticPopup_Show("VOICE_CHAT_JOIN_GROUP")
@@ -452,10 +452,10 @@ describe("the StaticPopup dialogs on Forever", function()
       string.format(_G.INVITATION_XREALM, "Wind Mami") .. "\n\n" .. _G.ACCEPTING_INVITE_WILL_REMOVE_QUEUE)
     assert.are.equal(UI.INVITATION_XREALM[2]:format("Wind Mami") .. "\n\n" .. UI.ACCEPTING_INVITE_WILL_REMOVE_QUEUE[2],
       e.Text:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     local en = string.format(_G.INVITATION_XREALM, "Wind Mami") .. "\n\n" .. _G.ACCEPTING_INVITE_WILL_REMOVE_QUEUE
     assert.are.equal(en, e.Text:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
   end)
 
   it("the talent wipe's caller line translates by its exact English", function()
@@ -469,10 +469,10 @@ describe("the StaticPopup dialogs on Forever", function()
     local b2 = d.ButtonContainer.Buttons[2]
     assert.are.equal("Decline (1s)", b2:GetText()) -- seen by the show hook as the countdown: left alone
     assert.are.equal("承諾", d.ButtonContainer.Buttons[1]:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     _G.StaticPopup_OnUpdate(d, 0.1)
     assert.are.equal("Decline (1s)", b2:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     b2:SetText("Decline") -- the ticker unlocks it (gamedialogdefs.lua:38-41)
     _G.StaticPopup_OnUpdate(d, 0.1)
     assert.are.equal("辞退", b2:GetText())
@@ -484,7 +484,7 @@ describe("the StaticPopup dialogs on Forever", function()
     _G.StaticPopup1.shown = false
     local e = _G.StaticPopup_Show("CONFIRM_LEAVE_INSTANCE_PARTY", "Leave the battlefield?")
     assert.are.equal("Leave the battlefield?", e.Text:GetText())
-    assert.is_true(X.unrecorded(WFJ, e.Text))
+    assert.is_true(X.unrecorded(WFI, e.Text))
   end)
 
   it("the invite's Decline, locked with a countdown, is Japanese once its English is back", function()
@@ -497,9 +497,9 @@ describe("the StaticPopup dialogs on Forever", function()
     _G.StaticPopup_OnUpdate(d, 0.1)
     assert.are.equal("辞退", b2:GetText())
     assert.are.equal("承諾", d.ButtonContainer.Buttons[1]:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Decline", b2:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     assert.are.equal("辞退", b2:GetText())
   end)
 
@@ -512,12 +512,12 @@ describe("the StaticPopup dialogs on Forever", function()
   end)
 
   it("hooks once; a missing StaticPopup_Show is no surface; wrong-typed input raises nothing", function()
-    assert.is_false(WFJ.Popups.init())
+    assert.is_false(WFI.Popups.init())
     assert.has_no.errors(function()
-      WFJ.Popups.onShow(nil)
-      WFJ.Popups.onShow({ dialogInfo = 3 })
-      WFJ.Popups.onShowCall("NOPE")
-      WFJ.Popups.onUpdate({ Text = 1 })
+      WFI.Popups.onShow(nil)
+      WFI.Popups.onShow({ dialogInfo = 3 })
+      WFI.Popups.onShowCall("NOPE")
+      WFI.Popups.onUpdate({ Text = 1 })
     end)
   end)
 end)

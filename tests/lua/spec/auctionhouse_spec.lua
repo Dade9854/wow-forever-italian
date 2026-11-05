@@ -123,21 +123,21 @@ local function loadAuctionHouse()
 end
 
 describe("the auction house on Forever", function()
-  local WFJ
+  local WFI
 
-  local function load() WFJ = C.fresh({ "UI/AuctionHouse.lua" }, UI) end
+  local function load() WFI = C.fresh({ "UI/AuctionHouse.lua" }, UI) end
 
   local function setup(loadedFirst)
     load()
     if loadedFirst then
       loadAuctionHouse()
-      WFJ.Labels.forbidNames(WFJ.AuctionHouse.NEVER_TOUCH)
-      assert.is_true(WFJ.AuctionHouse.init())
+      WFI.Labels.forbidNames(WFI.AuctionHouse.NEVER_TOUCH)
+      assert.is_true(WFI.AuctionHouse.init())
     else
-      assert.is_false(WFJ.AuctionHouse.init()) -- waits for the addon
+      assert.is_false(WFI.AuctionHouse.init()) -- waits for the addon
       loadAuctionHouse()
-      WFJ.Labels.forbidNames(WFJ.AuctionHouse.NEVER_TOUCH)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      WFI.Labels.forbidNames(WFI.AuctionHouse.NEVER_TOUCH)
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -156,9 +156,9 @@ describe("the auction house on Forever", function()
           assert.are.equal("オークションを見る", title:GetText())
           frame:SetDisplayMode("sell")
           assert.are.equal("出品する", title:GetText())
-          C.alt(WFJ, true)
+          C.alt(WFI, true)
           assert.are.equal("Post Auctions", title:GetText())
-          C.alt(WFJ, false)
+          C.alt(WFI, false)
           frame:SetTitle("Thrall") -- not a title key: left as written
           assert.are.equal("Thrall", title:GetText())
         end)
@@ -172,7 +172,7 @@ describe("the auction house on Forever", function()
           assert.are.equal("出品", frame.ItemSellFrame.PostButton:GetText())
           assert.are.equal("入札", frame.ItemBuyFrame.BidFrame.BidButton:GetText())
           assert.are.equal("戻る", frame.ItemBuyFrame.BackButton:GetText()) -- an owned word
-          assert.are.equal("INVTYPE_CLOAK", (WFJ.UIIndex:match("Back"))) -- the slot word elsewhere
+          assert.are.equal("INVTYPE_CLOAK", (WFI.UIIndex:match("Back"))) -- the slot word elsewhere
           assert.are.equal("24時間", frame.ItemSellFrame.Duration.Dropdown.Text:GetText())
           assert.are.equal("即決価格", frame.WoWTokenResults.BuyoutLabel:GetText())
           -- forever_titles.txt `key TUTORIAL_TOKEN_ABOUT_TOKENS auctionhouse`
@@ -224,7 +224,7 @@ describe("the auction house on Forever", function()
             en("AUCTION_HOUSE_NONE_AVAILABLE") })
           assert.are.equal("Swords", row.cells[1].Text:GetText())
           assert.are.equal("Search", row.cells[2].Text:GetText())
-          assert.is_true(C.unrecorded(WFJ, row.cells[1].Text))
+          assert.is_true(C.unrecorded(WFI, row.cells[1].Text))
           assert.are.equal("出品者3人", row.cells[3].Text:GetText())
           assert.are.equal("出品なし", row.cells[4].Text:GetText())
         end)
@@ -260,15 +260,15 @@ describe("the auction house on Forever", function()
           assert.are.equal("頭", head:GetText())
           assert.are.equal("武器", weapons:GetText())
           assert.are.equal("Daggers", daggers:GetText())
-          assert.is_true(C.unrecorded(WFJ, daggers))
-          C.alt(WFJ, true)
+          assert.is_true(C.unrecorded(WFI, daggers))
+          C.alt(WFI, true)
           assert.are.equal("Staves", staves:GetText())
-          C.alt(WFJ, false)
+          C.alt(WFI, false)
           assert.are.equal("杖", staves:GetText())
           -- the pooled button reused for another category shows that one's word
           _G.AuctionHouseFilterButton_SetUp(staves, { name = "Swords" }) -- a global word, not a category key
           assert.are.equal("Swords", staves:GetText())
-          assert.is_nil(WFJ.UIIndex:match("Staves")) -- the family is never matched outside the category list
+          assert.is_nil(WFI.UIIndex:match("Staves")) -- the family is never matched outside the category list
         end)
 
       it("help tooltips: a disabled bid button and a refresh button translate", function()
@@ -294,8 +294,8 @@ describe("the auction house on Forever", function()
       end)
 
       it("hooks install once", function()
-        assert.is_false(WFJ.AuctionHouse.init())
-        assert.is_false(WFJ.AuctionHouse.setup())
+        assert.is_false(WFI.AuctionHouse.init())
+        assert.is_false(WFI.AuctionHouse.setup())
         assert.are.equal(1, #Stub.hooks["AuctionHouseFilterButton_SetUp"])
       end)
     end)
@@ -307,8 +307,8 @@ describe("the auction house on Forever", function()
     frame:Show()
     local name = frame.ItemSellFrame.ItemDisplay.Name
     assert.are.equal("Searching...", name:GetText())
-    assert.are.equal(0, WFJ.Labels.show("auctionhouse", "x", name))
-    assert.is_true(C.unrecorded(WFJ, name))
+    assert.are.equal(0, WFI.Labels.show("auctionhouse", "x", name))
+    assert.is_true(C.unrecorded(WFI, name))
   end)
 
   it("client names bound to the wrong type degrade to English with no error", function()
@@ -323,7 +323,7 @@ describe("the auction house on Forever", function()
     _G.AuctionHouseFilterButton_SetUp = "not a function"
     _G.AuctionHouseMultisellProgressFrame = 1
     assert.has_no.errors(function()
-      assert.is_true(WFJ.AuctionHouse.init())
+      assert.is_true(WFI.AuctionHouse.init())
       frame:Show()
       frame:SetDisplayMode("buy")
       frame.BrowseResultsFrame.ItemList:SetState("none")
@@ -333,12 +333,12 @@ describe("the auction house on Forever", function()
     load()
     _G.AuctionHouseFrame = 42
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() assert.is_false(WFJ.AuctionHouse.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.AuctionHouse.init()) end)
   end)
 
   it("the addon never loads → init is false and nothing is set up", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.AuctionHouse.init()) end)
-    assert.are.equal(0, WFJ.LoadOnDemand.loaded("Blizzard_AuctionUI"))
+    assert.has_no.errors(function() assert.is_false(WFI.AuctionHouse.init()) end)
+    assert.are.equal(0, WFI.LoadOnDemand.loaded("Blizzard_AuctionUI"))
   end)
 end)

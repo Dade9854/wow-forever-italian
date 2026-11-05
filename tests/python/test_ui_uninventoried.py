@@ -5,7 +5,7 @@ key the inventory stops seeing after a client update."""
 import re
 from pathlib import Path
 
-from wfj.io import wago
+from wfi.io import wago
 
 ROOT = Path(__file__).resolve().parents[2]
 

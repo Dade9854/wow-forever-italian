@@ -147,31 +147,31 @@ local function loadProfessions()
 end
 
 describe("the crafting page on the Forever client", function()
-  local WFJ, SS
+  local WFI, SS
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function page() return _G.ProfessionsFrame.CraftingPage end
   local function form() return page().SchematicForm end
 
   local function setup(loadedFirst, shape)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
     -- The `words` argument kind PROFESSIONS_CREATE_ALL_FORMAT needs in Core/UIStrings.ARGS (harmless when it is
     -- already there). Without it the button keeps "Create All [5]" verbatim.
-    WFJ.UIStrings.ARGS.PROFESSIONS_CREATE_ALL_FORMAT = { [1] = "words" }
-    H.uiSetup(WFJ, UI)
+    WFI.UIStrings.ARGS.PROFESSIONS_CREATE_ALL_FORMAT = { [1] = "words" }
+    H.uiSetup(WFI, UI)
     C.recipe = nil
     if loadedFirst then
       local frame = loadProfessions()
       if shape then shape(frame) end
-      assert.is_true(WFJ.Crafting.init())
+      assert.is_true(WFI.Crafting.init())
     else
-      assert.is_false(WFJ.Crafting.init()) -- waits for the addon
+      assert.is_false(WFI.Crafting.init()) -- waits for the addon
       local frame = loadProfessions()
       if shape then shape(frame) end
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -192,7 +192,7 @@ describe("the crafting page on the Forever client", function()
         assert.are.equal("現在のフィルターに一致する結果はありません。", page().RecipeList.NoResultsText:GetText())
         assert.are.equal("検索", page().RecipeList.SearchBox.Instructions:GetText())
         assert.are.equal("材料:", form().Reagents.Label:GetText())
-        assert.are.equal("SPELL_REAGENTS", (WFJ.UIIndex:match("Reagents:")))
+        assert.are.equal("SPELL_REAGENTS", (WFI.UIIndex:match("Reagents:")))
         assert.are.equal("仕上げ材料:", form().FinishingReagents.Label:GetText())
         assert.are.equal("初回製作", form().FirstCraftBonus.Text:GetText())
         local log = page().CraftingOutputLog
@@ -220,7 +220,7 @@ describe("the crafting page on the Forever client", function()
         assert.are.equal("任意の材料:", form().OptionalReagents.Label:GetText())
         assert.are.equal("クールダウンは毎日リセットされます", form().Cooldown:GetText())
         assert.are.equal("Search", form().OutputText:GetText()) -- a recipe whose name is a dictionary word
-        assert.is_true(WFJ.Labels.forbidden(form().OutputText))
+        assert.is_true(WFI.Labels.forbidden(form().OutputText))
         page():SelectRecipe({ name = "Enchant Bracer", enchant = true, count = 1,
           cooldown = "Available Crafts: 2 / 3." })
         assert.are.equal("エンチャント", page().CreateButton:GetText())
@@ -238,13 +238,13 @@ describe("the crafting page on the Forever client", function()
         local link = page().LinkButton
         link.scripts.OnEnter(link)
         assert.are.equal("クリックすると専門技術へのリンクを作成します。", _G.GameTooltipTextLeft1:GetText())
-        assert.is_true(WFJ.Labels.forbidden(page().RecipeList.SearchBox))
-        assert.is_true(WFJ.Labels.forbidden(page().CreateMultipleInputBox))
-        assert.is_true(WFJ.Labels.forbidden(page().MinimizedSearchBox))
+        assert.is_true(WFI.Labels.forbidden(page().RecipeList.SearchBox))
+        assert.is_true(WFI.Labels.forbidden(page().CreateMultipleInputBox))
+        assert.is_true(WFI.Labels.forbidden(page().MinimizedSearchBox))
       end)
 
       it("hooks install once", function()
-        assert.is_false(WFJ.Crafting.setup())
+        assert.is_false(WFI.Crafting.setup())
         assert.are.equal(1, #Stub.hooks["CraftingPage:ValidateControls"])
         assert.are.equal(1, #Stub.hooks["SchematicForm:Init"])
       end)
@@ -268,17 +268,17 @@ describe("the crafting page on the Forever client", function()
     assert.are.equal("仕上げ材料:", form().FinishingReagents.Label:GetText()) -- the rest still renders
     _G.ProfessionsFrame = nil
     assert.has_no.errors(function() setup(true, function(frame) frame.CraftingPage = "moved" end) end)
-    assert.is_false(WFJ.Crafting.setup())
+    assert.is_false(WFI.Crafting.setup())
   end)
 
   it("without the frame init returns false and touches nothing", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_false(WFJ.Crafting.init())
-    assert.is_false(WFJ.Crafting.setup())
-    assert.are.equal(0, WFJ.SurfaceState.count("crafting"))
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_false(WFI.Crafting.init())
+    assert.is_false(WFI.Crafting.setup())
+    assert.are.equal(0, WFI.SurfaceState.count("crafting"))
   end)
 end)
 
@@ -286,9 +286,9 @@ end)
 -- [blizzard_professionsrecipelist.lua:21–86, 207, 282–316; recipelist.xml:98; blizzard_professions.lua:844;
 -- blizzard_professionsrecipeenchantslot.lua:8, 65, 72; schematicform.lua:171–175, 1177–1244, 1536–1544].
 describe("the crafting page on the Forever client: list rows, enchant slot, help tooltips", function()
-  local WFJ
+  local WFI
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function page() return _G.ProfessionsFrame.CraftingPage end
   local function form() return page().SchematicForm end
   local function box() return page().RecipeList.ScrollBox end
@@ -309,20 +309,20 @@ describe("the crafting page on the Forever client: list rows, enchant slot, help
   end
 
   local function setup(loadedFirst, shape)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     C.recipe = nil
     if loadedFirst then
       local frame = loadProfessions()
       if shape then shape(frame) end
-      WFJ.Crafting.init()
+      WFI.Crafting.init()
     else
-      WFJ.Crafting.init()
+      WFI.Crafting.init()
       local frame = loadProfessions()
       if shape then shape(frame) end
-      WFJ.LoadOnDemand.loaded(ADDON)
+      WFI.LoadOnDemand.loaded(ADDON)
     end
   end
 
@@ -350,7 +350,7 @@ describe("the crafting page on the Forever client: list rows, enchant slot, help
       box():initFrame(recipe, node({ recipeInfo = { name = "Favorites" } }),
         function(r) r.Label:SetText("Favorites") end)
       assert.are.equal("Favorites", recipe.Label:GetText())
-      assert.is_true(WFJ.Labels.forbidden(recipe.Label))
+      assert.is_true(WFI.Labels.forbidden(recipe.Label))
       assert.are.equal("確実にスキルが3上昇する", hover(recipe.SkillUps, "Guaranteed chance of gaining 3 skill ups"))
       assert.are.equal("スキル上昇の確率は低い", hover(recipe.SkillUps, "Low chance of gaining skill"))
       alt(true)
@@ -375,7 +375,7 @@ describe("the crafting page on the Forever client: list rows, enchant slot, help
     assert.are.equal("鞄", bags.ButtonText:GetText())
     assert.are.equal("Leatherworking", profession.ButtonText:GetText()) -- a profession's name has no row
     assert.are.equal("Miscellaneous", misc.ButtonText:GetText())
-    assert.is_nil(WFJ.UIIndex:match("Leather Armor")) -- the family only where the header names it
+    assert.is_nil(WFI.UIIndex:match("Leather Armor")) -- the family only where the header names it
     alt(true)
     assert.are.equal("Leather Armor", leather.ButtonText:GetText())
     alt(false)
@@ -424,8 +424,8 @@ describe("the crafting page on the Forever client: list rows, enchant slot, help
     assert.are.equal("適した材料を持っていません。", flyout.Text:GetText())
     assert.are.equal("使用不可を隠す", flyout.HideUnownedCheckbox.text:GetText())
     assert.has_no.errors(function()
-      WFJ.Crafting.onFlyout(nil, "moved")
-      WFJ.Crafting.onFlyout(nil, { GetChildren = function() return "moved", { HideUnownedCheckbox = "moved" } end })
+      WFI.Crafting.onFlyout(nil, "moved")
+      WFI.Crafting.onFlyout(nil, { GetChildren = function() return "moved", { HideUnownedCheckbox = "moved" } end })
     end)
     _G.OpenProfessionsItemFlyout = nil
   end)
@@ -448,15 +448,15 @@ describe("the crafting page on the Forever client: list rows, enchant slot, help
     _G.ProfessionsFrame = nil
     setup(true)
     assert.has_no.errors(function()
-      WFJ.Crafting.onListRow(WFJ.Crafting, "moved")
-      WFJ.Crafting.onListRow(WFJ.Crafting, { ButtonText = "moved" }, node({ categoryInfo = {} }))
-      WFJ.Crafting.onListRow({ Label = "moved" }, { isDivider = true })
-      WFJ.Crafting.onListRow({ Label = "moved", SkillUps = "moved" }, { recipeInfo = {} })
-      WFJ.Crafting.onListRow({}, "moved")
+      WFI.Crafting.onListRow(WFI.Crafting, "moved")
+      WFI.Crafting.onListRow(WFI.Crafting, { ButtonText = "moved" }, node({ categoryInfo = {} }))
+      WFI.Crafting.onListRow({ Label = "moved" }, { isDivider = true })
+      WFI.Crafting.onListRow({ Label = "moved", SkillUps = "moved" }, { recipeInfo = {} })
+      WFI.Crafting.onListRow({}, "moved")
       form().enchantSlot = "moved"
-      WFJ.Crafting.onFormInit()
+      WFI.Crafting.onFormInit()
       form().enchantSlot = { Name = "moved", SetNameText = "moved", Button = "moved" }
-      WFJ.Crafting.onFormInit()
+      WFI.Crafting.onFormInit()
     end)
   end)
   it("the create buttons' disabled reason, the required tools, Track Recipe, the enchant slot's replace hint"
@@ -492,7 +492,7 @@ describe("the crafting page on the Forever client: list rows, enchant slot, help
     assert.are.equal("Cooking", _G.GameTooltipTextLeft1:GetText()) -- the item's name: untouched
     assert.are.equal("|cnDISABLED_FONT_COLOR:左クリックでこのアイテムを置き換え|r", _G.GameTooltipTextLeft4:GetText())
     local element = { ItemContainer = { Text = fs("") } }
-    WFJ.Crafting.onLogElement(WFJ.Crafting, element)
+    WFI.Crafting.onLogElement(WFI.Crafting, element)
     element.ItemContainer.Text:SetText(_G.ENCHANTED_TOOLTIP_LINE:format("Cooking")) -- the item loads later
     assert.are.equal("エンチャント済み: Cooking", element.ItemContainer.Text:GetText())
     element.ItemContainer.Text:SetText("Cooking") -- a crafted item's plain name

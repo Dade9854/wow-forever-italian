@@ -1,11 +1,11 @@
 # ADR-031: Objective lines by template and fingerprint; menus and HelpTip callouts translated
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/Core/Objectives.lua`,
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/Core/Objectives.lua`,
   `Core/Const.lua` / `Core/Data.lua` (the `objective` slot), `Core/UIStrings.lua` (`affix` fill form, the last-break
   `paragraphs` split), `Core/UIStringKeys.lua` (objective `ARGS`), `UI/QuestMap.lua` (tracker `AddObjective`, list objective rows, map
   details objectives, the list title tooltip), `UI/Menus.lua`, `UI/HelpTips.lua`, `UI/FriendsTooltip.lua`,
-  `UI/MicroMenu.lua` (stable pet XP bar), `UI/Slash.lua` (`/wfj debug objective`), `Main.lua` and the TOC;
-  `pipeline/wfj/core/model.py`, `emit/schema.py`, `cmd/check.py`, `cmd/validate.py` (`rule_objective`),
+  `UI/MicroMenu.lua` (stable pet XP bar), `UI/Slash.lua` (`/wfi debug objective`), `Main.lua` and the TOC;
+  `pipeline/wfi/core/model.py`, `emit/schema.py`, `cmd/check.py`, `cmd/validate.py` (`rule_objective`),
   `core/status.py` (`PROSE_KINDS`), `core/markup.py` (textures and `|n`), `dev/translate_batch.py`,
   `dev/translate_lint.py`; `data/objective/`, `pipeline/objective_names.txt`. Not yet verified in game on Forever
   (the re-target checklist in [Testing strategy](../testing/strategy.md)).
@@ -102,7 +102,7 @@ characters with a |T…AvailableQuestIcon:16:16|t above their head.") were kept 
 - Objective lines show Japanese on Forever without an objective id and without a position. The fingerprint is a match,
   not a key: `data/` stays keyed by QuestObjective id, and a translator edits one id's line.
 - Shared English is a hard constraint on objective drafts: every id with the same English ships the same Japanese,
-  or none of them shows. `validate` catches it before release; `/wfj debug objective` counts it in game.
+  or none of them shows. `validate` catches it before release; `/wfi debug objective` counts it in game.
 - An objective whose English the server changes stops matching and shows the live English (the same behaviour as a
   moved UI string).
 - Menus run the addon's code inside Blizzard's menu initializers. `AddInitializer` is Blizzard's own extension point,

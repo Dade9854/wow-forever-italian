@@ -1,5 +1,5 @@
-"""The quest-cache reader (`pipeline/wfj/io/wdb.py`) on real records cut from a
-`questcache.wdb` (`wfj.dev.cut_wdb_fixture`), and every malformed shape it must refuse. The
+"""The quest-cache reader (`pipeline/wfi/io/wdb.py`) on real records cut from a
+`questcache.wdb` (`wfi.dev.cut_wdb_fixture`), and every malformed shape it must refuse. The
 Forever 1.60.1.69913 fixture has a different payload layout: one pinned `Layout` per build, and a build with
 no pinned layout is refused."""
 
@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd.import_ import run
-from wfj.io import wdb
+from wfi.cmd.import_ import run
+from wfi.io import wdb
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 FIXTURE = FIXTURES / "wdb"  # Classic Era 1.15.9.69722
@@ -198,5 +198,5 @@ def test_import_of_a_malformed_file_writes_nothing(tmp_path, monkeypatch, capsys
     bad.write_bytes(real[:-8])  # no terminator
     assert run(["english", "wdb", str(bad), "--build", "1.15.9.69722"]) == 1
     err = capsys.readouterr().err.strip().splitlines()
-    assert len(err) == 1 and err[0].startswith("wfj import: questcache.wdb:")
+    assert len(err) == 1 and err[0].startswith("wfi import: questcache.wdb:")
     assert not (data / "english").exists()

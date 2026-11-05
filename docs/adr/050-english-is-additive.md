@@ -6,7 +6,7 @@
 
 ## Context
 
-ADR-034 added `wfj import english served`, which runs last in every English import and prunes `data/english` to
+ADR-034 added `wfi import english served`, which runs last in every English import and prunes `data/english` to
 the ids the current Forever build serves: QuestV2 or the quest cache for quests, ItemSparse and SpellName for items
 and spells, the Forever tables' stamp and `ui_keys.txt` for UI keys. Its purpose was to keep Classic Era-only
 content out of the addon, and the Japanese in `data/` was never touched.

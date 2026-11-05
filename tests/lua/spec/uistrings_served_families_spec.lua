@@ -16,12 +16,12 @@ local UI = {
 }
 
 describe("served-text family words inside a translated sentence", function()
-  local WFJ, index
+  local WFI, index
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(H.UI_FILES)
-    H.uiSetup(WFJ, UI)
-    index = WFJ.UIIndex
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(H.UI_FILES)
+    H.uiSetup(WFI, UI)
+    index = WFI.UIIndex
   end)
   after_each(function() H.uiTeardown() end)
 
@@ -55,8 +55,8 @@ describe("served-text family words inside a translated sentence", function()
   it("the family words are never matched on their own by the open match", function()
     assert.is_nil(index:match("Fish"))
     assert.is_nil(index:match("Melee Weapon"))
-    assert.is_true(WFJ.UIStrings.isRestrictedKey("PetFood:2"))
-    assert.is_true(WFJ.UIStrings.isRestrictedKey("CriteriaText:1"))
-    assert.is_true(WFJ.UIStrings.isFingerprintKey("MailBody:1"))
+    assert.is_true(WFI.UIStrings.isRestrictedKey("PetFood:2"))
+    assert.is_true(WFI.UIStrings.isRestrictedKey("CriteriaText:1"))
+    assert.is_true(WFI.UIStrings.isFingerprintKey("MailBody:1"))
   end)
 end)

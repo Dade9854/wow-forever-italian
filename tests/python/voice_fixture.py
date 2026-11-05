@@ -7,9 +7,9 @@ import json
 import sqlite3
 from pathlib import Path
 
-from wfj.core import voice
-from wfj.io import creature_tables, tables_stamp
-from wfj.io.jsonl_store import Store
+from wfi.core import voice
+from wfi.io import creature_tables, tables_stamp
+from wfi.io.jsonl_store import Store
 
 SRC = {"source": "vmangos@13b49dc", "imported": "2026-10-06"}
 HELLO, GREETING, CAPTURED = "Hello, traveller.", "A greeting.", "Captured line."

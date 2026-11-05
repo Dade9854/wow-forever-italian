@@ -21,7 +21,7 @@ local function byAddon()
     local info = debug.getinfo(level, "S")
     if not info then return false end
     local src = info.source or ""
-    if src:find("/addon/WoWForeverJapanese/", 1, true) then return true end
+    if src:find("/addon/WoWForeverItalian/", 1, true) then return true end
     if src ~= "=(tail call)" and not src:find("wow_stub.lua", 1, true) then return false end
   end
   return false
@@ -148,7 +148,7 @@ Stub.META = { LALT = true, RALT = true, LCTRL = true, RCTRL = true, LSHIFT = tru
 Stub.MOUSE = { LeftButton = "BUTTON1", RightButton = "BUTTON2", MiddleButton = "BUTTON3", Button1 = "BUTTON1",
   Button2 = "BUTTON2", Button3 = "BUTTON3", Button4 = "BUTTON4", Button5 = "BUTTON5" }
 Stub.BINDING_NAMES = { ACTIONBUTTON5 = "Action Button 5", MOVEFORWARD = "Move Forward",
-  WFJ_TOGGLE = "Toggle translation" }
+  WFI_TOGGLE = "Toggle translation" }
 Stub.KEY_NAMES = { BUTTON4 = "Mouse Button 4", BUTTON5 = "Mouse Button 5", BUTTON3 = "Middle Mouse" }
 
 function Stub.installKeyAPI()
@@ -230,12 +230,12 @@ function Stub.install(tocPath)
   Stub.keys = { alt = false, ctrl = false, shift = false, -- the side polls
     lalt = false, ralt = false, lctrl = false, rctrl = false, lshift = false, rshift = false }
   Stub.fontSetFails = false
-  _G.WFJ_DB = nil -- fresh SavedVariables per install (a real global; it would otherwise leak between specs)
-  _G.WFJ_Collector = nil
-  _G.WFJ_Log = nil -- the third SavedVariables: an error one spec caught must not count in the next
+  _G.WFI_DB = nil -- fresh SavedVariables per install (a real global; it would otherwise leak between specs)
+  _G.WFI_Collector = nil
+  _G.WFI_Log = nil -- the third SavedVariables: an error one spec caught must not count in the next
   -- the AddOn List is opt-in per spec (Stub.installAddonList), never left over from an earlier one
   _G.AddonList, _G.AddonList_InitAddon, _G.AddonList_HasAnyChanged, _G.HideUIPanel = nil, nil, nil, nil
-  _G.UIParent, _G.WFJSettingsTooltip = nil, nil
+  _G.UIParent, _G.WFISettingsTooltip = nil, nil
 
   -- GetAddOnName(index) reads Stub.addonNames (the AddOn List button).
   Stub.addonNames = {}
@@ -405,7 +405,7 @@ function Stub.install(tocPath)
     return frame
   end
   Stub.installGameMenu()
-  -- EnumerateFrames(prev) → the next frame the stub created (for /wfj debug ui scan)
+  -- EnumerateFrames(prev) → the next frame the stub created (for /wfi debug ui scan)
   _G.EnumerateFrames = function(prev)
     local i = 0
     if prev then for j, f in ipairs(Stub.frames) do if f == prev then i = j end end end

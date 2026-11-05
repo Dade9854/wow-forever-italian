@@ -24,8 +24,8 @@ def plan_report(root: Path) -> tuple[dict[str, str], dict]:
     """The committed store's plan and its report, computed once: planning the whole store takes seconds, and
     every test that needs it asserts on the same committed data. Tests read the plan; the ones that write
     apply it to a copy of the addon folder."""
-    from wfj.cmd import generate
-    from wfj.io.jsonl_store import Store
+    from wfi.cmd import generate
+    from wfi.io.jsonl_store import Store
 
     report: dict = {}
     planned = generate.plan(Store(root / "data"), generate.vectors_rows(root / "data"), report)

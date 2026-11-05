@@ -7,7 +7,7 @@
 ## Two readings, and why they differ
 
 `verdicts-run2.json` is generated from the raw probe file and reads **rework 99 · unknown 79 · works 172**.
-Ten surfaces were marked with `/wfjprobe <surface>`, but **guild and talents are gated at
+Ten surfaces were marked with `/wfiprobe <surface>`, but **guild and talents are gated at
 character level 10** ("This feature becomes available at level 10."), so those two windows could not
 have been open and their marks are **withdrawn**. Reading the same answers with those two marks removed
 gives **rework 37 · unknown 141 · works 172**, the figure the research doc uses.
@@ -19,7 +19,7 @@ stops being one.
 Reproducing both readings from the committed files:
 
 ```python
-from wfj.dev import client_surface as cs
+from wfi.dev import client_surface as cs
 manifest = json.load(open("surface-manifest-run2.json"))
 raw      = open("probe-answers-run2.lua", encoding="utf-8").read()
 answers  = cs.read_saved_variables(raw)
@@ -48,7 +48,7 @@ cs.report(manifest, answers, None, asked)                    # withdrawn:   rewo
 
 - **trainer, talents, raid**: their load-on-demand Blizzard addon never loaded in the session, so
   absence proves nothing (`loaded` in the probe file lists only Blizzard_TimeManager,
-  Blizzard_GroupFinder_VanillaStyle, Blizzard_CombatLog, WoWForeverJapanese and WFJProbe).
+  Blizzard_GroupFinder_VanillaStyle, Blizzard_CombatLog, WoWForeverItalian and WFIProbe).
 - **guild**: level 10, as above.
 - **tooltip**: scored unknown here because the surface was never marked, but it needs no probe: the
   live client took the data-processor path (`hook path: dataprocessor`), which is the answer.

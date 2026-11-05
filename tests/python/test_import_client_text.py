@@ -1,16 +1,16 @@
-"""`wfj import english client-text` (item / spell tooltip and buff English) and the `--src`
+"""`wfi import english client-text` (item / spell tooltip and buff English) and the `--src`
 label of the client-table imports."""
 
 from pathlib import Path
 
 import pytest
 
-from wfj.cmd.import_ import run
-from wfj.core.hashing import key
-from wfj.core.model import english_line, validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.io import tables_stamp
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.core.hashing import key
+from wfi.core.model import english_line, validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.io import tables_stamp
+from wfi.io.jsonl_store import Store
 
 BUILD = "1.15.9.69722"
 
@@ -202,7 +202,7 @@ def _forever_csvs(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
 
 
 def test_item_effects_join_through_itemxitemeffect(tmp_path: Path):
-    from wfj.io import wago
+    from wfi.io import wago
 
     _, _, effect, _ = _forever_csvs(tmp_path)
     link = tmp_path / "ItemXItemEffect.csv"
@@ -218,7 +218,7 @@ def test_item_effects_join_through_itemxitemeffect(tmp_path: Path):
 
 def test_without_the_join_a_forever_itemeffect_imports_nothing_and_says_so(tmp_path: Path):
     """The whole point: ParentItemID 0 must fail loudly, not join zero items in silence."""
-    from wfj.io import wago
+    from wfi.io import wago
 
     _, _, effect, _ = _forever_csvs(tmp_path)
     with pytest.raises(ValueError, match="no item effects"):
@@ -227,7 +227,7 @@ def test_without_the_join_a_forever_itemeffect_imports_nothing_and_says_so(tmp_p
 
 def test_two_items_claiming_one_effect_is_reported_never_last_wins(tmp_path: Path):
     """A duplicate is resolved by a stated rule or reported, never silently."""
-    from wfj.io import wago
+    from wfi.io import wago
 
     link = tmp_path / "ItemXItemEffect.csv"
     link.write_text("ID,ItemEffectID,ItemID\n1,10,117\n2,10,5000\n")
@@ -236,7 +236,7 @@ def test_two_items_claiming_one_effect_is_reported_never_last_wins(tmp_path: Pat
 
 
 def test_an_empty_itemxitemeffect_is_refused(tmp_path: Path):
-    from wfj.io import wago
+    from wfi.io import wago
 
     link = tmp_path / "ItemXItemEffect.csv"
     link.write_text("ID,ItemEffectID,ItemID\n")
@@ -246,7 +246,7 @@ def test_an_empty_itemxitemeffect_is_refused(tmp_path: Path):
 
 def test_the_join_is_optional_so_classic_era_is_unchanged(tmp_path: Path):
     """Omitting it must read ParentItemID exactly as before; Classic Era ships no such table."""
-    from wfj.io import wago
+    from wfi.io import wago
 
     _, _, effect, _ = _csvs(tmp_path)
     assert [(i, e, s) for i, _, e, s, _ in wago.read_item_effects(effect)][:3] == [
@@ -261,7 +261,7 @@ def test_the_join_is_optional_so_classic_era_is_unchanged(tmp_path: Path):
 # and their unchanged `src` is what lets `--unseen-since` find them again later.
 
 def test_union_keeps_a_line_the_new_source_does_not_provide():
-    from wfj.cmd.import_english import _merge_fields
+    from wfi.cmd.import_english import _merge_fields
 
     existing = [
         {"id": 1, "field": "description", "en": "old one", "src": "wago@1.15.9.69722"},
@@ -282,7 +282,7 @@ def test_union_keeps_a_line_the_new_source_does_not_provide():
 
 def test_union_still_refuses_to_merge_zero_lines():
     """The guard that stops an empty read from emptying the corpus stays in both modes."""
-    from wfj.cmd.import_english import _merge_fields
+    from wfi.cmd.import_english import _merge_fields
 
     existing = [{"id": 1, "field": "description", "en": "x", "src": "wago@1.15.9.69722"}]
     with pytest.raises(ValueError, match="zero lines"):
@@ -290,7 +290,7 @@ def test_union_still_refuses_to_merge_zero_lines():
 
 
 def test_union_does_not_touch_other_fields_or_other_sources():
-    from wfj.cmd.import_english import _merge_fields
+    from wfi.cmd.import_english import _merge_fields
 
     existing = [
         {"id": 1, "field": "name", "en": "a name", "src": "wago@1.15.9.69722"},
@@ -305,7 +305,7 @@ def test_union_does_not_touch_other_fields_or_other_sources():
 
 
 def test_unseen_since_counts_what_a_source_has_never_provided():
-    from wfj.core import report
+    from wfi.core import report
 
     english = {
         "item": [
@@ -329,7 +329,7 @@ def test_unseen_since_counts_what_a_source_has_never_provided():
 
 
 def test_unseen_since_matches_a_bare_source_name_too():
-    from wfj.core import report
+    from wfi.core import report
 
     english = {"item": [
         {"id": 1, "field": "description", "src": "db2@1.60.1.69913"},

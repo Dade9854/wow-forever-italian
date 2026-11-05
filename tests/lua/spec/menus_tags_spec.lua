@@ -127,16 +127,16 @@ local CASES = {
 }
 
 describe("UI/MenusTags: every other Forever window's menus", function()
-  local WFJ, callbacks
+  local WFI, callbacks
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     callbacks = {}
     _G.Menu = { ModifyMenu = function(tag, fn) callbacks[tag] = fn end }
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_true(WFJ.Menus.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_true(WFI.Menus.init())
   end)
 
   after_each(function() H.uiTeardown(); _G.Menu = nil end)
@@ -150,7 +150,7 @@ describe("UI/MenusTags: every other Forever window's menus", function()
 
   it("each new tag names its source file:line and is registered with Menu.ModifyMenu", function()
     local n = 0
-    for tag, spec in pairs(WFJ.Menus.TAGS) do
+    for tag, spec in pairs(WFI.Menus.TAGS) do
       assert.is_string(spec.source, tag)
       assert.truthy(spec.source:match("%.lua:%d+"), tag)
       assert.is_function(callbacks[tag], tag)
@@ -173,7 +173,7 @@ describe("UI/MenusTags: every other Forever window's menus", function()
       assert.are.equal("Raid", frames[e[3]].fontString:GetText(), tag)
       M.release(frames)
     end
-    assert.are.equal(0, WFJ.SurfaceState.count(WFJ.Menus.SURFACE))
+    assert.are.equal(0, WFI.SurfaceState.count(WFI.Menus.SURFACE))
   end)
 
   it("a submenu entry renders Japanese; Alt shows the English", function()
@@ -185,9 +185,9 @@ describe("UI/MenusTags: every other Forever window's menus", function()
     assert.are.equal("My Layout", frames[root.children[1]].fontString:GetText())
     local sub = frames[layout.children[1]]
     assert.are.equal("名前を変更", sub.fontString:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Change Name", sub.fontString:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("a tracker block menu keeps its title (the achievement's name) even when it is a dictionary word", function()
@@ -204,7 +204,7 @@ describe("UI/MenusTags: every other Forever window's menus", function()
       r:CreateButton(UI.ACHIEVEMENTFRAME_FILTER_COMPLETED[1])
     end)
     local radio = frames[root.children[1]]
-    assert.is_true(WFJ.HelpTooltip.registered(radio))
+    assert.is_true(WFI.HelpTooltip.registered(radio))
     assert.are.equal("アチーブメントフィルター",
       M.hover(radio, UI.ACHIEVEMENT_FILTER_TITLE[1], UI.ACHIEVEMENT_FILTER_COMPLETE_EXPLANATION[1]))
     assert.are.equal("アカウントで達成したアチーブメントを表示", _G.GameTooltipTextLeft2:GetText())
@@ -257,12 +257,12 @@ describe("UI/MenusTags: every other Forever window's menus", function()
       assert.are.equal("Onyxia [04:12]", frames[e[2]].fontString:GetText())
       assert.are.equal("戦闘12", frames[e[3]].fontString:GetText())
       assert.are.equal("現在の区間", frames[e[4]].fontString:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Combat 3 [01:23]", frames[e[1]].fontString:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("戦闘3 [01:23]", frames[e[1]].fontString:GetText())
       M.release(frames)
-      assert.are.equal(0, WFJ.SurfaceState.count(WFJ.Menus.SURFACE))
+      assert.are.equal(0, WFI.SurfaceState.count(WFI.Menus.SURFACE))
     end)
 
   it("the added keys join the shipped tags without dropping theirs", function()
@@ -270,7 +270,7 @@ describe("UI/MenusTags: every other Forever window's menus", function()
       for _, k in ipairs(list) do if k == key then return true end end
       return false
     end
-    local tags = WFJ.Menus.TAGS
+    local tags = WFI.Menus.TAGS
     assert.is_true(has(tags.MENU_QUEUE_STATUS_FRAME.keys, "LEAVE_ARENA"))
     assert.is_true(has(tags.MENU_QUEUE_STATUS_FRAME.keys, "UNLIST_ME"))
     assert.is_true(has(tags.MENU_EDIT_MODE_MANAGER.keys, "HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER"))

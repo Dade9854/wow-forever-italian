@@ -5,10 +5,10 @@ ships."""
 import copy
 import json
 
-from wfj.cmd.check import build_scopes, check_type
-from wfj.core import dedupe
-from wfj.core.align import load_allowlist
-from wfj.io.jsonl_store import Store
+from wfi.cmd.check import build_scopes, check_type
+from wfi.core import dedupe
+from wfi.core.align import load_allowlist
+from wfi.io.jsonl_store import Store
 
 HUMAN = {
     "class": "human",

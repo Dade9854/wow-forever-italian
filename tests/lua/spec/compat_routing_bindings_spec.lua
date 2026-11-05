@@ -28,16 +28,16 @@ local function writes()
 end
 
 describe("UI/KeyCapture: client names through Compat", function()
-  local WFJ, KC, got
+  local WFI, KC, got
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(KC_FILES)
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Settings.load(nil, 1, {})
-    KC = WFJ.KeyCapture
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(KC_FILES)
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Settings.load(nil, 1, {})
+    KC = WFI.KeyCapture
     got = {}
-    Stub.bindings.J = "WFJ_TOGGLE"
+    Stub.bindings.J = "WFI_TOGGLE"
     Stub.bindings.Q = "ACTIONBUTTON5"
   end)
 
@@ -49,13 +49,13 @@ describe("UI/KeyCapture: client names through Compat", function()
     assert.are.same({ "CreateKeyChordStringUsingMetaKeyState", "GetBindingAction", "GetBindingKey", "GetBindingText",
       "GetConvertedKeyOrButton", "GetCurrentBindingSet", "InCombatLockdown", "IsMetaKey", "SaveBindings",
       "SetBinding" }, names(KC.API))
-    for key in pairs(KC.API) do assert.is_function(WFJ.Compat.get(KC.SURFACE, key), key) end
+    for key in pairs(KC.API) do assert.is_function(WFI.Compat.get(KC.SURFACE, key), key) end
   end)
 
   for _, shape in ipairs({ "a table", "absent" }) do
     it("every routed name " .. shape .. ": no error, nothing read as a binding, nothing written", function()
       for _, name in ipairs(names(KC.API)) do _G[name] = shape == "a table" and {} or nil end
-      WFJ.Compat.init(function(name) return _G[name] end)
+      WFI.Compat.init(function(name) return _G[name] end)
       Stub.bindingCalls = {}
       assert.has_no.errors(function()
         local toggle = capture("toggle")
@@ -78,13 +78,13 @@ describe("UI/KeyCapture: client names through Compat", function()
       end)
       assert.are.same({}, got)
       assert.are.same({}, writes())
-      assert.are.equal("WFJ_TOGGLE", Stub.bindings.J) -- the player's binding set is untouched
+      assert.are.equal("WFI_TOGGLE", Stub.bindings.J) -- the player's binding set is untouched
     end)
   end
 
   it("a half-available binding API never writes (the setter present, the saver missing)", function()
     _G.SaveBindings = nil
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI.Compat.init(function(name) return _G[name] end)
     Stub.bindingCalls = {}
     assert.is_false(KC.setToggle("F7"))
     assert.is_false(KC.clearToggle())
@@ -94,7 +94,7 @@ describe("UI/KeyCapture: client names through Compat", function()
 
   it("combat unknown (InCombatLockdown missing): capture works, the binding is never written", function()
     _G.InCombatLockdown = nil
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI.Compat.init(function(name) return _G[name] end)
     local cap = capture("reveal")
     cap.button:click()
     cap.button:keyDown("LALT")
@@ -106,20 +106,20 @@ describe("UI/KeyCapture: client names through Compat", function()
 end)
 
 describe("UI/RevealBinding: client names through Compat", function()
-  local WFJ, S, RB
+  local WFI, S, RB
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
-    WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-    S, RB = WFJ.Settings, WFJ.RevealBinding
+    WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+    S, RB = WFI.Settings, WFI.RevealBinding
     Stub.bindingCalls = {}
   end)
 
   it("declares every client function it calls, and each resolves on this client", function()
     assert.are.same({ "ClearOverrideBindings", "InCombatLockdown", "SetOverrideBinding" }, names(RB.API))
-    for key in pairs(RB.API) do assert.is_function(WFJ.Compat.get(RB.SURFACE, key), key) end
+    for key in pairs(RB.API) do assert.is_function(WFI.Compat.get(RB.SURFACE, key), key) end
   end)
 
   for _, shape in ipairs({ "a table", "absent" }) do
@@ -144,7 +144,7 @@ describe("UI/RevealBinding: client names through Compat", function()
     _G.SetOverrideBinding = {}
     S.set("modifier", "lalt")
     Stub.keys.lalt = true
-    WFJ.Modifier.refresh()
-    assert.is_true(WFJ.State.modifierHeld)
+    WFI.Modifier.refresh()
+    assert.is_true(WFI.State.modifierHeld)
   end)
 end)

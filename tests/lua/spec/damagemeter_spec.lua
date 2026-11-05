@@ -55,20 +55,20 @@ local GLOBALS = { "DamageMeter", "DamageMeterSessionWindow1", "DamageMeterSessio
   "DamageMeterSessionWindow3" }
 
 describe("the damage meter on Forever", function()
-  local WFJ
+  local WFI
 
   local function setup(install)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     if install then install() end
-    WFJ.Labels.forbidNames(WFJ.DamageMeter.NEVER_TOUCH)
+    WFI.Labels.forbidNames(WFI.DamageMeter.NEVER_TOUCH)
   end
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   after_each(function()
@@ -79,7 +79,7 @@ describe("the damage meter on Forever", function()
 
   it("a window that exists at init: its type label is Japanese and follows a type change", function()
     setup(function() installMeter():SetupSessionWindow(1, { damageMeterType = 1 }) end)
-    assert.is_true(WFJ.DamageMeter.init())
+    assert.is_true(WFI.DamageMeter.init())
     local w = _G.DamageMeterSessionWindow1
     assert.are.equal("与ダメージ", w.DamageMeterTypeDropdown.TypeName:GetText())
     w:SetDamageMeterType(2)
@@ -95,13 +95,13 @@ describe("the damage meter on Forever", function()
 
   it("a window created after init is followed; the session abbreviation and a source row stay as written", function()
     setup(installMeter)
-    assert.is_true(WFJ.DamageMeter.init())
+    assert.is_true(WFI.DamageMeter.init())
     _G.DamageMeter:SetupSessionWindow(2, { damageMeterType = 3 })
     local w = _G.DamageMeterSessionWindow2
     assert.are.equal("死亡", w.DamageMeterTypeDropdown.TypeName:GetText())
     assert.are.equal("O", w.SessionDropdown.SessionName:GetText())
-    assert.is_true(WFJ.Labels.forbidden(w.SessionDropdown.SessionName))
-    assert.are.equal(0, WFJ.Labels.show("damagemeter", "x", w.SessionDropdown.SessionName))
+    assert.is_true(WFI.Labels.forbidden(w.SessionDropdown.SessionName))
+    assert.are.equal(0, WFI.Labels.show("damagemeter", "x", w.SessionDropdown.SessionName))
     assert.are.equal("1. Deaths", w.row:GetText())
     -- set up again with the same window (a reload of saved data): hooked once
     _G.DamageMeter:SetupSessionWindow(2, { damageMeterType = 1, sessionWindow = w })
@@ -117,19 +117,19 @@ describe("the damage meter on Forever", function()
       _G.DamageMeterSessionWindow2 = "not a frame"
       _G.DamageMeter.SetupSessionWindow = true
     end)
-    assert.has_no.errors(function() assert.is_true(WFJ.DamageMeter.init()) end)
-    assert.has_no.errors(function() WFJ.DamageMeter.onType(_G.DamageMeterSessionWindow1) end)
-    assert.has_no.errors(function() WFJ.DamageMeter.onNotActive(_G.DamageMeterSessionWindow1) end)
-    assert.has_no.errors(function() WFJ.DamageMeter.onSetup(nil, 1, "bad") end)
+    assert.has_no.errors(function() assert.is_true(WFI.DamageMeter.init()) end)
+    assert.has_no.errors(function() WFI.DamageMeter.onType(_G.DamageMeterSessionWindow1) end)
+    assert.has_no.errors(function() WFI.DamageMeter.onNotActive(_G.DamageMeterSessionWindow1) end)
+    assert.has_no.errors(function() WFI.DamageMeter.onSetup(nil, 1, "bad") end)
   end)
 
   it("hooks install once; without the DamageMeter frame init returns false", function()
     setup(installMeter)
-    assert.is_true(WFJ.DamageMeter.init())
-    assert.is_false(WFJ.DamageMeter.init())
+    assert.is_true(WFI.DamageMeter.init())
+    assert.is_false(WFI.DamageMeter.init())
     assert.are.equal(1, #Stub.hooks["DamageMeter:SetupSessionWindow"])
     for _, name in ipairs(GLOBALS) do _G[name] = nil end
     setup(nil)
-    assert.has_no.errors(function() assert.is_false(WFJ.DamageMeter.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.DamageMeter.init()) end)
   end)
 end)

@@ -1,7 +1,7 @@
 # ADR-033: Name-list tails as `$T`; untagged menus through the dropdown's RegisterMenu
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/core/align.py` (`NAME_LIST_TAIL`, `split_tail`, `tail_problems`), `dev/translate_lint.py`,
-  `dev/translate_batch.py`, `core/status.py`; `addon/WoWForeverJapanese/Core/Align.lua` (`Align.splitTail`),
+- **Status:** Accepted. Implemented in `pipeline/wfi/core/align.py` (`NAME_LIST_TAIL`, `split_tail`, `tail_problems`), `dev/translate_lint.py`,
+  `dev/translate_batch.py`, `core/status.py`; `addon/WoWForeverItalian/Core/Align.lua` (`Align.splitTail`),
   `Core/UIStrings.lua` and `Core/UIStringKeys.lua` (`icon`, `optionTip`, `verbatim`, the `%%` rule), `UI/Menus.lua` (`Menus.UNTAGGED`),
   `UI/MenusUntagged.lua`, `Main.lua`. The in-game checks are pending (the
   level-1 checklist in [Testing strategy](../testing/strategy.md)).

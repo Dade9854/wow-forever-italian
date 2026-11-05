@@ -1,4 +1,4 @@
-"""`wfj stats --delta REF [--capture PATH]`: data/english since a git ref, and the turn-in capture
+"""`wfi stats --delta REF [--capture PATH]`: data/english since a git ref, and the turn-in capture
 list."""
 
 import json
@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import stats
-from wfj.core.hashing import key
-from wfj.core.model import english_line
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd import stats
+from wfi.core.hashing import key
+from wfi.core.model import english_line
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 
 def _l(id_, field, en, src="pfquest@7786596"):
@@ -82,7 +82,7 @@ def test_bad_ref_is_one_line_error_and_writes_nothing(repo, capsys):
     assert stats.run(["--delta", "no-such-ref", "--capture", str(path)]) == 1
     captured = capsys.readouterr()
     assert captured.out == ""
-    assert captured.err.strip() == "wfj stats: unknown git ref 'no-such-ref'"
+    assert captured.err.strip() == "wfi stats: unknown git ref 'no-such-ref'"
     assert not path.exists()
 
 
@@ -117,7 +117,7 @@ def test_delta_lists_the_client_table_types_and_the_status_shift(repo, capsys):
 
 
 def test_status_shift_counts_moves():
-    from wfj.core import report
+    from wfi.core import report
 
     base = [{"id": 1, "field": "description", "status": "unaligned"}, {"id": 2, "field": "description", "status": "trusted"}]
     head = [{"id": 1, "field": "description", "status": "stale"}, {"id": 3, "field": "description", "status": "trusted"}]

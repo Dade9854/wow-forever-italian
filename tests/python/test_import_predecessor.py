@@ -4,10 +4,10 @@ from pathlib import Path
 
 from local_inputs import forever_build, forever_quest_build
 
-from wfj.cmd.import_ import run
-from wfj.cmd.import_predecessor import Collector, import_items, import_quests, import_spells
-from wfj.core.model import FIELDS, validate_line
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.cmd.import_predecessor import Collector, import_items, import_quests, import_spells
+from wfi.core.model import FIELDS, validate_line
+from wfi.io.jsonl_store import Store
 
 FX = "tests/fixtures/predecessor"
 
@@ -157,7 +157,7 @@ def test_committed_data_validates(root):
     # progress / completion (vmangos) · Blizzard's cached title / objectives / description (wdb)
     # the Forever client's own tables (db2@<its build>) and its quest cache (wdb@<its build>). Two
     # clients coexist by design: the union merge restamps what Forever provides and leaves the rest on its
-    # Vanilla stamp, which is what `wfj stats --unseen-since` reads. The quest cache is the one source held at
+    # Vanilla stamp, which is what `wfi stats --unseen-since` reads. The quest cache is the one source held at
     # TWO pinned builds, because Forever's server answers under a third of the quest ids Classic Era's did
     # (`schema.MULTI_VERSION_SOURCES`). Every source is still a PINNED build; that is what this asserts.
     pinned = {
@@ -181,14 +181,14 @@ def test_git_head_refuses_non_git_dir(tmp_path: Path):
     """A non-git copy must be imported with explicit --commit-* flags, never as cqjt@unknown."""
     import pytest
 
-    from wfj.cmd.import_predecessor import git_head
+    from wfi.cmd.import_predecessor import git_head
 
     with pytest.raises(ValueError, match="not a git checkout"):
         git_head(tmp_path)
 
 
 def test_conflict_keeps_extra_and_empty_save_refused(tmp_path: Path):
-    from wfj.io.jsonl_store import Store
+    from wfi.io.jsonl_store import Store
 
     col = Collector()
     p = {"class": "human", "translator": "a", "source": "cqjt@1234567", "imported": "2026-09-13"}

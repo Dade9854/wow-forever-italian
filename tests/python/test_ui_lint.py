@@ -6,8 +6,8 @@ import json
 
 import pytest
 
-from wfj.dev import ui_inventory, ui_lint
-from wfj.io.jsonl_store import Store
+from wfi.dev import ui_inventory, ui_lint
+from wfi.io.jsonl_store import Store
 
 ENGLISH = {
     "ACCEPT": "Accept",
@@ -124,8 +124,8 @@ def test_main_reads_a_draft_file(tmp_path, monkeypatch):
         "ui", [{"id": "ACCEPT", "field": "text", "en": "Accept", "hash": "0", "src": "db2"}])
     (tmp_path / "data" / "SCHEMA").write_text("", encoding="utf-8")
     # the addon and the inventory come from the same checkout as the data
-    (tmp_path / "addon" / "WoWForeverJapanese" / "Core").mkdir(parents=True)
-    (tmp_path / "addon" / "WoWForeverJapanese" / "Core" / "UIStrings.lua").write_text("UIStrings.OWN = {\n}\n", encoding="utf-8")
+    (tmp_path / "addon" / "WoWForeverItalian" / "Core").mkdir(parents=True)
+    (tmp_path / "addon" / "WoWForeverItalian" / "Core" / "UIStrings.lua").write_text("UIStrings.OWN = {\n}\n", encoding="utf-8")
     (tmp_path / "pipeline").mkdir()
     (tmp_path / "pipeline" / "ui_inventory.txt").write_text("popups ACCEPT\n", encoding="utf-8")
     draft = tmp_path / "d.ui.jsonl"
@@ -147,7 +147,7 @@ def test_shipped_ui_lines_have_no_failures(root, monkeypatch):
     out = io.StringIO()
     rows = ui_lint.shipped_rows(root / "data")
     english = ui_lint.english_ui(root / "data")
-    found = ui_lint.ambiguous([], rows, english, ui_lint.ui_own(root / "addon" / "WoWForeverJapanese"))
+    found = ui_lint.ambiguous([], rows, english, ui_lint.ui_own(root / "addon" / "WoWForeverItalian"))
     code = ui_lint.summarize(ui_lint.with_ambiguity(ui_lint.lint_rows(rows, english, ui_inventory.read_inventory()), found), out)
     assert code == 0, [ln for ln in out.getvalue().splitlines() if ln.startswith("FAIL")][:20]
 
@@ -187,7 +187,7 @@ def test_a_duplicate_is_checked_for_ambiguity_on_its_first_row():
 
 
 def test_moved_refuses_a_key_whose_shipped_line_changed_since_the_review():
-    from wfj.core import readings
+    from wfi.core import readings
 
     shipped = [{"id": "ACCEPT", "ja": "承諾"}, {"id": "OK", "ja": "決定"}]
     base = {"ACCEPT": readings.ja_hash("承諾"), "OK": readings.ja_hash("了解")}
@@ -247,15 +247,15 @@ def test_shipped_and_base_together_are_refused(tmp_path):
 
 
 def test_main_with_a_base_reports_a_moved_key(tmp_path, monkeypatch):
-    from wfj.core import readings
+    from wfi.core import readings
 
     Store(tmp_path / "data", english=True).save(
         "ui", [{"id": "ACCEPT", "field": "text", "en": "Accept", "hash": "0", "src": "db2"}])
     Store(tmp_path / "data").save("ui", [{"id": "ACCEPT", "field": "text", "ja": "承諾", "status": "trusted",
                                           "provenance": {"class": "machine"}, "english": {"hash": "0"}}])
     (tmp_path / "data" / "SCHEMA").write_text("", encoding="utf-8")
-    (tmp_path / "addon" / "WoWForeverJapanese" / "Core").mkdir(parents=True)
-    (tmp_path / "addon" / "WoWForeverJapanese" / "Core" / "UIStrings.lua").write_text("UIStrings.OWN = {\n}\n", encoding="utf-8")
+    (tmp_path / "addon" / "WoWForeverItalian" / "Core").mkdir(parents=True)
+    (tmp_path / "addon" / "WoWForeverItalian" / "Core" / "UIStrings.lua").write_text("UIStrings.OWN = {\n}\n", encoding="utf-8")
     (tmp_path / "pipeline").mkdir()
     (tmp_path / "pipeline" / "ui_inventory.txt").write_text("popups ACCEPT\n", encoding="utf-8")
     draft = tmp_path / "d.ui.jsonl"

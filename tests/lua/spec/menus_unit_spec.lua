@@ -56,16 +56,16 @@ local CASES = {
 }
 
 describe("UI/MenusUnit: the unit menus outside level 1", function()
-  local WFJ, callbacks
+  local WFI, callbacks
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     callbacks = {}
     _G.Menu = { ModifyMenu = function(tag, fn) callbacks[tag] = fn end }
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    WFJ.Menus.init()
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    WFI.Menus.init()
   end)
 
   after_each(function() H.uiTeardown(); _G.Menu = nil end)
@@ -80,9 +80,9 @@ describe("UI/MenusUnit: the unit menus outside level 1", function()
   end
 
   it("registers the 16 new whichs, each with its own key list and titleIsName", function()
-    assert.are.equal(16, (function() local n = 0; for _ in pairs(WFJ.MenusUnit.WHICH) do n = n + 1 end; return n end)())
-    for which, keys in pairs(WFJ.MenusUnit.WHICH) do
-      local spec = WFJ.Menus.TAGS["MENU_UNIT_" .. which]
+    assert.are.equal(16, (function() local n = 0; for _ in pairs(WFI.MenusUnit.WHICH) do n = n + 1 end; return n end)())
+    for which, keys in pairs(WFI.MenusUnit.WHICH) do
+      local spec = WFI.Menus.TAGS["MENU_UNIT_" .. which]
       assert.are.equal(keys, spec.keys, which)
       assert.is_true(spec.titleIsName, which)
       assert.is_function(callbacks["MENU_UNIT_" .. which], which)
@@ -150,9 +150,9 @@ describe("UI/MenusUnit: the unit menus outside level 1", function()
         assert.are.equal("ささやく", M.hover(element, UI.WHISPER[1], warning), which)
         assert.are.equal("未成年者のアカウントでは、チャットやその他のソーシャル機能を利用できません。",
           _G.GameTooltipTextLeft2:GetText(), which)
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal(warning, _G.GameTooltipTextLeft2:GetText(), which)
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
         _G.GameTooltip:Hide()
       end
     end)
@@ -163,9 +163,9 @@ describe("UI/MenusUnit: the unit menus outside level 1", function()
         local root, frames = generate(which, "Jaina", { UI.INSPECT_TALENTS[1] }, { name = "Jaina" })
         local fs = frames[root.children[2]].fontString
         assert.are.equal("タレントを表示", fs:GetText(), which)
-        Stub.keys.alt = true; WFJ.Modifier.refresh()
+        Stub.keys.alt = true; WFI.Modifier.refresh()
         assert.are.equal("View Talents", fs:GetText(), which)
-        Stub.keys.alt = false; WFJ.Modifier.refresh()
+        Stub.keys.alt = false; WFI.Modifier.refresh()
       end
       local root, frames = generate("COMMUNITIES_COMMUNITY", "Club", { UI.INSPECT_TALENTS[1] }, { name = "Club" })
       assert.are.equal("View Talents", frames[root.children[2]].fontString:GetText())

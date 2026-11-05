@@ -25,23 +25,23 @@ local UI = {
 }
 
 describe("skills on the Forever client", function()
-  local WFJ, SS
+  local WFI, SS
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function detail() return _G.SkillsFrame.SkillDetailFrame end
   local function rows() return PS.rowPools.active end
   local SWORDS = { name = "Swords", description = "Allows the use of swords.",
     weapon = { values = { "+5.00%", "5.00%", "-2.40%", "3.10%", "40%", "35%" } } }
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     PS.install() -- SkillsFrame exists at login (Blizzard_UIPanels_Game)
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
-    WFJ.Labels.forbidNames(WFJ.Skills.NEVER_TOUCH) -- Main registers every list before any init
-    WFJ.Skills.init()
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
+    WFI.Labels.forbidNames(WFI.Skills.NEVER_TOUCH) -- Main registers every list before any init
+    WFI.Skills.init()
   end)
 
   after_each(function() H.uiTeardown() end)
@@ -49,14 +49,14 @@ describe("skills on the Forever client", function()
   it("the empty prompt translates after SetEmpty", function()
     _G.SkillsFrame:Show() -- no selection: Refresh → SetEmpty
     assert.are.equal("スキルを選ぶと詳細が表示されます。", detail().EmptyText:GetText())
-    assert.are.equal(WFJ.Font.PATH, (detail().EmptyText:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (detail().EmptyText:GetFont()))
     alt(true)
     assert.are.equal("Select a skill to view its details.", detail().EmptyText:GetText())
     alt(false)
     _G.SkillsFrame:Hide()
     assert.are.equal("Select a skill to view its details.", detail().EmptyText:GetText())
     assert.are.equal(0, SS.count("skills"))
-    assert.is_false(WFJ.Skills.init()) -- once
+    assert.is_false(WFI.Skills.init()) -- once
     assert.are.equal(1, #Stub.hooks["?:SetEmpty"])
   end)
 
@@ -116,15 +116,15 @@ describe("skills on the Forever client", function()
     PS.selectSkill({ name = "Swords", description = "" })
     assert.are.equal(0, #rows())
     assert.are.equal("Swords", detail().Title:GetText())
-    assert.is_true(WFJ.Labels.forbidden(detail().Title))
+    assert.is_true(WFI.Labels.forbidden(detail().Title))
   end)
 
   it("a moved pane or pool degrades to English with no error (type guards)", function()
     detail().rowPools = { EnumerateActive = "moved" }
-    assert.are.equal(0, WFJ.Skills.onLayoutRows())
+    assert.are.equal(0, WFI.Skills.onLayoutRows())
     _G.SkillsFrame.SkillDetailFrame = "moved"
-    WFJ.Compat.declare("skills", "detail", { "SkillsFrame.SkillDetailFrame" })
-    assert.are.equal(0, WFJ.Skills.onLayoutRows())
+    WFI.Compat.declare("skills", "detail", { "SkillsFrame.SkillDetailFrame" })
+    assert.are.equal(0, WFI.Skills.onLayoutRows())
   end)
 end)
 
@@ -132,14 +132,14 @@ end)
 -- the row's `.Name`; "Weapon Skills" and "Languages" read exactly as STAT_CATEGORY_WEAPON_SKILLS / LANGUAGES_LABEL and
 -- are shown, every other header and every skill's name stays English [camelot/skillsframe.lua:101–118, 297–301, 348].
 describe("skills on the Forever client: the list's category headers", function()
-  local WFJ, SS, box
+  local WFI, SS, box
 
   local HEADERS = {
     STAT_CATEGORY_WEAPON_SKILLS = { "Weapon Skills", "武器スキル" }, LANGUAGES_LABEL = { "Languages", "言語" },
     SWORDS = { "Swords", "片手剣" }, -- a skill name that is also a dictionary word
     TRADE_SKILLS = { "Professions", "専門技術" }, -- a header that is a dictionary word, but not one of the two
   }
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function headerRow()
     local row = CreateFrame("Frame")
     row.Name = Stub.fontString("")
@@ -154,17 +154,17 @@ describe("skills on the Forever client: the list's category headers", function()
   local function initEntry(row, data) row.Content.Name.text = data.name end -- SkillsEntryMixin:Initialize
 
   local function setup(shape)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     PS.install()
     box = Stub.scrollBox()
     _G.SkillsFrame.ScrollBox = box
     if shape then shape() end
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, HEADERS)
-    WFJ.Labels.forbidNames(WFJ.Skills.NEVER_TOUCH)
-    WFJ.Skills.init()
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, HEADERS)
+    WFI.Labels.forbidNames(WFI.Skills.NEVER_TOUCH)
+    WFI.Skills.init()
   end
 
   after_each(function() H.uiTeardown() end)
@@ -183,13 +183,13 @@ describe("skills on the Forever client: the list's category headers", function()
     local sub = entryRow() -- a sub-header (SkillsSubHeaderTemplate inherits the entry: its name is Content.Name)
     box:initFrame(sub, { isHeader = true, isChild = true, name = "Languages" }, initEntry)
     assert.are.equal("武器スキル", weapons.Name:GetText())
-    assert.are.equal(WFJ.Font.PATH, (weapons.Name:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (weapons.Name:GetFont()))
     assert.are.equal("言語", languages.Name:GetText())
     assert.are.equal("Armor Proficiencies", armor.Name:GetText())
     assert.are.equal("Professions", professions.Name:GetText())
     assert.are.equal("Swords", swords.Content.Name:GetText())
     assert.are.equal(0, swords.Content.Name.calls.SetText)
-    assert.is_true(WFJ.Labels.forbidden(swords.Content.Name))
+    assert.is_true(WFI.Labels.forbidden(swords.Content.Name))
     assert.are.equal("Languages", sub.Content.Name:GetText())
     alt(true)
     assert.are.equal("Weapon Skills", weapons.Name:GetText())
@@ -225,9 +225,9 @@ describe("skills on the Forever client: the list's category headers", function()
     assert.are.equal(0, #box.initCallbacks)
     setup()
     assert.has_no.errors(function()
-      WFJ.Skills.onListRow(WFJ.Skills, "moved")
-      WFJ.Skills.onListRow(WFJ.Skills, { Name = "moved" }, { isHeader = true })
-      WFJ.Skills.onListRow({ Content = "moved", Name = "moved" }, { isHeader = true })
+      WFI.Skills.onListRow(WFI.Skills, "moved")
+      WFI.Skills.onListRow(WFI.Skills, { Name = "moved" }, { isHeader = true })
+      WFI.Skills.onListRow({ Content = "moved", Name = "moved" }, { isHeader = true })
     end)
   end)
 end)
@@ -236,7 +236,7 @@ end)
 -- ScrollingFont, skillsframe.lua:248; characterframe.lua:860–872), the SkillLineDescription:* family only; and the
 -- list's headers, which are SkillLineCategory names (the SkillCategory:* family) besides the two GlobalStrings.
 describe("skills on the Forever client: client-table text", function()
-  local WFJ, box
+  local WFI, box
 
   local ROWS = {
     ["SkillLineDescription:43"] = { "Allows the use of swords.", "片手剣を扱えるようになる。" },
@@ -246,7 +246,7 @@ describe("skills on the Forever client: client-table text", function()
     SWORDS = { "Swords", "片手剣" }, -- a skill name that is also a dictionary word
     TRADE_SKILLS = { "Professions", "専門技術" }, -- a header that is a dictionary word, but no SkillCategory row
   }
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function detail() return _G.SkillsFrame.SkillDetailFrame end
   local function headerRow(name)
     local row = CreateFrame("Frame")
@@ -256,7 +256,7 @@ describe("skills on the Forever client: client-table text", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     PS.install()
     box = Stub.scrollBox()
@@ -264,17 +264,17 @@ describe("skills on the Forever client: client-table text", function()
     local d = _G.SkillsFrame.SkillDetailFrame
     d.Description = Stub.scrollingFont("")
     function d.SetDescription(self, text) self.Description:SetText(text) end
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
-    WFJ.Labels.forbidNames(WFJ.Skills.NEVER_TOUCH)
-    WFJ.Skills.init()
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
+    WFI.Labels.forbidNames(WFI.Skills.NEVER_TOUCH)
+    WFI.Skills.init()
   end)
 
   after_each(function() H.uiTeardown(); Stub.keys.alt = false end)
 
   it("the description: a SkillLineDescription row is Japanese, Alt shows English; another text stays English",
     function()
-      assert.is_false(WFJ.Labels.forbidden(detail().Description))
+      assert.is_false(WFI.Labels.forbidden(detail().Description))
       local sf = detail().Description
       detail():SetDescription("Allows the use of swords.")
       assert.are.equal("片手剣を扱えるようになる。", sf:GetText())

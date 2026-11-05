@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from wfj.core import stat_words
-from wfj.io.jsonl_store import Store
+from wfi.core import stat_words
+from wfi.io.jsonl_store import Store
 
 # the interface key that shows each stat word on the character sheet or an item's stat line
 INTERFACE_KEYS = {

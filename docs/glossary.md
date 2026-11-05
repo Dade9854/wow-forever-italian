@@ -1,4 +1,4 @@
-# WoW Forever Japanese: Glossary
+# WoW Forever Italian: Glossary
 
 > The project's domain vocabulary: the words this project's world uses, defined once.
 >
@@ -22,7 +22,7 @@ _Avoid_: human (one of the two classes), manual, curated
 → [Data model](architecture/data-model.md) · [ADR-014](adr/014-machine-drafted-text-and-ui-dictionary.md)
 
 **Machine-drafted text**:
-Japanese a model wrote, recorded with [[Provenance]] `machine`, the `model` id (required), an optional [[Critic]], and `source: draft-<name>@<date>`. Enters `data/` only through `wfj import draft`; carried across `make data`; ships as trusted when it passes the rules like any other value. The [[UI dictionary]] and most [[Server-only text]] are machine-drafted.
+Japanese a model wrote, recorded with [[Provenance]] `machine`, the `model` id (required), an optional [[Critic]], and `source: draft-<name>@<date>`. Enters `data/` only through `wfi import draft`; carried across `make data`; ships as trusted when it passes the rules like any other value. The [[UI dictionary]] and most [[Server-only text]] are machine-drafted.
 _Avoid_: AI translation, MT, auto-translation, generated text (generated means the Lua build output)
 → [Data model](architecture/data-model.md) · [ADR-014](adr/014-machine-drafted-text-and-ui-dictionary.md)
 
@@ -52,7 +52,7 @@ _Avoid_: `$I` marker, spell icon code, texture placeholder
 → [Addon modules](architecture/addon-modules.md) · [ADR-043](adr/043-included-text-icons-and-branch-variants.md)
 
 **Player placeholder**:
-A token in an entry's Japanese standing for the reader's own character: `{name}`, `{class}`, `{race}`, or an English gender word pair `<male/female>` (`<lad/lass>`). Kept literally in `data/` and the generated Lua; expanded per player when the Japanese is applied: the character name as the client returns it, class and race as the corpus's katakana words, the pair by the character's sex. Any other `{word}` is unknown: left literal in-game, counted by `/wfj debug`, and a shipped line carrying one fails `wfj validate`. Case-sensitive (`{Name}` is unknown). An emote in angle brackets (`<Sirraは…>`) is not a pair. Distinct from a [[Value placeholder]] (a number filled from the [[Live English]]) and from the placeholders `normalize_v1` puts in English before hashing.
+A token in an entry's Japanese standing for the reader's own character: `{name}`, `{class}`, `{race}`, or an English gender word pair `<male/female>` (`<lad/lass>`). Kept literally in `data/` and the generated Lua; expanded per player when the Japanese is applied: the character name as the client returns it, class and race as the corpus's katakana words, the pair by the character's sex. Any other `{word}` is unknown: left literal in-game, counted by `/wfi debug`, and a shipped line carrying one fails `wfi validate`. Case-sensitive (`{Name}` is unknown). An emote in angle brackets (`<Sirraは…>`) is not a pair. Distinct from a [[Value placeholder]] (a number filled from the [[Live English]]) and from the placeholders `normalize_v1` puts in English before hashing.
 _Avoid_: variable, macro, template tag, "placeholder" on its own (three kinds exist)
 → [Addon modules](architecture/addon-modules.md) · [Pipeline](systems/pipeline.md)
 
@@ -61,7 +61,7 @@ An entry kept in `data/` with `status: rejected` and one or more [[Reason code]]
 _Avoid_: dropped, deleted, filtered out
 
 **Pending**:
-An entry as `wfj import` writes it: imported, not yet checked: `status: pending`, `checks: []`, `english: null`. The only status the import writes; `wfj check` assigns every other status. A pending entry never ships.
+An entry as `wfi import` writes it: imported, not yet checked: `status: pending`, `checks: []`, `english: null`. The only status the import writes; `wfi check` assigns every other status. A pending entry never ships.
 _Avoid_: unchecked, raw, provisional
 → [Data model](architecture/data-model.md)
 
@@ -71,12 +71,12 @@ _Avoid_: validation (too broad), fuzzy match
 → [Pipeline](systems/pipeline.md)
 
 **Reason code**:
-The machine-readable reason(s) `wfj check` writes on a [[Rejected entry]]: `no_english_id` (no [[English source]] for the ID: no source has it, or the [[Served step]] dropped it because no Forever build has served the ID; the line keeps the English it was last checked against, so English that returns reworded makes it [[Stale]]), `not_japanese`, `duplicate_conflict`, `alignment_failed:<name>`, `numbers_changed:<n>`, `truncated:<ja paragraphs>/<en paragraphs>`, `specifiers_changed:<detail>` (a [[UI string]] whose Japanese does not take its English template's arguments), `ruled_reject` (the only candidate is a variant a person ruled `reject`, which would otherwise pass), `markup_changed:<detail>` (a [[UI string]] whose Japanese does not keep its English colour codes and line breaks, or carries a malformed [[Plural grammar]] group). One entry can carry several.
+The machine-readable reason(s) `wfi check` writes on a [[Rejected entry]]: `no_english_id` (no [[English source]] for the ID: no source has it, or the [[Served step]] dropped it because no Forever build has served the ID; the line keeps the English it was last checked against, so English that returns reworded makes it [[Stale]]), `not_japanese`, `duplicate_conflict`, `alignment_failed:<name>`, `numbers_changed:<n>`, `truncated:<ja paragraphs>/<en paragraphs>`, `specifiers_changed:<detail>` (a [[UI string]] whose Japanese does not take its English template's arguments), `ruled_reject` (the only candidate is a variant a person ruled `reject`, which would otherwise pass), `markup_changed:<detail>` (a [[UI string]] whose Japanese does not keep its English colour codes and line breaks, or carries a malformed [[Plural grammar]] group). One entry can carry several.
 _Avoid_: error, failure reason
 → [Data model](architecture/data-model.md)
 
 **Ruling**:
-A person's `accept` or `reject` on one variant of a [[Duplicate conflict]], recorded on the variant as `ruling: {ruling, by, date}` and honoured by `wfj check`: a single `accept` wins the conflict, a `reject` excludes the variant; a `machine` variant wins a line that has a [[Hand-written]] variant only with an `accept`, or when every hand-written variant is ruled `reject`. It picks the variant only: the rules still decide the line's status. A `reject` is permanent: the ruled variant never ships again, even alone on its line and even when it later passes the rules. Carried across `make data` (ADR-012). With a [[Correction]], the only human input the check reads.
+A person's `accept` or `reject` on one variant of a [[Duplicate conflict]], recorded on the variant as `ruling: {ruling, by, date}` and honoured by `wfi check`: a single `accept` wins the conflict, a `reject` excludes the variant; a `machine` variant wins a line that has a [[Hand-written]] variant only with an `accept`, or when every hand-written variant is ruled `reject`. It picks the variant only: the rules still decide the line's status. A `reject` is permanent: the ruled variant never ships again, even alone on its line and even when it later passes the rules. Carried across `make data` (ADR-012). With a [[Correction]], the only human input the check reads.
 _Avoid_: override, manual fix
 → [Local setup → Ruling on conflicts](operations/local-setup.md)
 
@@ -118,7 +118,7 @@ _Avoid_: file id, fdid (in prose)
 → [ADR-021](adr/021-client-tables-from-the-local-archive.md)
 
 **Layout hash**:
-The fingerprint in a [[DB2 table]]'s header of its field layout. A table's column map is pinned **per build**, to each layout hash it has been verified on (Classic Era 1.15.9.69722 and every Forever build since 1.60.1.69913, 1.60.1.70124, 1.60.1.70170, 1.60.1.70245, 1.60.1.70291, 1.60.1.70338 and 1.60.1.70425 included), each pin carrying the citation that verified it; a hash nobody has verified stops that table, naming every layout that has been, so a moved field never becomes wrong English. Re-verifying is `wfj.dev.verify_columns` against a second installed client, not a hash bump.
+The fingerprint in a [[DB2 table]]'s header of its field layout. A table's column map is pinned **per build**, to each layout hash it has been verified on (Classic Era 1.15.9.69722 and every Forever build since 1.60.1.69913, 1.60.1.70124, 1.60.1.70170, 1.60.1.70245, 1.60.1.70291, 1.60.1.70338 and 1.60.1.70425 included), each pin carrying the citation that verified it; a hash nobody has verified stops that table, naming every layout that has been, so a moved field never becomes wrong English. Re-verifying is `wfi.dev.verify_columns` against a second installed client, not a hash bump.
 _Avoid_: schema version, table hash (a different header value, which names the table)
 → [ADR-021](adr/021-client-tables-from-the-local-archive.md) · [ADR-027](adr/027-column-maps-verified-per-build.md)
 
@@ -138,7 +138,7 @@ _Avoid_: gone list, removed list, served cache (nothing in it is removed or expi
 → [ADR-050](adr/050-english-is-additive.md) · [Pipeline](systems/pipeline.md)
 
 **Served step**:
-The last step of `make import` / `make import-english` (`wfj import english served`, `make import-served`). It is additive: it drops English only for ids Forever has never served, and never removes a line whose English came from Forever itself. What a build serves: quest ids in Forever's QuestV2 or its [[Quest cache]] (placeholders included), item ids in ItemSparse, spell ids in SpellName, and [[UI string]] keys whose English carries the Forever tables' [[Source stamp]] and that are in `ui_keys.txt`. It adds those ids to the [[Served record]], and keeps every line whose id is in the record, from this build or an earlier one. [[Objective text]] follows its quest (mapped through Forever's cache, then Classic Era's; an objective no cache maps is kept). Book and gossip English is untouched. Forever's own tables decide, not where the English came from: a quest Forever lists but the server has not answered yet keeps its Classic Era English and ships. An id an earlier build served and this one did not keeps its English; the import prints how many. Japanese in `data/` is never touched; a line whose English was dropped becomes `no_english_id` and ships again when a later harvest lists the id.
+The last step of `make import` / `make import-english` (`wfi import english served`, `make import-served`). It is additive: it drops English only for ids Forever has never served, and never removes a line whose English came from Forever itself. What a build serves: quest ids in Forever's QuestV2 or its [[Quest cache]] (placeholders included), item ids in ItemSparse, spell ids in SpellName, and [[UI string]] keys whose English carries the Forever tables' [[Source stamp]] and that are in `ui_keys.txt`. It adds those ids to the [[Served record]], and keeps every line whose id is in the record, from this build or an earlier one. [[Objective text]] follows its quest (mapped through Forever's cache, then Classic Era's; an objective no cache maps is kept). Book and gossip English is untouched. Forever's own tables decide, not where the English came from: a quest Forever lists but the server has not answered yet keeps its Classic Era English and ships. An id an earlier build served and this one did not keeps its English; the import prints how many. Japanese in `data/` is never touched; a line whose English was dropped becomes `no_english_id` and ships again when a later harvest lists the id.
 _Avoid_: served filter (it narrows the English store, not the build), Forever filter, target filter, "gone" (for an id the current build did not serve; its English is kept)
 → [ADR-034](adr/034-forever-is-the-only-target.md) · [ADR-050](adr/050-english-is-additive.md) · [Pipeline](systems/pipeline.md) · [Data model](architecture/data-model.md)
 
@@ -194,17 +194,17 @@ The maintainer's step that fills the [[Quest cache]] before an import; the impor
 → [Pipeline](systems/pipeline.md) · [ADR-020](adr/020-quest-cache-harvest.md)
 
 **English delta**:
-What `data/english/` gained, lost or changed since a git ref, per type: ids new, ids removed, lines changed per field (`wfj stats --delta REF`, which first prints the status shift: translation lines whose status moved). The review view after an English import such as a re-pull.
+What `data/english/` gained, lost or changed since a git ref, per type: ids new, ids removed, lines changed per field (`wfi stats --delta REF`, which first prints the status shift: translation lines whose status moved). The review view after an English import such as a re-pull.
 _Avoid_: diff (that is git's), changelog
 → [Pipeline](systems/pipeline.md)
 
 **Capture list**:
-The quests from an [[English delta]] that are new or whose title / objectives / description English changed, written as JSONL by `wfj stats --delta REF --capture PATH`, each with the source of its progress / completion English (`null` = none). They name the quests whose turn-in windows a player must see in-game so the [[Collector]] records that text.
+The quests from an [[English delta]] that are new or whose title / objectives / description English changed, written as JSONL by `wfi stats --delta REF --capture PATH`, each with the source of its progress / completion English (`null` = none). They name the quests whose turn-in windows a player must see in-game so the [[Collector]] records that text.
 _Avoid_: todo list, stale report (that is `--stale`), missing list (the import's unanswered ids)
 → [Pipeline](systems/pipeline.md) · [Collector](systems/collector.md)
 
 **Stale**:
-A trusted or [[Unaligned entry]] whose stored [[Source hash]] no longer matches the current [[English source]] for that field: the English changed after the translation was checked (for items and spells, when their [[Tooltip text]] changes). Stale entries **ship**, shown with a [[Stale marker]], and are first in line for re-audit (`wfj stats --stale` lists the quest ones). A stale item or spell entry is still gated at display time like an unaligned one: Japanese with the marker when names and numbers match the live tooltip, the English otherwise. On quest surfaces the marker follows the [[Live check]] when one is possible, not the build-time status. A numeric change (a count, a level) fails the [[Alignment check]] outright and is rejected instead. A [[UI string]] whose live English no longer matches its shipped hash shows the English with **no** marker (a marker on a one-word label would break the layout; [ADR-015](adr/015-ui-text-surfaces.md)).
+A trusted or [[Unaligned entry]] whose stored [[Source hash]] no longer matches the current [[English source]] for that field: the English changed after the translation was checked (for items and spells, when their [[Tooltip text]] changes). Stale entries **ship**, shown with a [[Stale marker]], and are first in line for re-audit (`wfi stats --stale` lists the quest ones). A stale item or spell entry is still gated at display time like an unaligned one: Japanese with the marker when names and numbers match the live tooltip, the English otherwise. On quest surfaces the marker follows the [[Live check]] when one is possible, not the build-time status. A numeric change (a count, a level) fails the [[Alignment check]] outright and is rejected instead. A [[UI string]] whose live English no longer matches its shipped hash shows the English with **no** marker (a marker on a one-word label would break the layout; [ADR-015](adr/015-ui-text-surfaces.md)).
 _Avoid_: outdated, expired, invalid
 
 **Source hash**:
@@ -231,7 +231,7 @@ _Avoid_: chunk, page, batch, data file (a shard is one of many, by id range)
 → [Data model](architecture/data-model.md)
 
 **Slot**:
-A fixed position inside one generated Lua row (a field's Japanese, that field's 32-bit source-hash prefix, or the row's status string), defined once by the slot map (`WFJ.SLOTS` in `Core/Const.lua`, `SLOTS` in `emit/schema.py`, kept in parity by tests). Slots are positional *within* a row only: the row itself is always keyed by the game ID, never by position, and a slot never moves without a data-schema bump. An empty slot (`nil`) means the field is not shipped.
+A fixed position inside one generated Lua row (a field's Japanese, that field's 32-bit source-hash prefix, or the row's status string), defined once by the slot map (`WFI.SLOTS` in `Core/Const.lua`, `SLOTS` in `emit/schema.py`, kept in parity by tests). Slots are positional *within* a row only: the row itself is always keyed by the game ID, never by position, and a slot never moves without a data-schema bump. An empty slot (`nil`) means the field is not shipped.
 _Avoid_: index, column, array position (the thing the ID rule forbids for *entries*)
 → [Data model](architecture/data-model.md) · [Addon modules](architecture/addon-modules.md)
 
@@ -286,11 +286,11 @@ _Avoid_: gloss, definition, translation (in player-facing text; `gloss` is the c
 → [Readings](systems/readings.md) · [ADR-039](adr/039-word-meanings-written-in-context.md)
 
 **Meaning number**:
-The number a [[Meaning]] ships under in `Data/Gloss/`; a reading row points at it (`word=reading=n`). Kept in `data/reading/meaning-numbers.tsv`, which `wfj generate` writes: a meaning keeps its number for good, a new one takes the next number after the highest, and a number is never given to another meaning.
+The number a [[Meaning]] ships under in `Data/Gloss/`; a reading row points at it (`word=reading=n`). Kept in `data/reading/meaning-numbers.tsv`, which `wfi generate` writes: a meaning keeps its number for good, a new one takes the next number after the highest, and a number is never given to another meaning.
 → [Readings](systems/readings.md#pipeline) · [ADR-060](adr/060-stable-meaning-numbers.md)
 
 **Stale reading**:
-A [[Reading]] whose stored hash no longer matches the Japanese it annotates: the translation changed after the words were written. `wfj validate` reports it (not a failure) and `wfj generate` leaves it out, so it never ships, unlike a [[Stale]] entry, which ships with a marker. It is written again from a fresh export.
+A [[Reading]] whose stored hash no longer matches the Japanese it annotates: the translation changed after the words were written. `wfi validate` reports it (not a failure) and `wfi generate` leaves it out, so it never ships, unlike a [[Stale]] entry, which ships with a marker. It is written again from a fresh export.
 _Avoid_: outdated reading, [[Stale]] (that's the English side of a translation)
 → [Readings](systems/readings.md)
 
@@ -396,7 +396,7 @@ _Avoid_: wording hash, branch key, text key, English key (nothing English ships)
 → [Pipeline](systems/pipeline.md) · [Addon modules](architecture/addon-modules.md) · [ADR-064](adr/064-aura-inclusions-list-tails-and-variant-keys.md)
 
 **UI dictionary**:
-The set of shipped [[UI string]]s, and the addon's index over them (`Core/UIStrings`, `WFJ.UIIndex`) built once at load: exact strings, templates, and labels, from which every interface surface looks up the line or widget it just saw. One dictionary for every surface; new coverage on a hooked surface is dictionary rows, not code.
+The set of shipped [[UI string]]s, and the addon's index over them (`Core/UIStrings`, `WFI.UIIndex`) built once at load: exact strings, templates, and labels, from which every interface surface looks up the line or widget it just saw. One dictionary for every surface; new coverage on a hooked surface is dictionary rows, not code.
 _Avoid_: glossary (this document), translation table, locale file
 → [Addon modules](architecture/addon-modules.md) · [ADR-015](adr/015-ui-text-surfaces.md)
 
@@ -551,12 +551,12 @@ _Avoid_: scraper, dump mode, logger, tracker
 → [Collector](systems/collector.md) · [ADR-013](adr/013-collector-english.md)
 
 **Collector dump**:
-The `WFJ_Collector` SavedVariables table, and the player's `WoWForeverJapanese.lua` file that carries it: the [[Collector]]'s entries keyed `<kind>:<id>:<field>`, each only normalized text in Blizzard's tokens (`$N`, `$C` / `$R` in quest and gossip text, paragraphs joined with `$B$B` as pfQuest writes them), its hash and a client-build index, plus a `sent` map of what the player has sent; no character, account, realm, location or time. The player hands it off with a [[Collector send]] (the whole file only when a send is too long to paste); a file at hand is read by `wfj import english collector`, which takes what the Forever client showed as the English: it replaces stand-in English (pfQuest, VMaNGOS, an older client) and keeps the same client's own tables and quest cache. `check`, `validate` and `stats` consult imported quest and gossip English; item and spell English is stored, not consulted.
-_Avoid_: upload, telemetry, log file, export, `WFJ_DB` (that is the settings table)
+The `WFI_Collector` SavedVariables table, and the player's `WoWForeverItalian.lua` file that carries it: the [[Collector]]'s entries keyed `<kind>:<id>:<field>`, each only normalized text in Blizzard's tokens (`$N`, `$C` / `$R` in quest and gossip text, paragraphs joined with `$B$B` as pfQuest writes them), its hash and a client-build index, plus a `sent` map of what the player has sent; no character, account, realm, location or time. The player hands it off with a [[Collector send]] (the whole file only when a send is too long to paste); a file at hand is read by `wfi import english collector`, which takes what the Forever client showed as the English: it replaces stand-in English (pfQuest, VMaNGOS, an older client) and keeps the same client's own tables and quest cache. `check`, `validate` and `stats` consult imported quest and gossip English; item and spell English is stored, not consulted.
+_Avoid_: upload, telemetry, log file, export, `WFI_DB` (that is the settings table)
 → [Collector](systems/collector.md) · [ADR-053](adr/053-forever-shown-english-is-the-english.md)
 
 **Collector send**:
-One hand-off of the [[Collector dump]]'s unsent entries, always one GitHub issue (the `collector-send` form), opened from the game's send window (**Send English**, `/wfj collector send`, or **Send collected English** in the minimap button's menu). It carries the **send string**: `WFJC1:` followed by URL-safe Base64 of zlib-compressed JSON `{v, a, b, e}` (format version, addon version, builds, entries in the dump's own fields), packed by the client's `C_EncodingUtil`. The string rides in the issue link when the whole link is at most 6,000 characters, is pasted into the form when it is at most 60,000, and is replaced by the zipped SavedVariables file attached to the same issue beyond that. Lines that ship in Japanese by then are left out. The player's **I sent it** marks the entries sent (`WFJ_Collector.sent`); `send all` packs everything again. Checked on the issue by `collector-check`, imported by `make collector-intake ISSUE=N`.
+One hand-off of the [[Collector dump]]'s unsent entries, always one GitHub issue (the `collector-send` form), opened from the game's send window (**Send English**, `/wfi collector send`, or **Send collected English** in the minimap button's menu). It carries the **send string**: `WFIC1:` followed by URL-safe Base64 of zlib-compressed JSON `{v, a, b, e}` (format version, addon version, builds, entries in the dump's own fields), packed by the client's `C_EncodingUtil`. The string rides in the issue link when the whole link is at most 6,000 characters, is pasted into the form when it is at most 60,000, and is replaced by the zipped SavedVariables file attached to the same issue beyond that. Lines that ship in Japanese by then are left out. The player's **I sent it** marks the entries sent (`WFI_Collector.sent`); `send all` packs everything again. Checked on the issue by `collector-check`, imported by `make collector-intake ISSUE=N`.
 _Avoid_: upload, sync, export, collector dump (that is the stored table and file), dump string, part (a send is never split)
 → [Collector](systems/collector.md#send-corecollectorsendlua-uicollectorsendwindowlua) · [ADR-056](adr/056-collector-send-string.md) · [Collector sends](operations/collector-sends.md)
 
@@ -589,7 +589,7 @@ The English text the game client is displaying right now. The addon never ships 
 _Avoid_: original text, our English, fallback text (there is no separate fallback text)
 
 **Modifier**:
-The key the player holds to see the [[Live English]]; releasing it returns the Japanese. Alt by default. It is one of three classes: **either** (`alt` / `ctrl` / `shift`: either side of the key), **side** (`lalt` … `rshift`: one side only), or **bound** (any other single key or mouse button 3–5, taken over by an [[Override binding]] while the addon is loaded). Set by pressing it on the settings page or with `/wfj modifier <key>`. Never the same key as the toggle binding. Key names stay English.
+The key the player holds to see the [[Live English]]; releasing it returns the Japanese. Alt by default. It is one of three classes: **either** (`alt` / `ctrl` / `shift`: either side of the key), **side** (`lalt` … `rshift`: one side only), or **bound** (any other single key or mouse button 3–5, taken over by an [[Override binding]] while the addon is loaded). Set by pressing it on the settings page or with `/wfi modifier <key>`. Never the same key as the toggle binding. Key names stay English.
 _Avoid_: reveal key, hotkey, hold key
 → [Settings](systems/settings.md) · [ADR-018](adr/018-reveal-key-override-binding.md)
 
@@ -612,7 +612,7 @@ _Avoid_: furigana, ruby, reading tooltip (it is not a GameTooltip), popup
 → [Readings](systems/readings.md) · [ADR-036](adr/036-readings-hover-word-lists.md)
 
 **Word card**:
-The [[Word-reading box]]'s larger form (`UI/ReadingPopup`): for a [[Word]] that carries a [[Meaning]], the word and its reading (a [[Kana word]] shown once), the [[Dictionary form]] and its reading when it differs (laid out like the head line, in pale blue and muted gold), then the meaning, in a 280 px card above the word, kept on screen. Shown instead of the reading-only box while `readings.glosses` is on (default on; the *Show word meanings in the reading box* checkbox on the main settings page, or `/wfj glosses on|off`); a word with no meaning still gets the reading-only box. Same rules as the box: nothing drawn until the mouse is on a word, never while English shows. Shown on quest and gossip prose, [[Window label]]s and plain-text [[Book page]]s ([Principles §3](architecture/principles.md#3-japanese-by-default-english-one-key-away)).
+The [[Word-reading box]]'s larger form (`UI/ReadingPopup`): for a [[Word]] that carries a [[Meaning]], the word and its reading (a [[Kana word]] shown once), the [[Dictionary form]] and its reading when it differs (laid out like the head line, in pale blue and muted gold), then the meaning, in a 280 px card above the word, kept on screen. Shown instead of the reading-only box while `readings.glosses` is on (default on; the *Show word meanings in the reading box* checkbox on the main settings page, or `/wfi glosses on|off`); a word with no meaning still gets the reading-only box. Same rules as the box: nothing drawn until the mouse is on a word, never while English shows. Shown on quest and gossip prose, [[Window label]]s and plain-text [[Book page]]s ([Principles §3](architecture/principles.md#3-japanese-by-default-english-one-key-away)).
 Player-facing text (the README, the listing) calls it the popup dictionary.
 _Avoid_: gloss box, dictionary popup, tooltip (it is not a GameTooltip)
 → [Readings](systems/readings.md) · [ADR-039](adr/039-word-meanings-written-in-context.md)
@@ -646,12 +646,12 @@ _Avoid_: hash code, text id, option index
 → [ADR-005](adr/005-gossip-key-fingerprint.md) · [ADR-017](adr/017-gossip-surface.md)
 
 **Blast radius**:
-The [[Gossip key]]s with English (the [[Collector]]'s, and VMaNGOS's with no NPC ids), ranked by how many different NPCs the Collector saw say the line: the lines whose Japanese would change the most places at once ("Goodbye.", "I would like to buy from you."), so they are reviewed first. Printed by `wfj stats` (top 20, with each key's status). A review list, not a scope: it changes no status and no yield.
+The [[Gossip key]]s with English (the [[Collector]]'s, and VMaNGOS's with no NPC ids), ranked by how many different NPCs the Collector saw say the line: the lines whose Japanese would change the most places at once ("Goodbye.", "I would like to buy from you."), so they are reviewed first. Printed by `wfi stats` (top 20, with each key's status). A review list, not a scope: it changes no status and no yield.
 _Avoid_: occurrence count, frequency, top keys
 → [Collector](systems/collector.md) · [Pipeline](systems/pipeline.md)
 
 **Fix report**:
-The block of text a player copies out of the fix window and pastes into a GitHub issue (label `translation-report`) to report wrong or awkward Japanese: a `WFJ-REPORT 1` header, the addon and client versions, one `fix` line per [[Pending fix]] with its optional note and Japanese, and an `end <count>` trailer that shows whether the paste was cut. Every fix names a line by its store address and the hash of the stored Japanese behind what the player saw (the before); it carries the player's Japanese only when they changed the line (the after), and no English. Read by `wfj report check` (the issue workflow), `intake` and `apply`; a fix the pipeline applies is written with provenance `report` = the issue number.
+The block of text a player copies out of the fix window and pastes into a GitHub issue (label `translation-report`) to report wrong or awkward Japanese: a `WFI-REPORT 1` header, the addon and client versions, one `fix` line per [[Pending fix]] with its optional note and Japanese, and an `end <count>` trailer that shows whether the paste was cut. Every fix names a line by its store address and the hash of the stored Japanese behind what the player saw (the before); it carries the player's Japanese only when they changed the line (the after), and no English. Read by `wfi report check` (the issue workflow), `intake` and `apply`; a fix the pipeline applies is written with provenance `report` = the issue number.
 _Avoid_: bug report (that is the [[Report window]]'s Bug form), feedback, translation issue (the issue is the container; the report is the pasted block), correction (a [[Correction]] is the data variant a report may produce)
 → [Fix reports](systems/fix-reports.md) · [ADR-045](adr/045-player-fix-reports.md)
 
@@ -661,12 +661,12 @@ _Avoid_: history, log, recent translations, chat log
 → [Fix reports](systems/fix-reports.md)
 
 **Pending fix**:
-One fix the player saved in the fix window and has not sent yet, listed on its **Pending** tab (送信待ち); the window's own copy calls it a saved report (報告): a line's address and the hash of the Japanese they saw, a reason (`wrong`, `awkward`, `typo`, `name`, `other`), an optional note and optionally their own Japanese. Kept in `WFJ_DB.reports` across `/reload` and logout, at most 25, one per line, until the player clears them after pasting the [[Fix report]].
+One fix the player saved in the fix window and has not sent yet, listed on its **Pending** tab (送信待ち); the window's own copy calls it a saved report (報告): a line's address and the hash of the Japanese they saw, a reason (`wrong`, `awkward`, `typo`, `name`, `other`), an optional note and optionally their own Japanese. Kept in `WFI_DB.reports` across `/reload` and logout, at most 25, one per line, until the player clears them after pasting the [[Fix report]].
 _Avoid_: draft, queued report, saved report (the report is the copied text of all pending fixes)
 → [Fix reports](systems/fix-reports.md)
 
 **Intro window**:
-The window a first install shows once, at its first login or reload (`Core/Intro` decides, `UI/IntroWindow` draws it, the flag is `WFJ_DB.intro`). It says what the addon does, that holding the reveal key shows the game's English, that pointing at a word shows its reading, what the [[Minimap button]] does and, while no voice pack is installed, where to get the free voice. It is the one addon window that shows both languages at once, a Japanese block above an English one, because the player has not learned the reveal key yet. A player who already had the addon never sees it. One of the on-screen additions [Principles §3](architecture/principles.md#3-japanese-by-default-english-one-key-away) allows.
+The window a first install shows once, at its first login or reload (`Core/Intro` decides, `UI/IntroWindow` draws it, the flag is `WFI_DB.intro`). It says what the addon does, that holding the reveal key shows the game's English, that pointing at a word shows its reading, what the [[Minimap button]] does and, while no voice pack is installed, where to get the free voice. It is the one addon window that shows both languages at once, a Japanese block above an English one, because the player has not learned the reveal key yet. A player who already had the addon never sees it. One of the on-screen additions [Principles §3](architecture/principles.md#3-japanese-by-default-english-one-key-away) allows.
 _Avoid_: welcome screen, splash, onboarding popup, what's new (it never shows after an update)
 → [Settings → Intro window](systems/settings.md#intro-window)
 
@@ -676,24 +676,24 @@ _Avoid_: minimap icon, LDB button, launcher, addon compartment (that is Blizzard
 → [Fix reports](systems/fix-reports.md) · [ADR-045](adr/045-player-fix-reports.md)
 
 **Report window**:
-The addon's tool window for everything that is not a wrong line (`UI/ReportWindow`, opened by `/wfj bug`, the [[Minimap button]] menu's Report a bug or idea and the About page's button). A radio choice picks Bug or Idea. Bug gives a link to the bug-report issue form with the client build, the addon version and the unsent errors from the [[Problem log]] filled in (or, when the link would pass 6,000 characters, the error text to paste), and an I sent it button that marks those errors sent. Idea gives a link to the idea form. It shows the addon's own errors, never game text.
+The addon's tool window for everything that is not a wrong line (`UI/ReportWindow`, opened by `/wfi bug`, the [[Minimap button]] menu's Report a bug or idea and the About page's button). A radio choice picks Bug or Idea. Bug gives a link to the bug-report issue form with the client build, the addon version and the unsent errors from the [[Problem log]] filled in (or, when the link would pass 6,000 characters, the error text to paste), and an I sent it button that marks those errors sent. Idea gives a link to the idea form. It shows the addon's own errors, never game text.
 _Avoid_: bug window, feedback window, fix window (that one reports a line as a [[Fix report]])
 → [Fix reports](systems/fix-reports.md#bug-and-idea-reports) · [ADR-057](adr/057-catching-the-addons-own-lua-errors.md)
 
 **Problem log**:
-The addon's own record of problems seen in game, kept in the `WFJ_Log` SavedVariables table (`Core/Diag`): one entry per load, surfaces whose setup failed, protected actions the client blocked, hooks that stopped working and the Lua memory, plus, under `errors`, the addon's own Lua errors (`Core/ErrorLog`: only errors raised in a file under `WoWForeverJapanese/`, judged by the file the message names or else the top Lua frame of the stack, at most 30, the player's name written as `<name>`). `/wfj log` prints it. No game text, chat or location.
+The addon's own record of problems seen in game, kept in the `WFI_Log` SavedVariables table (`Core/Diag`): one entry per load, surfaces whose setup failed, protected actions the client blocked, hooks that stopped working and the Lua memory, plus, under `errors`, the addon's own Lua errors (`Core/ErrorLog`: only errors raised in a file under `WoWForeverItalian/`, judged by the file the message names or else the top Lua frame of the stack, at most 30, the player's name written as `<name>`). `/wfi log` prints it. No game text, chat or location.
 _Avoid_: error log, debug log, diagnostics file, BugSack
 → [Diagnostics log](systems/diagnostics.md) · [ADR-057](adr/057-catching-the-addons-own-lua-errors.md)
 
 ## Voice over
 
 **Voice pack**:
-One of the separate addons that hold the Japanese voice over audio, named for what it holds: `WoWForeverJapanese_VoiceLevels1to10` to `…Levels51to60` (the quests of a level band and their NPCs' talk) and `…VoiceOther` (book and letter pages, the character's error lines, quests with no known level). Each holds one MP3 per voiced line (and per [[Voice variant]]), and a `Register.lua` that hands the main addon a table of [[Pack key]] → file, [[Japanese hash]] and length. Every pack depends on the main addon; the main addon plays nothing and shows no voice setting without one. Built by `wfj voice pack`, never committed to this repository.
+One of the separate addons that hold the Japanese voice over audio, named for what it holds: `WoWForeverItalian_VoiceLevels1to10` to `…Levels51to60` (the quests of a level band and their NPCs' talk) and `…VoiceOther` (book and letter pages, the character's error lines, quests with no known level). Each holds one MP3 per voiced line (and per [[Voice variant]]), and a `Register.lua` that hands the main addon a table of [[Pack key]] → file, [[Japanese hash]] and length. Every pack depends on the main addon; the main addon plays nothing and shows no voice setting without one. Built by `wfi voice pack`, never committed to this repository.
 _Avoid_: voice addon, sound pack, part, audio data (the main addon ships no audio)
 → [Voice over](systems/voice.md) · [ADR-061](adr/061-voice-over-from-a-separate-pack.md) · [ADR-062](adr/062-voice-cast-per-speaker-in-step-with-the-text.md)
 
 **Voice entry**:
-The addon players install for the voice, "WoW Forever Japanese Voice" (`WoWForeverJapanese_Voice`): no audio of its own; on CurseForge its file requires the main addon and every [[Voice pack]], so the app installs them all from one click. Its list of required projects is the one place that says what the voice consists of.
+The addon players install for the voice, "WoW Forever Italian Voice" (`WoWForeverItalian_Voice`): no audio of its own; on CurseForge its file requires the main addon and every [[Voice pack]], so the app installs them all from one click. Its list of required projects is the one place that says what the voice consists of.
 _Avoid_: voice pack (it holds none), installer, bundle
 → [Voice over](systems/voice.md) · [Voice over runbook](operations/voice.md)
 
@@ -738,7 +738,7 @@ _Avoid_: manifest, audio index
 → [Data model](architecture/data-model.md#voice-over-tables)
 
 **Audio pin**:
-`pipeline/voice-audio-commit.txt`: the commit of the voice audio repository (`zyaga/wow-forever-japanese-voice`) that goes with this repository's text. A voice run writes it; a release builds the [[Voice pack]]s from exactly that commit.
+`pipeline/voice-audio-commit.txt`: the commit of the voice audio repository (`zyaga/wow-forever-italian-voice`) that goes with this repository's text. A voice run writes it; a release builds the [[Voice pack]]s from exactly that commit.
 _Avoid_: audio version, lock file
 → [Voice over runbook](operations/voice.md)
 
@@ -758,7 +758,7 @@ _Avoid_: queue box, playlist, backlog
 → [Voice over](systems/voice.md#the-voice-panel-uivoicepanellua)
 
 **Remembered speaker**:
-The quest NPC the addon saw show a quest line (creature id, sex, name, title), saved in `WFJ_DB.voiceSpeakers` each time the quest window shows it, and used when that line is played from the quest log. Kept on the player's machine, never shipped; not the [[Speaker]] table in `data/voice/`.
+The quest NPC the addon saw show a quest line (creature id, sex, name, title), saved in `WFI_DB.voiceSpeakers` each time the quest window shows it, and used when that line is played from the quest log. Kept on the player's machine, never shipped; not the [[Speaker]] table in `data/voice/`.
 _Avoid_: speaker table, cached NPC, quest giver record
 → [Voice over](systems/voice.md) · [Data model](architecture/data-model.md)
 
@@ -780,7 +780,7 @@ _Avoid_: retail (retail is the live product; the family is a load rule), modern 
 → [ADR-029](adr/029-camelot-targets-the-mainline-family.md) · [ADR-030](adr/030-every-window-the-forever-client-loads.md)
 
 **Load set**:
-The client files a Blizzard addon loads on [[camelot]], in load order: its TOC's lines that pass the [[Game type]] rule, with XML `<Include>` / `<Script>` followed. Resolved by `wfj.dev.client_addons` (`--files <addon>` prints one). An addon's state is `gated` (its header keeps camelot out), `glue` (login screen only), `login` or `lod` (load-on-demand); only `login` and `lod` addons are in game. "In the load set" means some camelot-loaded file of some addon; an entry point outside it does not count.
+The client files a Blizzard addon loads on [[camelot]], in load order: its TOC's lines that pass the [[Game type]] rule, with XML `<Include>` / `<Script>` followed. Resolved by `wfi.dev.client_addons` (`--files <addon>` prints one). An addon's state is `gated` (its header keeps camelot out), `glue` (login screen only), `login` or `lod` (load-on-demand); only `login` and `lod` addons are in game. "In the load set" means some camelot-loaded file of some addon; an entry point outside it does not count.
 _Avoid_: file list (the inventory's `FOREVER_WINDOWS` is a per-surface subset), TOC contents (a TOC also lists gated lines)
 → [ADR-030](adr/030-every-window-the-forever-client-loads.md) · [Pipeline](systems/pipeline.md)
 
@@ -795,7 +795,7 @@ _Avoid_: header (a DialogHeader is a different widget), caption, frame name
 → [Addon modules](architecture/addon-modules.md) · [ADR-030](adr/030-every-window-the-forever-client-loads.md)
 
 **Candidate name**:
-One of the names a surface declares through `Compat` for a client thing it needs: a global, a function, or a **dotted path** through `parentKey`s (`PlayerSpellsFrame.TitleContainer.TitleText`). Candidates are the [[camelot]] names; a declaration stays a list even when it holds one name. The first one that resolves is used, and a hook is installed only for a writer that resolves. A name that does not resolve shows in `/wfj debug` as unresolved.
+One of the names a surface declares through `Compat` for a client thing it needs: a global, a function, or a **dotted path** through `parentKey`s (`PlayerSpellsFrame.TitleContainer.TitleText`). Candidates are the [[camelot]] names; a declaration stays a list even when it holds one name. The first one that resolves is used, and a hook is installed only for a writer that resolves. A name that does not resolve shows in `/wfi debug` as unresolved.
 _Avoid_: fallback, alias
 → [Addon modules](architecture/addon-modules.md)
 
@@ -809,7 +809,7 @@ _Avoid_: clear, reset
 → [ADR-029](adr/029-camelot-targets-the-mainline-family.md)
 
 **UI inventory**:
-The list, per [[Surface]], of every UI key a hooked client file can put on screen, enumerated from source by `wfj.dev.ui_inventory`. There is one, the Forever client's: `pipeline/ui_inventory.txt`, built by `make ui-inventory` from a client UI extract and its GlobalStrings (its file map `FOREVER_WINDOWS` covers every `surface` [[Disposition]]). Every inventoried key is in `pipeline/ui_keys.txt` or excluded with a reason in `pipeline/ui_exclusions.txt`; the coverage test holds the inventory to that.
+The list, per [[Surface]], of every UI key a hooked client file can put on screen, enumerated from source by `wfi.dev.ui_inventory`. There is one, the Forever client's: `pipeline/ui_inventory.txt`, built by `make ui-inventory` from a client UI extract and its GlobalStrings (its file map `FOREVER_WINDOWS` covers every `surface` [[Disposition]]). Every inventoried key is in `pipeline/ui_keys.txt` or excluded with a reason in `pipeline/ui_exclusions.txt`; the coverage test holds the inventory to that.
 _Avoid_: key list (that is `ui_keys.txt`), string dump
 → [Pipeline](systems/pipeline.md)
 
@@ -829,7 +829,7 @@ _Avoid_: known issue, bug, workaround
 → [Client limits](architecture/client-limits.md)
 
 **Tooltip trace**:
-The row-by-row record of every pass over a tooltip, kept in memory while `/wfj debug tooltip on` and shown by `/wfj debug tooltip` in a window whose text can be copied. Each entry names the pass's kind, the spell or item id, the owner, each row's kind, text and colour (a [[Secret value]] as `<secret>`), what was written and why; a hidden pass's entry adds every data row, the row map and the countdown's duration. It is the evidence a client-side fix is made from.
+The row-by-row record of every pass over a tooltip, kept in memory while `/wfi debug tooltip on` and shown by `/wfi debug tooltip` in a window whose text can be copied. Each entry names the pass's kind, the spell or item id, the owner, each row's kind, text and colour (a [[Secret value]] as `<secret>`), what was written and why; a hidden pass's entry adds every data row, the row map and the countdown's duration. It is the evidence a client-side fix is made from.
 _Avoid_: debug log, dump
 → [Testing strategy](testing/strategy.md)
 
@@ -851,6 +851,6 @@ _Avoid_: test build, nightly, snapshot
 → [Release → Versioning](operations/release.md#versioning)
 
 **Package check**:
-`wfj package-check`: the gate between building the release zip and publishing it. The zip must hold exactly the addon folder's tracked files (dotfiles such as `.gitkeep` excepted) plus `LICENSE` and `ATTRIBUTION.md` under one `WoWForeverJapanese/` folder, every file the TOC lists, the TOC version of this release, a numeric CurseForge project id, and no dependency field. Nothing leaves the runner until it passes.
+`wfi package-check`: the gate between building the release zip and publishing it. The zip must hold exactly the addon folder's tracked files (dotfiles such as `.gitkeep` excepted) plus `LICENSE` and `ATTRIBUTION.md` under one `WoWForeverItalian/` folder, every file the TOC lists, the TOC version of this release, a numeric CurseForge project id, and no dependency field. Nothing leaves the runner until it passes.
 _Avoid_: zip test, smoke test, `toc-check` (that compares the TOC's `## Interface` with `clients.toml`)
 → [Release](operations/release.md)

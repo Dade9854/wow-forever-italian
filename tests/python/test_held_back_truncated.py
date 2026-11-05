@@ -12,10 +12,10 @@ from pathlib import Path
 
 import pytest
 
-from wfj.core import decisions
-from wfj.dev import rule_held_back as rhb
-from wfj.dev import translate_batch as tb
-from wfj.io.jsonl_store import Store
+from wfi.core import decisions
+from wfi.dev import rule_held_back as rhb
+from wfi.dev import translate_batch as tb
+from wfi.io.jsonl_store import Store
 
 HUMAN = {"class": "human", "translator": "questjapanizer-wiki", "source": "cqjt@3446c82",
          "imported": "2026-09-13"}

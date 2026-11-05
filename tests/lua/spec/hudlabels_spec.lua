@@ -80,7 +80,7 @@ local GLOBALS = { "MirrorTimerContainer", "SwingTimerMainHandFrame", "SwingTimer
   "DebuffFrame", "ExternalDefensivesFrame", "AuraButtonMixin" }
 
 describe("the HUD's small bars and messages on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
     local ns = H.loadChunks(FILES)
@@ -91,15 +91,15 @@ describe("the HUD's small bars and messages on Forever", function()
   local function fresh()
     H.uiTeardown()
     for _, n in ipairs(GLOBALS) do _G[n] = nil end
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
   end
 
   before_each(function()
     fresh()
-    WFJ = load()
+    WFI = load()
     installHud()
-    assert.is_true(WFJ.HudLabels.init())
+    assert.is_true(WFI.HudLabels.init())
   end)
 
   after_each(function()
@@ -117,7 +117,7 @@ describe("the HUD's small bars and messages on Forever", function()
     timers[1]:Setup("FEIGNDEATH", 1, 1, 0, "Cancel") -- the same frame reused for a spell-named timer
     assert.are.equal("Cancel", timers[1].Text:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal(en("EXHAUSTION_LABEL"), timers[2].Text:GetText())
     assert.are.equal("Cancel", timers[1].Text:GetText())
   end)
@@ -155,11 +155,11 @@ describe("the HUD's small bars and messages on Forever", function()
     local d = _G.DebuffFrame.auraFrames[2]
     d:UpdateDuration(en("HOUR_ONELETTER_ABBR"), 1)
     assert.are.equal("1時間", d.Duration:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("30 s", b.Duration:GetText())
     b:UpdateDuration(en("SECOND_ONELETTER_ABBR"), 30) -- held: the client's English stays
     assert.are.equal("30 s", b.Duration:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("30秒", b.Duration:GetText())
     -- a button made later carries the hooked mixin, and is never hooked twice (its own hook is not added)
     local later = CreateFrame("Button")
@@ -176,22 +176,22 @@ describe("the HUD's small bars and messages on Forever", function()
     -- in combat: the client's line can be a value the addon may write but not compare
     local secret = { ["4 m"] = true }
     _G.issecretvalue = function(v) return secret[v] == true end
-    WFJ.HudLabels.init() -- the name resolves again now the client has it
-    local records = WFJ.SurfaceState.count(WFJ.HudLabels.SURFACE)
+    WFI.HudLabels.init() -- the name resolves again now the client has it
+    local records = WFI.SurfaceState.count(WFI.HudLabels.SURFACE)
     b.Duration.text = "4 m"
-    assert.are.equal(0, WFJ.HudLabels.onDuration(b))
+    assert.are.equal(0, WFI.HudLabels.onDuration(b))
     assert.are.equal("4 m", b.Duration:GetText())
     assert.has_no.errors(function() b:UpdateDuration(en("MINUTE_ONELETTER_ABBR"), 4) end)
     assert.are.equal("4 m", b.Duration:GetText())
-    assert.are.equal(records, WFJ.SurfaceState.count(WFJ.HudLabels.SURFACE))
+    assert.are.equal(records, WFI.SurfaceState.count(WFI.HudLabels.SURFACE))
     -- Alt while the line is secret: the record is dropped without comparing the secret, no error
     Stub.keys.alt = true
-    assert.has_no.errors(function() WFJ.Modifier.refresh() end)
+    assert.has_no.errors(function() WFI.Modifier.refresh() end)
     assert.are.equal("4 m", b.Duration:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     -- readable again: Japanese again
     _G.issecretvalue = nil
-    WFJ.HudLabels.init()
+    WFI.HudLabels.init()
     b:UpdateDuration(en("MINUTE_ONELETTER_ABBR"), 3)
     assert.are.equal("3分", b.Duration:GetText())
   end)
@@ -203,10 +203,10 @@ describe("the HUD's small bars and messages on Forever", function()
     fs:SetFormattedText(en("FPS_COUNTER_GPU_BOUND"), 120)
     assert.are.equal("120.0 GPU律速", fs:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("120.0 GPU Bound", fs:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     fs:SetFormattedText("%.1f", 60)
     assert.are.equal("60.0", fs:GetText())
   end)
@@ -231,7 +231,7 @@ describe("the HUD's small bars and messages on Forever", function()
   end)
 
   it("hooks install once; a client with none of the widgets is skipped without error", function()
-    assert.is_false(WFJ.HudLabels.init())
+    assert.is_false(WFI.HudLabels.init())
     assert.are.equal(1, #Stub.hooks["ActionStatus:DisplayMessage"])
     fresh()
     local bare = load()

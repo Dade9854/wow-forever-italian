@@ -1,6 +1,6 @@
 # ADR-026: A blank archive-entry header is unwritten, not wrong: verify the content by its content key
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/io/casc.py` (`LocalArchive.read_blob`, `LocalArchive.read_file`, `self._unverified`), with tests in `tests/python/test_casc_local.py` and `tests/python/casc_fixture.py` (`build(…, blank_headers=…)`).
+- **Status:** Accepted. Implemented in `pipeline/wfi/io/casc.py` (`LocalArchive.read_blob`, `LocalArchive.read_file`, `self._unverified`), with tests in `tests/python/test_casc_local.py` and `tests/python/casc_fixture.py` (`build(…, blank_headers=…)`).
 - **Date:** 2026-09-17
 
 ## Context
@@ -67,4 +67,4 @@ The forces:
 - [ADR-025: Guarded surface init and a runtime-chosen tooltip hook path](025-guarded-surface-init-and-runtime-tooltip-path.md): the same rule about not branching on a build number
 - [What the Forever client changed under the addon's surfaces](../research/2026-09-17-forever-client-differences.md): [C5](../research/2026-09-17-forever-client-differences.md#c5-the-client-archive-was-never-sparse), the survey claim this withdrew
 - [Pipeline](../systems/pipeline.md) · [Local setup](../operations/local-setup.md) · [Testing strategy](../testing/strategy.md)
-- Implementation: `pipeline/wfj/io/casc.py`
+- Implementation: `pipeline/wfi/io/casc.py`

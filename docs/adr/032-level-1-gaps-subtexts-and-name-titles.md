@@ -1,9 +1,9 @@
 # ADR-032: Spellbook subtexts as fingerprint rows; menus whose title is a name
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/io/client_tables.py` (Spell
+- **Status:** Accepted. Implemented in `pipeline/wfi/io/client_tables.py` (Spell
   `NameSubtext_lang`), `io/wago.py` (`read_subtexts`), `cmd/import_.py` / `cmd/import_english.py` (`wago-ui
   --subtexts`), `core/model.py` (`UI_KEY_RE`), `emit/schema.py`, the `Makefile` (`import-client`),
-  `pipeline/ui_keys.txt`; `addon/WoWForeverJapanese/Core/UIStrings.lua` (`isFingerprintKey`), `Main.lua`,
+  `pipeline/ui_keys.txt`; `addon/WoWForeverItalian/Core/UIStrings.lua` (`isFingerprintKey`), `Main.lua`,
   `UI/SpellBook.lua`, `UI/Menus.lua` (`titleIsName`). Partly checked in game on Forever: the spellbook subtexts show
   Japanese, and `C_Minimap.GetTrackingInfo(1).name` = "Auctioneer", the `MINIMAP_TRACKING_AUCTIONEER` English; the
   rest of the level-1 checklist in [Testing strategy](../testing/strategy.md) is pending.
@@ -30,7 +30,7 @@ An in-game pass on Forever with a fresh level-1 character found English in two p
 1. **`SpellSubtext:<spellID>` is a UI fingerprint key family**, the pattern of `ItemSubClass:` and
    `SpellItemEnchantment:` (ADR-015, ADR-016).
    - `client_tables` extracts Spell `NameSubtext_lang` (field 0); `wago.read_subtexts` turns `Spell.csv` into
-     `{ "SpellSubtext:<ID>": subtext }`; `wfj import english wago-ui --subtexts Spell.csv` adds it to the table the key
+     `{ "SpellSubtext:<ID>": subtext }`; `wfi import english wago-ui --subtexts Spell.csv` adds it to the table the key
      list is resolved against. `make import-client` passes `$(CLIENT_SPELL)`.
    - `pipeline/ui_keys.txt` lists **one representative spell id per distinct prose subtext**: 12 keys (Racial, Racial
      Passive, Summon, Shapeshift, Tier 1–4, Level 1–4). Pet families, form names and `QASpell` are never listed; a

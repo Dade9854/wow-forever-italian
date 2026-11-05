@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import struct
 
-from wfj.io import db2
+from wfi.io import db2
 
 
 def wdc5(

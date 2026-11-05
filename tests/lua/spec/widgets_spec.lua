@@ -51,20 +51,20 @@ local function container(lines)
 end
 
 describe("the UI widgets' lines on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function text(c, id, level) return c.widgetFrames[id].levels[level].Text:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end)
 
   after_each(function()
@@ -85,7 +85,7 @@ describe("the UI widgets' lines on Forever", function()
       local c = container({ [101] = { "Towers Controlled: 3", "Bases: 2  Resources: 150/1600",
         "Alliance flag captures", "Towers Controlled: 4", "Towers Controlled: 5" } })
       manager(c)
-      assert.is_true(WFJ.Widgets.init())
+      assert.is_true(WFI.Widgets.init())
       c:ProcessWidget(101)
       assert.are.equal("制圧した塔: 3", text(c, 101, 0))
       assert.are.equal("資源: 150/1600  拠点: 2", text(c, 101, 1))
@@ -106,26 +106,26 @@ describe("the UI widgets' lines on Forever", function()
   it("a base or player name, another family's word and a dictionary word on a widget stay English", function()
     local c = container({ [7] = { "Stormpike Graveyard", "Flag Captures", "Close", "" } })
     manager(c)
-    WFJ.Widgets.init()
+    WFI.Widgets.init()
     c:ProcessWidget(7)
     assert.are.equal("Stormpike Graveyard", text(c, 7, 0))
     assert.are.equal("Flag Captures", text(c, 7, 1))
     assert.are.equal("Close", text(c, 7, 2))
     assert.are.equal("", text(c, 7, 3))
-    assert.are.equal(0, WFJ.Widgets.showFrame(c.widgetFrames[7]))
+    assert.are.equal(0, WFI.Widgets.showFrame(c.widgetFrames[7]))
   end)
 
   it("a widget already built when the container is hooked is shown at once", function()
     local c = container({ [3] = { "Towers Controlled: 2" } })
     c:ProcessWidget(3) -- before the addon hooks
     manager(c)
-    WFJ.Widgets.init()
+    WFI.Widgets.init()
     assert.are.equal("制圧した塔: 2", text(c, 3, 0))
   end)
 
   it("a container registered later is hooked through OnWidgetContainerRegistered, once", function()
     local m = manager()
-    assert.is_true(WFJ.Widgets.init())
+    assert.is_true(WFI.Widgets.init())
     local c = container({ [9] = { "Towers Controlled: 1" } })
     c:ProcessWidget(9)
     assert.are.equal("Towers Controlled: 1", text(c, 9, 0)) -- not hooked yet
@@ -135,23 +135,23 @@ describe("the UI widgets' lines on Forever", function()
     c.lines[9][1] = "Towers Controlled: 2"
     c:ProcessWidget(9)
     assert.are.equal("制圧した塔: 2", text(c, 9, 0))
-    assert.are.equal(0, WFJ.Widgets.hookContainer(c)) -- already hooked
+    assert.are.equal(0, WFI.Widgets.hookContainer(c)) -- already hooked
     assert.are.equal(1, #Stub.hooks["?:ProcessWidget"])
   end)
 
   it("init: once; false without a widget manager; wrong types degrade with no error", function()
-    assert.is_false(WFJ.Widgets.init()) -- no UIWidgetManager
+    assert.is_false(WFI.Widgets.init()) -- no UIWidgetManager
     manager()
-    assert.is_true(WFJ.Widgets.init())
-    assert.is_false(WFJ.Widgets.init())
+    assert.is_true(WFI.Widgets.init())
+    assert.is_false(WFI.Widgets.init())
     assert.are.equal(1, #Stub.hooks["?:OnWidgetContainerRegistered"])
     assert.has_no.errors(function()
-      assert.are.equal(0, WFJ.Widgets.hookContainer(nil))
-      assert.are.equal(0, WFJ.Widgets.hookContainer({ ProcessWidget = 3 }))
-      WFJ.Widgets.onProcess(nil, 1)
-      WFJ.Widgets.onProcess({ widgetFrames = 5 }, 1)
-      WFJ.Widgets.onProcess({ widgetFrames = {} }, 1)
-      assert.are.equal(0, WFJ.Widgets.showFrame("frame"))
+      assert.are.equal(0, WFI.Widgets.hookContainer(nil))
+      assert.are.equal(0, WFI.Widgets.hookContainer({ ProcessWidget = 3 }))
+      WFI.Widgets.onProcess(nil, 1)
+      WFI.Widgets.onProcess({ widgetFrames = 5 }, 1)
+      WFI.Widgets.onProcess({ widgetFrames = {} }, 1)
+      assert.are.equal(0, WFI.Widgets.showFrame("frame"))
     end)
   end)
 end)

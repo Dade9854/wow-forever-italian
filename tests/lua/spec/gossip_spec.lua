@@ -18,7 +18,7 @@ local function isJapanese(text)
 end
 
 describe("UI/Gossip: the NPC talk window", function()
-  local WFJ, S, SS, G, C, sb, data, db
+  local WFI, S, SS, G, C, sb, data, db
 
   local function key(en) return C.key(en, PLAYER) end
 
@@ -33,20 +33,20 @@ describe("UI/Gossip: the NPC talk window", function()
   end
 
   local function setup(viewRows)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installGossipAPI(viewRows)
-    WFJ = H.loadChunks(FILES)
-    S, SS, G, C = WFJ.Settings, WFJ.SurfaceState, WFJ.Gossip, WFJ.Collector
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI = H.loadChunks(FILES)
+    S, SS, G, C = WFI.Settings, WFI.SurfaceState, WFI.Gossip, WFI.Collector
+    WFI.Compat.init(function(name) return _G[name] end)
     S.load(nil, 1, {})
     db = C.load(nil, H.collectorDeps({ lookup = function(kind, id)
       if kind == "gossip" then return data[id] end
     end }))
     data = {}
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) if kind == "gossip" then return data[id] end end,
       marker = function(n) return S.get("marker." .. n) end,
     }))
@@ -94,9 +94,9 @@ describe("UI/Gossip: the NPC talk window", function()
 
     local rows = sb.frames
     assert.are.equal("ごきげんよう。今夜は精霊が騒がしい。", rows[1].GreetingText:GetText())
-    assert.are.same({ WFJ.Font.PATH, 13, "" }, fontOf(rows[1]))
+    assert.are.same({ WFI.Font.PATH, 13, "" }, fontOf(rows[1]))
     assert.are.equal("この宿を拠点にする。", rows[4]:GetText())
-    assert.are.same({ WFJ.Font.PATH, 12, "" }, fontOf(rows[4]))
+    assert.are.same({ WFI.Font.PATH, 12, "" }, fontOf(rows[4]))
     assert.are.equal(LONG_JA, rows[5]:GetText())
     assert.are.equal("Let me browse your goods.", rows[6]:GetText())
     assert.are.same({ "Fonts\\FRIZQT__.TTF", 12, "" }, fontOf(rows[6]))
@@ -149,11 +149,11 @@ describe("UI/Gossip: the NPC talk window", function()
     check(false)
     sb:scrollTo(0)
     check(false)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     check(true)
     sb:scrollTo(10)
     check(true)
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     check(false)
   end)
 
@@ -176,10 +176,10 @@ describe("UI/Gossip: the NPC talk window", function()
 
     sb:scrollTo(10)
     assertLayout()
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(names[12], sb.frames[15]:GetText())
     assertLayout()
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(LONG_JA, sb.frames[15]:GetText())
     assertLayout()
 
@@ -220,7 +220,7 @@ describe("UI/Gossip: the NPC talk window", function()
     function()
       setup(10)
       ship({})
-      H.uiSetup(WFJ, { GOSSIP_OPTION_PREPEND = { "|cff0000ff(%s)|r %s", "|cff0000ff(%s)|r %s" },
+      H.uiSetup(WFI, { GOSSIP_OPTION_PREPEND = { "|cff0000ff(%s)|r %s", "|cff0000ff(%s)|r %s" },
         QUEST_PREPEND = { "Quest", "クエスト" } }, { lookup = function(kind, id)
           if kind == "gossip" then return data[id] end
         end })
@@ -231,9 +231,9 @@ describe("UI/Gossip: the NPC talk window", function()
         if sb.frames[i].kind == "option" then row = sb.frames[i] end
       end
       assert.are.equal("|cff0000ff(クエスト)|r Tell me about the Scourge. Now.", row:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("|cff0000ff(Quest)|r Tell me about the Scourge. Now.", row:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       H.uiTeardown()
     end)
 
@@ -241,7 +241,7 @@ describe("UI/Gossip: the NPC talk window", function()
     function()
       setup(10)
       ship({})
-      H.uiSetup(WFJ, { GOSSIP_OPTION_PREPEND = { "|cff0000ff%s|r %s", "|cff0000ff%s|r %s" },
+      H.uiSetup(WFI, { GOSSIP_OPTION_PREPEND = { "|cff0000ff%s|r %s", "|cff0000ff%s|r %s" },
         PLAY_MOVIE_PREPEND = { "(Play Movie)", "(ムービーを再生)" } }, { lookup = function(kind, id)
           if kind == "gossip" then return data[id] end
         end })
@@ -252,9 +252,9 @@ describe("UI/Gossip: the NPC talk window", function()
         if sb.frames[i].kind == "option" then row = sb.frames[i] end
       end
       assert.are.equal("|cff0000ff(ムービーを再生)|r Show me the battle.", row:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("|cff0000ff(Play Movie)|r Show me the battle.", row:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       H.uiTeardown()
       _G.PLAY_MOVIE_PREPEND = nil
     end)
@@ -263,8 +263,8 @@ describe("UI/Gossip: the NPC talk window", function()
     setup(5)
     Stub.showGossip({ text = "Hello, Reyn.", options = options(12), npc = NPC, active = { "A Quest" } })
     sb:scrollTo(10)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     sb:scrollTo(0)
     Stub.closeGossip()
     for _, fs in ipairs(Stub.fontStrings) do
@@ -307,25 +307,25 @@ describe("UI/Gossip: the NPC talk window", function()
     for _, f in ipairs(all) do
       if f.GreetingText or f.GetFontString then
         assert.is_false(isJapanese(textOf(f)), tostring(textOf(f)))
-        assert.are_not.equal(WFJ.Font.PATH, fontOf(f)[1])
+        assert.are_not.equal(WFI.Font.PATH, fontOf(f)[1])
       end
     end
     assert.are.equal("Page two.", sb.frames[1].GreetingText:GetText())
   end)
 
   it("master, area and modifier restore English; a stale row's marker is on the banner; no-op refresh", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     ship({ ["Hello."] = "こんにちは。", ["Old option."] = { "古い選択肢。", "s" } })
     Stub.showGossip({ text = "Hello.", options = { "Old option.", "Plain." }, npc = NPC })
     local greeting, stale = sb.frames[1], sb.frames[4]
     local marker = ""
     assert.are.equal("古い選択肢。", stale:GetText())
-    assert.are.equal(WFJ.MARKER.stale, G.banner:GetText())
+    assert.are.equal(WFI.MARKER.stale, G.banner:GetText())
     assert.is_true(G.banner:IsShown())
     assertLayout()
 
     local updates = sb.calls.FullUpdate
-    assert.are.equal(0, WFJ.Render.refresh("gossip"))
+    assert.are.equal(0, WFI.Render.refresh("gossip"))
     assert.are.equal(updates, sb.calls.FullUpdate)
 
     for _, flip in ipairs({ { "enabled", false, true }, { "area.gossip", false, true } }) do
@@ -338,9 +338,9 @@ describe("UI/Gossip: the NPC talk window", function()
       assert.are.equal("こんにちは。", greeting.GreetingText:GetText(), flip[1])
       assertLayout()
     end
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Old option.", stale:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(marker .. "古い選択肢。", stale:GetText())
     assertLayout()
   end)
@@ -355,15 +355,15 @@ describe("UI/Gossip: the NPC talk window", function()
       for _, k in ipairs(keys) do if data[k] then return k end end
       return keys[1]
     end
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc") -- a fresh surface wired with the candidate-key picker
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc") -- a fresh surface wired with the candidate-key picker
     Stub.installGossipAPI()
-    WFJ = H.loadChunks(FILES)
-    S, SS, G, C = WFJ.Settings, WFJ.SurfaceState, WFJ.Gossip, WFJ.Collector
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI = H.loadChunks(FILES)
+    S, SS, G, C = WFI.Settings, WFI.SurfaceState, WFI.Gossip, WFI.Collector
+    WFI.Compat.init(function(name) return _G[name] end)
     S.load(nil, 1, {})
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end, areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown, lookup = function(_, id) return data[id] end,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end, areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown, lookup = function(_, id) return data[id] end,
       marker = function(n) return S.get("marker." .. n) end,
     }))
     assert.is_true(G.init({ key = pick }))
@@ -389,25 +389,25 @@ describe("UI/Gossip: the NPC talk window", function()
   it("markers: the banner sits in the stone band; inline while the friendship bar holds it; hidden on close", function()
     S.set("marker.missing", true)
     Stub.showGossip({ text = "Hello.", options = { "Plain." }, npc = NPC })
-    assert.are.equal(WFJ.MARKER.missing, G.banner:GetText())
+    assert.are.equal(WFI.MARKER.missing, G.banner:GetText())
     assert.are.equal("Hello.", sb.frames[1].GreetingText:GetText()) -- the parchment text is untouched
     assert.are.equal(0, sb.frames[1].GreetingText.calls.addonSetText)
     assert.are.same({ "TOP", GossipFrame, "TOP", 20, -38 }, G.bannerFrame.point) -- the stone band
-    assert.are.equal(GossipFrame:GetFrameLevel() + WFJ.Render.BANNER_LIFT, G.bannerFrame:GetFrameLevel())
+    assert.are.equal(GossipFrame:GetFrameLevel() + WFI.Render.BANNER_LIFT, G.bannerFrame:GetFrameLevel())
     Stub.closeGossip()
     assert.is_false(G.banner:IsShown())
 
     GossipFrame.FriendshipStatusBar:Show()
     Stub.showGossip({ text = "Hello.", options = { "Plain." }, npc = NPC })
     assert.is_false(G.banner:IsShown())
-    local inline = WFJ.MARKER_INLINE_COLOR .. WFJ.MARKER.missing .. "|r\n"
+    local inline = WFI.MARKER_INLINE_COLOR .. WFI.MARKER.missing .. "|r\n"
     assert.are.equal(inline .. "Hello.", sb.frames[1].GreetingText:GetText())
     assertLayout()
     Stub.closeGossip()
     GossipFrame.FriendshipStatusBar:Hide()
     Stub.showGossip({ text = "Hello.", options = { "Plain." }, npc = NPC })
     assert.are.equal("Hello.", sb.frames[1].GreetingText:GetText())
-    assert.are.equal(WFJ.MARKER.missing, G.banner:GetText())
+    assert.are.equal(WFI.MARKER.missing, G.banner:GetText())
     assertLayout()
   end)
 end)

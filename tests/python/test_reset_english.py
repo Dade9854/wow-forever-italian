@@ -1,8 +1,8 @@
-"""`wfj.dev.reset_english`: a rebuild keeps the English a client recorded in game and nothing else."""
+"""`wfi.dev.reset_english`: a rebuild keeps the English a client recorded in game and nothing else."""
 
 import json
 
-from wfj.dev.reset_english import reset
+from wfi.dev.reset_english import reset
 
 
 def test_keeps_collector_lines_only(tmp_path):

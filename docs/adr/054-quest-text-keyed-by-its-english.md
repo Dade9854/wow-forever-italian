@@ -1,6 +1,6 @@
 # ADR-054: Quest text with no readable id is keyed by its English
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/cmd/import_english.py` (`run_wdb`, `_wdb_keyed_lines`, `_add_keyed`), `addon/WoWForeverJapanese/Main.lua` (`WFJ.IsQuestFieldEnglish`, `WFJ.ShippedGossipKey`), `UI/QuestFrame.lua` and `UI/QuestMap.lua` (`showField`, `completionLogKey`).
+- **Status:** Accepted. Implemented in `pipeline/wfi/cmd/import_english.py` (`run_wdb`, `_wdb_keyed_lines`, `_add_keyed`), `addon/WoWForeverItalian/Main.lua` (`WFI.IsQuestFieldEnglish`, `WFI.ShippedGossipKey`), `UI/QuestFrame.lua` and `UI/QuestMap.lua` (`showField`, `completionLogKey`).
 - **Date:** 2026-10-03
 - **Amends:** [ADR-020](020-quest-cache-harvest.md) decision 11 (conditional quest text was read and reported, never imported)
 
@@ -34,9 +34,9 @@ to a quest id, but that id is not readable where they show, or (for a variant) n
    collector, an earlier cache) keeps its line. A key whose existing line holds other English ends the run
    (`wdb: gossip hash K names two texts: …`), so a collision is never resolved silently.
 3. **The addon finds the line by its live text.**
-   - `WFJ.ShippedGossipKey(text)` (`Main.lua`) returns the first of `Collector.keys(text, player)` that has a
+   - `WFI.ShippedGossipKey(text)` (`Main.lua`) returns the first of `Collector.keys(text, player)` that has a
      shipped `gossip` row, or nil. It is memoized per text, because the tracker asks every frame.
-   - `WFJ.IsQuestFieldEnglish(id, field, text)` (`Main.lua`) is true when a fingerprint of the live text equals
+   - `WFI.IsQuestFieldEnglish(id, field, text)` (`Main.lua`) is true when a fingerprint of the live text equals
      the quest entry's `h1` or `h1f` for that field.
    - In the quest window (`UI/QuestFrame.lua`) and the quest map's details pane and popup (`UI/QuestMap.lua`,
      `showField`), a description is shown from its keyed row only when the live text is not the quest's own

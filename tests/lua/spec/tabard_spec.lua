@@ -39,18 +39,18 @@ local function install()
 end
 
 describe("the tabard designer on Forever", function()
-  local WFJ
+  local WFI
 
   before_each(function()
-    WFJ = G.load(FILES, UI)
+    WFI = G.load(FILES, UI)
     T.guildMaster = true
   end)
   after_each(function() G.clear(NAMES) end)
 
   it("labels and the greeting translate; the greeting follows its writer; the NPC's name stays English", function()
     local frame = install()
-    WFJ.Labels.forbidNames(WFJ.Tabard.NEVER_TOUCH)
-    assert.is_true(WFJ.Tabard.init())
+    WFI.Labels.forbidNames(WFI.Tabard.NEVER_TOUCH)
+    assert.is_true(WFI.Tabard.init())
     frame:Show()
     assert.are.equal("アイコン", _G.TabardFrameCustomization1Text:GetText())
     assert.are.equal("縁取りの色", _G.TabardFrameCustomization4Text:GetText())
@@ -58,13 +58,13 @@ describe("the tabard designer on Forever", function()
     assert.are.equal("承諾", _G.TabardFrameAcceptButton:GetText())
     assert.are.equal(UI.TABARDVENDORGREETING[2], _G.TabardFrameGreetingText:GetText())
     assert.are.equal("Border", _G.TabardFrameNameText:GetText())
-    assert.is_true(G.unrecorded(WFJ, _G.TabardFrameNameText))
+    assert.is_true(G.unrecorded(WFI, _G.TabardFrameNameText))
     T.guildMaster = false
     _G.TabardFrame_UpdateButtons()
     assert.are.equal(UI.TABARDVENDORNOGUILDGREETING[2], _G.TabardFrameGreetingText:GetText())
-    G.alt(WFJ, true)
+    G.alt(WFI, true)
     assert.are.equal(UI.TABARDVENDORNOGUILDGREETING[1], _G.TabardFrameGreetingText:GetText())
-    G.alt(WFJ, false)
+    G.alt(WFI, false)
     frame:Hide()
     assert.are.equal("Accept", _G.TabardFrameAcceptButton:GetText())
   end)
@@ -74,14 +74,14 @@ describe("the tabard designer on Forever", function()
     _G.TabardFrameCostLabel = 1
     _G.TabardFrameCustomization2Text = "x"
     _G.TabardFrame_UpdateButtons = "y"
-    assert.has_no.errors(function() assert.is_true(WFJ.Tabard.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Tabard.init()) end)
     assert.has_no.errors(function() frame:Show() end)
     assert.are.equal("アイコン", _G.TabardFrameCustomization1Text:GetText())
-    assert.is_false(WFJ.Tabard.init())
+    assert.is_false(WFI.Tabard.init())
   end)
 
   it("no TabardFrame: init is false and nothing is touched", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.Tabard.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Tabard.init()) end)
     assert.is_nil(Stub.hooks["TabardFrame_UpdateButtons"])
   end)
 end)

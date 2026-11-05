@@ -8,8 +8,8 @@ from pathlib import Path
 
 from test_ui_coverage import _exclusions
 
-from wfj.io import wago
-from wfj.io.jsonl_store import Store
+from wfi.io import wago
+from wfi.io.jsonl_store import Store
 
 # a reason that proves the line never shows, or names what shows it instead: a Forever UI file and line, a client
 # table row count or absence, a spell id checked against SpellName, a disposition file, a key sharing the English,
@@ -17,7 +17,7 @@ from wfj.io.jsonl_store import Store
 _PROOF = re.compile(
     r"\.(?:lua|xml|toc):\d+|\d+ rows on \d|absent from the [\d.]+ archive|not in SpellName|forever_addon_dispositions\.txt"
     r"|forever_addons\.txt|same English as [A-Z0-9_]+|no words (?:of its own|outside the link)|^a name:"
-    r"|never displayed|wfj\.dev\.ui_reach"
+    r"|never displayed|wfi\.dev\.ui_reach"
 )
 
 GROUPS = {

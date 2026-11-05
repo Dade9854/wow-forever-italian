@@ -39,15 +39,15 @@ local function install(data)
 end
 
 describe("the world map legend on Forever", function()
-  local WFJ
+  local WFI
 
-  before_each(function() WFJ = G.load(FILES, UI) end)
+  before_each(function() WFI = G.load(FILES, UI) end)
   after_each(function() G.clear({ "QuestMapFrame" }) end)
 
   it("heading, categories, entries and their tooltips translate; a word outside the legend's keys does not",
     function()
       local panel, child = install({ { title = "Quests", "Turn In", "Delve" }, { title = "Movement", "Flightpoint" } })
-      assert.is_true(WFJ.MapLegend.init())
+      assert.is_true(WFI.MapLegend.init())
       panel:Show()
       assert.are.equal("マップ凡例", panel.TitleText:GetText())
       local quests, movement = child.kids[1], child.kids[2]
@@ -55,16 +55,16 @@ describe("the world map legend on Forever", function()
       assert.are.equal("移動", movement.TitleText:GetText())
       assert.are.equal("報告", quests.kids[1]:GetText())
       assert.are.equal("Delve", quests.kids[2]:GetText())
-      assert.is_true(G.unrecorded(WFJ, quests.kids[2]))
+      assert.is_true(G.unrecorded(WFI, quests.kids[2]))
       assert.are.equal("フライトポイント", movement.kids[1]:GetText())
       G.tooltip(quests.kids[1], { "Turn In", UI.MAP_LEGEND_TURNIN_TOOLTIP[1] })
       assert.are.equal("報告", G.line(1))
       assert.are.equal("報告できるクエスト", G.line(2))
       G.tooltip(_G.QuestMapFrame.MapLegendTab, { "Map Legend" })
       assert.are.equal("マップ凡例", G.line(1))
-      G.alt(WFJ, true)
+      G.alt(WFI, true)
       assert.are.equal("Quests", quests.TitleText:GetText())
-      G.alt(WFJ, false)
+      G.alt(WFI, false)
       panel:Hide()
       assert.are.equal("Turn In", quests.kids[1]:GetText())
     end)
@@ -75,19 +75,19 @@ describe("the world map legend on Forever", function()
     child.kids[1].kids[2] = "x"
     panel.TitleText = false
     _G.QuestMapFrame.MapLegendTab = 1
-    assert.has_no.errors(function() assert.is_true(WFJ.MapLegend.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.MapLegend.init()) end)
     assert.has_no.errors(function() panel:Show() end)
     assert.are.equal("報告", child.kids[1].kids[1]:GetText())
     panel.ScrollFrame = 7
-    assert.has_no.errors(function() assert.are.equal(0, WFJ.MapLegend.onShow()) end)
-    assert.is_false(WFJ.MapLegend.init())
+    assert.has_no.errors(function() assert.are.equal(0, WFI.MapLegend.onShow()) end)
+    assert.is_false(WFI.MapLegend.init())
   end)
 
   it("no QuestMapFrame, or a wrong-typed one: init is false", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.MapLegend.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.MapLegend.init()) end)
     _G.QuestMapFrame = "x"
-    assert.has_no.errors(function() assert.is_false(WFJ.MapLegend.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.MapLegend.init()) end)
     _G.QuestMapFrame = { MapLegend = 3 }
-    assert.has_no.errors(function() assert.is_false(WFJ.MapLegend.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.MapLegend.init()) end)
   end)
 end)

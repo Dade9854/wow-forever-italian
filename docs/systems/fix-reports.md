@@ -13,9 +13,9 @@ sequenceDiagram
   participant R as UI/Render
   participant L as Core/RecentLines
   participant W as UI/FixWindow
-  participant P as Core/Reports (WFJ_DB.reports)
+  participant P as Core/Reports (WFI_DB.reports)
   participant G as GitHub issue
-  participant C as wfj report
+  participant C as wfi report
   R->>L: note(kind, id, surface) after each Japanese apply
   W->>L: list(group), the Translations page
   W->>P: save(fix) on Save
@@ -31,17 +31,17 @@ sequenceDiagram
 | Way in | Left-click / action | Right-click |
 |---|---|---|
 | Minimap button (`UI/MinimapButton`) | opens the fix window | the menu |
-| Blizzard's addon dropdown on the minimap (TOC `AddonCompartmentFunc` → `WFJ_OnAddonCompartmentClick` in `Main.lua`) | opens the fix window | the menu |
+| Blizzard's addon dropdown on the minimap (TOC `AddonCompartmentFunc` → `WFI_OnAddonCompartmentClick` in `Main.lua`) | opens the fix window | the menu |
 | About page: **Report a line** button (`Options` row `aboutFix`, above the bug and idea row) | opens the fix window | none |
-| `/wfj fix` | opens the fix window | none |
+| `/wfi fix` | opens the fix window | none |
 
 The menu (a small frame of the addon's own, not Blizzard's context menu: opening that from this button can fail an engine check in `Menu.lua` and close the game) holds, as `MinimapButton.items()` lists them: **Translation on** (a checkbox bound to the `enabled` setting, the same state as the settings checkbox), **Report a line**, **Report a bug or idea** (opens the [report window](#bug-and-idea-reports)), **Send collected English (N)** (opens the English Collector's send window; shown only while N, the collector's unsent count, is at least 1 and its file is not read-only, [Collector](collector.md)), **Settings** (the addon's settings), **Hide this button** (sets `minimapButton` off). The entries and the button's tooltip ("左クリック：翻訳を報告 ・ 右クリック：メニュー") are in one language: Japanese, or English ("Left-click: report a line · Right-click: menu") when translation is off or the reveal key is held as the menu or tooltip opens; menu entries are drawn in the bundled font through `OptionsWidgets.setText`, like the settings pages.
 
-The button is built on the client's `MiniMapButtonTemplate`, placed on the minimap rim at an angle (degrees, 0 = right, counter-clockwise; default 225, the lower left). Dragging moves it around the rim; the angle is saved to `WFJ_DB.minimap.angle` on drop and restored on load (absent → the default). The `minimapButton` setting (default on; main settings page, `/wfj minimapButton on|off`) shows or hides it. The rim position assumes a round minimap (camelot's minimap shape is unverified). The icon is the addon's 字 medallion (`Media/icon.tga`, the TOC's `IconTexture`), 20 px at `TOPLEFT` 5, -5 inside the tracking-border ring.
+The button is built on the client's `MiniMapButtonTemplate`, placed on the minimap rim at an angle (degrees, 0 = right, counter-clockwise; default 225, the lower left). Dragging moves it around the rim; the angle is saved to `WFI_DB.minimap.angle` on drop and restored on load (absent → the default). The `minimapButton` setting (default on; main settings page, `/wfi minimapButton on|off`) shows or hides it. The rim position assumes a round minimap (camelot's minimap shape is unverified). The icon is the addon's 字 medallion (`Media/icon.tga`, the TOC's `IconTexture`), 20 px at `TOPLEFT` 5, -5 inside the tracking-border ring.
 
 ### The fix window
 
-`UI/FixWindow` (`WFJFixWindow`) is built on the client's own window frame, `ButtonFrameTemplate` with the portrait hidden and the title set by `SetTitle`: 600 × 580, movable, Esc closes it, strata `FULLSCREEN_DIALOG` with `SetToplevel`, above the client's own overlays. Three tabs from the client's `TabSystemTemplate` (`TabSystemTopButtonTemplate` buttons) sit in the strip above the inset: **翻訳** (Translations) · **送信待ち（n）** (Pending (n)) · **報告を送る** (Send report); a row opens the edit panel, which keeps its tab selected. Every widget is a Forever template, with no hand-drawn frames:
+`UI/FixWindow` (`WFIFixWindow`) is built on the client's own window frame, `ButtonFrameTemplate` with the portrait hidden and the title set by `SetTitle`: 600 × 580, movable, Esc closes it, strata `FULLSCREEN_DIALOG` with `SetToplevel`, above the client's own overlays. Three tabs from the client's `TabSystemTemplate` (`TabSystemTopButtonTemplate` buttons) sit in the strip above the inset: **翻訳** (Translations) · **送信待ち（n）** (Pending (n)) · **報告を送る** (Send report); a row opens the edit panel, which keeps its tab selected. Every widget is a Forever template, with no hand-drawn frames:
 
 | Widget | Template (`UI/OptionsWidgets` / `UI/FixWindow`) |
 |---|---|
@@ -97,22 +97,22 @@ What each `Render.show` caller records (the list `recent_lines_spec.lua` pins; a
 
 ### Pending fixes
 
-`Core/Reports` keeps the pending fixes in `WFJ_DB.reports`: `{ type, id, field, ja_hash, reason, note?, ja? }`. A fix holds no time, and never the player's name: `Reports.save(fix, replace, name)` takes the character's name from `UI/FixWindow` and stores the `{name}` placeholder wherever the note or the Japanese held it, in any letter case (`Reports.withoutName`, whole words only). A `t` field that an earlier version saved is dropped on load. The key is created only with the first fix; a save without it (older versions, or no fix yet) loads as empty, and an entry a hand edit broke is dropped on load. At most `CAP` = 25; one fix per address. No English is ever stored. `Core/ReportText.serialize(addonVersion, build, fixes)` writes the report below (`build` from `GetBuildInfo`, `version.build`).
+`Core/Reports` keeps the pending fixes in `WFI_DB.reports`: `{ type, id, field, ja_hash, reason, note?, ja? }`. A fix holds no time, and never the player's name: `Reports.save(fix, replace, name)` takes the character's name from `UI/FixWindow` and stores the `{name}` placeholder wherever the note or the Japanese held it, in any letter case (`Reports.withoutName`, whole words only). A `t` field that an earlier version saved is dropped on load. The key is created only with the first fix; a save without it (older versions, or no fix yet) loads as empty, and an entry a hand edit broke is dropped on load. At most `CAP` = 25; one fix per address. No English is ever stored. `Core/ReportText.serialize(addonVersion, build, fixes)` writes the report below (`build` from `GetBuildInfo`, `version.build`).
 
 ### SavedVariables added
 
 | Key | Written when | Absent |
 |---|---|---|
-| `WFJ_DB.reports` | the first fix is saved | empty list |
-| `WFJ_DB.minimap.angle` | the player drops the button after a drag | the default angle (225) |
+| `WFI_DB.reports` | the first fix is saved | empty list |
+| `WFI_DB.minimap.angle` | the player drops the button after a drag | the default angle (225) |
 | setting `minimapButton` | through the settings registry | on |
 
 ## Report text, version 1
 
-The addon writes the report; `pipeline/wfj/core/fix_report.py` reads it (`wfj report …`). The two must agree byte for byte: `vectors/report_vectors.{jsonl,lua}` (generated by `make vectors`) holds the shared cases, and both test suites run them.
+The addon writes the report; `pipeline/wfi/core/fix_report.py` reads it (`wfi report …`). The two must agree byte for byte: `vectors/report_vectors.{jsonl,lua}` (generated by `make vectors`) holds the shared cases, and both test suites run them.
 
 ```
-WFJ-REPORT 1
+WFI-REPORT 1
 addon <version> client <build>
 fix <type> <id> <field> <ja_hash> <reason>
 note <escaped text>
@@ -122,7 +122,7 @@ end <count>
 
 | Line | Rule |
 |---|---|
-| `WFJ-REPORT 1` | First line of the block. Any other version is refused. |
+| `WFI-REPORT 1` | First line of the block. Any other version is refused. |
 | `addon … client …` | The addon's TOC version and the client build (`GetBuildInfo`), each one token of `[0-9A-Za-z._@?+-]`, at most 40 characters (the addon replaces anything else with `_`); `?` when unknown. They are echoed in the issue comment, so nothing else is accepted. |
 | `fix` | One per fix, in the order the player saved them, at most 25 in a report (the number the addon keeps; the parser refuses more). Fields are separated by one space. |
 | `note` | Optional, at most one per fix, right after its `fix` line. At most 200 bytes before escaping; never a newline. |
@@ -141,26 +141,26 @@ Fields of a `fix` line:
 
 Escaping (in `note` and `ja` only): `\` → `\\`, newline → `\n`, carriage return → `\r`, `|` → `\x7c`. No other escape exists; any other `\` sequence is an error. The report therefore never contains `|` (a WoW escape character) and never a raw newline or carriage return inside a field: shipped lines hold CRs, and a browser turns a raw one into a line break. A note holds neither.
 
-Reading rules: the parser takes the one block between `WFJ-REPORT` and `end` anywhere in the text (an issue form wraps it in a code fence and headings), ignores leading whitespace on each line, trailing whitespace on structural lines (a `note` / `ja` value keeps its own) and blank lines inside the block, and refuses: no header, a second header, an unknown version, a missing or wrong `end` count, an unknown type / field / reason, a malformed id or hash, a `note` / `ja` line with no `fix` before it or repeated for one fix, an over-long field, a bad escape, and the same `(type, id, field)` twice.
+Reading rules: the parser takes the one block between `WFI-REPORT` and `end` anywhere in the text (an issue form wraps it in a code fence and headings), ignores leading whitespace on each line, trailing whitespace on structural lines (a `note` / `ja` value keeps its own) and blank lines inside the block, and refuses: no header, a second header, an unknown version, a missing or wrong `end` count, an unknown type / field / reason, a malformed id or hash, a `note` / `ja` line with no `fix` before it or repeated for one fix, an over-long field, a bad escape, and the same `(type, id, field)` twice.
 
 ## GitHub
 
 | File | What it does |
 |---|---|
 | `.github/ISSUE_TEMPLATE/translation-report.yml` | Issue form, label `translation-report`: **Report** (textarea, required), **Credit me as** (optional; empty → the GitHub name), **Permission** (required checkbox: the Japanese may ship under GPL-2.0-or-later). |
-| `.github/workflows/report-check.yml` | On an issue opened / edited that carries `translation-report`: writes the body to a file (through an env var, never the script text), runs `python -m wfj report check --body-file …`, writes the summary as its one comment on the issue (an edit of the issue rewrites that comment), and labels `report-ok` (exit 0) or `report-broken` (exit 1), removing the other; any other exit (3: an internal error) or an empty summary fails the job with no comment or label. One run per issue at a time (a newer edit cancels an older run), a 5-minute timeout, and checkout keeps no token (`persist-credentials: false`). Every value the player wrote is echoed inside a code span (backticks removed, `@` full-width), so the comment renders no link, image or mention of theirs. The workflow's token is read-only; the `check` job alone gets `contents: read`, `issues: write` (the one exception to ADR-046's write rule, `test_workflows.py`); actions pinned to commits. |
+| `.github/workflows/report-check.yml` | On an issue opened / edited that carries `translation-report`: writes the body to a file (through an env var, never the script text), runs `python -m wfi report check --body-file …`, writes the summary as its one comment on the issue (an edit of the issue rewrites that comment), and labels `report-ok` (exit 0) or `report-broken` (exit 1), removing the other; any other exit (3: an internal error) or an empty summary fails the job with no comment or label. One run per issue at a time (a newer edit cancels an older run), a 5-minute timeout, and checkout keeps no token (`persist-credentials: false`). Every value the player wrote is echoed inside a code span (backticks removed, `@` full-width), so the comment renders no link, image or mention of theirs. The workflow's token is read-only; the `check` job alone gets `contents: read`, `issues: write` (the one exception to ADR-046's write rule, `test_workflows.py`); actions pinned to commits. |
 
 The check only reads the paste: whether it parses, and for each fix whether the line is ready, changed since the player's build, no longer shipped, or not in the data. It never judges a translation and never writes data.
 
 ## Pipeline
 
-`pipeline/wfj/core/fix_report.py` (pure: `parse`, `render`, `resolve`) and `pipeline/wfj/cmd/fix_report.py` (the CLI verb `wfj report`). `core/report.py` is unrelated: it counts the store's lines per type, field, status and reason for `wfj check` and `wfj stats`.
+`pipeline/wfi/core/fix_report.py` (pure: `parse`, `render`, `resolve`) and `pipeline/wfi/cmd/fix_report.py` (the CLI verb `wfi report`). `core/report.py` is unrelated: it counts the store's lines per type, field, status and reason for `wfi check` and `wfi stats`.
 
 | Command | Make target | Reads | Writes |
 |---|---|---|---|
-| `wfj report check --body-file F` | (the workflow) | an issue body, `data/` | stdout: the markdown summary; exit 0 reads / 1 does not / 3 internal error |
-| `wfj report intake --issue N` (or `--file F --number N`) `[--credit NAME] [--force]` | `make report-intake ISSUE=N [REPORT=<saved body>] [CREDIT=…] [FORCE=1]` | the issue via `gh issue view N --json body,author`, `data/`, `data/english/` | the issue's working folder, `batches/reports/issue-N/` at the repository root (git ignores `batches/`): `report.txt` (canonical text), `meta.json` (`issue`, `credit`, `addon`, `client`), `triage.jsonl`, `skipped.jsonl`. Refuses an existing triage without `--force`. |
-| `wfj report apply --issue N --model M [--date D] [--by WHO] [--dry-run]` | `make report-apply ISSUE=N MODEL=M [DATE=…]` | `triage.jsonl`, `skipped.jsonl`, `decisions.jsonl`, `meta.json` | `data/` lines, `data/reading/` records, `ATTRIBUTION.md` Correctors, `reply.md`; then the Make target runs `check generate voice-generate validate coverage` |
+| `wfi report check --body-file F` | (the workflow) | an issue body, `data/` | stdout: the markdown summary; exit 0 reads / 1 does not / 3 internal error |
+| `wfi report intake --issue N` (or `--file F --number N`) `[--credit NAME] [--force]` | `make report-intake ISSUE=N [REPORT=<saved body>] [CREDIT=…] [FORCE=1]` | the issue via `gh issue view N --json body,author`, `data/`, `data/english/` | the issue's working folder, `batches/reports/issue-N/` at the repository root (git ignores `batches/`): `report.txt` (canonical text), `meta.json` (`issue`, `credit`, `addon`, `client`), `triage.jsonl`, `skipped.jsonl`. Refuses an existing triage without `--force`. |
+| `wfi report apply --issue N --model M [--date D] [--by WHO] [--dry-run]` | `make report-apply ISSUE=N MODEL=M [DATE=…]` | `triage.jsonl`, `skipped.jsonl`, `decisions.jsonl`, `meta.json` | `data/` lines, `data/reading/` records, `ATTRIBUTION.md` Correctors, `reply.md`; then the Make target runs `check generate voice-generate validate coverage` |
 
 ### Resolving a fix
 
@@ -196,13 +196,13 @@ Apply is idempotent: a row whose line already ships its `ja` with `report` = N c
 
 ## Bug and idea reports
 
-Everything that is not a wrong line goes through a second, smaller window: `UI/ReportWindow.lua` (`WFJReportWindow`, Esc closes it), built on `ButtonFrameTemplate` through `W.toolWindow`, the frame the fix window and the collector send window share. It sends a bug, with the addon's own Lua errors ([Diagnostics log](diagnostics.md#the-addons-own-lua-errors), [ADR-057](../adr/057-catching-the-addons-own-lua-errors.md)), or an idea. Like the fix window it shows one language at a time from `UI/OptionsText` (`report.*` keys), and it shows the addon's own errors, never game text.
+Everything that is not a wrong line goes through a second, smaller window: `UI/ReportWindow.lua` (`WFIReportWindow`, Esc closes it), built on `ButtonFrameTemplate` through `W.toolWindow`, the frame the fix window and the collector send window share. It sends a bug, with the addon's own Lua errors ([Diagnostics log](diagnostics.md#the-addons-own-lua-errors), [ADR-057](../adr/057-catching-the-addons-own-lua-errors.md)), or an idea. Like the fix window it shows one language at a time from `UI/OptionsText` (`report.*` keys), and it shows the addon's own errors, never game text.
 
 ### Ways in
 
 | Way in | Action |
 |---|---|
-| `/wfj bug` | opens the window on Bug |
+| `/wfi bug` | opens the window on Bug |
 | Minimap button menu (right-click) and the addon dropdown's menu: **Report a bug or idea** | opens the window on Bug |
 | About page: **Report a bug or idea** button (`Options` row `aboutBug`, under the Report a line row) | opens the window on Bug |
 
@@ -221,7 +221,7 @@ A radio choice at the top picks **Bug** or **Idea**. The window always opens on 
 
 `Core/BugReport.lua` (pure) builds it. A bug link opens the bug-report form with three fields filled through the URL (GitHub issue forms take a field's value from a query parameter named by the field's id):
 
-`https://github.com/zyaga/wow-forever-japanese/issues/new?template=bug-report.yml&client-build=…&addon-version=…&errors=…`
+`https://github.com/zyaga/wow-forever-italian/issues/new?template=bug-report.yml&client-build=…&addon-version=…&errors=…`
 
 - `client-build`: the build the login screen shows (`GetBuildInfo`, version and build number, as `1.60.1.70170`).
 - `addon-version`: the addon's version.
@@ -241,17 +241,17 @@ Both forms need a GitHub account. No workflow checks bug or idea issues; the mai
 
 ## Key files
 
-- `addon/WoWForeverJapanese/Core/RecentLines.lua` · `Core/Reports.lua` · `Core/ReportText.lua`: the log, the pending fixes, the serializer (pure, no frames)
-- `addon/WoWForeverJapanese/UI/FixWindow.lua` · `UI/MinimapButton.lua`: the window; the button, menu and addon-dropdown handlers
-- `addon/WoWForeverJapanese/UI/OptionsWidgets.lua`: `W.scrollList`, `W.scrollText`, `W.copyBox`, `W.button`, and the one-language copy (`W.pick`, `W.relabel`)
-- `addon/WoWForeverJapanese/UI/Render.lua`: `noteRecent` in `sync`
-- `addon/WoWForeverJapanese/Core/ErrorLog.lua` · `Core/BugReport.lua` · `UI/ReportWindow.lua`: the addon's own Lua errors, the bug and idea links, the report window
-- `pipeline/wfj/core/fix_report.py` · `pipeline/wfj/cmd/fix_report.py` · `pipeline/wfj/dev/gen_report_vectors.py`
+- `addon/WoWForeverItalian/Core/RecentLines.lua` · `Core/Reports.lua` · `Core/ReportText.lua`: the log, the pending fixes, the serializer (pure, no frames)
+- `addon/WoWForeverItalian/UI/FixWindow.lua` · `UI/MinimapButton.lua`: the window; the button, menu and addon-dropdown handlers
+- `addon/WoWForeverItalian/UI/OptionsWidgets.lua`: `W.scrollList`, `W.scrollText`, `W.copyBox`, `W.button`, and the one-language copy (`W.pick`, `W.relabel`)
+- `addon/WoWForeverItalian/UI/Render.lua`: `noteRecent` in `sync`
+- `addon/WoWForeverItalian/Core/ErrorLog.lua` · `Core/BugReport.lua` · `UI/ReportWindow.lua`: the addon's own Lua errors, the bug and idea links, the report window
+- `pipeline/wfi/core/fix_report.py` · `pipeline/wfi/cmd/fix_report.py` · `pipeline/wfi/dev/gen_report_vectors.py`
 - `vectors/report_vectors.{jsonl,lua}`: the shared cases
 
 ## Invariants
 
-- No English game text shown in the fix window, saved in `WFJ_DB.reports`, or written into a report ([principle 4](../architecture/principles.md#4-the-addon-never-ships-stored-english)).
+- No English game text shown in the fix window, saved in `WFI_DB.reports`, or written into a report ([principle 4](../architecture/principles.md#4-the-addon-never-ships-stored-english)).
 - A fix is addressed by store address + hash of the Japanese seen, never by position ([principle 5](../architecture/principles.md#5-every-translation-is-keyed-by-the-game)).
 - No machine output lands as a machine variant over a `human` or `correction` line; it is always a `correction` with `report` ([principle 6](../architecture/principles.md#6-provenance-on-every-line-people-over-machines)).
 - Nothing is applied until the maintainer takes the report; the merged PR is the logged decision.

@@ -5,11 +5,11 @@ import json
 
 import pytest
 
-from wfj.cmd.check import build_scopes, check_type
-from wfj.core.hashing import key
-from wfj.core.normalize import normalize_v1
-from wfj.dev import apply_review
-from wfj.io.jsonl_store import Store
+from wfi.cmd.check import build_scopes, check_type
+from wfi.core.hashing import key
+from wfi.core.normalize import normalize_v1
+from wfi.dev import apply_review
+from wfi.io.jsonl_store import Store
 
 OLD, NEW = "Look To The Stars", "Look to the Stars"
 WDB = "wdb@1.60.1.70009"

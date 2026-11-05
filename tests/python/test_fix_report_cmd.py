@@ -1,4 +1,4 @@
-"""`wfj report check|intake|apply` end to end on a small store: a fix report from the issue body to data/,
+"""`wfi report check|intake|apply` end to end on a small store: a fix report from the issue body to data/,
 readings, ATTRIBUTION.md and the reply; every refusal of a decisions file; a second run changes nothing."""
 
 import json
@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import fix_report as cmd
-from wfj.core import fix_report as F
-from wfj.core.hashing import key
-from wfj.core.normalize import normalize_v1
-from wfj.core.readings import ja_hash
-from wfj.dev.gen_attribution import with_correctors
-from wfj.io.jsonl_store import Store
+from wfi.cmd import fix_report as cmd
+from wfi.core import fix_report as F
+from wfi.core.hashing import key
+from wfi.core.normalize import normalize_v1
+from wfi.core.readings import ja_hash
+from wfi.dev.gen_attribution import with_correctors
+from wfi.io.jsonl_store import Store
 
 EN = "Look to the Stars"
 WDB = "wdb@1.60.1.70009"
@@ -333,10 +333,10 @@ def test_correctors_section_leaves_every_other_section_unchanged(root):
 
 
 def test_cli_registers_report(root):
-    from wfj.cli import VERBS
+    from wfi.cli import VERBS
 
     assert VERBS["report"][1] is cmd.run
-    assert Path(root / "Makefile").read_text().count("wfj report ") >= 2
+    assert Path(root / "Makefile").read_text().count("wfi report ") >= 2
 
 
 def test_which_lines_take_words():

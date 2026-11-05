@@ -1,4 +1,4 @@
-from wfj.dev.gen_attribution import (
+from wfi.dev.gen_attribution import (
     FOREVER_VO,
     LABELS,
     correctors_section,
@@ -24,7 +24,7 @@ def test_fixture_tags_are_all_in_committed_attribution(root):
 
 def test_every_translator_in_data_is_credited(root):
     """A hand-written line in data/, shipped or not, names its translator; the credits list every one. Run
-    `python -m wfj.dev.gen_attribution` when this fails."""
+    `python -m wfi.dev.gen_attribution` when this fails."""
     in_data = data_translators(root / "data")
     assert len(in_data) >= 50
     listed = set(listed_translators((root / "ATTRIBUTION.md").read_text(encoding="utf-8")))
@@ -87,7 +87,7 @@ def test_a_regeneration_never_drops_a_credit(root, tmp_path):
 
 
 def test_regeneration_keeps_the_correctors_section(root, tmp_path):
-    # `wfj report apply` writes the Correctors section from data/; regenerating the file keeps it, byte for
+    # `wfi report apply` writes the Correctors section from data/; regenerating the file keeps it, byte for
     # byte, before Lineage
     out = tmp_path / "ATTRIBUTION.md"
     args = ["--corpus", str(root / FIXTURE), "--out", str(out)]
@@ -104,7 +104,7 @@ def test_regeneration_keeps_the_correctors_section(root, tmp_path):
 
 def test_forever_vo_is_credited_exactly_while_its_lines_remain(root):
     """forever-vo's credit and license (ADR-055) stand in ATTRIBUTION.md exactly while some English line in
-    data/english/ comes from it. When this fails, run `python -m wfj.dev.gen_attribution`: it adds or drops the
+    data/english/ comes from it. When this fails, run `python -m wfi.dev.gen_attribution`: it adds or drops the
     credit to match the data."""
     text = (root / "ATTRIBUTION.md").read_text(encoding="utf-8")
     credited = "## forever-vo license" in text and "github.com/quinn-dougherty/forever-vo" in text

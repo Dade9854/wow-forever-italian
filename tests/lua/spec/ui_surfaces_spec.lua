@@ -43,44 +43,44 @@ local UI = {
 local ITEM_JA = "【使用】Hearthstoneの場所に戻ります。"
 
 describe("the ui area on its surfaces", function()
-  local WFJ, S, SS, tt, rows
+  local WFI, S, SS, tt, rows
 
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
   local function right(i) return _G["GameTooltipTextRight" .. i] end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    S, SS = WFJ.Settings, WFJ.SurfaceState
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI = H.loadChunks(FILES)
+    S, SS = WFI.Settings, WFI.SurfaceState
+    WFI.Compat.init(function(name) return _G[name] end)
     S.load(nil, 1, {})
     rows = {}
-    local function h1(text) return (WFJ.Hash.h32x2(WFJ.Normalize.v1(text))) end
+    local function h1(text) return (WFI.Hash.h32x2(WFI.Normalize.v1(text))) end
     for key, pair in pairs(UI) do
       rows[key] = { pair[2], h1(pair[1]), "." }
       if not key:find(":") then _G[key] = pair[1] end
     end
     Stub.subclasses["2:7"] = "One-Handed Swords" -- what the API returns; never consulted
     -- as Main.lua does: globals by name; an item subclass has no string the tooltip uses (fingerprint path)
-    WFJ.UIIndex = WFJ.UIStrings.build({ rows = rows, hash = h1, english = function(key)
+    WFI.UIIndex = WFI.UIStrings.build({ rows = rows, hash = h1, english = function(key)
       if key:find("^ItemSubClass:") then return nil end
       return _G[key]
     end })
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id)
         if kind == "ui" then local r = rows[id]; return r and { ja = r[1], status = r[3] } end
         if kind == "item.description" and id == 6948 then return { ja = ITEM_JA, status = "u" } end
         return nil
       end,
       marker = function(n) return S.get("marker." .. n) end,
-      align = WFJ.Align.check,
-      fill = function(ja, args) return WFJ.UIIndex:fill(ja, args) end,
+      align = WFI.Align.check,
+      fill = function(ja, args) return WFI.UIIndex:fill(ja, args) end,
     }))
-    WFJ.Tooltip.init(); WFJ.QuestFrame.init(); WFJ.GameMenu.init()
+    WFI.Tooltip.init(); WFI.QuestFrame.init(); WFI.GameMenu.init()
     tt = _G.GameTooltip
   end)
 
@@ -105,8 +105,8 @@ describe("the ui area on its surfaces", function()
     assert.are.equal("耐久度 20 / 20", left(7):GetText())
     assert.are.equal("必要レベル 5", left(8):GetText())
     assert.are.equal("売値: 12c", left(9):GetText())
-    assert.are.equal(WFJ.Font.PATH, (left(2):GetFont()))
-    assert.are.equal(WFJ.Font.PATH, (right(3):GetFont()))
+    assert.are.equal(WFI.Font.PATH, (left(2):GetFont()))
+    assert.are.equal(WFI.Font.PATH, (right(3):GetFont()))
     assert.are.equal(2, tt.calls.Show) -- one refit for the hover (two Shows)
   end)
 
@@ -121,7 +121,7 @@ describe("the ui area on its surfaces", function()
   end)
 
   it("a spell tooltip's cost / range / cast lines translate; the description line is left alone", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     Stub.spellDescriptions[133] = "Hurls a fiery ball that causes 14 to 22 Fire damage."
     Stub.setSpellTooltip(tt, 133, { "Fireball", { "30 Mana", "35 yd range" }, "1.5 sec cast",
       "Hurls a fiery ball that causes 14 to 22 Fire damage." })
@@ -156,9 +156,9 @@ describe("the ui area on its surfaces", function()
       assert.are.equal("装備時にソウルバウンド", _G.ItemRefTooltipTextLeft2:GetText())
       -- the client shows a quest link on the same frame: no OnTooltipSetItem, no OnHide
       ref:writeLines({ "The Balance of Nature", "Kill 7 Young Nightsabers.", "Rewards" })
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Kill 7 Young Nightsabers.", _G.ItemRefTooltipTextLeft2:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("Kill 7 Young Nightsabers.", _G.ItemRefTooltipTextLeft2:GetText())
       assert.are.equal("Rewards", _G.ItemRefTooltipTextLeft3:GetText())
       assert.are.equal(0, SS.count("tooltip.ItemRefTooltip"))
@@ -189,11 +189,11 @@ describe("the ui area on its surfaces", function()
       "+1 Stamina" })
     local use =
       "Use: Returns you to Goldshire. Speak to an Innkeeper in a different place to change your home location."
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Binds when equipped", left(2):GetText())
     assert.are.equal("Fonts\\FRIZQT__.TTF", (left(2):GetFont()))
     assert.are.equal(use, left(3):GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("装備時にソウルバウンド", left(2):GetText())
 
     S.set("area.interface", false)
@@ -221,14 +221,14 @@ describe("the ui area on its surfaces", function()
       assert.are.equal("以下の報酬から1つ選択できます:", QuestInfoRewardsFrame.ItemChooseText:GetText())
       assert.are.equal("受注", QuestFrameAcceptButton:GetText())
       assert.are.equal("辞退", QuestFrameDeclineButton:GetText())
-      assert.are.equal(WFJ.Font.PATH, (QuestFrameAcceptButton:GetFontString():GetFont()))
+      assert.are.equal(WFI.Font.PATH, (QuestFrameAcceptButton:GetFontString():GetFont()))
       assert.are.equal("Learn Spell: (Complete)", QuestInfoSpellObjectiveLearnLabel:GetText())
       assert.are.equal("推奨人数 [3]", QuestInfoGroupSize:GetText()) -- a template label gets its live value
       assert.are.equal("経験値:", QuestInfoRewardsFrame.XPFrame.ReceiveText:GetText())
       assert.is_nil(SS.get("questframe.detail", "ui.learnLabel"))
       -- a reward item's data arrives: the client redraws the rewards in English (QuestInfo_ShowRewards)
       QuestInfoRewardsFrame.ItemChooseText:SetText(_G.REWARD_CHOICES)
-      WFJ.QuestFrame.onShowRewards()
+      WFI.QuestFrame.onShowRewards()
       assert.are.equal("以下の報酬から1つ選択できます:", QuestInfoRewardsFrame.ItemChooseText:GetText())
 
       Stub.showProgress()
@@ -238,9 +238,9 @@ describe("the ui area on its surfaces", function()
       Stub.showReward()
       assert.are.equal("クエスト完了", QuestFrameCompleteQuestButton:GetText())
 
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Complete Quest", QuestFrameCompleteQuestButton:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       QuestFrame:Hide()
       assert.are.equal("Complete Quest", QuestFrameCompleteQuestButton:GetText())
       assert.are.equal(0, SS.count("questframe.reward"))
@@ -263,9 +263,9 @@ describe("the ui area on its surfaces", function()
     local b = QuestFrameAcceptButton
     for _, state in ipairs({ "OnEnter", "OnLeave", "OnMouseDown", "OnMouseUp", "OnDisable", "OnEnable", "OnShow" }) do
       b:state(state)
-      assert.are.equal(WFJ.Font.PATH, (b:GetFontString():GetFont()), state)
+      assert.are.equal(WFI.Font.PATH, (b:GetFontString():GetFont()), state)
     end
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Accept", b:GetText())
     b:state("OnEnter")
     assert.are.equal("Fonts\\FRIZQT__.TTF", (b:GetFontString():GetFont())) -- English: the client's font stands
@@ -289,7 +289,7 @@ describe("the ui area on its surfaces", function()
     assert.are.equal("ゲームに戻る", byLabel[5]:GetText())
     assert.are.equal(6, SS.count("gamemenu"))
     byLabel[2]:state("OnEnter")
-    assert.are.equal(WFJ.Font.PATH, (byLabel[2]:GetFontString():GetFont()))
+    assert.are.equal(WFI.Font.PATH, (byLabel[2]:GetFontString():GetFont()))
 
     GameMenuFrame:Hide()
     assert.are.equal("Macros", byLabel[2]:GetText())
@@ -297,7 +297,7 @@ describe("the ui area on its surfaces", function()
   end)
 
   it("without an index nothing is shown and nothing breaks", function()
-    WFJ.UIIndex = nil
+    WFI.UIIndex = nil
     Stub.setItemTooltip(tt, "|Hitem:2488:0:0:0|h[Worn Shortsword]|h", SWORD)
     assert.are.equal("Binds when equipped", left(2):GetText())
     GameMenuFrame:Show()

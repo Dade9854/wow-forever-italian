@@ -141,11 +141,11 @@ local function installPvPRank()
 end
 
 describe("the PvP rank panel on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function labels()
@@ -164,15 +164,15 @@ describe("the PvP rank panel on Forever", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     installPvPRank()
     P.info = { rank = 1, points = 120, threshold = 500, seasonMaxRep = 1500, weekMax = 900, weekCap = 300 }
-    WFJ.Labels.forbidNames(WFJ.PvPRank.NEVER_TOUCH)
-    assert.is_true(WFJ.PvPRank.init())
+    WFI.Labels.forbidNames(WFI.PvPRank.NEVER_TOUCH)
+    assert.is_true(WFI.PvPRank.init())
   end)
 
   after_each(function()
@@ -234,15 +234,15 @@ describe("the PvP rank panel on Forever", function()
     assert.are.equal("Season ends in: 5 Days 3 Hours", _G.PVPRankFrame.SeasonTimerField:GetText())
     alt(false)
     _G.PVPRankFrame.SeasonTimerField.text = "Season ends in: 5 Days 2 Hours" -- the next tick's client write
-    WFJ.PvPRank.onTimer()
+    WFI.PvPRank.onTimer()
     assert.are.equal("シーズン終了まで: 5日2時間", _G.PVPRankFrame.SeasonTimerField:GetText())
     assert.are.equal(1, #Stub.hooks["PVPRankFrame:UpdateSeasonCountdownTimer"])
   end)
 
   it("hooks install once; a client without PVPRankFrame is skipped without error", function()
-    assert.is_false(WFJ.PvPRank.init())
+    assert.is_false(WFI.PvPRank.init())
     assert.are.equal(1, #Stub.hooks["PVPRankFrame:Update"])
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.PVPRankFrame = nil
     local bare = H.loadChunks(FILES)

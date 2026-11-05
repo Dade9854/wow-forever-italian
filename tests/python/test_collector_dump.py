@@ -2,10 +2,10 @@
 
 import pytest
 
-from wfj.core.hashing import key
-from wfj.core.normalize import normalize_v1
-from wfj.io.collector_dump import REASONS, read_dump
-from wfj.io.lua_reader import Table, parse_assignments
+from wfi.core.hashing import key
+from wfi.core.normalize import normalize_v1
+from wfi.io.collector_dump import REASONS, read_dump
+from wfi.io.lua_reader import Table, parse_assignments
 
 
 def lua_str(s: str) -> str:
@@ -32,8 +32,8 @@ def gossip(e, *, n=None, **kw) -> str:
 
 def dump(*entries: str, version: int = 1, builds: str = '"1.15.9.69722", -- [1]\n') -> str:
     return (
-        'WFJ_DB = {\n["schema"] = 1,\n}\n'
-        f"WFJ_Collector = {{\n[\"version\"] = {version},\n[\"builds\"] = {{\n{builds}}},\n"
+        'WFI_DB = {\n["schema"] = 1,\n}\n'
+        f"WFI_Collector = {{\n[\"version\"] = {version},\n[\"builds\"] = {{\n{builds}}},\n"
         f'["entries"] = {{\n{chr(10).join(entries)}\n}},\n}}\n'
     )
 
@@ -102,8 +102,8 @@ def test_each_rejection_reason_is_counted(line, reason):
 def test_wrong_version_or_no_dump_raise():
     with pytest.raises(ValueError, match="version"):
         read_dump(dump(entry("quest", 1, "title", "T"), version=2))
-    with pytest.raises(ValueError, match="no WFJ_Collector"):
-        read_dump("WFJ_DB = {\n}\nWFJ_Collector = nil\n")
+    with pytest.raises(ValueError, match="no WFI_Collector"):
+        read_dump("WFI_DB = {\n}\nWFI_Collector = nil\n")
 
 
 def test_bad_build_string_and_duplicate_keys_are_rejected():

@@ -35,7 +35,7 @@ Take only issues labelled `report-ok`. The workflow never judges a translation; 
 2. **Draft.** The drafting model writes `decisions.jsonl` in the working folder, one row per triage row: `use` (the player's Japanese, edited as little as needed), `rewrite` (a new line) or `keep` (with a reason a player would accept). Every changed quest, gossip, UI or plain-text book line also gets its `words` (the word list with readings and meanings, as in [Translation batches](translation-batches.md#readings-for-a-batch)). Check with the dry run until it prints no problem:
 
    ```bash
-   cd pipeline && ../.venv/bin/python -m wfj report apply --issue N --model <model id> --dry-run
+   cd pipeline && ../.venv/bin/python -m wfi report apply --issue N --model <model id> --dry-run
    ```
 3. **Apply.** `make report-apply ISSUE=N MODEL=<model id>` (`DATE=YYYY-MM-DD` to pin the date)
    - Checks every decision first and writes nothing if one fails; refuses if a changed line would not ship under the pipeline's status rules (`check_type`: Japanese, names kept, numbers, tokens). `translate_lint` is not run; the drafting pass follows the style guide itself.

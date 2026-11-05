@@ -47,8 +47,8 @@ C.suite(getfenv(1), {
   file = "UI/CurrencyTransfer.lua", root = "CurrencyTransferMenu", ui = UI, build = build, globals = GLOBALS,
   cases = {
     { "the title keeps the currency name; the labels and the log's title and empty message are Japanese",
-      function(menu, WFJ)
-        C.args(WFJ, UI, ARGS)
+      function(menu, WFI)
+        C.args(WFI, UI, ARGS)
         menu:SetTitle(en("CURRENCY_TRANSFER_MENU_TITLE"):format("Honor")) -- RefreshMenuTitle (lua:240–242)
         menu:Show()
         assert.are.equal("通貨の移動 - Honor", menu.TitleContainer.TitleText:GetText())
@@ -59,13 +59,13 @@ C.suite(getfenv(1), {
         local log = _G.CurrencyTransferLog
         assert.are.equal("移動ログ", log.TitleContainer.TitleText:GetText())
         assert.are.equal("移動の記録はありません。", log.EmptyLogMessage:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Transfer Currency - Honor", menu.TitleContainer.TitleText:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
       end },
     { "each balance preview follows its SetCharacterName, the name kept; its cost display owns a tooltip",
-      function(menu, WFJ)
-        C.args(WFJ, UI, ARGS)
+      function(menu, WFI)
+        C.args(WFI, UI, ARGS)
         local p = menu.Content.PlayerBalancePreview
         p:SetCharacterName("Arthas")
         assert.are.equal("Arthasの新しい残高", p.Label:GetText())
@@ -75,11 +75,11 @@ C.suite(getfenv(1), {
         assert.are.equal("移動で5の通貨が失われます。", _G.GameTooltipTextLeft1:GetText())
       end },
   },
-  name = function(menu, WFJ)
+  name = function(menu, WFI)
     menu:Show()
     local name = menu.Content.SourceSelector.PlayerName
     assert.are.equal("To Max", name:GetText())
-    assert.is_true(C.unrecorded(WFJ, name))
+    assert.is_true(C.unrecorded(WFI, name))
     assert.are.equal("120", menu.Content.PlayerBalancePreview.BalanceInfo.Amount:GetText())
   end,
   wrong = function(menu)
@@ -96,7 +96,7 @@ describe("the currency transfer destination line", function()
   after_each(function() C.teardown({ "CurrencyTransferMenu" }) end)
 
   it("follows RefreshPlayerName; the name is kept", function()
-    local WFJ = C.fresh({ "UI/CurrencyTransfer.lua" }, UI45)
+    local WFI = C.fresh({ "UI/CurrencyTransfer.lua" }, UI45)
     local menu = C.window("CurrencyTransferMenu")
     C.tree(menu, { ["Content.SourceSelector.PlayerName"] = "" })
     local selector = menu.Content.SourceSelector
@@ -104,12 +104,12 @@ describe("the currency transfer destination line", function()
     function selector.RefreshPlayerName(self)
       self.PlayerName.text = en("CURRENCY_TRANSFER_DESTINATION"):format(player)
     end
-    assert.is_true(WFJ.CurrencyTransfer.init())
+    assert.is_true(WFI.CurrencyTransfer.init())
     selector:RefreshPlayerName()
     assert.are.equal("Arthasへ", selector.PlayerName:GetText())
-    C.alt(WFJ, true)
+    C.alt(WFI, true)
     assert.are.equal("To Arthas", selector.PlayerName:GetText())
-    C.alt(WFJ, false)
+    C.alt(WFI, false)
     player = "Max"
     selector:RefreshPlayerName()
     assert.are.equal("Maxへ", selector.PlayerName:GetText())

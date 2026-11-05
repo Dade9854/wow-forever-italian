@@ -74,13 +74,13 @@ local function buttonNamed(f, name)
 end
 
 describe("the Timewalking campaign window on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   after_each(function()
@@ -95,11 +95,11 @@ describe("the Timewalking campaign window on Forever", function()
       local f
       if order[1] then
         f = installChromieTime()
-        assert.is_true(WFJ.ChromieTime.init())
+        assert.is_true(WFI.ChromieTime.init())
       else
-        assert.is_false(WFJ.ChromieTime.init())
+        assert.is_false(WFI.ChromieTime.init())
         f = installChromieTime()
-        assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+        assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
       end
       f:Show()
       assert.are.equal("時間は味方、何でもできる！", f.Title.Text:GetText())
@@ -111,7 +111,7 @@ describe("the Timewalking campaign window on Forever", function()
       assert.are.equal("Recommended", named.Name:GetText()) -- a campaign's name, never touched
       assert.are.equal("おすすめ", named.RecommendLabel.Label:GetText())
       assert.are.equal("おすすめ", named.RecommendLabel.BGLabel:GetText())
-      assert.is_true(WFJ.HelpTooltip.registered(named))
+      assert.is_true(WFI.HelpTooltip.registered(named))
       card:SetCurrentlySelectedExpansion(named) -- a campaign whose description is a dictionary word
       assert.are.equal("Recommended", card.Name:GetText())
       assert.are.equal("Select", card.Description:GetText())
@@ -122,9 +122,9 @@ describe("the Timewalking campaign window on Forever", function()
       tt:SetText(en("CHROMIE_TIME_CAMPAIGN_COMPLETE"))
       assert.are.equal("キャンペーン完了", _G.GameTooltipTextLeft1:GetText())
       Stub.keys.alt = true
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       assert.are.equal("Recommended", named.RecommendLabel.Label:GetText())
-      assert.is_false(WFJ.ChromieTime.setup()) -- once
+      assert.is_false(WFI.ChromieTime.setup()) -- once
     end)
   end
 
@@ -132,19 +132,19 @@ describe("the Timewalking campaign window on Forever", function()
     load()
     local f = installChromieTime()
     f.Title, f.CurrentlySelectedExpansionInfoFrame, f.SetupExpansionButtons = 4, "card", "not a function"
-    assert.has_no.errors(function() assert.is_true(WFJ.ChromieTime.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.ChromieTime.init()) end)
     assert.are.equal("選択", f.SelectButton:GetText())
     load()
     f = installChromieTime()
     f.ExpansionOptionsPool.EnumerateActive = true -- the client itself only acquires and releases
     function f.SetupExpansionButtons() end
-    assert.has_no.errors(function() assert.is_true(WFJ.ChromieTime.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.ChromieTime.init()) end)
     assert.has_no.errors(function() f:Show() end)
   end)
 
   it("no ChromieTimeFrame → init is false, nothing touched", function()
     load()
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() assert.is_false(WFJ.ChromieTime.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.ChromieTime.init()) end)
   end)
 end)

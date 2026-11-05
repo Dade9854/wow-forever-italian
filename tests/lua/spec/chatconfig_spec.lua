@@ -177,11 +177,11 @@ local CHANNELS = { { text = "1.General" }, { text = "General" } }
 local TIERED = { { text = "Melee", subTypes = { { text = "Damage" }, { text = "Misses" } } } }
 
 describe("the chat configuration window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -194,15 +194,15 @@ describe("the chat configuration window on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
     -- the Core/UIStrings grants this surface needs: a chat window's name is a verbatim argument, the
     -- character-specific label arrives inside a colour
-    WFJ.UIStrings.ARGS.CHATCONFIG_HEADER = { [1] = "text" }
-    WFJ.UIStrings.LABELS.CHARACTER_SPECIFIC_SETTINGS = "wrapped"
-    H.uiSetup(WFJ, UI)
+    WFI.UIStrings.ARGS.CHATCONFIG_HEADER = { [1] = "text" }
+    WFI.UIStrings.LABELS.CHARACTER_SPECIFIC_SETTINGS = "wrapped"
+    H.uiSetup(WFI, UI)
     C.windows, C.window, C.tts, C.custom = { "General", "Combat Log", "Text To Speech" }, "General", false, false
   end
 
@@ -222,8 +222,8 @@ describe("the chat configuration window on Forever", function()
         en("UNIT_COLORS"))
     end
     if createdFirst then create() end
-    WFJ.Labels.forbidNames(WFJ.ChatConfig.NEVER_TOUCH)
-    assert.is_true(WFJ.ChatConfig.init())
+    WFI.Labels.forbidNames(WFI.ChatConfig.NEVER_TOUCH)
+    assert.is_true(WFI.ChatConfig.init())
     if not createdFirst then create() end
   end
 
@@ -262,14 +262,14 @@ describe("the chat configuration window on Forever", function()
         assert.are.equal("1.General", _G.ChatConfigChannelSettingsLeftCheckbox1CheckText:GetText())
         assert.are.equal("General", _G.ChatConfigChannelSettingsLeftCheckbox2CheckText:GetText())
         assert.is_true(unrecorded(_G.ChatConfigChannelSettingsLeftCheckbox2CheckText))
-        assert.is_false(WFJ.HelpTooltip.registered(_G.ChatConfigChannelSettingsLeftCheckbox2Check))
+        assert.is_false(WFI.HelpTooltip.registered(_G.ChatConfigChannelSettingsLeftCheckbox2Check))
       end)
 
       it("the combat log's unit rows show friendly units as 味方; Friends elsewhere is the friends list", function()
         if order[1] then _G.ChatConfigFrame:Show() end
         assert.are.equal("味方", _G.CombatConfigMessageSourcesDoneByCheckbox2CheckText:GetText())
         assert.are.equal("味方", _G.CombatConfigColorsUnitColorsSwatch2Text:GetText())
-        assert.are.equal("FRIENDS", (WFJ.UIIndex:match("Friends")))
+        assert.are.equal("FRIENDS", (WFI.UIIndex:match("Friends")))
         alt(true)
         assert.are.equal("Friends", _G.CombatConfigMessageSourcesDoneByCheckbox2CheckText:GetText())
         alt(false)
@@ -307,7 +307,7 @@ describe("the chat configuration window on Forever", function()
     assert.are.equal("General", _G.CombatConfigSettingsNameEditBox:GetText())
     assert.are.equal("General", _G.CombatConfigColorsExampleString1:GetText())
     assert.is_true(unrecorded(_G.CombatConfigColorsExampleString1))
-    assert.are.equal(0, WFJ.Labels.show("chatconfig", "x", _G.CombatConfigColorsExampleString1))
+    assert.are.equal(0, WFI.Labels.show("chatconfig", "x", _G.CombatConfigColorsExampleString1))
   end)
 
   it("the header keeps the chat window's name; the window tabs translate only the text-to-speech tab", function()
@@ -354,7 +354,7 @@ describe("the chat configuration window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.ChatConfig.init())
+    assert.is_false(WFI.ChatConfig.init())
     assert.are.equal(1, #Stub.hooks["ChatConfig_CreateCheckboxes"])
     assert.are.equal(1, #Stub.hooks["ChatTabManager:UpdateTabDisplay"])
   end)
@@ -368,11 +368,11 @@ describe("the chat configuration window on Forever", function()
     _G.ChatConfigFrame.Header = "header"
     _G.ChatConfigCategoryFrameButton1 = 42
     _G.ChatConfigChatSettingsLeftTitle = true
-    assert.has_no.errors(function() assert.is_true(WFJ.ChatConfig.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.ChatConfig.init()) end)
     assert.has_no.errors(function()
-      WFJ.ChatConfig.onFamily(nil); WFJ.ChatConfig.onFamily({})
-      WFJ.ChatConfig.onFamily({ GetName = function() return 5 end })
-      WFJ.ChatConfig.onHeader(); WFJ.ChatConfig.onWindowTabs(); WFJ.ChatConfig.onShow()
+      WFI.ChatConfig.onFamily(nil); WFI.ChatConfig.onFamily({})
+      WFI.ChatConfig.onFamily({ GetName = function() return 5 end })
+      WFI.ChatConfig.onHeader(); WFI.ChatConfig.onWindowTabs(); WFI.ChatConfig.onShow()
     end)
     assert.are.equal("発言", _G.ChatConfigChatSettingsLeftCheckbox1CheckText:GetText()) -- the rest still works
     assert.is_nil(Stub.hooks["ChatConfig_UpdateCheckboxes"])
@@ -380,6 +380,6 @@ describe("the chat configuration window on Forever", function()
 
   it("no ChatConfigFrame → init is false and nothing is touched", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.ChatConfig.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.ChatConfig.init()) end)
   end)
 end)

@@ -15,7 +15,7 @@ def test_workflow_runs_only_on_sends_with_least_permissions(root):
     assert [ln.strip() for ln in perms.splitlines()] == ["contents: read"]
     job = re.search(r"^    permissions:\n((?:      .*\n)+)", wf, re.M).group(1)
     assert sorted(ln.strip() for ln in job.splitlines()) == ["contents: read", "issues: write"]
-    assert "python -m wfj collector check --body-file" in wf
+    assert "python -m wfi collector check --body-file" in wf
 
 
 def test_workflow_never_puts_the_issue_text_in_a_script(root):

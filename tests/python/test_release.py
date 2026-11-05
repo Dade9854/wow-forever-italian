@@ -1,4 +1,4 @@
-"""wfj release: the version rule, the changelog cut, notes, and the pull-request changelog gate
+"""wfi release: the version rule, the changelog cut, notes, and the pull-request changelog gate
 (docs/operations/release.md)."""
 
 import subprocess
@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import release
-from wfj.cmd.release import ReleaseError
+from wfi.cmd import release
+from wfi.cmd.release import ReleaseError
 
 HEAD = "# Changelog\n\nIntro line.\n\n"
 
@@ -165,15 +165,15 @@ BASE = HEAD + "## Unreleased\n\n### Fixed\n- Old line.\n\n" + OLD
 
 
 def test_gate_needs_a_line_when_addon_or_data_changes():
-    for path in ("addon/WoWForeverJapanese/UI/Gossip.lua", "data/quest/quest_0001.jsonl"):
+    for path in ("addon/WoWForeverItalian/UI/Gossip.lua", "data/quest/quest_0001.jsonl"):
         problems = release.gate(BASE, BASE, [path])
         assert len(problems) == 1 and "add a line for players" in problems[0]
     added = BASE.replace("- Old line.\n", "- Old line.\n- New line.\n")
-    assert release.gate(BASE, added, ["addon/WoWForeverJapanese/Main.lua"]) == []
+    assert release.gate(BASE, added, ["addon/WoWForeverItalian/Main.lua"]) == []
 
 
 def test_gate_exempts_changes_that_do_not_reach_the_game():
-    for path in ("docs/overview.md", ".github/workflows/pr.yml", "tests/python/test_cli.py", "pipeline/wfj/cli.py"):
+    for path in ("docs/overview.md", ".github/workflows/pr.yml", "tests/python/test_cli.py", "pipeline/wfi/cli.py"):
         assert release.gate(BASE, BASE, [path]) == []
 
 
@@ -197,14 +197,14 @@ def test_gate_refuses_local_paths(line):
     assert problems == [f"changelog line names a local path or something private: {line}"]
 
 
-@pytest.mark.parametrize("line", ["- Fixed the gossip window (" + "WFJ" + "-12).", "- Fixed it (" + "wfj" + " 12)."])
+@pytest.mark.parametrize("line", ["- Fixed the gossip window (" + "WFI" + "-12).", "- Fixed it (" + "wfi" + " 12)."])
 def test_gate_refuses_tracker_ids_without_any_rules_file(line):
     added = BASE.replace("- Old line.\n", f"- Old line.\n{line}\n")
     assert release.gate(BASE, added, ["addon/x.lua"]) == [f"changelog line names a local path or something private: {line}"]
 
 
 def test_gate_refuses_what_the_private_rules_name():
-    from wfj.core import public_text
+    from wfi.core import public_text
 
     rules = public_text.private_rules({"patterns": {"codename": r"(?i:\bzebra-\d+)"}, "words": ["quokka"]})
     for line in ("- Fixed the gossip window (Zebra-12).", "- Thanks to Quokka."):

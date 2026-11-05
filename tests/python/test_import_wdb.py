@@ -1,16 +1,16 @@
-"""`wfj import english wdb`: Blizzard's cached quest text merged over pfQuest (ADR-020)."""
+"""`wfi import english wdb`: Blizzard's cached quest text merged over pfQuest (ADR-020)."""
 
 import struct
 from pathlib import Path
 
 import pytest
 
-from wfj.cmd.import_ import run
-from wfj.core.hashing import key
-from wfj.core.model import english_line, validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
-from wfj.io.wdb import WdbError, read_ids, read_quests
+from wfi.cmd.import_ import run
+from wfi.core.hashing import key
+from wfi.core.model import english_line, validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
+from wfi.io.wdb import WdbError, read_ids, read_quests
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "wdb" / "questcache.wdb"
 BUILD = "1.15.9.69722"
@@ -118,7 +118,7 @@ def test_missing_needs_questv2(tmp_path, monkeypatch, capsys):
 
 def _cut(tmp_path: Path, keep: set[int]) -> Path:
     """The fixture cache with only the records in `keep` (a wiped or smaller cache of the same build)."""
-    from wfj.io import wdb
+    from wfi.io import wdb
 
     buf, out, off = FIXTURE.read_bytes(), [], wdb.HEADER_SIZE
     while True:
@@ -199,7 +199,7 @@ def test_area_and_objective_texts(tmp_path, monkeypatch, capsys):
 
 def _record_498() -> tuple[bytes, int, bytearray]:
     """The fixture file, the byte offset of quest 498's record and a copy of its payload (two objective texts)."""
-    from wfj.io import wdb
+    from wfi.io import wdb
 
     buf, off = FIXTURE.read_bytes(), wdb.HEADER_SIZE
     while True:
@@ -210,7 +210,7 @@ def _record_498() -> tuple[bytes, int, bytearray]:
 
 
 def test_an_objective_cached_under_two_quests_is_an_error(tmp_path, monkeypatch, capsys):
-    from wfj.io import wdb
+    from wfi.io import wdb
 
     data = _data(tmp_path, monkeypatch)
     buf, _, record = _record_498()
@@ -236,7 +236,7 @@ def _patched_498(tmp_path: Path, at: int, value: bytes) -> Path:
 def test_objective_text_must_be_utf8_and_keyed(tmp_path, monkeypatch, capsys):
     """Kept strict: a bad objective text or a text under QuestObjective id 0 stops the import (and
     so wdb-preflight, before any store is written), naming the quest and the objective."""
-    from wfj.io import wdb
+    from wfi.io import wdb
 
     data = _data(tmp_path, monkeypatch)
     first = wdb.layout_for(69722).objectives_at
@@ -253,7 +253,7 @@ def test_objective_text_must_be_utf8_and_keyed(tmp_path, monkeypatch, capsys):
 
 def test_a_blank_objective_text_under_id_0_is_not_an_error(tmp_path, monkeypatch):
     """Whitespace-only text is never written, so an id 0 beside it does not stop the preflight."""
-    from wfj.io import wdb
+    from wfi.io import wdb
 
     _data(tmp_path, monkeypatch)
     first = wdb.layout_for(69722).objectives_at
@@ -392,9 +392,9 @@ def test_an_older_clients_cache_leaves_a_newer_clients_quests_alone(tmp_path, mo
     """`make import-english` imports Classic Era's cache before Forever's. A quest Forever served on an earlier
     build and the current Forever cache did not answer keeps Forever's English: Era's cache must neither
     replace it nor, by taking the quest whole, drop a field Era has and Forever had not (ADR-050)."""
-    from wfj.core.hashing import key
-    from wfj.core.model import english_line
-    from wfj.core.normalize import normalize_v1
+    from wfi.core.hashing import key
+    from wfi.core.model import english_line
+    from wfi.core.normalize import normalize_v1
 
     data = _data(tmp_path, monkeypatch)
     qid = read_quests(FIXTURE).quests[0].id
@@ -408,7 +408,7 @@ def test_an_older_clients_cache_leaves_a_newer_clients_quests_alone(tmp_path, mo
 
 
 def test_a_newer_client_is_told_by_its_game_line():
-    from wfj.cmd.import_english import _newer_client, held_by_newer_cache
+    from wfi.cmd.import_english import _newer_client, held_by_newer_cache
 
     assert _newer_client("wdb@1.60.1.70245", "1.15.9.69722")
     assert not _newer_client("wdb@1.15.9.69722", "1.60.1.70291")
@@ -437,7 +437,7 @@ def test_union_keeps_the_cache_over_pfquest_and_takes_an_answered_quest_whole():
     """pfQuest, imported first, never replaces an earlier build's cached line: a later union import
     restores only what its own cache holds. A quest the new cache answered keeps only the new
     cache's fields, because Forever reuses quest ids for different quests."""
-    from wfj.cmd.import_english import merge_source
+    from wfi.cmd.import_english import merge_source
 
     def ln(id_, field, src, en="x"):
         return {"id": id_, "field": field, "en": en, "hash": "0" * 16, "src": src}
@@ -461,7 +461,7 @@ def test_under_union_pfquest_does_not_fill_a_field_the_answered_quest_left_empty
     """Quest 5639 is answered on Forever with a title only. pfQuest (imported first) wrote its
     objectives and description; under union they are dropped, so a reused id never pairs an old quest's English
     with a new title."""
-    from wfj.cmd.import_english import merge_source, take_answered_whole
+    from wfi.cmd.import_english import merge_source, take_answered_whole
 
     def ln(id_, field, src):
         return {"id": id_, "field": field, "en": "x", "hash": "0" * 16, "src": src}
@@ -481,7 +481,7 @@ def test_conditional_descriptions_and_completion_logs_are_keyed_text():
 
     import pytest as _pytest
 
-    from wfj.cmd.import_english import _add_keyed, _wdb_keyed_lines
+    from wfi.cmd.import_english import _add_keyed, _wdb_keyed_lines
 
     quests = [
         SimpleNamespace(conditional=((137888, 3595, "You are born kaldorei, druid."), (0, 0, "")),

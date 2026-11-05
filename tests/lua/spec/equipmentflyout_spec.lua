@@ -21,15 +21,15 @@ R.suite(getfenv(1), {
   title = "the equipment flyout on Forever", module = "EquipmentFlyout",
   file = "UI/EquipmentFlyout.lua", root = "EquipmentFlyoutFrame", globals = GLOBALS, ui = UI, build = build,
   cases = {
-    { "the special buttons' tooltips and the page labels are Japanese; Alt shows English", function(frame, WFJ)
+    { "the special buttons' tooltips and the page labels are Japanese; Alt shows English", function(frame, WFI)
       frame:Show()
       assert.are.equal("前へ", frame.NavigationFrame.PreviousPageText:GetText())
       assert.are.equal("次へ", frame.NavigationFrame.NextPageText:GetText())
       R.tooltip(frame.buttonFrame, { _G.EQUIPMENT_MANAGER_IGNORE_SLOT })
       assert.are.equal("このスロットを無視", _G.GameTooltipTextLeft1:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("Ignore This Slot", _G.GameTooltipTextLeft1:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
   },
   name = function(frame)

@@ -1,12 +1,12 @@
-"""wfj.dev.table_counts: the no-content windows' tables and TraitSubTree, counted per build from the
+"""wfi.dev.table_counts: the no-content windows' tables and TraitSubTree, counted per build from the
 local archive and the hotfix cache, read only."""
 
 from pathlib import Path
 
 import pytest
 
-from wfj.dev import table_counts
-from wfj.io import casc, db2, dbcache
+from wfi.dev import table_counts
+from wfi.io import casc, db2, dbcache
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "db2"
 

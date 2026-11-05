@@ -24,23 +24,23 @@ local UI = {
 }
 
 describe("the mailbox on Forever's Blizzard_MailFrame", function()
-  local WFJ, S
+  local WFI, S
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function title(frame) return frame.TitleContainer.TitleText:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     MailStub.installCamelot()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    S = WFJ.Settings
-    assert.is_true(WFJ.Mail.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    S = WFI.Settings
+    assert.is_true(WFI.Mail.init())
   end)
 
   after_each(function()
@@ -59,7 +59,7 @@ describe("the mailbox on Forever's Blizzard_MailFrame", function()
       MailStub.letter = { sender = "Thrall", subject = "Hello", items = 0, money = 0, canDelete = true }
       MailStub.camelotOpenLetter()
       assert.are.equal("郵便を開く", title(_G.OpenMailFrame))
-      assert.are.equal(WFJ.Font.PATH, (_G.MailFrame.TitleContainer.TitleText:GetFont()))
+      assert.are.equal(WFI.Font.PATH, (_G.MailFrame.TitleContainer.TitleText:GetFont()))
       alt(true)
       assert.are.equal("Inbox", title(_G.MailFrame))
       assert.are.equal("Open Mail", title(_G.OpenMailFrame))
@@ -73,7 +73,7 @@ describe("the mailbox on Forever's Blizzard_MailFrame", function()
   it("a title holding anything but INBOX / SENDMAIL / OPENMAIL is left as written", function()
     MailStub.camelotOpenMailbox()
     _G.MailFrame:SetTitle("Cancel") -- a dictionary word the title never shows
-    WFJ.Mail.onFrameTitle()
+    WFI.Mail.onFrameTitle()
     assert.are.equal("Cancel", title(_G.MailFrame))
   end)
 
@@ -126,7 +126,7 @@ describe("the mailbox on Forever's Blizzard_MailFrame", function()
     end)
 
   it("hooks install once; a second init is a no-op", function()
-    assert.is_false(WFJ.Mail.init())
+    assert.is_false(WFI.Mail.init())
     assert.are.equal(1, #Stub.hooks.MailFrameTab_OnClick)
     MailStub.camelotOpenMailbox()
     assert.are.equal("受信箱", title(_G.MailFrame))

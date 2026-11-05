@@ -25,21 +25,21 @@ local UI = {
 }
 
 describe("the bags on the Forever client", function()
-  local WFJ
+  local WFI
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
   local function title(f) return f.TitleContainer.TitleText:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     for key, pair in pairs(UI) do _G[key] = pair[1] end -- the client's GlobalStrings
     CI.install()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    WFJ.Labels.forbidNames(WFJ.Bags.NEVER_TOUCH)
-    assert.is_true(WFJ.Bags.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    WFI.Labels.forbidNames(WFI.Bags.NEVER_TOUCH)
+    assert.is_true(WFI.Bags.init())
   end)
 
   after_each(function()
@@ -51,7 +51,7 @@ describe("the bags on the Forever client", function()
     .. " a bag drops its record", function()
     local backpack = CI.openBag(0)
     assert.are.equal("バックパック", title(backpack))
-    assert.are.equal(WFJ.Font.PATH, (backpack.TitleContainer.TitleText:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (backpack.TitleContainer.TitleText:GetFont()))
     local pouch = CI.openBag(1)
     assert.are.equal("Small Red Pouch", title(pouch))
     local keyring = CI.openBag(-2)
@@ -60,7 +60,7 @@ describe("the bags on the Forever client", function()
     assert.are.equal("Keyring", title(named))
     _G.ContainerFrame_GenerateFrame(backpack, 16, 1) -- the backpack frame reused for a bag
     assert.are.equal("Small Red Pouch", title(backpack))
-    assert.is_nil(WFJ.SurfaceState.get("bags", "ui.title.ContainerFrame1"))
+    assert.is_nil(WFI.SurfaceState.get("bags", "ui.title.ContainerFrame1"))
     alt(true)
     assert.are.equal("Keyring", title(keyring))
     alt(false)
@@ -101,7 +101,7 @@ describe("the bags on the Forever client", function()
 
   it("the add-slots button, made on first use, is registered after the backpack is generated", function()
     local backpack = CI.openBag(0)
-    assert.is_true(WFJ.HelpTooltip.registered(backpack.AddSlotsButton))
+    assert.is_true(WFI.HelpTooltip.registered(backpack.AddSlotsButton))
     CI.hover(backpack.AddSlotsButton)
     assert.are.equal("バックパックを拡張", left(1))
   end)
@@ -166,8 +166,8 @@ describe("the bags on the Forever client", function()
   end)
 
   it("a generated frame without a name or a title widget degrades to English with no error", function()
-    assert.are.equal(0, WFJ.Bags.onGenerate("moved", 16, 0))
-    assert.are.equal(0, WFJ.Bags.onGenerate({ GetName = function() return nil end }, 16, 0))
+    assert.are.equal(0, WFI.Bags.onGenerate("moved", 16, 0))
+    assert.are.equal(0, WFI.Bags.onGenerate({ GetName = function() return nil end }, 16, 0))
     local f = CI.openBag(0)
     f.TitleContainer = { TitleText = "moved" } -- a title that is no text widget
     f.SetTitle = function() end

@@ -1,4 +1,4 @@
-"""`wfj voice generate` starts the AivisSpeech Engine when it has work and none answers, and stops what it
+"""`wfi voice generate` starts the AivisSpeech Engine when it has work and none answers, and stops what it
 started however the run ends; an engine someone else started is used and left alone."""
 
 from __future__ import annotations
@@ -15,9 +15,9 @@ from pathlib import Path
 import pytest
 from test_voice import CFG, _fake_encode, _store
 
-from wfj.cmd import voice_make
-from wfj.io import aivis
-from wfj.io.aivis import Engine, EngineError
+from wfi.cmd import voice_make
+from wfi.io import aivis
+from wfi.io.aivis import Engine, EngineError
 
 FAKE = Path(__file__).with_name("fake_aivis.py")
 
@@ -109,7 +109,7 @@ def test_a_failure_mid_run_still_stops_the_engine(tmp_path, url, reap):
 def test_a_stop_signal_to_the_run_stops_the_engine(tmp_path, url, reap, sig):
     run = FakeRun(tmp_path)
     code = (
-        "import sys, time\nfrom pathlib import Path\nfrom wfj.io.aivis import Engine, running\n"
+        "import sys, time\nfrom pathlib import Path\nfrom wfi.io.aivis import Engine, running\n"
         f"with running(Engine({url!r}), Path({str(run.path)!r}), log=lambda *_: None):\n"
         "    print('up', flush=True)\n    time.sleep(60)\n"
     )
@@ -128,7 +128,7 @@ def test_a_stop_signal_to_the_run_stops_the_engine(tmp_path, url, reap, sig):
 def test_a_hangup_the_run_ignores_stays_ignored(tmp_path, url, reap):
     run = FakeRun(tmp_path)
     code = (
-        "import signal, time\nfrom pathlib import Path\nfrom wfj.io.aivis import Engine, running\n"
+        "import signal, time\nfrom pathlib import Path\nfrom wfi.io.aivis import Engine, running\n"
         "signal.signal(signal.SIGHUP, signal.SIG_IGN)\n"
         f"with running(Engine({url!r}), Path({str(run.path)!r}), log=lambda *_: None):\n"
         "    print('up', flush=True)\n    time.sleep(60)\n"

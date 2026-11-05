@@ -17,14 +17,14 @@ Turn a player's collector send (a GitHub issue labelled `collector-send`) into E
 |---|---|---|
 | `collector-send` | the issue form | a player's collector send; the `collector-check` workflow runs on it |
 | `collector-ok` | `collector-check` | the send reads; the comment counts its entries by kind, its builds, the addon version, how it was sent and the entries left out by reason |
-| `collector-broken` | `collector-check` | the send does not read (cut, edited, nothing found, a format the pipeline does not read, or no line that can be imported); the comment says why and asks the player to copy it again with `/wfj collector send all`. The check runs again when the player edits the issue. |
+| `collector-broken` | `collector-check` | the send does not read (cut, edited, nothing found, a format the pipeline does not read, or no line that can be imported); the comment says why and asks the player to copy it again with `/wfi collector send all`. The check runs again when the player edits the issue. |
 
 Take only issues labelled `collector-ok`. The comment never shows the English: read it in the diff after the import.
 
 ## Steps
 
 1. **Intake.** `make collector-intake ISSUE=N`
-   - Reads the issue with `gh issue view`, refuses it unless the form's **Permission** box is ticked, reads the send (the `WFJC1:` string, or the attached zip or `.lua`), and merges it into `data/english/` with the same rules as `make import-collector` ([Local setup → Collector dumps](local-setup.md#collector-dumps)).
+   - Reads the issue with `gh issue view`, refuses it unless the form's **Permission** box is ticked, reads the send (the `WFIC1:` string, or the attached zip or `.lua`), and merges it into `data/english/` with the same rules as `make import-collector` ([Local setup → Collector dumps](local-setup.md#collector-dumps)).
    - Offline, from a saved issue body: `make collector-intake ISSUE=N BODY=<file>`.
    - It prints `english collector: issue #N · <entries> entries · builds …`, the per-type table (added, unchanged, replaced, differs), the rejected counts, then a `replaced:` list (`  <type> <id> <field> (was <src>)`) and the `differs` list.
 2. **Review, then check.** Read the `replaced:` list first: each line there is English the send put in place of another source's, and it is what the data diff should be checked against. Then `make check`. Collector quest and gossip English is consulted, so the import can move a quest line's hash and make it `stale`. Review the delta (`git diff data/`) before going on.

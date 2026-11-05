@@ -1,9 +1,9 @@
 # ADR-040: The gamepad-mode HUD in Japanese: prompts, legend, radial menu and skip button
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/UI/Gamepad.lua`,
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/UI/Gamepad.lua`,
   `UI/MenusTags.lua` (`MORE_CONTEXT_ACTIONS` gains `Gamepad.MENU_KEYS`), `Core/UIStringKeys.lua` (three `OWN` keys, the
   `wrapped` legend headers, `SKIP` `number`, the `icon` input-icon lines), `Main.lua`, the TOC;
-  `pipeline/wfj/dev/ui_windows.py` (`FOREVER_WINDOWS["gamepad"]`), `pipeline/forever_addon_dispositions.txt`,
+  `pipeline/wfi/dev/ui_windows.py` (`FOREVER_WINDOWS["gamepad"]`), `pipeline/forever_addon_dispositions.txt`,
   `ui_keys.txt`, `ui_exclusions.txt`, `ui_inventory.txt`, `ui_uninventoried.txt`. The in-game checks are pending (the
   gamepad checklist in [Testing strategy](../testing/strategy.md)).
 - **Date:** 2026-09-25

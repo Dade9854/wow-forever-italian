@@ -5,9 +5,9 @@ go about it.
 
 ## What is welcome
 
-**Translation fixes.** The best way is from inside the game: click the 字 minimap button (or type `/wfj fix`),
+**Translation fixes.** The best way is from inside the game: click the 字 minimap button (or type `/wfi fix`),
 pick the line, say what is wrong, and paste the report into a
-[translation report](https://github.com/zyaga/wow-forever-japanese/issues/new?template=translation-report.yml).
+[translation report](https://github.com/zyaga/wow-forever-italian/issues/new?template=translation-report.yml).
 A check reads the report and comments within a minute. If your own Japanese ships, you are credited in
 `ATTRIBUTION.md` under the name you give (the issue and the credit are public).
 
@@ -17,7 +17,7 @@ agreed issue may be closed, and some ideas will be declined because they do not 
 dependency, or puts stored English text in the addon).
 
 **Bug reports.** Open an issue with the client build (bottom left of the login screen), the addon version
-(`/wfj version`), and what you saw.
+(`/wfi version`), and what you saw.
 
 **Security problems.** Report them in private, as [`SECURITY.md`](SECURITY.md) describes, not in an issue.
 
@@ -35,8 +35,8 @@ cluacov, is a C module, so you also need a C compiler and the Lua 5.1 headers (t
 macOS, `build-essential` on Linux).
 
 ```bash
-git clone https://github.com/zyaga/wow-forever-japanese.git
-cd wow-forever-japanese
+git clone https://github.com/zyaga/wow-forever-italian.git
+cd wow-forever-italian
 python3 -m venv .venv
 .venv/bin/pip install -e "pipeline[dev]"
 LUAROCKS="luarocks --lua-version=5.1 --local" .github/scripts/lua-rocks.sh install
@@ -51,7 +51,7 @@ The Makefile uses `.venv` automatically. The Lua rocks (busted, luacheck, luacov
 | Command | What it does |
 |---|---|
 | `make test` | pytest over the pipeline, busted over the addon logic, and a parse of every addon Lua file |
-| `make lint` | ruff, luacheck, the layering and no-English-in-the-addon gates, and `wfj public-check` |
+| `make lint` | ruff, luacheck, the layering and no-English-in-the-addon gates, and `wfi public-check` |
 | `make validate` | the data gate: schema, provenance, key collisions, regenerate-and-diff |
 | `make coverage` | how much of the game ships in Japanese, written to `docs/operations/coverage.md` |
 | `make coverage-py` / `make coverage-lua` | test coverage of the pipeline and of the addon logic |
@@ -68,11 +68,11 @@ noreply address; the check refuses a personal one.
 
 | Path | What |
 |---|---|
-| `addon/WoWForeverJapanese/` | the addon. `Core/` is lookup, data and state and never touches a frame; `UI/` draws. |
-| `addon/WoWForeverJapanese/Data/` | generated Lua data. **Never edit by hand**: change `data/` and run `make generate`. |
+| `addon/WoWForeverItalian/` | the addon. `Core/` is lookup, data and state and never touches a frame; `UI/` draws. |
+| `addon/WoWForeverItalian/Data/` | generated Lua data. **Never edit by hand**: change `data/` and run `make generate`. |
 | `data/` | the source of truth: one JSON line per translated field, keyed by game ID, with provenance |
 | `data/english/` | the English each line was translated from (for alignment and hashing; never shipped) |
-| `pipeline/` | the Python pipeline (`wfj` command): import, check, generate, validate, readings, fix reports, release |
+| `pipeline/` | the Python pipeline (`wfi` command): import, check, generate, validate, readings, fix reports, release |
 | `tests/` | pytest (`tests/python`), busted specs (`tests/lua`), and their fixtures |
 | `vectors/` | shared test vectors that keep the Python and Lua hashing and normalizing in step |
 | `docs/` | how it works and why: [overview](docs/overview.md), [principles](docs/architecture/principles.md), [decisions](docs/adr/) |

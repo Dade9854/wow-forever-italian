@@ -48,7 +48,7 @@ local UI = {
 }
 
 describe("the mailbox", function()
-  local WFJ, S, SS
+  local WFI, S, SS
 
   -- no record on any surface holds this widget (a Button's record holds its ButtonText adapter)
   local function recorded(widget)
@@ -74,13 +74,13 @@ describe("the mailbox", function()
   local function line(i) return _G["GameTooltipTextLeft" .. i] end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     MailStub.installCamelot()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    S, SS = WFJ.Settings, WFJ.SurfaceState
-    assert.is_true(WFJ.Mail.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    S, SS = WFI.Settings, WFI.SurfaceState
+    assert.is_true(WFI.Mail.init())
   end)
 
   after_each(function()
@@ -95,7 +95,7 @@ describe("the mailbox", function()
     MailStub.camelotOpenMailbox()
     assert.are.equal("受信箱", _G.MailFrameTab1.measured)
     assert.are.equal("郵便を送る", _G.MailFrameTab2.measured)
-    assert.are.equal(WFJ.Font.PATH, font(_G.MailFrameTab1))
+    assert.are.equal(WFI.Font.PATH, font(_G.MailFrameTab1))
     for name, ja in pairs({ MailFrameTrialError = "この機能を利用するにはアカウントのアップグレードが必要です。",
       InboxTooMuchMailText = "受信箱がいっぱいです。", SendMailSendMoneyButtonText = "送金", SendMailCODButtonText = "代引き",
       SendMailCancelButton = "キャンセル", SendMailMailButton = "送信", OpenMailSenderLabel = "差出人:",
@@ -108,7 +108,7 @@ describe("the mailbox", function()
       assert.are.equal(ja, _G[name]:GetText(), name)
     end
     assert.are.equal("代引き金額:", _G.SendMailMoneyText:GetText()) -- SendMailFrame's OnLoad left the C.O.D. text
-    assert.are.equal(WFJ.Font.PATH, font(_G.OpenMailSenderLabel))
+    assert.are.equal(WFI.Font.PATH, font(_G.OpenMailSenderLabel))
   end)
 
   it("unnamed To: / Subject: / Postage: / Prev / Next regions translate by their exact English only", function()
@@ -135,7 +135,7 @@ describe("the mailbox", function()
     assert.are.equal("|cffff202013時間30分|r", _G.MailItem2ExpireTime:GetText()) -- format() leaves |4; both terms
     assert.is_not_nil(SS.get("mail", "expire2"))
     assert.are.equal("|cffff202042秒|r", _G.MailItem3ExpireTime:GetText())
-    assert.are.equal(WFJ.Font.PATH, font(_G.MailItem1ExpireTime))
+    assert.are.equal(WFI.Font.PATH, font(_G.MailItem1ExpireTime))
     assert.are.equal("Thrall", _G.MailItem1Sender:GetText())
     assert.are.equal(0, _G.MailItem1Sender.calls.SetText)
 
@@ -143,9 +143,9 @@ describe("the mailbox", function()
     MailStub.inbox[1].daysLeft = 1 / 1024
     _G.InboxFrame:Update()
     assert.are.equal("|cffff20201分24秒|r", _G.MailItem1ExpireTime:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("|cffff20201 |4Min:Mins; 24 |4Sec:Secs;|r", _G.MailItem1ExpireTime:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("|cffff20201分24秒|r", _G.MailItem1ExpireTime:GetText())
   end)
 
@@ -165,7 +165,7 @@ describe("the mailbox", function()
     _G.OpenMailFrame:Update()
     assert.are.equal("添付物を受け取る:", _G.OpenMailAttachmentText:GetText())
     assert.are.equal("返送", _G.OpenMailDeleteButton:GetText())
-    assert.are.equal(WFJ.Font.PATH, font(_G.OpenMailDeleteButton))
+    assert.are.equal(WFI.Font.PATH, font(_G.OpenMailDeleteButton))
     assert.are.equal("Jaina", _G.OpenMailSender.Name:GetText())
     assert.are.equal("Gift", _G.OpenMailSubject:GetText())
   end)
@@ -180,8 +180,8 @@ describe("the mailbox", function()
     -- "Item Sold: Linen Cloth (5)" / "Purchased By: Raid": the colonPrefix form, the rest kept as the client wrote it
     assert.are.equal("売却したアイテム: Linen Cloth (5)", _G.OpenMailInvoiceItemLabel:GetText())
     assert.are.equal("購入者: Raid", _G.OpenMailInvoicePurchaser:GetText())
-    assert.are.equal(WFJ.Font.PATH, font(_G.OpenMailInvoiceAmountReceived))
-    assert.are.equal(WFJ.Font.PATH, font(_G.OpenMailInvoiceItemLabel))
+    assert.are.equal(WFI.Font.PATH, font(_G.OpenMailInvoiceAmountReceived))
+    assert.are.equal(WFI.Font.PATH, font(_G.OpenMailInvoiceItemLabel))
   end)
 
   it("the invoice prefixes translate with the item / player name verbatim; Alt shows the client's English",
@@ -192,10 +192,10 @@ describe("the mailbox", function()
       -- the buyer's "  (Buyout)" tail is part of the rest: kept as written inside the item label
       assert.are.equal("購入したアイテム: Linen Cloth  (Buyout)", _G.OpenMailInvoiceItemLabel:GetText())
       assert.are.equal("販売者: Thrall", _G.OpenMailInvoicePurchaser:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Item Purchased: Linen Cloth  (Buyout)", _G.OpenMailInvoiceItemLabel:GetText())
       assert.are.equal("Sold By: Thrall", _G.OpenMailInvoicePurchaser:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("購入したアイテム: Linen Cloth  (Buyout)", _G.OpenMailInvoiceItemLabel:GetText())
 
       MailStub.letter.invoice.type = "seller_temp_invoice"
@@ -224,7 +224,7 @@ describe("the mailbox", function()
     assert.are.equal("代引き金額:", _G.SendMailMoneyText:GetText())
     MailStub.radio(1)
     assert.are.equal("送金額:", _G.SendMailMoneyText:GetText())
-    assert.are.equal(WFJ.Font.PATH, font(_G.SendMailMoneyText))
+    assert.are.equal(WFI.Font.PATH, font(_G.SendMailMoneyText))
   end)
 
   it("the C.O.D. error written on SendMailFrame's OnShow translates, colour-blind form included", function()
@@ -247,7 +247,7 @@ describe("the mailbox", function()
     MailStub.openAllKeepsOpening = false
     MailStub.openAll() -- nothing to open: StartOpening ends inside StopOpening
     assert.are.equal("すべて開く", _G.OpenAllMail:GetText())
-    assert.are.equal(WFJ.Font.PATH, font(_G.OpenAllMail))
+    assert.are.equal(WFI.Font.PATH, font(_G.OpenAllMail))
   end)
 
   it("mail help tooltips translate; an item tooltip on an inbox row is never walked", function()
@@ -271,23 +271,23 @@ describe("the mailbox", function()
     assert.are.equal("ここにアイテムをドラッグすると郵便に添付できます", line(1):GetText())
     MailStub.hover(_G.OpenMailLetterButton)
     assert.are.equal("クリックでこの手紙の\n永久コピーを作成します。", line(1):GetText())
-    assert.are.equal(WFJ.Font.PATH, (line(1):GetFont()))
+    assert.are.equal(WFI.Font.PATH, (line(1):GetFont()))
   end)
 
   it("Alt shows English and release shows Japanese; area.interface off restores English", function()
     MailStub.inbox = { { sender = "Thrall", subject = "Hello", daysLeft = 0.25 } }
     MailStub.camelotOpenMailbox()
     MailStub.camelotSelectTab(2)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Inbox", _G.MailFrameTab1:GetText())
     assert.are.equal("To:", _G.SendMailNameEditBox:GetRegions():GetText())
     assert.are.equal("|cffff20206 |4Hr:Hrs;|r", _G.MailItem1ExpireTime:GetText())
     assert.are.equal("Amount to send:", _G.SendMailMoneyText:GetText())
     assert.are.equal("Send Mail", _G.MailFrame.TitleContainer.TitleText:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("受信箱", _G.MailFrameTab1:GetText())
     assert.are.equal("|cffff20206時間|r", _G.MailItem1ExpireTime:GetText())
-    assert.are.equal(WFJ.Font.PATH, font(_G.MailFrame.TitleContainer.TitleText))
+    assert.are.equal(WFI.Font.PATH, font(_G.MailFrame.TitleContainer.TitleText))
     S.set("area.interface", false)
     assert.are.equal("Inbox", _G.MailFrameTab1:GetText())
     assert.are.equal("Amount to send:", _G.SendMailMoneyText:GetText())
@@ -298,7 +298,7 @@ describe("the mailbox", function()
 
   it("never-touch widgets holding dictionary English are never recorded, and Reply copies them as written",
     function()
-      assert.is_true(#WFJ.Mail.NEVER_TOUCH >= 21)
+      assert.is_true(#WFI.Mail.NEVER_TOUCH >= 21)
       MailStub.inbox = { { sender = "Inbox", subject = "Delete", daysLeft = 0.25 } }
       MailStub.letter = { sender = "Send Money", subject = "Reply", body = "Close", items = 0, money = 0,
         canDelete = true }
@@ -310,9 +310,9 @@ describe("the mailbox", function()
       MailStub.camelotSelectTab(2)
       MailStub.radio(2)
       MailStub.openAll()
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
-      for _, path in ipairs(WFJ.Mail.NEVER_TOUCH) do
+      Stub.keys.alt = true; WFI.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
+      for _, path in ipairs(WFI.Mail.NEVER_TOUCH) do
         local widget = resolve(path)
         assert.is_not_nil(widget, path)
         assert.is_false(recorded(widget), path)
@@ -326,14 +326,14 @@ describe("the mailbox", function()
     end)
 
   it("hooks install once; a client without the mail frames is skipped without error", function()
-    assert.is_false(WFJ.Mail.init())
+    assert.is_false(WFI.Mail.init())
     MailStub.letter = { sender = "Thrall", subject = "Hello", items = 0, money = 0, canDelete = true }
     MailStub.camelotOpenLetter()
     assert.are.equal(1, #Stub.hooks["OpenMailFrame:Update"])
     assert.are.equal(1, #Stub.hooks["InboxFrame:Update"])
     assert.are.equal("削除", _G.OpenMailDeleteButton:GetText())
 
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     local bare = H.loadChunks(FILES)
     H.uiSetup(bare, UI)

@@ -59,34 +59,34 @@ local ARGS = {}
 local LABELS = { SWORDS = "bareColon" } -- only so the spec can show a skill-named row stays English anyway
 
 describe("the character window on the Forever client", function()
-  local WFJ, saved
+  local WFI, saved
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     RC.install()
-    WFJ = H.loadChunks(FILES)
+    WFI = H.loadChunks(FILES)
     saved = { args = {}, labels = {} }
-    for k, v in pairs(ARGS) do saved.args[k] = WFJ.UIStrings.ARGS[k]; WFJ.UIStrings.ARGS[k] = v end
-    for k, v in pairs(LABELS) do saved.labels[k] = WFJ.UIStrings.LABELS[k]; WFJ.UIStrings.LABELS[k] = v end
-    H.uiSetup(WFJ, UI)
-    WFJ.Labels.forbidNames(WFJ.Character.NEVER_TOUCH) -- Main registers every list before any init
-    WFJ.Character.init()
+    for k, v in pairs(ARGS) do saved.args[k] = WFI.UIStrings.ARGS[k]; WFI.UIStrings.ARGS[k] = v end
+    for k, v in pairs(LABELS) do saved.labels[k] = WFI.UIStrings.LABELS[k]; WFI.UIStrings.LABELS[k] = v end
+    H.uiSetup(WFI, UI)
+    WFI.Labels.forbidNames(WFI.Character.NEVER_TOUCH) -- Main registers every list before any init
+    WFI.Character.init()
   end)
 
   after_each(function()
-    for k in pairs(ARGS) do WFJ.UIStrings.ARGS[k] = saved.args[k] end
-    for k in pairs(LABELS) do WFJ.UIStrings.LABELS[k] = saved.labels[k] end
+    for k in pairs(ARGS) do WFI.UIStrings.ARGS[k] = saved.args[k] end
+    for k in pairs(LABELS) do WFI.UIStrings.LABELS[k] = saved.labels[k] end
     H.uiTeardown()
   end)
 
   it("the level writers are hooked once", function()
     assert.are.equal(1, #Stub.hooks.PaperDollFrame_SetLevel)
     assert.are.equal(1, #Stub.hooks.PaperDollFrame_SetPetLevel)
-    assert.is_false(WFJ.Character.init())
+    assert.is_false(WFI.Character.init())
     assert.are.equal(1, #_G.CharacterStatsPaneScrollBox.ScrollBox.initCallbacks)
     assert.are.equal(1, #_G.CharacterStatsPanePetScrollBox.ScrollBox.initCallbacks)
     -- the window title left NEVER_TOUCH; the player's name title still stays English (next describe)
@@ -176,8 +176,8 @@ describe("the character window on the Forever client", function()
   it("a stat row's tooltip translates (the row is a help-tooltip owner)", function()
     local rows = RC.setStats({ { header = "General" }, { label = "Stamina", value = "25",
       tooltip = "|cffffffffStamina 25|r", tooltip2 = "Increases health points." } })
-    assert.is_true(WFJ.HelpTooltip.registered(rows[2]))
-    assert.is_false(WFJ.HelpTooltip.registered(rows[1]))
+    assert.is_true(WFI.HelpTooltip.registered(rows[2]))
+    assert.is_false(WFI.HelpTooltip.registered(rows[1]))
     RC.hover(rows[2])
     assert.are.equal("|cffffffffスタミナ 25|r", left(1))
     assert.are.equal("HPが上昇。", left(2))
@@ -272,7 +272,7 @@ describe("the character window on the Forever client", function()
     local rows = RC.setGearSets({ "Save", "Tanking" })
     assert.are.equal("Save", rows[1].text:GetText())
     assert.are.equal(0, rows[1].text.calls.addonSetText)
-    assert.is_true(WFJ.Labels.forbidden(rows[1].text))
+    assert.is_true(WFI.Labels.forbidden(rows[1].text))
     RC.hover(rows[2].DeleteButton)
     assert.are.equal("削除", left(1))
     RC.hover(rows[2].EditButton)
@@ -281,7 +281,7 @@ describe("the character window on the Forever client", function()
     assert.are.equal("Equip", pane.EquipSet:GetText())
     assert.are.equal("Settings", left(1))
     alt(false)
-    assert.is_true(WFJ.Labels.forbidden(_G.GearManagerPopupFrame.BorderBox.IconSelectorEditBox))
+    assert.is_true(WFI.Labels.forbidden(_G.GearManagerPopupFrame.BorderBox.IconSelectorEditBox))
   end)
 
   it("the title pane: the No Title row translates; an earned title stays English, even a dictionary word", function()
@@ -312,18 +312,18 @@ describe("the character window on the Forever client", function()
   end)
 
   it("a moved stat pane or a missing ScrollUtil degrades to nothing, with no error (type guards)", function()
-    assert.has_no.errors(function() WFJ.Character.onStatRow(WFJ.Character, "moved") end)
-    assert.has_no.errors(function() WFJ.Character.onStatRow({}) end)
-    assert.has_no.errors(function() WFJ.Character.onGearSetRow(WFJ.Character, "moved") end)
-    assert.has_no.errors(function() WFJ.Character.onGearSetRow({ DeleteButton = "moved" }) end)
-    assert.has_no.errors(function() WFJ.Character.onTitleRow(WFJ.Character, "moved") end)
-    assert.has_no.errors(function() WFJ.Character.onTitleRow({ text = "moved" }) end)
+    assert.has_no.errors(function() WFI.Character.onStatRow(WFI.Character, "moved") end)
+    assert.has_no.errors(function() WFI.Character.onStatRow({}) end)
+    assert.has_no.errors(function() WFI.Character.onGearSetRow(WFI.Character, "moved") end)
+    assert.has_no.errors(function() WFI.Character.onGearSetRow({ DeleteButton = "moved" }) end)
+    assert.has_no.errors(function() WFI.Character.onTitleRow(WFI.Character, "moved") end)
+    assert.has_no.errors(function() WFI.Character.onTitleRow({ text = "moved" }) end)
     _G.GearManagerPopupFrame.BorderBox = "moved"
-    assert.are.equal(0, WFJ.Character.onIconText())
+    assert.are.equal(0, WFI.Character.onIconText())
     _G.CharacterStatsPaneScrollBox.ScrollBox = "moved"
     _G.ScrollUtil = nil
-    WFJ.Compat.init(function(name) return _G[name] end)
-    assert.has_no.errors(function() WFJ.Character.init() end)
+    WFI.Compat.init(function(name) return _G[name] end)
+    assert.has_no.errors(function() WFI.Character.init() end)
   end)
 end)
 
@@ -332,18 +332,18 @@ end)
 -- the player's name on the paperdoll, REPUTATION / CURRENCY / PVP / SKILLS / STATISTICS on the other panes
 -- [camelot/characterframe.lua:242–246; camelot/characterframeconstants.lua:9–34].
 describe("the character window's title on the Forever client", function()
-  local WFJ
+  local WFI
 
   local TITLES = { ReputationFrame = "Reputation", SkillsFrame = "Skills", TokenFrame = "Currency" }
   local TITLE_UI = {
     SKILLS = { "Skills", "スキル" }, REPUTATION = { "Reputation", "評判" }, CURRENCY = { "Currency", "通貨" },
     CLOSE = { "Close", "閉じる" }, -- a dictionary word that is no pane title
   }
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function title() return _G.CharacterFrame.TitleContainer.TitleText:GetText() end
 
   local function setup(playerName)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     RC.install()
     local cf = _G.CharacterFrame
@@ -351,10 +351,10 @@ describe("the character window's title on the Forever client", function()
     function cf.SetTitle(self, t) self.TitleContainer.TitleText.text = t end
     function cf.UpdateTitle(self) self:SetTitle(TITLES[self.activeSubframe] or self.playerTitle) end
     function cf.ShowSubFrame(self, pane) self.activeSubframe = pane; self:UpdateTitle() end
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, TITLE_UI)
-    WFJ.Labels.forbidNames(WFJ.Character.NEVER_TOUCH)
-    WFJ.Character.init()
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, TITLE_UI)
+    WFI.Labels.forbidNames(WFI.Character.NEVER_TOUCH)
+    WFI.Character.init()
   end
 
   after_each(function()
@@ -393,20 +393,20 @@ describe("the character window's title on the Forever client", function()
     assert.are.equal("スキル", title())
     cf:ShowSubFrame("PaperDollFrame")
     assert.are.equal("Skills", title())
-    assert.are.equal(0, WFJ.SurfaceState.count("character.title"))
+    assert.are.equal(0, WFI.SurfaceState.count("character.title"))
   end)
 
   it("a title host of the wrong shape degrades to English with no error", function()
     assert.has_no.errors(function()
-      Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+      Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
       Stub.installTooltipAPI()
       RC.install()
       _G.CharacterFrame.TitleContainer = { TitleText = "moved" }
       _G.CharacterFrame.UpdateTitle = "moved"
-      WFJ = H.loadChunks(FILES)
-      H.uiSetup(WFJ, TITLE_UI)
-      WFJ.Character.init()
-      WFJ.Character.onUpdateTitle()
+      WFI = H.loadChunks(FILES)
+      H.uiSetup(WFI, TITLE_UI)
+      WFI.Character.init()
+      WFI.Character.onUpdateTitle()
     end)
   end)
 end)

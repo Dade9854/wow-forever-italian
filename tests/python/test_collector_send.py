@@ -10,15 +10,15 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import collector
-from wfj.cmd.import_ import run as import_run
-from wfj.core.hashing import key
-from wfj.core.normalize import normalize_v1
-from wfj.io import collector_send
-from wfj.io.collector_send import SendError, decode
-from wfj.io.lua_reader import Table, parse_assignments
+from wfi.cmd import collector
+from wfi.cmd.import_ import run as import_run
+from wfi.core.hashing import key
+from wfi.core.normalize import normalize_v1
+from wfi.io import collector_send
+from wfi.io.collector_send import SendError, decode
+from wfi.io.lua_reader import Table, parse_assignments
 
-FIXTURE = "tests/fixtures/collector/WoWForeverJapanese.lua"
+FIXTURE = "tests/fixtures/collector/WoWForeverItalian.lua"
 
 
 def _plain(v):
@@ -41,7 +41,7 @@ def pack(entries, builds, addon="1.0.0", version=1, wrap=None):
 
 
 def fixture_send(root: Path) -> tuple[list, list]:
-    dump = parse_assignments((root / FIXTURE).read_text(encoding="utf-8"))["WFJ_Collector"]
+    dump = parse_assignments((root / FIXTURE).read_text(encoding="utf-8"))["WFI_Collector"]
     entries = [_plain(raw) for _, raw in dump.get("entries").items]
     builds = [v for _, v in dump.get("builds").items]
     return entries, builds
@@ -100,11 +100,11 @@ def test_decode_rejects_like_a_dump_file():
 @pytest.mark.parametrize(
     "text, why",
     [
-        ("WFJX1:abc", "does not start with"),
-        ("WFJC1:@@@@", "does not decode"),
-        ("WFJC1:" + base64.urlsafe_b64encode(b"not zlib").decode(), "does not unpack"),
-        ("WFJC1:" + base64.urlsafe_b64encode(zlib.compress(b"{not json")).decode(), "does not read"),
-        ("WFJC1:" + base64.urlsafe_b64encode(zlib.compress(b'{"v": 2}')).decode(), "does not read (v = 2)"),
+        ("WFIX1:abc", "does not start with"),
+        ("WFIC1:@@@@", "does not decode"),
+        ("WFIC1:" + base64.urlsafe_b64encode(b"not zlib").decode(), "does not unpack"),
+        ("WFIC1:" + base64.urlsafe_b64encode(zlib.compress(b"{not json")).decode(), "does not read"),
+        ("WFIC1:" + base64.urlsafe_b64encode(zlib.compress(b'{"v": 2}')).decode(), "does not read (v = 2)"),
     ],
 )
 def test_decode_says_why_a_string_does_not_read(text, why):
@@ -121,7 +121,7 @@ def test_a_cut_paste_does_not_read(root):
 
 def test_decode_refuses_text_over_the_limit():
     with pytest.raises(SendError, match="longer than"):
-        decode("WFJC1:" + "A" * collector_send.MAX_TEXT)
+        decode("WFIC1:" + "A" * collector_send.MAX_TEXT)
 
 
 # --- check ------------------------------------------------------------------------------------------
@@ -145,8 +145,8 @@ def test_check_reads_the_string_anywhere_in_the_body():
 
 def test_check_fails_with_a_reason_a_player_can_act_on():
     ok, text = collector.summary(body("I forgot to paste it"))
-    assert not ok and "could not be read" in text and "WFJC1:" in text and "/wfj collector send all" in text
-    ok, text = collector.summary(body("WFJC1:@@@@"))  # the string stops at the first character outside Base64
+    assert not ok and "could not be read" in text and "WFIC1:" in text and "/wfi collector send all" in text
+    ok, text = collector.summary(body("WFIC1:@@@@"))  # the string stops at the first character outside Base64
     assert not ok and "is not complete" in text
 
 
@@ -158,14 +158,14 @@ def test_check_fails_a_send_with_no_valid_entry():
 def _zip(text: str) -> bytes:
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
-        z.writestr("WoWForeverJapanese.lua", text)
+        z.writestr("WoWForeverItalian.lua", text)
     return buf.getvalue()
 
 
 def test_check_reads_an_attached_zip(root):
-    url = "https://github.com/user-attachments/files/123/WoWForeverJapanese.zip"
+    url = "https://github.com/user-attachments/files/123/WoWForeverItalian.zip"
     blob = _zip((root / FIXTURE).read_text(encoding="utf-8"))
-    ok, text = collector.summary(body(f"[WoWForeverJapanese.zip]({url})"), download=lambda u: blob)
+    ok, text = collector.summary(body(f"[WoWForeverItalian.zip]({url})"), download=lambda u: blob)
     assert ok and "the attached file" in text and "| Entries | 12 |" in text
 
 
@@ -235,7 +235,7 @@ def test_intake_refuses_an_issue_without_permission(tmp_path: Path, monkeypatch,
 def test_intake_says_why_a_send_does_not_read(tmp_path: Path, monkeypatch, capsys):
     _data_dir(tmp_path, monkeypatch)
     saved = tmp_path / "body.txt"
-    saved.write_text(body("WFJC1:@@@@"))
+    saved.write_text(body("WFIC1:@@@@"))
     assert collector.run(["intake", "--file", str(saved), "--number", "5"]) == 1
     assert "is not complete" in capsys.readouterr().out
 
@@ -244,10 +244,10 @@ def test_intake_says_why_a_send_does_not_read(tmp_path: Path, monkeypatch, capsy
 
 
 def test_hostile_json_is_a_broken_send_not_a_crash():
-    deep = "WFJC1:" + base64.urlsafe_b64encode(zlib.compress(b"[" * 200_000)).decode()
+    deep = "WFIC1:" + base64.urlsafe_b64encode(zlib.compress(b"[" * 200_000)).decode()
     with pytest.raises(SendError, match="does not read"):
         decode(deep)
-    huge = "WFJC1:" + base64.urlsafe_b64encode(zlib.compress(b'{"v": 1, "e": [' + b"9" * 5000 + b"]}")).decode()
+    huge = "WFIC1:" + base64.urlsafe_b64encode(zlib.compress(b'{"v": 1, "e": [' + b"9" * 5000 + b"]}")).decode()
     with pytest.raises(SendError, match="does not read"):
         decode(huge)
 
@@ -272,16 +272,16 @@ def test_a_zipped_folder_reads_the_addon_file(root):
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
         z.writestr("SavedVariables/Blizzard_Console.lua", "x = 1")
-        z.writestr("__MACOSX/SavedVariables/._WoWForeverJapanese.lua", "junk")
-        z.writestr("SavedVariables/WoWForeverJapanese.lua", (root / FIXTURE).read_text(encoding="utf-8"))
+        z.writestr("__MACOSX/SavedVariables/._WoWForeverItalian.lua", "junk")
+        z.writestr("SavedVariables/WoWForeverItalian.lua", (root / FIXTURE).read_text(encoding="utf-8"))
     ok, text = collector.summary(body(f"[x]({url})"), download=lambda u: buf.getvalue())
     assert ok and "| Entries | 12 |" in text
 
 
 def test_an_encrypted_or_broken_zip_is_a_broken_send():
-    url = "https://github.com/user-attachments/files/9/WoWForeverJapanese.zip"
-    blob = bytearray(_zip("WFJ_Collector = {}"))
-    blob[30 + len("WoWForeverJapanese.lua") + 2] ^= 0xFF  # corrupt the member's data
+    url = "https://github.com/user-attachments/files/9/WoWForeverItalian.zip"
+    blob = bytearray(_zip("WFI_Collector = {}"))
+    blob[30 + len("WoWForeverItalian.lua") + 2] ^= 0xFF  # corrupt the member's data
     ok, text = collector.summary(body(f"[x]({url})"), download=lambda u: bytes(blob))
     assert not ok and "could not be read" in text
     ok, text = collector.summary(body(f"[x]({url})"), download=lambda u: b"not a zip")
@@ -299,8 +299,8 @@ def test_the_comment_keeps_its_table_whatever_the_version_says(root):
 
 
 def test_intake_lists_the_lines_it_replaces(tmp_path: Path, monkeypatch, capsys):
-    from wfj.core.model import english_line
-    from wfj.io.jsonl_store import Store
+    from wfi.core.model import english_line
+    from wfi.io.jsonl_store import Store
 
     data = _data_dir(tmp_path, monkeypatch)
     old = "Old Title"

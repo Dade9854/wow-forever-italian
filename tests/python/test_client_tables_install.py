@@ -1,10 +1,10 @@
 """Proof on a real install: every client table extracted from the local archive equals wago.tools'
 export of the same build. Runs only where both are present. CI has no game:
 
-    WFJ_WOW_DIR="<World of Warcraft folder>" WFJ_WAGO_DIR=<dir of wago CSVs at that build> \\
-        [WFJ_WOW_PRODUCT=wow_classic_era] pytest tests/python/test_client_tables_install.py
+    WFI_WOW_DIR="<World of Warcraft folder>" WFI_WAGO_DIR=<dir of wago CSVs at that build> \\
+        [WFI_WOW_PRODUCT=wow_classic_era] pytest tests/python/test_client_tables_install.py
 
-With WFJ_HOTFIXES=<client folder>/Cache/ADB/enUS/DBCache.bin as well, every hotfix record of the tables
+With WFI_HOTFIXES=<client folder>/Cache/ADB/enUS/DBCache.bin as well, every hotfix record of the tables
 that declare field types decodes to exactly its size: the first check of the declared-type layout on a real
 cache (the layout is built from wowdev/DBCD and WoWDBDefs).
 """
@@ -14,17 +14,17 @@ from pathlib import Path
 
 import pytest
 
-from wfj.io import casc, client_tables, dbcache
+from wfi.io import casc, client_tables, dbcache
 
-WOW = os.environ.get("WFJ_WOW_DIR")
-WAGO = os.environ.get("WFJ_WAGO_DIR")
-HOTFIXES = os.environ.get("WFJ_HOTFIXES")
-needs_wago = pytest.mark.skipif(not (WOW and WAGO), reason="needs WFJ_WOW_DIR and WFJ_WAGO_DIR")
+WOW = os.environ.get("WFI_WOW_DIR")
+WAGO = os.environ.get("WFI_WAGO_DIR")
+HOTFIXES = os.environ.get("WFI_HOTFIXES")
+needs_wago = pytest.mark.skipif(not (WOW and WAGO), reason="needs WFI_WOW_DIR and WFI_WAGO_DIR")
 
 
 @pytest.fixture(scope="module")
 def archive() -> casc.LocalArchive:
-    return casc.LocalArchive(Path(WOW), os.environ.get("WFJ_WOW_PRODUCT", "wow_classic_era"))
+    return casc.LocalArchive(Path(WOW), os.environ.get("WFI_WOW_PRODUCT", "wow_classic_era"))
 
 
 @needs_wago
@@ -41,7 +41,7 @@ def test_table_matches_wago(archive: casc.LocalArchive, name: str, tmp_path: Pat
     assert client_tables.compare_readers(table, out, theirs) == []
 
 
-@pytest.mark.skipif(not (WOW and HOTFIXES), reason="needs WFJ_WOW_DIR and WFJ_HOTFIXES")
+@pytest.mark.skipif(not (WOW and HOTFIXES), reason="needs WFI_WOW_DIR and WFI_HOTFIXES")
 @pytest.mark.parametrize("name", [n for n, t in client_tables.TABLES.items() if t.record])
 def test_real_hotfixes_decode_by_declared_types(archive: casc.LocalArchive, name: str):
     table = client_tables.TABLES[name]

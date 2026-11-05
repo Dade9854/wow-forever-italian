@@ -7,7 +7,7 @@ describe("Core/Align: shared vectors", function()
   local A
   setup(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
 
@@ -39,7 +39,7 @@ describe("Core/Align.check: placeholders and the gate", function()
   local A
   before_each(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
 
@@ -102,7 +102,7 @@ describe("gate", function()
   local A
   setup(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
   local LINE = { "Restores 50 health." }
@@ -134,7 +134,7 @@ describe("durations", function()
   local A
   setup(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
 
@@ -238,7 +238,7 @@ describe("fillValues", function()
   local A
   setup(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
 
@@ -297,7 +297,7 @@ describe("name-list tail ($T)", function()
   local A
   setup(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
   local live = "You are fluent in the following languages:\r\nCommon\r\nDwarvish"
@@ -337,7 +337,7 @@ describe("Core/Align: icons and branch variants (ADR-043)", function()
   local ICON = "|Tinterface\\icons\\inv_misc_food_15:0|t"
   setup(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
 
@@ -413,7 +413,7 @@ describe("name-list tail after a multi-line head", function()
   local A
   setup(function()
     local ns = {}
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
   local live = "Allows you to ride basic ground mounts that require a riding skill of 75.\r\n\r\nKnown abilities:"
@@ -464,9 +464,9 @@ describe("Core/Align.variantKey and keyed variants", function()
     ["1 hr 30 min"] = "1時間30分" })[t] end
   setup(function()
     local ns = {}
-    H.loadPure("Core/Normalize.lua", "WoWForeverJapanese", ns)
-    H.loadPure("Core/Hash.lua", "WoWForeverJapanese", ns)
-    H.loadPure("Core/Align.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/Normalize.lua", "WoWForeverItalian", ns)
+    H.loadPure("Core/Hash.lua", "WoWForeverItalian", ns)
+    H.loadPure("Core/Align.lua", "WoWForeverItalian", ns)
     A = ns.Align
   end)
 

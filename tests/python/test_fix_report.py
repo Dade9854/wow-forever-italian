@@ -5,9 +5,9 @@ import json
 
 import pytest
 
-from wfj.core import fix_report as F
-from wfj.core.readings import ja_hash
-from wfj.dev import gen_report_vectors
+from wfi.core import fix_report as F
+from wfi.core.readings import ja_hash
+from wfi.dev import gen_report_vectors
 
 
 def _vectors(root):
@@ -53,7 +53,7 @@ def test_every_bad_text_is_refused_with_its_reason(root):
 
 
 def _report(fixes: int) -> str:
-    lines = ["WFJ-REPORT 1", "addon v0.1.0 client 1.60.1.70009"]
+    lines = ["WFI-REPORT 1", "addon v0.1.0 client 1.60.1.70009"]
     lines += [f"fix quest {n} title 0011223344556677 typo" for n in range(1, fixes + 1)]
     return "\n".join([*lines, f"end {fixes}"]) + "\n"
 
@@ -62,13 +62,13 @@ def test_a_report_holds_no_more_fixes_than_the_addon_keeps(root):
     assert len(F.parse(_report(F.FIXES_MAX)).fixes) == F.FIXES_MAX
     with pytest.raises(F.ReportError, match=f"at most {F.FIXES_MAX} fixes"):
         F.parse(_report(F.FIXES_MAX + 1))
-    reports = (root / "addon/WoWForeverJapanese/Core/Reports.lua").read_text(encoding="utf-8")
+    reports = (root / "addon/WoWForeverItalian/Core/Reports.lua").read_text(encoding="utf-8")
     assert f"Reports.CAP = {F.FIXES_MAX}\n" in reports
 
 
 @pytest.mark.parametrize("bad", ["\u00b2", "\u0663", "9" * 11, "9" * 5000, "07", "-7", "7.0"])
 def test_an_id_that_is_not_a_plain_number_is_refused(bad):
-    text = f"WFJ-REPORT 1\naddon v0.1.0 client 1.60.1.70009\nfix quest {bad} title 0011223344556677 typo\nend 1\n"
+    text = f"WFI-REPORT 1\naddon v0.1.0 client 1.60.1.70009\nfix quest {bad} title 0011223344556677 typo\nend 1\n"
     with pytest.raises(F.ReportError):
         F.parse(text)
 
@@ -112,7 +112,7 @@ def test_a_book_fix_lands_on_the_page_that_ships_under_its_english():
 def test_resolve_hashes_a_tooltip_as_the_addon_ships_it():
     """A hand-written tooltip's manual breaks are joined on the way out (ADR-049): the player's report carries
     the hash of the joined text, and intake must find the line by it."""
-    from wfj.core import tooltip_text
+    from wfi.core import tooltip_text
 
     line = {"id": 5176, "field": "description", "ja": "対象に$N1のNature属性ダメージを\n与えます。", "status": "unaligned",
             "provenance": {"class": "human", "translator": "t", "source": "x", "imported": "2026-01-01"}}

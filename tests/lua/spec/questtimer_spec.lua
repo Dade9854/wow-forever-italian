@@ -11,14 +11,14 @@ FILES[#FILES + 1] = "UI/QuestTimer.lua"
 local UI = { QUEST_TIMERS = { "Quest Timers", "クエストタイマー" }, SEARCH = { "Search", "検索" } }
 
 describe("the quest timers panel on the Forever client", function()
-  local WFJ, SS, widths
+  local WFI, SS, widths
 
   local function install(shape)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     widths = 0
     local frame = CreateFrame("Frame", "QuestTimerFrame")
     frame.Header = CreateFrame("Frame", nil, frame)
@@ -26,7 +26,7 @@ describe("the quest timers panel on the Forever client", function()
     function frame.Header.UpdateWidth() widths = widths + 1 end
     frame.row = { Text = Stub.fontString("Search") } -- a timer row (never ours), holding a dictionary word
     if shape then shape(frame) end
-    return WFJ.QuestTimer.init()
+    return WFI.QuestTimer.init()
   end
 
   after_each(function()
@@ -41,16 +41,16 @@ describe("the quest timers panel on the Forever client", function()
     assert.are.equal("Quest Timers", text:GetText()) -- hidden: untouched
     _G.QuestTimerFrame:Show()
     assert.are.equal("クエストタイマー", text:GetText())
-    assert.are.equal(WFJ.Font.PATH, (text:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (text:GetFont()))
     assert.is_true(widths >= 1)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Quest Timers", text:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     _G.QuestTimerFrame:Hide()
     assert.are.equal("Quest Timers", text:GetText())
     assert.are.equal(0, SS.count("questtimer"))
     assert.are.equal("Search", _G.QuestTimerFrame.row.Text:GetText()) -- a row is never walked
-    assert.is_false(WFJ.QuestTimer.init()) -- once
+    assert.is_false(WFI.QuestTimer.init()) -- once
   end)
 
   it("a header that holds anything else stays English, even a dictionary word", function()
@@ -79,7 +79,7 @@ describe("the quest timers panel on the Forever client", function()
   it("without the mainline header init returns false and touches nothing", function()
     assert.is_false(install(function(frame) frame.Header = nil end))
     _G.QuestTimerFrame = nil
-    assert.is_false(WFJ.QuestTimer.init())
+    assert.is_false(WFI.QuestTimer.init())
     assert.are.equal(0, SS.count("questtimer"))
   end)
 end)

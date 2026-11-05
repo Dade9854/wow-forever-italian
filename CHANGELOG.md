@@ -1,6 +1,6 @@
 # Changelog
 
-What changed in each release of WoW Forever Japanese, written for players.
+What changed in each release of WoW Forever Italian, written for players.
 
 Every change that reaches the game adds a line under **Unreleased**, in one of these groups:
 **Added** (something new), **Changed**, **Fixed**, **Removed**, **Breaking** (your settings are reset or
@@ -102,15 +102,15 @@ an old setting stops working). A release moves those lines under its version num
 ## 0.1.0 - 2026-10-10
 
 ### Added
-- Japanese voice over: install "WoW Forever Japanese Voice" on CurseForge (after the addon) and quest offers, progress and turn-ins, NPC greetings and talk, and book and letter pages are read aloud in Japanese while the window shows the Japanese. Every NPC has a voice that fits who they are (race, gender, age, kind of being) and keeps it, and your character's own spoken error lines ("out of range") play in Japanese too, in a voice for your race and sex. With the voice panel on (the default), the voice goes on while you hold Alt or after you close the window. With the panel's size set to Off, holding Alt or closing the window stops the line, and a small button on the window stops it or plays it again. While a line plays, the game's English NPC voice is turned off and then put back. Without the voice nothing changes and no voice settings show; the Voice settings page turns it off, or one kind of line at a time.
-- The voice panel: while a line is read aloud, a panel at the bottom of the screen shows the NPC's moving head, their name and title, and the line in Japanese one sentence at a time as the voice reads it, with word cards when you point at a word. A line that starts while another plays waits its turn, and an "Up next" list above the panel lets you click one to hear it now. Buttons on the panel pause and resume, play the line again, show the whole text (the quest in your quest log, or a small window with the whole line) and close it; two new key bindings pause and replay. The line keeps playing after you close the window, and holding Alt shows the line's English on the panel while the Japanese voice goes on. The quest log's quest details get a play button that reads the quest through the panel with the NPC who gave it, as long as the addon saw that NPC hand it out. The panel fades after the last line, dims in combat, can be dragged and locked (locked, clicks pass through it to the world; `/wfj panel reset` puts it back). Its own words are in Japanese, in English while you hold Alt. A new **Voice panel** settings page holds Panel size (Off, Full, Compact strip) and Panel style (Dark, Parchment) and the panel's other switches.
+- Japanese voice over: install "WoW Forever Italian Voice" on CurseForge (after the addon) and quest offers, progress and turn-ins, NPC greetings and talk, and book and letter pages are read aloud in Japanese while the window shows the Japanese. Every NPC has a voice that fits who they are (race, gender, age, kind of being) and keeps it, and your character's own spoken error lines ("out of range") play in Japanese too, in a voice for your race and sex. With the voice panel on (the default), the voice goes on while you hold Alt or after you close the window. With the panel's size set to Off, holding Alt or closing the window stops the line, and a small button on the window stops it or plays it again. While a line plays, the game's English NPC voice is turned off and then put back. Without the voice nothing changes and no voice settings show; the Voice settings page turns it off, or one kind of line at a time.
+- The voice panel: while a line is read aloud, a panel at the bottom of the screen shows the NPC's moving head, their name and title, and the line in Japanese one sentence at a time as the voice reads it, with word cards when you point at a word. A line that starts while another plays waits its turn, and an "Up next" list above the panel lets you click one to hear it now. Buttons on the panel pause and resume, play the line again, show the whole text (the quest in your quest log, or a small window with the whole line) and close it; two new key bindings pause and replay. The line keeps playing after you close the window, and holding Alt shows the line's English on the panel while the Japanese voice goes on. The quest log's quest details get a play button that reads the quest through the panel with the NPC who gave it, as long as the addon saw that NPC hand it out. The panel fades after the last line, dims in combat, can be dragged and locked (locked, clicks pass through it to the world; `/wfi panel reset` puts it back). Its own words are in Japanese, in English while you hold Alt. A new **Voice panel** settings page holds Panel size (Off, Full, Compact strip) and Panel style (Dark, Parchment) and the panel's other switches.
 - The minimap button's tooltip shows the addon's version and, while the English Collector holds lines you have not sent yet, how many ("The collector has N lines we need. Right-click to send them.").
-- The About & Help page says whether the Japanese voice is installed. Without it, it shows the address of "WoW Forever Japanese Voice" on CurseForge, ready to copy; with it, it names the voice packs that loaded. Its two report buttons now sit side by side.
+- The About & Help page says whether the Japanese voice is installed. Without it, it shows the address of "WoW Forever Italian Voice" on CurseForge, ready to copy; with it, it names the voice packs that loaded. Its two report buttons now sit side by side.
 - Japanese for the quests Forever build 1.60.1.70245 opens (their titles, objectives and descriptions, with word readings), the quest text it reworded, and its new item tooltips. Six item tooltips whose old Japanese had the wrong stat or a fixed number (for example a shield block chance written as parry) are newly translated.
 - Japanese for the text Forever build 1.60.1.70291 added or reworded: its quests, item and spell tooltips and interface text, with word readings, including the beta's Legacy achievement and the subtitles of the gnome race introduction, and the lines the English Collector sent in. The quests whose wording changed are read aloud again in the new Japanese.
 - The PvP scoreboard's stat names that come from a table of their own on this build, such as Alterac Valley's towers and graveyards, are in Japanese.
 - New interface text is translated: the voice chat (Discord) settings, the voice chat join popup, the group finder's voice chat choice and its line in a listing's tooltip, the chat line when the group's voice service changes, Edit Mode's gamepad action bar and the gamepad's Collapse and Expand prompts.
-- When the English Collector holds 10 or more lines you have not sent yet, a small window opens at login or reload with how many are waiting, a **Send English** button that opens the send window, and **Later**. It shows at most once a day and gives only the count. Its **Don't remind me again** box, the new setting on the English Collector page, or `/wfj collector remind off` turns it off; the collector keeps recording. The minimap button's menu also gets **Send collected English** with the count while any line is waiting.
+- When the English Collector holds 10 or more lines you have not sent yet, a small window opens at login or reload with how many are waiting, a **Send English** button that opens the send window, and **Later**. It shows at most once a day and gives only the count. Its **Don't remind me again** box, the new setting on the English Collector page, or `/wfi collector remind off` turns it off; the collector keeps recording. The minimap button's menu also gets **Send collected English** with the count while any line is waiting.
 
 ### Fixed
 - Quests that Forever served on an earlier build but did not answer on 1.60.1.70291 keep the English Forever showed (and their Japanese), instead of falling back to Classic Era's wording.
@@ -123,7 +123,7 @@ an old setting stops working). A release moves those lines under its version num
 
 ### Changed
 - The game text is read from Forever build 1.60.1.70291.
-- The problem log (`/wfj log`) now notes, for each NPC chat line, whether it was said to you and what the English collector did with it (yes/no flags only, never a name or the line's text), and it keeps the latest NPC lines even when the log is full.
+- The problem log (`/wfi log`) now notes, for each NPC chat line, whether it was said to you and what the English collector did with it (yes/no flags only, never a name or the line's text), and it keeps the latest NPC lines even when the log is full.
 
 ## 0.1.0-alpha.8 - 2026-10-05
 
@@ -133,19 +133,19 @@ an old setting stops working). A release moves those lines under its version num
 - The turn-in text of "Coldridge Valley Mail Delivery" is now translated in full; Forever's text is longer than the one the old translation covered.
 
 ### Changed
-- The problem log (`/wfj log`) now records how every NPC chat line came out, translated or not, and says when NPC speech could not be set up, so a bug report can name why a line stayed English. It holds keys and yes/no flags only, never the line's text or the NPC's name.
+- The problem log (`/wfi log`) now records how every NPC chat line came out, translated or not, and says when NPC speech could not be set up, so a bug report can name why a line stayed English. It holds keys and yes/no flags only, never the line's text or the NPC's name.
 
 ## 0.1.0-alpha.7 - 2026-10-04
 
 ### Added
-- Report a bug or send an idea from the game: `/wfj bug` (or **Report a bug or idea** in the 字 minimap button's menu) opens a window: pick **Bug** or **Idea** and open its link to the GitHub issue form. A bug report comes with the game build, the addon version and the addon's own Lua errors already filled in. Click **I sent it** afterwards, and the next report holds only new errors.
-- The addon now keeps its own Lua errors (only errors raised in its own files, with your character's name left out), since the game hides Lua errors by default. The first one in a session prints one line in chat, and `/wfj log` ends with how many it holds. The game's Lua error window and addons such as BugSack still see every error.
+- Report a bug or send an idea from the game: `/wfi bug` (or **Report a bug or idea** in the 字 minimap button's menu) opens a window: pick **Bug** or **Idea** and open its link to the GitHub issue form. A bug report comes with the game build, the addon version and the addon's own Lua errors already filled in. Click **I sent it** afterwards, and the next report holds only new errors.
+- The addon now keeps its own Lua errors (only errors raised in its own files, with your character's name left out), since the game hides Lua errors by default. The first one in a session prints one line in chat, and `/wfi log` ends with how many it holds. The game's Lua error window and addons such as BugSack still see every error.
 
 ### Changed
 - The About page's issue link is now a **Report a bug or idea** button, and the bug report form says how to fill it in from the game.
 - Inside the spellbook, the line under each spell ("Rank 1", "Passive", "Level 20"), flyout group names, search-result headers, the page number and the search suggestions now stay English. Writing Japanese into them is what made the action bars stop working in combat. The spellbook's title, search box and settings menu stay Japanese, and spell tooltips are unchanged.
 - The 字 minimap button's right-click menu is now the addon's own small menu, with the same entries.
-- The problem log now records where a blocked action came from: the call path at the block, the first action-bar setting the addon's taint reached, the code that wrote it and the game events before it. `/wfj taint` checks for it at any time.
+- The problem log now records where a blocked action came from: the call path at the block, the first action-bar setting the addon's taint reached, the code that wrote it and the game events before it. `/wfi taint` checks for it at any time.
 - In the quest log, the `[要更新 / English Changed]` and `[未翻訳 / Not Translated]` markers now sit to the right of the 戻る button instead of above the description.
 
 ### Fixed
@@ -157,10 +157,10 @@ an old setting stops working). A release moves those lines under its version num
 ## 0.1.0-alpha.6 - 2026-10-03
 
 ### Added
-- A problem log for the addon (`/wfj log`). It notes when the game blocks the addon or a hooked part of the game stops answering, and keeps it across reloads so a problem can be traced afterwards.
+- A problem log for the addon (`/wfi log`). It notes when the game blocks the addon or a hooked part of the game stops answering, and keeps it across reloads so a problem can be traced afterwards.
 - Japanese for the progress and turn-in text of 421 quests (630 lines), mostly ones new in Forever, from text Forever players recorded with the forever-vo addon. Its NPC greetings are read too.
 - What NPCs say in chat is now recorded by the addon's collector, so Forever's own NPC speech can be translated.
-- Send the English the addon recorded straight from the game: the **Send English** button on the English Collector page (or `/wfj collector send`) gives you one link that opens a filled-in GitHub issue. Click **I sent it** afterwards, and the next send holds only new lines. Lines that have a translation by then are left out.
+- Send the English the addon recorded straight from the game: the **Send English** button on the English Collector page (or `/wfi collector send`) gives you one link that opens a filled-in GitHub issue. Click **I sent it** afterwards, and the next send holds only new lines. Lines that have a translation by then are left out.
 - Japanese for 31 NPC lines on Zephras Isle, the Skyborne starting area, recorded by the addon's collector.
 
 ### Changed
@@ -213,7 +213,7 @@ an old setting stops working). A release moves those lines under its version num
 ## 0.1.0-alpha.4 - 2026-10-01
 
 ### Fixed
-- The settings page header reads WoW Forever Japanese (日本語化) in both languages, the addon's name as the addon list shows it.
+- The settings page header reads WoW Forever Italian (日本語化) in both languages, the addon's name as the addon list shows it.
 
 ## 0.1.0-alpha.3 - 2026-10-01
 
@@ -246,8 +246,8 @@ an old setting stops working). A release moves those lines under its version num
 - Hold Alt (changeable) to see the game's own English wherever Japanese is showing.
 - Point at a Japanese word to see its reading and a short English meaning.
 - Names of people, places, creatures, items and spells stay in English everywhere.
-- Settings in Esc > Options > AddOns, or type /wfj config.
-- Report a wrong or awkward translation without typing: the 字 minimap button (or /wfj fix) lists the lines you just read. Pick one, choose what is wrong, rewrite it if you like, and paste the report into the issue form.
+- Settings in Esc > Options > AddOns, or type /wfi config.
+- Report a wrong or awkward translation without typing: the 字 minimap button (or /wfi fix) lists the lines you just read. Pick one, choose what is wrong, rewrite it if you like, and paste the report into the issue form.
 - A 字 minimap button: left-click to report a line; right-click to turn translation on or off, open the settings or hide the button.
 - The addon's own windows and settings read in Japanese; hold Alt, or turn translation off, to read them in English.
 

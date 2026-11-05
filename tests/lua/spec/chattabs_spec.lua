@@ -64,16 +64,16 @@ local function hover(tab) -- the tab's OnEnter
 end
 
 describe("the chat frame's hovers on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
+    WFI = H.loadChunks(FILES)
     -- the Core/UIStrings grants this surface needs
-    WFJ.UIStrings.ARGS.CHAT_TAB_NAME = { [1] = "text" }
-    WFJ.UIStrings.LABELS.CHAT_CHANNELS = "binding"
-    H.uiSetup(WFJ, UI)
+    WFI.UIStrings.ARGS.CHAT_TAB_NAME = { [1] = "text" }
+    WFI.UIStrings.LABELS.CHAT_CHANNELS = "binding"
+    H.uiSetup(WFI, UI)
   end
 
   local function tabs()
@@ -93,23 +93,23 @@ describe("the chat frame's hovers on Forever", function()
   it("a tab's hover is Japanese around the window's name; the tab's own text is never touched", function()
     load()
     tabs()
-    assert.is_true(WFJ.ChatTabs.init())
+    assert.is_true(WFI.ChatTabs.init())
     hover(_G.ChatFrame1Tab)
     assert.are.equal("Generalタブ", _G.GameTooltipTextLeft1:GetText()) -- "General" is a dictionary word: kept
     assert.are.equal("<右クリックでタブ設定>", _G.GameTooltipTextLeft2:GetText())
     assert.are.equal("General", _G.ChatFrame1Tab:GetText())
-    assert.are.equal(0, WFJ.Labels.show("chattabs", "x", _G.ChatFrame1Tab))
+    assert.are.equal(0, WFI.Labels.show("chattabs", "x", _G.ChatFrame1Tab))
     _G.FCF_OpenTemporaryWindow() -- a whisper window's tab is registered when it appears
     hover(_G.ChatFrame3Tab)
     assert.are.equal("Thrallタブ", _G.GameTooltipTextLeft1:GetText())
-    assert.is_false(WFJ.ChatTabs.init())
+    assert.is_false(WFI.ChatTabs.init())
     assert.are.equal(1, #Stub.hooks["FCF_OpenTemporaryWindow"])
   end)
 
   it("the chat channels button's hover keeps its key binding", function()
     load()
     tabs()
-    assert.is_true(WFJ.ChatTabs.init())
+    assert.is_true(WFI.ChatTabs.init())
     local tt = _G.GameTooltip
     tt:SetOwner(_G.ChatFrameChannelButton)
     tt:SetText("Chat Channels |cffffd200(O)|r")
@@ -122,24 +122,24 @@ describe("the chat frame's hovers on Forever", function()
   it("the docked-tabs overflow list's count is Japanese", function()
     load()
     tabs()
-    assert.is_true(WFJ.ChatTabs.init())
+    assert.is_true(WFI.ChatTabs.init())
     local list = { numTabs = Stub.fontString("") }
     _G.FCFDockOverflowList_Update(list)
     assert.are.equal("チャットウィンドウ 12個", list.numTabs:GetText())
-    assert.has_no.errors(function() WFJ.ChatTabs.onOverflow(nil); WFJ.ChatTabs.onOverflow({ numTabs = 3 }) end)
+    assert.has_no.errors(function() WFI.ChatTabs.onOverflow(nil); WFI.ChatTabs.onOverflow({ numTabs = 3 }) end)
   end)
 
   it("client names bound to the wrong type degrade with no error", function()
     load()
     tabs()
     _G.ChatFrame2Tab, _G.ChatFrameChannelButton, _G.FCF_OpenTemporaryWindow = 7, "button", {}
-    assert.has_no.errors(function() assert.is_true(WFJ.ChatTabs.init()) end)
-    assert.are.equal(1, WFJ.ChatTabs.registerTabs())
+    assert.has_no.errors(function() assert.is_true(WFI.ChatTabs.init()) end)
+    assert.are.equal(1, WFI.ChatTabs.registerTabs())
   end)
 
   it("no chat tabs → init is false", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.ChatTabs.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.ChatTabs.init()) end)
   end)
 
   it("the edit box header is Japanese after UpdateHeader, the whisper target kept; the typed text is"
@@ -147,29 +147,29 @@ describe("the chat frame's hovers on Forever", function()
     load()
     tabs()
     local box, header = editBox("ChatFrame1EditBox")
-    assert.is_true(WFJ.ChatTabs.init())
+    assert.is_true(WFI.ChatTabs.init())
     box:UpdateHeader()
     assert.are.equal("発言： ", header:GetText())
     assert.are.equal(15 + #"発言： " * 6, box.inset)
     box.chatType, box.target = "WHISPER", "Thrall"
     box:UpdateHeader()
     assert.are.equal("Thrallへ囁く： ", header:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Tell Thrall: ", header:GetText())
     assert.are.equal(15 + #"Tell Thrall: " * 6, box.inset)
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     box.chatType = "CHANNEL" -- a channel header is a channel's name: never ours
     _G.CHAT_CHANNEL_SEND = "[1. General]: "
     box:UpdateHeader()
     assert.are.equal("[1. General]: ", header:GetText())
     assert.are.equal(15 + #"[1. General]: " * 6, box.inset)
-    Stub.keys.alt = true; WFJ.Modifier.refresh(); Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh(); Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(15 + #"[1. General]: " * 6, box.inset) -- a refit never moves the client's inset for English
     -- whatever else the client adds to the inset is kept: the Japanese moves it by the width difference only
     box.chatType, box.extra = "SAY", 30
     box:UpdateHeader()
     assert.are.equal(15 + #"発言： " * 6 + 30, box.inset)
-    assert.are.equal(0, WFJ.ChatTabs.registerEditBoxes()) -- hooked once
+    assert.are.equal(0, WFI.ChatTabs.registerEditBoxes()) -- hooked once
     for _, n in ipairs({ "ChatFrame1EditBox", "ChatFrame1EditBoxHeader", "ChatFrame1EditBoxHeaderSuffix",
       "CHAT_CHANNEL_SEND" }) do _G[n] = nil end
   end)
@@ -178,17 +178,17 @@ end)
 -- UI/ChatTabs: the newcomer chat hint (ChatFrameEditBoxMixin:UpdateNewcomerEditBoxHint) in Japanese, the slash
 -- command kept.
 describe("the newcomer chat hint on Forever", function()
-  local WFJ
+  local WFI
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     Stub.button("ChatFrame1Tab", "General")
     CreateFrame("Button", "ChatFrameChannelButton")
     editBox("ChatFrame1EditBox")
-    assert.is_true(WFJ.ChatTabs.init())
+    assert.is_true(WFI.ChatTabs.init())
   end)
 
   after_each(function()
@@ -207,10 +207,10 @@ describe("the newcomer chat hint on Forever", function()
     box:UpdateNewcomerEditBoxHint()
     assert.are.equal("/1と入力して初心者チャットで質問", box.NewcomerHint:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Type /1 to ask questions in Newcomer Chat", box.NewcomerHint:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("/1と入力して初心者チャットで質問", box.NewcomerHint:GetText())
   end)
 end)

@@ -192,7 +192,7 @@
 - **Cooldown durations.** Which duration template the C client prints inside `ITEM_COOLDOWN_TIME` / `_TOTAL` is not in the Lua source [unknown].
 
 ### 4. Inventory method
-- `pipeline/wfj/dev/ui_inventory.py` scans each surface's files for `text="KEY"`, `value="KEY" type="global"`, bare upper-case identifiers and `..NAME..` concatenations. It adds `DYNAMIC` families for names built at run time (`_G["SPELL_STAT"..i.."_NAME"]`, `GetText("FACTION_STANDING_LABEL"..id)`, quoted `GetText("GUILD_TOTAL")`, the `SEARCH` template key).
+- `pipeline/wfi/dev/ui_inventory.py` scans each surface's files for `text="KEY"`, `value="KEY" type="global"`, bare upper-case identifiers and `..NAME..` concatenations. It adds `DYNAMIC` families for names built at run time (`_G["SPELL_STAT"..i.."_NAME"]`, `GetText("FACTION_STANDING_LABEL"..id)`, quoted `GetText("GUILD_TOTAL")`, the `SEARCH` template key).
 - Result at the pinned commit: 19 surfaces, 1,185 distinct keys (`pipeline/ui_inventory.txt`, 1,259 lines). 499 exclusions carry reasons.
 - Scanner gaps found and fixed: `..NAME..` (mail `BUYOUT` / `HIGH_BIDDER`), `GUILD_TOTAL`, `SEARCH`.
 - Gap left: `TRAINER_PET_SPELL_LABEL` is appended through `GetText()` (excluded as a name composite). `LFG_BUTTON`'s Era writer is outside the listed files.

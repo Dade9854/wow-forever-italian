@@ -13,8 +13,8 @@ The word card's meanings ship once each in `Data/Gloss/`, and every reading row 
 1. **A committed numbers file.** `data/reading/meaning-numbers.tsv` records the number of every meaning ever numbered: `n<TAB>dictionary form<TAB>its reading<TAB>meaning`, one line per meaning, sorted by number. It is generated (marked `linguist-generated`) and never edited by hand.
 2. **A meaning keeps its number.** A new meaning takes the next number after the highest in the file; several new ones are numbered in sorted order, so a run is deterministic.
 3. **Numbers are never reused.** A meaning no current reading uses keeps its line and ships nowhere, which leaves a gap in `Data/Gloss/`. A meaning that comes back gets its old number.
-4. **`wfj generate` writes the file**, and only when it numbered something new (`generate: N meanings numbered for the first time`). A malformed line, a number given twice or a meaning listed twice stops it with an error naming the file.
-5. **`wfj validate` only reads it.** Rule 5 (regenerate-and-diff) fails when the file on disk is not the one `generate` would write: missing, some shipped meanings with no number, or any other difference. The fix is always `make generate`.
+4. **`wfi generate` writes the file**, and only when it numbered something new (`generate: N meanings numbered for the first time`). A malformed line, a number given twice or a meaning listed twice stops it with an error naming the file.
+5. **`wfi validate` only reads it.** Rule 5 (regenerate-and-diff) fails when the file on disk is not the one `generate` would write: missing, some shipped meanings with no number, or any other difference. The fix is always `make generate`.
 
 ## Rationale
 

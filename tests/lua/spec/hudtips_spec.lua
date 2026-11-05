@@ -63,7 +63,7 @@ local GLOBALS = { "MainMenuBarVehicleLeaveButton", "OverrideActionBar", "Durabil
 local function enter(frame) frame.scripts.OnEnter(frame) end
 
 describe("the HUD buttons' help tooltips on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
     local ns = H.loadChunks(FILES)
@@ -74,16 +74,16 @@ describe("the HUD buttons' help tooltips on Forever", function()
   local function fresh()
     H.uiTeardown()
     for _, n in ipairs(GLOBALS) do _G[n] = nil end
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
   end
 
   before_each(function()
     fresh()
     S = { taxi = true }
-    WFJ = load()
+    WFI = load()
     installHud()
-    assert.are.equal(5, WFJ.HudTips.init())
+    assert.are.equal(5, WFI.HudTips.init())
   end)
 
   after_each(function()
@@ -100,7 +100,7 @@ describe("the HUD buttons' help tooltips on Forever", function()
     enter(_G.MainMenuBarVehicleLeaveButton)
     assert.are.equal(ja("LEAVE_VEHICLE"), tip(1))
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal(en("LEAVE_VEHICLE"), tip(1))
   end)
 
@@ -123,7 +123,7 @@ describe("the HUD buttons' help tooltips on Forever", function()
     button.spellId = 0
     _G.MultiCastFlyoutButton_SetTooltip(button)
     assert.are.equal(ja("MULTI_CAST_TOOLTIP_NO_TOTEM"), tip(1))
-    assert.is_false(WFJ.HelpTooltip.registered(button))
+    assert.is_false(WFI.HelpTooltip.registered(button))
     button.spellId = 8071 -- a spell NAMED like the dictionary word
     _G.MultiCastFlyoutButton_SetTooltip(button)
     assert.are.equal("No Totem", tip(1))
@@ -144,7 +144,7 @@ describe("the HUD buttons' help tooltips on Forever", function()
   end)
 
   it("init runs once; a client with none of the owners is skipped without error", function()
-    assert.are.equal(5, WFJ.HudTips.init())
+    assert.are.equal(5, WFI.HudTips.init())
     assert.are.equal(1, #Stub.hooks["MultiCastFlyoutButton_SetTooltip"])
     fresh()
     local bare = load()

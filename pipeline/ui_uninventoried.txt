@@ -2,7 +2,7 @@
 # tests/python/test_ui_uninventoried.py: every key in pipeline/ui_keys.txt is in pipeline/ui_inventory.txt or here,
 # and every line here has a reason. A key lands here when the client never names it in a file the inventory
 # scans: it passes the string by reference, builds the name at run time, or the C client writes the line itself.
-# Prefer a DYNAMIC family or a window file in wfj/dev/ui_inventory.py over a line here.
+# Prefer a DYNAMIC family or a window file in wfi/dev/ui_inventory.py over a line here.
 ADDON_BANNED  # asked for by UI/AddonList.lua: the client passes the string by reference or builds its name at run time, so no scanned file names it
 ADDON_CORRUPT  # asked for by UI/AddonList.lua: the client passes the string by reference or builds its name at run time, so no scanned file names it
 ADDON_DEMAND_LOADED  # asked for by UI/AddonList.lua: the client passes the string by reference or builds its name at run time, so no scanned file names it

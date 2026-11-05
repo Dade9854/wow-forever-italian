@@ -33,14 +33,14 @@ local function install()
 end
 
 describe("the dressing room on Forever", function()
-  local WFJ
+  local WFI
 
-  before_each(function() WFJ = G.load(FILES, UI) end)
+  before_each(function() WFI = G.load(FILES, UI) end)
   after_each(function() G.clear(NAMES) end)
 
   it("the title renders Japanese after SetTitle and keeps it after a second SetTitle", function()
     local frame = install()
-    assert.is_true(WFJ.DressUp.init())
+    assert.is_true(WFI.DressUp.init())
     local title = frame.TitleContainer.TitleText
     assert.are.equal("試着室", title:GetText())
     frame:SetTitle(_G.DRESSUP_FRAME)
@@ -51,8 +51,8 @@ describe("the dressing room on Forever", function()
 
   it("buttons and the appearance-list tooltip translate; the player's set name stays as written", function()
     local frame, side = install()
-    WFJ.Labels.forbidNames(WFJ.DressUp.NEVER_TOUCH)
-    assert.is_true(WFJ.DressUp.init())
+    WFI.Labels.forbidNames(WFI.DressUp.NEVER_TOUCH)
+    assert.is_true(WFI.DressUp.init())
     frame:Show()
     side:Show()
     assert.are.equal("閉じる", _G.DressUpFrameCancelButton:GetText())
@@ -60,12 +60,12 @@ describe("the dressing room on Forever", function()
     assert.are.equal("カスタムセットをリンク", frame.LinkButton:GetText())
     assert.are.equal("リセット", side.ResetButton:GetText())
     assert.are.equal("Reset", frame.CustomSetDropdown.Text:GetText())
-    assert.is_true(G.unrecorded(WFJ, frame.CustomSetDropdown.Text))
+    assert.is_true(G.unrecorded(WFI, frame.CustomSetDropdown.Text))
     G.tooltip(frame.ToggleCustomSetDetailsButton, { "Appearance List" })
     assert.are.equal("外観リスト", G.line(1))
-    G.alt(WFJ, true)
+    G.alt(WFI, true)
     assert.are.equal("Reset", side.ResetButton:GetText())
-    G.alt(WFJ, false)
+    G.alt(WFI, false)
     side:Hide()
     assert.are.equal("Reset", side.ResetButton:GetText())
     assert.are.equal("リセット", frame.ResetButton:GetText()) -- the main window is still open
@@ -88,7 +88,7 @@ describe("the dressing room on Forever", function()
         end
       end
       frame.CustomSetDetailsPanel = panel
-      assert.is_true(WFJ.DressUp.init())
+      assert.is_true(WFI.DressUp.init())
       panel.names = { "Illusion: Crusader", "Illusion: Maybe" }
       panel:Refresh()
       assert.are.equal("幻影: Crusader", rows[1].Name:GetText())
@@ -96,9 +96,9 @@ describe("the dressing room on Forever", function()
       panel:Refresh()
       assert.are.equal("Arcanite Reaper", rows[1].Name:GetText())
       assert.are.equal("幻影: Fiery Weapon", rows[2].Name:GetText())
-      G.alt(WFJ, true)
+      G.alt(WFI, true)
       assert.are.equal("Illusion: Fiery Weapon", rows[2].Name:GetText())
-      G.alt(WFJ, false)
+      G.alt(WFI, false)
       frame:Hide()
       assert.are.equal("Illusion: Fiery Weapon", rows[2].Name:GetText())
     end)
@@ -106,7 +106,7 @@ describe("the dressing room on Forever", function()
   it("the custom-set dropdown's empty text and Save are Japanese; a set named like the empty text is not",
     function()
       local frame = install()
-      assert.is_true(WFJ.DressUp.init())
+      assert.is_true(WFI.DressUp.init())
       local dd = frame.CustomSetDropdown
       dd:UpdateText()
       assert.are.equal("|cff808080カスタムセットなし|r", dd.Text:GetText())
@@ -114,12 +114,12 @@ describe("the dressing room on Forever", function()
       dd.selection = "No Custom Set" -- a saved set the player named exactly like the empty text
       dd:UpdateText()
       assert.are.equal("No Custom Set", dd.Text:GetText())
-      assert.is_true(G.unrecorded(WFJ, dd.Text))
+      assert.is_true(G.unrecorded(WFI, dd.Text))
       dd.selection = nil
       dd:UpdateText()
-      G.alt(WFJ, true)
+      G.alt(WFI, true)
       assert.are.equal("|cff808080No Custom Set|r", dd.Text:GetText())
-      G.alt(WFJ, false)
+      G.alt(WFI, false)
     end)
 
   it("the appearance list's empty slot rows show the slot word in Japanese; an item name stays",
@@ -130,8 +130,8 @@ describe("the dressing room on Forever", function()
         return function() i = i + 1; return rows[i] end end } }
       function panel.Refresh() end
       frame.CustomSetDetailsPanel = panel
-      WFJ.UIStrings.ARGS.PARENS_TEMPLATE = WFJ.UIStrings.ARGS.PARENS_TEMPLATE or { [1] = "entry" }
-      assert.is_true(WFJ.DressUp.init())
+      WFI.UIStrings.ARGS.PARENS_TEMPLATE = WFI.UIStrings.ARGS.PARENS_TEMPLATE or { [1] = "entry" }
+      assert.is_true(WFI.DressUp.init())
       panel:Refresh()
       assert.are.equal("(頭)", rows[1].Name:GetText())
       assert.are.equal("Novice's Robe", rows[2].Name:GetText())
@@ -142,13 +142,13 @@ describe("the dressing room on Forever", function()
     frame.ResetButton, frame.LinkButton, frame.ToggleCustomSetDetailsButton = 1, "x", false
     _G.SideDressUpFrame = 2
     _G.DressUpFrameCancelButton = true
-    assert.has_no.errors(function() assert.is_true(WFJ.DressUp.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.DressUp.init()) end)
     assert.has_no.errors(function() frame:Show() end)
     assert.are.equal("試着室", frame.TitleContainer.TitleText:GetText())
-    assert.is_false(WFJ.DressUp.init())
+    assert.is_false(WFI.DressUp.init())
   end)
 
   it("no DressUpFrame: init is false and nothing is touched", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.DressUp.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.DressUp.init()) end)
   end)
 end)

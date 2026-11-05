@@ -56,7 +56,7 @@ def _shipped_ui() -> set[str]:
 
 
 def _unit_keys() -> set[str]:
-    text = (ROOT / "addon/WoWForeverJapanese/UI/TooltipUnit.lua").read_text(encoding="utf-8")
+    text = (ROOT / "addon/WoWForeverItalian/UI/TooltipUnit.lua").read_text(encoding="utf-8")
     block = text[text.index("TooltipUnit.KEYS = {"):text.index("local function creatureOnly")]
     return set(re.findall(r'"([A-Z][A-Z0-9_]+)"', block))
 
@@ -83,7 +83,7 @@ def test_translated_line_kinds_name_real_keys_or_data():
         modules = _MODULE.findall(why)
         assert modules, f"{kind}: a translated kind names the module that writes it"
         for module in modules:
-            assert (ROOT / f"addon/WoWForeverJapanese/UI/{module}.lua").is_file(), f"{kind}: no UI/{module}.lua"
+            assert (ROOT / f"addon/WoWForeverItalian/UI/{module}.lua").is_file(), f"{kind}: no UI/{module}.lua"
         keys = _KEYS.search(why)
         assert keys or "data:" in why, f"{kind}: name its `keys:` or say `data:`"
         for key in (keys.group(1).split() if keys else []):
@@ -99,7 +99,7 @@ def test_every_tooltip_type_has_one_decision_that_matches_the_hooks():
     assert sorted(decisions.keys() - types) == [], "a decision for a type the client does not have"
     hooked: dict[str, set[str]] = {}
     for module in ("Tooltip", "TooltipUnit", "TooltipData"):
-        text = (ROOT / f"addon/WoWForeverJapanese/UI/{module}.lua").read_text(encoding="utf-8")
+        text = (ROOT / f"addon/WoWForeverItalian/UI/{module}.lua").read_text(encoding="utf-8")
         names = set(re.findall(r"AddTooltipPostCall\(types\.(\w+)", text))
         for listed in re.findall(r'for _, name in ipairs\(\{([^}]*)\}\) do\s+if types\[name\]', text):
             names |= set(re.findall(r'"(\w+)"', listed))

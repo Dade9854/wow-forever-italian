@@ -46,8 +46,8 @@ def test_every_client_is_imported_in_order_after_the_shared_sources(root, tmp_pa
     (after both, so it outranks pfQuest) and its three table imports, each from that client's own folder, at its
     build and label, under union. The preflight of every client runs before the first write."""
     out = _dry(root, target, f"INPUTS={tmp_path}")
-    steps = [ln for ln in out if "-m wfj import " in ln and "--dry-run" not in ln]
-    verbs = [ln.split("-m wfj import ", 1)[1].split()[1 if " english " in ln else 0] for ln in steps]
+    steps = [ln for ln in out if "-m wfi import " in ln and "--dry-run" not in ln]
+    verbs = [ln.split("-m wfi import ", 1)[1].split()[1 if " english " in ln else 0] for ln in steps]
     shared = (["predecessor"] if target == "import" else []) + ["pfquest", "vmangos", "forever-vo"]
     # the served step runs last, once, after every client
     assert verbs == shared + ["wdb", "wago-ids", "client-text", "wago-ui"] * 2 + ["served"], verbs
@@ -88,10 +88,10 @@ def test_preflight_dry_runs_the_cache_import(makefile, root):
     recipe = "\n".join(_recipe(makefile, "client-preflight"))
     assert 'test -f "$(WDB_QUEST)"' in recipe and 'test -f "$(WAGO_QUESTV2)"' in recipe
     assert "import english wdb" in recipe and "--dry-run" in recipe
-    r = subprocess.run(["make", "-s", "-C", str(root), "import-english", "INPUTS=/nonexistent-wfj", "forever_QUEST_BUILD="],
+    r = subprocess.run(["make", "-s", "-C", str(root), "import-english", "INPUTS=/nonexistent-wfi", "forever_QUEST_BUILD="],
                        capture_output=True, text=True, check=False)
     assert r.returncode != 0
-    assert "import: classic-era: no quest cache at /nonexistent-wfj/clients/classic-era-1.15.9.69722/questcache.wdb" in r.stdout
+    assert "import: classic-era: no quest cache at /nonexistent-wfi/clients/classic-era-1.15.9.69722/questcache.wdb" in r.stdout
 
 
 def test_a_broken_second_client_stops_the_import_before_any_write(makefile, root, tmp_path):
@@ -158,9 +158,9 @@ def test_rebuild_check_refuses_a_dirty_tree_before_deleting(makefile):
     recipe = _recipe(makefile, "rebuild-check")
     assert "$(ONE_CLIENT_GUARD)" in recipe[0]
     assert "git status --porcelain -- data $(ADDON) pipeline Makefile" in recipe[1] and "exit 1" in recipe[1]
-    delete = next(i for i, ln in enumerate(recipe) if "wfj.dev.reset_english" in ln)
+    delete = next(i for i, ln in enumerate(recipe) if "wfi.dev.reset_english" in ln)
     assert delete > next(i for i, ln in enumerate(recipe) if "wdb-preflight" in ln) > 0
-    assert "-m wfj.dev.reset_english ../data/english" in recipe[delete]  # the collector's lines are kept
+    assert "-m wfi.dev.reset_english ../data/english" in recipe[delete]  # the collector's lines are kept
     after = "\n".join(recipe[delete + 1:])
     assert "$(MAKE) -s -j1 -S data" in after and "git status --porcelain -- data $(ADDON)" in after and "exit 1" in after
 
@@ -200,7 +200,7 @@ def test_no_personal_paths(makefile):
 def test_tables_extract_reads_the_client_and_writes_only_inputs(makefile):
     """The client folder is only read; the CSVs land in INPUTS, the hotfix cache is optional."""
     recipe = "\n".join(_recipe(makefile, "tables-extract"))
-    assert "wfj.dev.client_tables" in recipe and '--out "$(CLIENT_DIR)"' in recipe
+    assert "wfi.dev.client_tables" in recipe and '--out "$(CLIENT_DIR)"' in recipe
     assert '--product "$(PRODUCT)"' in recipe and ".flavor.info" not in recipe  # no other game file is read
     assert re.search(r"^PRODUCT\s*\?=\s*\$\(\$\(CLIENT\)_PRODUCT\)$", makefile, re.M)  # per client
     assert re.search(r"^HOTFIXES\s*\?=\s*\$\(WOW_DIR\)/Cache/ADB/enUS/DBCache\.bin$", makefile, re.M)
@@ -235,8 +235,8 @@ def test_wago_fetch_stamps_the_tables_after_moving_them(makefile):
     """The stamp is written once every CSV is in place, labelled wago@WAGO_BUILD."""
     recipe = _recipe(makefile, "wago-fetch")
     move = next(i for i, ln in enumerate(recipe) if 'mv "$(CLIENT_DIR)/$$t.csv.part"' in ln)
-    clear = next(i for i, ln in enumerate(recipe) if "wfj.dev.tables_stamp clear" in ln)
-    stamp = next(i for i, ln in enumerate(recipe) if "wfj.dev.tables_stamp write" in ln)
+    clear = next(i for i, ln in enumerate(recipe) if "wfi.dev.tables_stamp clear" in ln)
+    stamp = next(i for i, ln in enumerate(recipe) if "wfi.dev.tables_stamp write" in ln)
     assert clear < move < stamp  # unstamped while the CSVs are replaced
     assert '--dir "$(CLIENT_DIR)" $(WAGO_TABLES)' in recipe[clear]
     assert 'write --dir "$(CLIENT_DIR)" --src wago --build $(WAGO_BUILD) $(WAGO_TABLES)' in recipe[stamp]
@@ -246,7 +246,7 @@ def test_preflight_checks_every_client_table_stamp_before_any_import_writes(make
     """`import` / `import-english` run wdb-preflight first; it checks the stamps of every CSV the
     three client-table imports read, so a refusal stops the target before predecessor / pfQuest / VMaNGOS write."""
     recipe = "\n".join(_recipe(makefile, "client-preflight"))
-    assert "wfj.dev.tables_stamp check --src $(TABLES_SRC) --build $(WAGO_BUILD)" in recipe
+    assert "wfi.dev.tables_stamp check --src $(TABLES_SRC) --build $(WAGO_BUILD)" in recipe
     for var in ("WAGO_ITEM", "WAGO_SPELL", "CLIENT_SPELL", "CLIENT_ITEMEFFECT", "WAGO_GLOBALSTRINGS",
                 "WAGO_ITEMSUBCLASS", "WAGO_ENCHANTMENTS"):
         assert f"$({var})" in recipe.split("tables_stamp check")[1], var
@@ -257,7 +257,7 @@ def test_every_english_import_passes_the_merge_mode(makefile):
     what the other client provides. Without `--merge` on every line, `make import-english` would replace and
     silently undo the union the committed data depends on."""
     assert "MERGE        ?= union" in makefile
-    lines = [ln for ln in makefile.splitlines() if "-m wfj import english " in ln]
+    lines = [ln for ln in makefile.splitlines() if "-m wfi import english " in ln]
     assert len(lines) >= 6  # pfQuest + VMaNGOS (shared) and the four per-client imports (`import-client`)
     for ln in lines:
         verb = ln.split("import english ", 1)[1].split()[0]
@@ -307,7 +307,7 @@ def test_wdb_copy_refuses_a_cache_of_another_build(makefile):
 
 def test_rebuild_check_checks_the_shared_inputs_and_runs_one_job(makefile):
     recipe = _recipe(makefile, "rebuild-check")
-    delete = next(i for i, ln in enumerate(recipe) if "wfj.dev.reset_english" in ln)
+    delete = next(i for i, ln in enumerate(recipe) if "wfi.dev.reset_english" in ln)
     shared = next(i for i, ln in enumerate(recipe) if "shared input missing" in ln)
     assert shared < delete
     for var in ("PRED_QUEST", "PRED_TOOLTIP", "QJP", "CJQ", "PFQUEST", "VMANGOS_DB", "UI_KEYS"):

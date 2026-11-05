@@ -14,7 +14,7 @@ local TITLES = { [5] = { ja = "狼の毛皮", status = "." }, [9] = { ja = "失�
 local TRIVIAL = { "|cff000000%s (low level)|r", "|cff000000%s (低レベル)|r" }
 
 describe("UI/QuestFrame: the greeting panel's quest titles", function()
-  local WFJ, active, offered, buttons
+  local WFI, active, offered, buttons
 
   -- a pooled title button as QuestFrameGreetingPanel_OnShow leaves it
   local function button(id, isActive, text)
@@ -33,7 +33,7 @@ describe("UI/QuestFrame: the greeting panel's quest titles", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     _G.TRIVIAL_QUEST_DISPLAY = TRIVIAL[1]
     _G.C_QuestLog = { GetTitleForQuestID = function() return nil end } -- greeting quests are read from their own API
@@ -50,15 +50,15 @@ describe("UI/QuestFrame: the greeting panel's quest titles", function()
       local i = 0
       return function() i = i + 1; return buttons[i] end
     end }
-    WFJ = H.loadChunks(FILES)
+    WFI = H.loadChunks(FILES)
     local lookup = function(kind, id) if kind == "quest.title" then return TITLES[id] end end
-    H.uiSetup(WFJ, {}, { lookup = lookup })
-    WFJ.Lookup = { get = function(kind, id)
+    H.uiSetup(WFI, {}, { lookup = lookup })
+    WFI.Lookup = { get = function(kind, id)
       if kind == "ui" and id == "TRIVIAL_QUEST_DISPLAY" then return { ja = TRIVIAL[2], status = "." } end
     end }
-    WFJ.Collector.load(nil, H.collectorDeps({ lookup = lookup }))
-    WFJ.QuestMap.init()
-    assert.is_true(WFJ.QuestFrame.init({ key = function(en) return WFJ.Collector.key(en, PLAYER) end }))
+    WFI.Collector.load(nil, H.collectorDeps({ lookup = lookup }))
+    WFI.QuestMap.init()
+    assert.is_true(WFI.QuestFrame.init({ key = function(en) return WFI.Collector.key(en, PLAYER) end }))
   end)
 
   after_each(function()
@@ -78,8 +78,8 @@ describe("UI/QuestFrame: the greeting panel's quest titles", function()
     assert.are.equal("|cff000000狼の毛皮|r", a:GetText())
     assert.are.equal("|cff000000失われた書物 (低レベル)|r", o1:GetText())
     assert.are.equal("|cff000000Untranslated Errand|r", o2:GetText())
-    assert.are.equal(WFJ.Font.PATH, (a:GetFontString():GetFont()))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    assert.are.equal(WFI.Font.PATH, (a:GetFontString():GetFont()))
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("|cff000000Wolf Pelts|r", a:GetText())
     assert.are.equal(TRIVIAL[1]:format("The Lost Tome"), o1:GetText())
   end)

@@ -35,7 +35,7 @@ It looked random because it needs, in one session: a translated spellbook page, 
 Guessing failed several times; probing at the right place worked. In order:
 
 1. **Block stack.** The block entry shows what was blocked and the Blizzard path that tripped. That is the reader, never the cause.
-2. **Which value carried the taint.** `issecurevariable(table, key)` answers whether a field was last written by tainted code, and by which addon. Scan the frames the blocked code reads (`/wfj taint`).
+2. **Which value carried the taint.** `issecurevariable(table, key)` answers whether a field was last written by tainted code, and by which addon. Scan the frames the blocked code reads (`/wfi taint`).
 3. **Who wrote it.** A post-hook on that field's writer that logs `debugstack()` when the value comes out tainted. Its stack names the path. If the stack is all Blizzard code, scan what that code read just before the write, and repeat one level up.
 4. **Never stop at the first plausible culprit.** Remove the suspect, run the same steps, read the probes again. The first fix here (moving spellbook hooks) was right about the place and wrong about the mechanism. The probes showed it at once.
 5. **Probe every writer at once, not one per test.** Every test costs the maintainer a session. The taint watch now covers the bar fields from the start.

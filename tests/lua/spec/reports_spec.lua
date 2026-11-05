@@ -1,9 +1,9 @@
--- Core/Reports: the pending fixes in WFJ_DB.reports.
+-- Core/Reports: the pending fixes in WFI_DB.reports.
 local H = require("tests.lua.spec.helpers")
 
 local function pure() -- the module loaded fresh, under the plain Lua environment (no WoW global)
   local ns = {}
-  H.loadPure("Core/Reports.lua", "WoWForeverJapanese", ns)
+  H.loadPure("Core/Reports.lua", "WoWForeverItalian", ns)
   return ns.Reports
 end
 
@@ -22,9 +22,9 @@ describe("Core/Reports", function()
     R.load(db)
   end)
 
-  it("an older WFJ_DB without reports loads as empty and keeps its shape until the first fix", function()
+  it("an older WFI_DB without reports loads as empty and keeps its shape until the first fix", function()
     assert.are.equal(0, R.count())
-    assert.is_nil(db.reports) -- the collector dump fixture's WFJ_DB stays byte-identical
+    assert.is_nil(db.reports) -- the collector dump fixture's WFI_DB stays byte-identical
     assert.is_true(R.save(fix()))
     assert.are.same({ { type = "quest", id = 7, field = "description", ja_hash = "0011223344556677",
       reason = "awkward" } }, db.reports)
@@ -63,7 +63,7 @@ describe("Core/Reports", function()
     assert.is_nil(db.reports[2].t)
   end)
 
-  it("persists in WFJ_DB: a reload of the same table lists the same fixes; broken entries are dropped", function()
+  it("persists in WFI_DB: a reload of the same table lists the same fixes; broken entries are dropped", function()
     R.save(fix({ note = "stiff", ja = "新しい文" }))
     db.reports[2] = { type = "quest" } -- a hand edit
     R = pure() -- /reload

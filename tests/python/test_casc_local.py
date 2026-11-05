@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from casc_fixture import PRODUCT, VERSION, blte_chunks, build, build_key_of
 
-from wfj.io import casc
+from wfi.io import casc
 
 PATH = "DBFilesClient\\Thing.db2"
 

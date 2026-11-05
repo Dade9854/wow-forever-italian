@@ -32,11 +32,11 @@ local UI = {
 local function en(key) return _G[key] end
 
 describe("the world map chrome on Forever", function()
-  local WFJ, SS, frame
+  local WFI, SS, frame
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -51,18 +51,18 @@ describe("the world map chrome on Forever", function()
   local function tick(overlay) overlay.scripts.OnUpdate(overlay, 0.016) end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     Maps.clear()
   end
 
   before_each(function()
     load()
     frame = Maps.worldMap(en)
-    assert.is_true(WFJ.WorldMap.init())
+    assert.is_true(WFI.WorldMap.init())
   end)
 
   after_each(function()
@@ -133,7 +133,7 @@ describe("the world map chrome on Forever", function()
   it("each coordinates label takes only its own keys", function()
     frame.coords.CursorCoords.Label.text = "Crosshair: 8, 80"
     frame.coords.CursorCoords.shown = true
-    WFJ.WorldMap.onCoords(frame.coords)
+    WFI.WorldMap.onCoords(frame.coords)
     assert.are.equal("Crosshair: 8, 80", frame.coords.CursorCoords.Label:GetText())
   end)
 
@@ -161,7 +161,7 @@ describe("the world map chrome on Forever", function()
     frame:Show()
     late.scripts.OnUpdate(late)
     assert.are.equal("次の戦闘: 01:02:03", late.TimeLabel:GetText())
-    assert.is_false(WFJ.WorldMap.init()) -- a second init hooks nothing
+    assert.is_false(WFI.WorldMap.init()) -- a second init hooks nothing
   end)
 
   it("a client name bound to the wrong type degrades to English with no error", function()
@@ -171,17 +171,17 @@ describe("the world map chrome on Forever", function()
     map.WorldMapTrackingOptionsButton = "button"
     map.WorldMapTrackingPinButton = true
     map.overlayFrames = { 1, "x", { PlayerCoords = 3, CursorCoords = {} }, { TimeLabel = "t" } }
-    assert.has_no.errors(function() assert.is_true(WFJ.WorldMap.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.WorldMap.init()) end)
     assert.has_no.errors(function() map:Show() end)
-    assert.has_no.errors(function() WFJ.WorldMap.onCoords({ PlayerCoords = 3, CursorCoords = "x" }) end)
-    assert.has_no.errors(function() WFJ.WorldMap.onTimer(5) end)
+    assert.has_no.errors(function() WFI.WorldMap.onCoords({ PlayerCoords = 3, CursorCoords = "x" }) end)
+    assert.has_no.errors(function() WFI.WorldMap.onTimer(5) end)
     load()
     _G.WorldMapFrame = "not a frame"
-    assert.has_no.errors(function() assert.is_false(WFJ.WorldMap.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.WorldMap.init()) end)
   end)
 
   it("without the frame, init returns false", function()
     load()
-    assert.is_false(WFJ.WorldMap.init())
+    assert.is_false(WFI.WorldMap.init())
   end)
 end)

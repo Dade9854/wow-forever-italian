@@ -91,11 +91,11 @@ local UI = {
 }
 
 describe("the Options window on Forever", function()
-  local WFJ, SS, panel, list, categories
+  local WFI, SS, panel, list, categories
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -108,19 +108,19 @@ describe("the Options window on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end
 
   before_each(function()
     load()
     panel = S.installSettingsPanel()
     list, categories = panel.Container.SettingsList.ScrollBox, panel.CategoryList.ScrollBox
-    WFJ.Labels.forbidNames(WFJ.SettingsPanel.NEVER_TOUCH)
-    assert.is_true(WFJ.SettingsPanel.init())
+    WFI.Labels.forbidNames(WFI.SettingsPanel.NEVER_TOUCH)
+    assert.is_true(WFI.SettingsPanel.init())
   end)
 
   after_each(function()
@@ -271,10 +271,10 @@ describe("the Options window on Forever", function()
       alt(false)
       -- the follower is hooked once, however often the row is walked
       list:initFrame(header, {})
-      local walks, onRow = 0, WFJ.SettingsPanel.onRow
-      WFJ.SettingsPanel.onRow = function(...) walks = walks + 1; return onRow(...) end
+      local walks, onRow = 0, WFI.SettingsPanel.onRow
+      WFI.SettingsPanel.onRow = function(...) walks = walks + 1; return onRow(...) end
       header:fire("SETTINGS_HEADER_TEXT_UPDATE")
-      WFJ.SettingsPanel.onRow = onRow
+      WFI.SettingsPanel.onRow = onRow
       assert.are.equal(1, walks)
       assert.are.equal("|cnNORMAL_FONT_COLOR:現在の設定:|r |cnHIGHLIGHT_FONT_COLOR:強化|r", header.Title:GetText())
       -- an addon's page: the row is left as the client wrote it, after the event too
@@ -452,9 +452,9 @@ describe("the Options window on Forever", function()
         row.Text, row.Control.Dropdown.Text, row.Tooltip = bad, bad, bad
         row.GetChildren = function() return bad, row.Control end
         list:initFrame(row, bad)
-        WFJ.SettingsPanel.onCategoryRow(WFJ.SettingsPanel, bad, bad)
+        WFI.SettingsPanel.onCategoryRow(WFI.SettingsPanel, bad, bad)
         categories:initFrame(S.categoryRow("Graphics"), bad)
-        WFJ.SettingsPanel.onRow(bad)
+        WFI.SettingsPanel.onRow(bad)
         panel.GetCurrentCategory = function() return bad end
         _G.Settings.CategorySet = bad
         panel:DisplayLayout()
@@ -464,15 +464,15 @@ describe("the Options window on Forever", function()
     S.removeSettingsPanel()
     local odd = S.installSettingsPanel()
     odd.Container.SettingsList.ScrollBox = 7
-    assert.has_no.errors(function() assert.is_false(WFJ.SettingsPanel.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.SettingsPanel.init()) end)
     assert.are.equal("Options", odd.NineSlice.Text:GetText())
   end)
 
   it("hooks install once; a client without the panel is skipped without error", function()
-    assert.is_false(WFJ.SettingsPanel.init())
+    assert.is_false(WFI.SettingsPanel.init())
     assert.are.equal(1, #Stub.hooks["SettingsPanel:DisplayLayout"])
     load()
     S.removeSettingsPanel()
-    assert.has_no.errors(function() assert.is_false(WFJ.SettingsPanel.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.SettingsPanel.init()) end)
   end)
 end)

@@ -1,14 +1,14 @@
 local H = require("tests.lua.spec.helpers")
 
 describe("Translator.resolve: the action table, and it stays pure", function()
-  local WFJ, flags, deps, T
+  local WFI, flags, deps, T
   local JA = "日本語のテキスト"
 
   local function entry(status) return { ja = JA, status = status } end
 
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Translator.lua", "WoWForeverJapanese", WFJ)
+    WFI = {}
+    H.loadPure("Core/Translator.lua", "WoWForeverItalian", WFI)
     flags = { enabled = true, area = true, held = false, entry = nil, markerStale = true, markerMissing = false,
       alignResult = nil }
     deps = {
@@ -18,7 +18,7 @@ describe("Translator.resolve: the action table, and it stays pure", function()
       lookup = function(kind, id) assert.are.equal("quest", kind); assert.are.equal(2, id); return flags.entry end,
       marker = function(n) if n == "stale" then return flags.markerStale end return flags.markerMissing end,
     }
-    T = WFJ.Translator.new(deps)
+    T = WFI.Translator.new(deps)
   end)
 
   local function resolve(ctx) return T.resolve("quests", "quest", 2, ctx) end
@@ -81,7 +81,7 @@ describe("Translator.resolve: the action table, and it stays pure", function()
     flags.entry = entry("u")
     local seen
     deps.align = function(ja, lines) seen = { ja, lines }; return flags.alignResult end
-    T = WFJ.Translator.new(deps)
+    T = WFI.Translator.new(deps)
     flags.alignResult = true
     local a, p = resolve({ lines = { "Use: x" } })
     assert.are.equal("apply", a); assert.are.same({ ja = JA }, p)
@@ -105,12 +105,12 @@ describe("Translator.resolve: the action table, and it stays pure", function()
 
   it("never reads a global (loaded under the empty environment)", function()
     -- the module was loaded with H.loadPure; reaching any global would have raised in the cases above
-    assert.is_function(WFJ.Translator.new)
+    assert.is_function(WFI.Translator.new)
   end)
 end)
 
 describe("Translator.resolve: player tokens expanded on apply only", function()
-  local WFJ, flags, calls, T
+  local WFI, flags, calls, T
 
   local function build(withExpand)
     local deps = {
@@ -123,12 +123,12 @@ describe("Translator.resolve: player tokens expanded on apply only", function()
     if withExpand then
       deps.expand = function(ja) calls[#calls + 1] = ja; return (ja:gsub("{name}", "Reyn")), 0 end
     end
-    return WFJ.Translator.new(deps)
+    return WFI.Translator.new(deps)
   end
 
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Translator.lua", "WoWForeverJapanese", WFJ)
+    WFI = {}
+    H.loadPure("Core/Translator.lua", "WoWForeverItalian", WFI)
     flags = { held = false, entry = nil, alignOk = true, alignText = nil }
     calls = {}
     T = build(true)
@@ -171,10 +171,10 @@ describe("Translator.resolve: player tokens expanded on apply only", function()
 end)
 
 describe("Translator.resolve: align returns the filled text", function()
-  local WFJ, T, flags, deps
+  local WFI, T, flags, deps
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Translator.lua", "WoWForeverJapanese", WFJ)
+    WFI = {}
+    H.loadPure("Core/Translator.lua", "WoWForeverItalian", WFI)
     flags = { result = nil, text = nil }
     deps = {
       enabled = function() return true end, areaEnabled = function() return true end,
@@ -183,7 +183,7 @@ describe("Translator.resolve: align returns the filled text", function()
       marker = function() return false end,
       align = function(_, _, nameScope) flags.nameScope = nameScope; return flags.result, flags.text end,
     }
-    T = WFJ.Translator.new(deps)
+    T = WFI.Translator.new(deps)
   end)
 
   it("applies the text align returns, the entry's ja on a bare true, none on false", function()
@@ -201,12 +201,12 @@ describe("Translator.resolve: align returns the filled text", function()
 end)
 
 describe("Translator.resolve: UI templates get the live values", function()
-  local WFJ, T, seen
+  local WFI, T, seen
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Translator.lua", "WoWForeverJapanese", WFJ)
+    WFI = {}
+    H.loadPure("Core/Translator.lua", "WoWForeverItalian", WFI)
     seen = {}
-    T = WFJ.Translator.new({
+    T = WFI.Translator.new({
       enabled = function() return true end, areaEnabled = function() return true end,
       modifierHeld = function() return false end,
       lookup = function(_, key) return ({ MIN = { ja = "必要レベル %d", status = "." },
@@ -236,7 +236,7 @@ end)
 
 -- ADR-019: the quest live check. The stale marker follows the client's English.
 describe("Translator.resolve: quest live check", function()
-  local WFJ, flags, T
+  local WFI, flags, T
   local JA = "報酬だ"
   local H1 = 0x1234abcd
 
@@ -254,12 +254,12 @@ describe("Translator.resolve: quest live check", function()
         return flags.fps, flags.inconclusive
       end
     end
-    return WFJ.Translator.new(deps)
+    return WFI.Translator.new(deps)
   end
 
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Translator.lua", "WoWForeverJapanese", WFJ)
+    WFI = {}
+    H.loadPure("Core/Translator.lua", "WoWForeverItalian", WFI)
     flags = { entry = { ja = JA, status = ".", h1 = H1 }, fps = { H1 }, markerStale = true, asked = {} }
     T = makeT(true)
   end)
@@ -315,7 +315,7 @@ describe("Translator.resolve: quest live check", function()
   it("a line filled from the live values is checked masked; the count never fails it", function()
     flags.entry = { ja = "Mossを$N1個集める。", status = ".", h1 = H1 }
     local maskedAsked
-    local T2 = WFJ.Translator.new({
+    local T2 = WFI.Translator.new({
       enabled = function() return true end, areaEnabled = function() return true end,
       modifierHeld = function() return false end, lookup = function() return flags.entry end,
       marker = function(n) return n == "stale" end,
@@ -365,14 +365,14 @@ end)
 
 -- ADR-007: a stale item / spell entry still goes through the align gate; a pass applies with the marker.
 describe("Translator.resolve: gated item / spell entries", function()
-  local WFJ, flags, T
+  local WFI, flags, T
   local JA = "【使用】$1秒間でhealthを$2回復。"
 
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Translator.lua", "WoWForeverJapanese", WFJ)
+    WFI = {}
+    H.loadPure("Core/Translator.lua", "WoWForeverItalian", WFI)
     flags = { entry = nil, markerStale = true, alignResult = true, alignText = nil, seen = nil }
-    T = WFJ.Translator.new({
+    T = WFI.Translator.new({
       enabled = function() return true end,
       areaEnabled = function() return true end,
       modifierHeld = function() return false end,
@@ -423,12 +423,12 @@ describe("Translator.resolve: gated item / spell entries", function()
 end)
 
 describe("Translator: branch lines (ADR-043)", function()
-  local WFJ, T, flags
+  local WFI, T, flags
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Translator.lua", "WoWForeverJapanese", WFJ)
+    WFI = {}
+    H.loadPure("Core/Translator.lua", "WoWForeverItalian", WFI)
     flags = { entry = nil, result = { false }, markerStale = true, calls = 0 }
-    T = WFJ.Translator.new({
+    T = WFI.Translator.new({
       enabled = function() return true end,
       areaEnabled = function() return true end,
       modifierHeld = function() return false end,
@@ -467,7 +467,7 @@ describe("Translator: branch lines (ADR-043)", function()
     flags.entry = entry(".")
     a, p = T.resolve("items", "spell.description", 1, { lines = { "L" } })
     assert.are.equal("none", a); assert.are.equal("not_shipped", p.reason)
-    local T2 = WFJ.Translator.new({ enabled = function() return true end, areaEnabled = function() return true end,
+    local T2 = WFI.Translator.new({ enabled = function() return true end, areaEnabled = function() return true end,
       modifierHeld = function() return false end, lookup = function() return entry("u") end,
       marker = function() return false end })
     a, p = T2.resolve("items", "spell.description", 1, { lines = { "L" } })
@@ -475,7 +475,7 @@ describe("Translator: branch lines (ADR-043)", function()
   end)
 
   it("modifier held or master off still leaves the frame alone", function()
-    local T3 = WFJ.Translator.new({ enabled = function() return true end, areaEnabled = function() return true end,
+    local T3 = WFI.Translator.new({ enabled = function() return true end, areaEnabled = function() return true end,
       modifierHeld = function() return true end, lookup = function() return entry("u") end,
       marker = function() return false end })
     assert.are.equal("leave", (T3.resolve("items", "spell.description", 1, {})))

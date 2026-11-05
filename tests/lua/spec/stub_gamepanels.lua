@@ -13,15 +13,15 @@ function G.files(...)
   return files
 end
 
--- A fresh stub client with the addon loaded over `ui`. `patch(WFJ)` runs before the index is built: a spec uses it
+-- A fresh stub client with the addon loaded over `ui`. `patch(WFI)` runs before the index is built: a spec uses it
 -- for the Core/UIStrings ARGS / LABELS entries its surface needs.
 function G.load(files, ui, patch)
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
-  local WFJ = H.loadChunks(files)
-  if patch then patch(WFJ) end
-  H.uiSetup(WFJ, ui)
-  return WFJ
+  local WFI = H.loadChunks(files)
+  if patch then patch(WFI) end
+  H.uiSetup(WFI, ui)
+  return WFI
 end
 
 -- A mainline titled panel: TitleContainer.TitleText + SetTitle (blizzard_sharedxml/portraitframe.lua:3–13).
@@ -44,15 +44,15 @@ end
 
 function G.line(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
 
-function G.alt(WFJ, down)
+function G.alt(WFI, down)
   Stub.keys.alt = down
-  WFJ.Modifier.refresh()
+  WFI.Modifier.refresh()
 end
 
 -- true when no surface holds a record for `widget` (a Button is recorded through its ButtonText adapter).
-function G.unrecorded(WFJ, widget)
-  local adapter = WFJ.ButtonText.known(widget) and WFJ.ButtonText.of(widget) or nil
-  for _, bucket in pairs(WFJ.SurfaceState.surfaces()) do
+function G.unrecorded(WFI, widget)
+  local adapter = WFI.ButtonText.known(widget) and WFI.ButtonText.of(widget) or nil
+  for _, bucket in pairs(WFI.SurfaceState.surfaces()) do
     for _, rec in pairs(bucket) do
       if rec.fs == widget or (adapter and rec.fs == adapter) then return false end
     end

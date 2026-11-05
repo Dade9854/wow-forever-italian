@@ -116,7 +116,7 @@ rest, and the import reports quest coverage against `QuestV2`.
 
 ## Pinning the next build
 
-`python -m wfj.dev.wdb_layout <cache>` reports, per pinned layout, how many records it reads and the first it
+`python -m wfi.dev.wdb_layout <cache>` reports, per pinned layout, how many records it reads and the first it
 cannot, and names a winner only if exactly one reads **every** record. A layout that reads most of a cache is
 a layout we do not understand (a partial fit of 82% is where this derivation started), and the tool refuses it
 (exit 1). When a pinned layout wins on a new build, add a `Layout` for that build to `io/wdb.LAYOUTS` with

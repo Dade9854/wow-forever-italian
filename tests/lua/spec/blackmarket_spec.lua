@@ -91,11 +91,11 @@ local function loadBlackMarket(o)
 end
 
 describe("the black market window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -108,11 +108,11 @@ describe("the black market window on Forever", function()
   end
 
   local function fresh()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     B.hot = { name = "Type", seller = "Name", type = "Bid", timeLeft = 4 }
   end
 
@@ -120,11 +120,11 @@ describe("the black market window on Forever", function()
     fresh()
     if loadedFirst then
       loadBlackMarket()
-      assert.is_true(WFJ.BlackMarket.init())
+      assert.is_true(WFI.BlackMarket.init())
     else
-      assert.is_false(WFJ.BlackMarket.init()) -- waits for the addon
+      assert.is_false(WFI.BlackMarket.init()) -- waits for the addon
       loadBlackMarket()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -165,7 +165,7 @@ describe("the black market window on Forever", function()
         local f = _G.BlackMarketFrame
         -- the time-left line's `%s` is a time-band word (`words`: "Very Long"; the core entry is in
         -- Core/UIStrings)
-        C.args(WFJ, UI, { BLACK_MARKET_HOT_ITEM_TIME_LEFT = { [1] = "words" } })
+        C.args(WFI, UI, { BLACK_MARKET_HOT_ITEM_TIME_LEFT = { [1] = "words" } })
         _G.BlackMarketFrame_UpdateHotItem(f)
         assert.are.equal("残り時間: 非常に長い", f.HotDeal.TimeLeft.Text:GetText())
         assert.are.equal("Type", f.HotDeal.Name:GetText())
@@ -216,7 +216,7 @@ describe("the black market window on Forever", function()
     local f = loadBlackMarket()
     local row = newRow()
     f.ScrollBox:initFrame(row, { name = "x", level = 1, type = "y", seller = "z", timeLeft = 1 }, initRow)
-    assert.is_true(WFJ.BlackMarket.init())
+    assert.is_true(WFI.BlackMarket.init())
     assert.are.equal("短い", row.TimeLeft.Text:GetText())
   end)
 
@@ -225,20 +225,20 @@ describe("the black market window on Forever", function()
     local f = loadBlackMarket({ scrollBox = "not a table" })
     f.HotDeal, f.ColumnName, f.BidButton = 7, "x", true
     _G.BlackMarketBidPrice, _G.BlackMarketFrame_UpdateHotItem, _G.ScrollUtil = 3, "nope", 1
-    assert.has_no.errors(function() assert.is_true(WFJ.BlackMarket.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.BlackMarket.init()) end)
     assert.are.equal("種類", f.ColumnType.Name:GetText()) -- the rest of the window still renders
-    assert.has_no.errors(function() WFJ.BlackMarket.onRow(WFJ.BlackMarket, 5) end)
-    assert.has_no.errors(function() WFJ.BlackMarket.onRow({ TimeLeft = 1, YourBid = "x" }) end)
+    assert.has_no.errors(function() WFI.BlackMarket.onRow(WFI.BlackMarket, 5) end)
+    assert.has_no.errors(function() WFI.BlackMarket.onRow({ TimeLeft = 1, YourBid = "x" }) end)
   end)
 
   it("hooks install once; without the addon init returns false and touches nothing", function()
     setup(true)
-    assert.is_false(WFJ.BlackMarket.init())
+    assert.is_false(WFI.BlackMarket.init())
     assert.are.equal(1, #Stub.hooks["BlackMarketFrame_UpdateHotItem"])
     fresh()
     _G.BlackMarketFrame = nil
-    assert.has_no.errors(function() assert.is_false(WFJ.BlackMarket.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.BlackMarket.init()) end)
     Stub.loadedAddons[ADDON] = true -- the addon reported loaded, its frame absent
-    assert.has_no.errors(function() assert.is_false(WFJ.BlackMarket.setup()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.BlackMarket.setup()) end)
   end)
 end)

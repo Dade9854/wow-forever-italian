@@ -16,18 +16,18 @@ UI["ItemNameDescription:8"] = { "Blue", "青" }
 UI["LfgActivity:285"] = { "Custom", "カスタム" } -- another restricted family: never on this dropdown
 
 describe("the wardrobe's variant dropdown on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   -- The dropdown's SetText (DropdownButtonMixin) writes its Text.
@@ -51,12 +51,12 @@ describe("the wardrobe's variant dropdown on Forever", function()
         if order[1] then
           C.load()
           dropdown = withSetText()
-          assert.is_true(WFJ.Wardrobe.init())
+          assert.is_true(WFI.Wardrobe.init())
         else
-          assert.is_false(WFJ.Wardrobe.init())
+          assert.is_false(WFI.Wardrobe.init())
           C.load()
           dropdown = withSetText()
-          assert.are.equal(1, WFJ.LoadOnDemand.loaded(C.ADDON))
+          assert.are.equal(1, WFI.LoadOnDemand.loaded(C.ADDON))
         end
       end)
 
@@ -78,12 +78,12 @@ describe("the wardrobe's variant dropdown on Forever", function()
         assert.are.equal("Custom", dropdown.Text:GetText())
         dropdown:SetText("Close") -- a global string word, not a variant
         assert.are.equal("Close", dropdown.Text:GetText())
-        assert.is_nil(WFJ.UIIndex:match("Green")) -- the family only where the dropdown names it
+        assert.is_nil(WFI.UIIndex:match("Green")) -- the family only where the dropdown names it
       end)
 
       it("the dropdown is not a never-touch widget; SetText is hooked once", function()
-        assert.is_false(WFJ.Labels.forbidden(dropdown.Text))
-        assert.is_false(WFJ.Wardrobe.setup())
+        assert.is_false(WFI.Labels.forbidden(dropdown.Text))
+        assert.is_false(WFI.Wardrobe.setup())
         assert.are.equal(1, #Stub.hooks["VariantSetsDropdown:SetText"])
       end)
     end)
@@ -93,20 +93,20 @@ describe("the wardrobe's variant dropdown on Forever", function()
     load()
     C.load()
     _G.WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame.VariantSetsDropdown.SetText = nil
-    assert.has_no.errors(function() assert.is_true(WFJ.Wardrobe.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Wardrobe.init()) end)
     assert.is_nil(Stub.hooks["VariantSetsDropdown:SetText"])
-    assert.are.equal(0, WFJ.Wardrobe.onVariant())
+    assert.are.equal(0, WFI.Wardrobe.onVariant())
   end)
 end)
 
 -- The search box's placeholder: SearchBox.Instructions, SearchBoxTemplate's instructionText SEARCH written once at
 -- load (mainline/blizzard_wardrobe.lua:1700–1702; inputboxtemplates.lua:174–177). The EditBox itself is the player's.
 describe("the wardrobe's search box placeholder on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local SEARCH_UI = {}
@@ -115,17 +115,17 @@ describe("the wardrobe's search box placeholder on Forever", function()
 
   local box
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, SEARCH_UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, SEARCH_UI)
     C.load()
     box = _G.WardrobeCollectionFrame.SearchBox
     box.Instructions = Stub.fontString(_G.SEARCH)
     box.text = ""
     function box.GetText(self) return self.text end
     function box.SetText(self, t) self.text = t end
-    assert.is_true(WFJ.Wardrobe.init())
+    assert.is_true(WFI.Wardrobe.init())
   end)
 
   after_each(function()
@@ -141,16 +141,16 @@ describe("the wardrobe's search box placeholder on Forever", function()
     alt(false)
     assert.are.equal("検索", box.Instructions:GetText())
     box:SetText("Search") -- the player types the dictionary word itself
-    WFJ.Wardrobe.showStatic()
+    WFI.Wardrobe.showStatic()
     assert.are.equal("Search", box:GetText())
-    assert.is_true(WFJ.Labels.forbidden(box))
-    assert.are.equal(0, WFJ.Labels.show("wardrobe", "probe", box))
+    assert.is_true(WFI.Labels.forbidden(box))
+    assert.are.equal(0, WFI.Labels.show("wardrobe", "probe", box))
   end)
 
   it("a placeholder that is no SEARCH text stays as written", function()
     box.Instructions:SetText("Search appearances")
-    WFJ.Render.forget("wardrobe")
-    WFJ.Wardrobe.showStatic()
+    WFI.Render.forget("wardrobe")
+    WFI.Wardrobe.showStatic()
     assert.are.equal("Search appearances", box.Instructions:GetText())
   end)
 end)

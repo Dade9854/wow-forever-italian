@@ -1,6 +1,6 @@
 # ADR-025: Every surface init is guarded and its failure reported, and the tooltip carries two hook paths chosen at runtime by capability
 
-- **Status:** Accepted. In-game checklist 19 ran on Forever build 1.60.1.69893: the addon loaded and reached `PLAYER_ENTERING_WORLD`, `/wfj debug` reported `hook path: dataprocessor` with 6/6 tooltip frames and the spell-description API present, and `surface errors:` listed exactly one failure (`raid`, in `UI/Labels.lua`), which cost that surface and nothing else.
+- **Status:** Accepted. In-game checklist 19 ran on Forever build 1.60.1.69893: the addon loaded and reached `PLAYER_ENTERING_WORLD`, `/wfi debug` reported `hook path: dataprocessor` with 6/6 tooltip frames and the spell-description API present, and `surface errors:` listed exactly one failure (`raid`, in `UI/Labels.lua`), which cost that surface and nothing else.
 - **Date:** 2026-09-17
 
 > Superseded in part by [ADR-034](034-forever-is-the-only-target.md): Classic Era is not a target; the tooltip's Classic path (`OnTooltipSetItem` / `OnTooltipSetSpell` `HookScript`) and the aura method-hook fallback are removed, and `Tooltip.path` is `"dataprocessor"` or `"none"`. The guarded init stands.
@@ -9,26 +9,26 @@
 
 Two findings from the survey of the Forever client ([What the Forever client changed under the addon's surfaces](../research/2026-09-17-forever-client-differences.md), findings 1 and 2) forced one design question each, and the two answers belong together: both are about *what an addon does on a client it was not written for*.
 
-**The composition root was a single point of failure.** `Main.lua`'s `OnLoad` ran roughly twenty surface `init` calls as one unguarded sequence. `Tooltip.init` is the third. On the Forever client it raised `bad argument #2` from its `HookScript("OnTooltipSetItem", …)`, so the other seventeen surfaces, the options registration, the AddOn List button and `WFJ.Slash.register()` never ran, and `/wfj` did not answer at all. One removed API in one surface cost the entire addon, including the command a player would use to diagnose it. Nothing about that is specific to the tooltip: any surface can be the third one on the next client.
+**The composition root was a single point of failure.** `Main.lua`'s `OnLoad` ran roughly twenty surface `init` calls as one unguarded sequence. `Tooltip.init` is the third. On the Forever client it raised `bad argument #2` from its `HookScript("OnTooltipSetItem", …)`, so the other seventeen surfaces, the options registration, the AddOn List button and `WFI.Slash.register()` never ran, and `/wfi` did not answer at all. One removed API in one surface cost the entire addon, including the command a player would use to diagnose it. Nothing about that is specific to the tooltip: any surface can be the third one on the next client.
 
 **The tooltip's hook genuinely moved.** `OnTooltipSetItem` / `OnTooltipSetSpell` are not scripts on Forever's tooltips (`GameTooltip:HasScript("OnTooltipSetItem") == false`, checked in-game), because Forever runs the `mainline` flavour of the tooltip code. The replacement is named in the client's own extracted source: `blizzard_sharedxmlgame/tooltip/tooltipdatahandler.lua` registers handlers through `TooltipDataProcessor.AddTooltipPostCall(tooltipType, func)`, with tooltip types from `Enum.TooltipDataType`, and `blizzard_sharedxmlgame/tooltip/tooltiputil.lua` filters with `tooltip:IsTooltipType(…)`. (The source is read through the read-only local-archive path of [ADR-021](021-client-tables-from-the-local-archive.md).) Classic Era 1.15.x has neither global and its `HookScript` path was the only one known to work there.
 
-Both sit under the constraint the addon has had since [ADR-009](009-surfaces-post-hook-the-writer.md): a surface post-hooks the client's writer, and an unresolved client name is a `/wfj debug` line, never an error. The survey showed that rule held *within* a surface and not *between* surfaces.
+Both sit under the constraint the addon has had since [ADR-009](009-surfaces-post-hook-the-writer.md): a surface post-hooks the client's writer, and an unresolved client name is a `/wfi debug` line, never an error. The survey showed that rule held *within* a surface and not *between* surfaces.
 
 ## Decision
 
 **1. Every step of `OnLoad` runs through one guard, and failures are reported rather than fatal.**
 
-`Main.lua` declares a single local `step(name, fn)` that `pcall`s `fn`, and on failure appends `{ surface = name, err = tostring(err) }` to `WFJ.initErrors` and returns `nil`. Every call in `OnLoad` goes through it: `Compat.init`, `Settings.load`, `Collector.load`, `BuildUIIndex`, `Render.init`, `Modifier.refresh`, each `Labels.forbidNames`, each surface `init`, `Scan.init`, `Slash.register` and `AddonListButton.install`.
+`Main.lua` declares a single local `step(name, fn)` that `pcall`s `fn`, and on failure appends `{ surface = name, err = tostring(err) }` to `WFI.initErrors` and returns `nil`. Every call in `OnLoad` goes through it: `Compat.init`, `Settings.load`, `Collector.load`, `BuildUIIndex`, `Render.init`, `Modifier.refresh`, each `Labels.forbidNames`, each surface `init`, `Scan.init`, `Slash.register` and `AddonListButton.install`.
 
 - **The order is unchanged and stays load-bearing.** The guard wraps calls; it does not reorder them. `ButtonText` / `HelpTooltip` / `LoadOnDemand` still precede the surfaces, and `Labels.forbidNames` still precedes every window's `init`. `init_guard_spec.lua` asserts the order explicitly.
 - **The guard is one function in the composition root, not a `pcall` inside each surface.** A surface does not get to decide whether its own failure matters.
-- **`/wfj debug` is the report.** It prints `surface errors: <surface>: <err> · …`, and `none` on a clean load. With `unresolved widgets:` beside it, that pair is the compatibility check on any future client without re-running the survey.
-- The `pcall` around `Compat.registerOptions(Options.build())` keeps its own `WFJ.Options.buildError` field, which the settings surface reads, **and** records into `WFJ.initErrors` like every other step.
+- **`/wfi debug` is the report.** It prints `surface errors: <surface>: <err> · …`, and `none` on a clean load. With `unresolved widgets:` beside it, that pair is the compatibility check on any future client without re-running the survey.
+- The `pcall` around `Compat.registerOptions(Options.build())` keeps its own `WFI.Options.buildError` field, which the settings surface reads, **and** records into `WFI.initErrors` like every other step.
 
 **2. The tooltip surface chooses its hook path at runtime, from whether the capability resolves, never from the client version.**
 
-`Tooltip.modern()` reads the two capability names through **`Compat.resolve`**, deliberately **not** through `Compat.declare` / `Compat.get`. A declared candidate that does not resolve is reported by `Compat.unresolved()` and printed by `/wfj debug` as a problem, and on a client without the system the *correct* answer is that neither `TooltipDataProcessor` nor `Enum.TooltipDataType` exists. These are a question about which client this is, not a widget the surface needs. `Tooltip.modern()` returns the pair only when the processor is a table with an `AddTooltipPostCall` function *and* the type table carries both `Item` and `Spell`. `Tooltip.path` records which path was taken and `/wfj debug` prints it; `Tooltip.resolved()` returns it as a fourth value.
+`Tooltip.modern()` reads the two capability names through **`Compat.resolve`**, deliberately **not** through `Compat.declare` / `Compat.get`. A declared candidate that does not resolve is reported by `Compat.unresolved()` and printed by `/wfi debug` as a problem, and on a client without the system the *correct* answer is that neither `TooltipDataProcessor` nor `Enum.TooltipDataType` exists. These are a question about which client this is, not a widget the surface needs. `Tooltip.modern()` returns the pair only when the processor is a table with an `AddTooltipPostCall` function *and* the type table carries both `Item` and `Spell`. `Tooltip.path` records which path was taken and `/wfi debug` prints it; `Tooltip.resolved()` returns it as a fourth value.
 
 - **Data-processor path:** one `AddTooltipPostCall` per data type for the whole client. One registration covers every tooltip that uses the system, so no per-frame loop is used for item and spell.
 - **`OnHide`** is hooked per frame, a plain widget script on every client, and the handler calls `Tooltip.onItem` / `Tooltip.onSpell`, so the rendered output is the same as ADR-010's.
@@ -38,7 +38,7 @@ Both sit under the constraint the addon has had since [ADR-009](009-surfaces-pos
 
 ## Consequences
 
-- **A broken surface costs that surface and nothing else.** `/wfj` answers on a client where half the addon cannot initialise, which is the difference between a diagnosable client and an opaque one.
+- **A broken surface costs that surface and nothing else.** `/wfi` answers on a client where half the addon cannot initialise, which is the difference between a diagnosable client and an opaque one.
 - **The failure is visible instead of silent.** The risk a blanket `pcall` carries is that a surface quietly stops working; `surface errors:` is the countermeasure, and it is also the first thing to read on any future client.
 - **The guard cannot save a surface that fails *after* `init`.** A hook installed successfully at load and raising later on a client call is still a Lua error in that call path; this ADR covers the load sequence only.
 - **The data-processor handler runs for every tooltip in the client**, not just six. The filter chain above is therefore load-bearing, and `tooltip_forever_spec.lua` pins it (wrong type ignored, undeclared frame ignored, missing reader counted not called).
@@ -60,4 +60,4 @@ Both sit under the constraint the addon has had since [ADR-009](009-surfaces-pos
 - [ADR-021: Client tables from the local archive](021-client-tables-from-the-local-archive.md): the read-only path the replacement hook was read from
 - [ADR-010: Tooltip in-place run replacement](010-tooltip-in-place-run-replacement.md): what `onItem` / `onSpell` do
 - [Addon Modules](../architecture/addon-modules.md) · [Testing Strategy](../testing/strategy.md) (in-game checklist 19)
-- Implementation: `addon/WoWForeverJapanese/Main.lua`, `addon/WoWForeverJapanese/UI/Tooltip.lua`, `addon/WoWForeverJapanese/Core/Compat.lua`, `addon/WoWForeverJapanese/UI/Slash.lua`
+- Implementation: `addon/WoWForeverItalian/Main.lua`, `addon/WoWForeverItalian/UI/Tooltip.lua`, `addon/WoWForeverItalian/Core/Compat.lua`, `addon/WoWForeverItalian/UI/Slash.lua`

@@ -22,10 +22,10 @@ local UI = {
 }
 
 describe("UI/MenusUntagged: untagged context menus", function()
-  local WFJ, menu, modified
+  local WFI, menu, modified
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     modified = {}
     -- the client's Menu: PopulateDescription runs the generator, then SecureModifyMenu (a ModifyMenu callback only
@@ -46,10 +46,10 @@ describe("UI/MenusUntagged: untagged context menus", function()
         return root, M.open(root)
       end,
     }
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    WFJ.Menus.init()
-    assert.are.equal(1, WFJ.MenusUntagged.init()) -- the PopulateDescription hook (no Settings / Edit Mode here)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    WFI.Menus.init()
+    assert.are.equal(1, WFI.MenusUntagged.init()) -- the PopulateDescription hook (no Settings / Edit Mode here)
   end)
 
   after_each(function() H.uiTeardown(); _G.Menu, _G.MenuUtil = nil, nil end)
@@ -102,30 +102,30 @@ describe("UI/MenusUntagged: untagged context menus", function()
     local root = M.element(nil)
     root.tag = "MENU_TOYBOX_FAVORITE"
     local n = 0
-    local wrap = WFJ.Menus.onMenu
-    WFJ.Menus.onMenu = function(...) n = n + 1; return wrap(...) end
+    local wrap = WFI.Menus.onMenu
+    WFI.Menus.onMenu = function(...) n = n + 1; return wrap(...) end
     _G.Menu.PopulateDescription(function(_, r) r:CreateButton(UI.BATTLE_PET_FAVORITE[1]) end, nil, root)
-    WFJ.Menus.onMenu = wrap
+    WFI.Menus.onMenu = wrap
     assert.are.equal(1, n) -- Menus.init's callback; the PopulateDescription hook returned at once
     assert.are.equal("お気に入りに設定", M.open(root)[root.children[1]].fontString:GetText())
-    assert.are.equal(0, WFJ.MenusUntagged.onPopulate(nil, nil, root))
+    assert.are.equal(0, WFI.MenusUntagged.onPopulate(nil, nil, root))
   end)
 
   it("malformed arguments never error", function()
-    assert.are.equal(0, WFJ.MenusUntagged.onPopulate(nil, nil, nil))
-    assert.are.equal(0, WFJ.MenusUntagged.onPopulate(nil, nil, {}))
-    assert.are.equal(0, WFJ.MenusUntagged.onPopulate(nil, nil, { GetTag = function() return nil end }))
+    assert.are.equal(0, WFI.MenusUntagged.onPopulate(nil, nil, nil))
+    assert.are.equal(0, WFI.MenusUntagged.onPopulate(nil, nil, {}))
+    assert.are.equal(0, WFI.MenusUntagged.onPopulate(nil, nil, { GetTag = function() return nil end }))
   end)
 
-  it("a walk that throws never reaches the client's menu: recorded once for /wfj debug, the menu opens", function()
-    WFJ.initErrors = {}
+  it("a walk that throws never reaches the client's menu: recorded once for /wfi debug, the menu opens", function()
+    WFI.initErrors = {}
     local root = { GetTag = function() return nil end,
       EnumerateElementDescriptions = function() error("walk broke") end }
-    assert.has_no.errors(function() assert.are.equal(0, WFJ.MenusUntagged.onPopulate(nil, nil, root)) end)
-    assert.has_no.errors(function() WFJ.MenusUntagged.onPopulate(nil, nil, root) end)
-    assert.are.equal(1, #WFJ.initErrors)
-    assert.are.equal("menus.untagged", WFJ.initErrors[1].surface)
-    assert.is_truthy(WFJ.initErrors[1].err:find("walk broke", 1, true))
+    assert.has_no.errors(function() assert.are.equal(0, WFI.MenusUntagged.onPopulate(nil, nil, root)) end)
+    assert.has_no.errors(function() WFI.MenusUntagged.onPopulate(nil, nil, root) end)
+    assert.are.equal(1, #WFI.initErrors)
+    assert.are.equal("menus.untagged", WFI.initErrors[1].surface)
+    assert.is_truthy(WFI.initErrors[1].err:find("walk broke", 1, true))
     -- through the client's own PopulateDescription (the post-hook runs after the generator)
     local opened = false
     assert.has_no.errors(function()

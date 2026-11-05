@@ -5,13 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import import_ as imp
-from wfj.cmd import import_draft
-from wfj.core import hashing, style
-from wfj.core.normalize import normalize_v1
-from wfj.dev import translate_batch as tb
-from wfj.dev.objective_items import objective_items
-from wfj.io.jsonl_store import Store
+from wfi.cmd import import_ as imp
+from wfi.cmd import import_draft
+from wfi.core import hashing, style
+from wfi.core.normalize import normalize_v1
+from wfi.dev import translate_batch as tb
+from wfi.dev.objective_items import objective_items
+from wfi.io.jsonl_store import Store
 
 HUMAN = {"class": "human", "translator": "Tammy", "source": "cqjt@3446c82", "imported": "2026-09-13"}
 CORRECTION = {"class": "correction", "translator": "Az", "source": "correction@2026-09-14",
@@ -502,7 +502,7 @@ def test_the_quest_client_kinds_select_their_field_and_carry_the_objective_items
 def test_the_quest_client_kinds_are_styled_and_not_held_back(repo):
     """Every quest field a drafter writes is styled, so `import draft` checks the style version on it; and
     `--held-back` reaches all three (the redraft of rejected hand-written lines)."""
-    from wfj.core import style
+    from wfi.core import style
 
     assert style.STYLED_FIELDS["quest"] == {
         "title", "objectives", "description", "progress", "completion"
@@ -599,7 +599,7 @@ def test_objective_names_reads_an_indented_comment_as_a_comment(tmp_path):
 
 
 def test_expand_writes_a_words_file_for_rows_with_words(tmp_path):
-    from wfj.core import readings
+    from wfi.core import readings
 
     words = [["森", "もり"]]
     ok = _ok(tmp_path, [
@@ -659,7 +659,7 @@ def test_cut_area_selects_undrafted_lines_and_expand_writes_the_area_file(tmp_pa
 def test_an_area_draft_imports_as_machine_and_the_lint_accepts_the_kind(tmp_path, monkeypatch):
     """`import-draft TYPE=area` takes the expanded file; the lint checks an area row like an
     objective's (title case: the names `cut` found must be kept)."""
-    from wfj.dev import translate_lint
+    from wfi.dev import translate_lint
 
     data = tmp_path / "data"
     data.mkdir()

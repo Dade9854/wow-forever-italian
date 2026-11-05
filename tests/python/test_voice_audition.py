@@ -1,4 +1,4 @@
-"""`wfj voice audition`: the clips every voice reads, the kinds of speaker, the review page and the picks
+"""`wfi voice audition`: the clips every voice reads, the kinds of speaker, the review page and the picks
 written back into voice.toml, against a fake engine and encoder."""
 
 from __future__ import annotations
@@ -10,10 +10,10 @@ from types import SimpleNamespace
 import pytest
 import voice_fixture as vf
 
-from wfj.cmd import voice_audition as aud
-from wfj.cmd import voice_make
-from wfj.core import voice
-from wfj.io.jsonl_store import Store
+from wfi.cmd import voice_audition as aud
+from wfi.cmd import voice_make
+from wfi.core import voice
+from wfi.io.jsonl_store import Store
 
 G = voice.gossip_key
 SPEAKERS = [

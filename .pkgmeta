@@ -1,14 +1,14 @@
 # Packaging instructions for the BigWigsMods packager (release.sh).
-# The shipped zip is WoWForeverJapanese/ = the contents of addon/WoWForeverJapanese/ plus LICENSE and
-# ATTRIBUTION.md. `wfj package-check` verifies that before anything is published (docs/operations/release.md).
-package-as: WoWForeverJapanese
+# The shipped zip is WoWForeverItalian/ = the contents of addon/WoWForeverItalian/ plus LICENSE and
+# ATTRIBUTION.md. `wfi package-check` verifies that before anything is published (docs/operations/release.md).
+package-as: WoWForeverItalian
 
 enable-nolib-creation: no
 
 # The voice is optional: the addon's CurseForge page shows the Voice entry, and installing the addon never pulls it in
 # (pipeline/voice-packs.toml, entry slug). The TOC carries no dependency line.
 optional-dependencies:
-  - wow-forever-japanese-voice
+  - wow-forever-italian-voice
 
 # The release run writes this version's notes here from CHANGELOG.md (a dotfile, so it is never packaged).
 manual-changelog:
@@ -18,7 +18,7 @@ manual-changelog:
 # The addon lives in a subfolder of the repo: lift it to the top of the package. LICENSE and
 # ATTRIBUTION.md stay where they are, at the top of the package, next to the addon's files.
 move-folders:
-  WoWForeverJapanese/addon/WoWForeverJapanese: WoWForeverJapanese
+  WoWForeverItalian/addon/WoWForeverItalian: WoWForeverItalian
 
 # Everything else in the repo is development material.
 ignore:

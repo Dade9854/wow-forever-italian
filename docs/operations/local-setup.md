@@ -69,11 +69,11 @@ The Lua and luarocks versions CI uses are the inputs of `.github/actions/lua-too
 | `make coverage-lua` | busted under luacov; fails below `COV_LUA_MIN` percent of the addon's logic lines (generated `Data/` excluded) |
 | `make lint` | `lint-py` + `lint-lua` + `lint-core-gate` + `lint-no-english-in-addon` + `lint-public` (which includes the private-paths check) |
 | `make lint-py` | `ruff check` over `pipeline/` and `tests/python` |
-| `make lint-lua` | `luacheck addon/WoWForeverJapanese tests/lua` |
+| `make lint-lua` | `luacheck addon/WoWForeverItalian tests/lua` |
 | `make lint-core-gate` | fails on any `CreateFrame(`, `_G[`, `GameTooltip`, `QuestInfo`, `QuestLog` or `GossipFrame` under `Core/`: rendering stays apart from data ([Principles §8](../architecture/principles.md#8-rendering-apart-from-data), [Addon modules](../architecture/addon-modules.md)) |
 | `make lint-no-english-in-addon` | fails on any `data/english` reference under `addon/` ([ADR-002](../adr/002-live-english-only.md)) |
 | `make lint-no-private-paths` | fails if a tracked file is a symlink, or sits under a path of the "Private project internals" block of the checkout's `.git/info/exclude` (the ignore list git never publishes; `.gitignore` holds no private path) |
-| `make lint-public` | `wfj public-check all`: no path on the author's machine in tracked files, nothing the private rules name (when the checkout has a rules file, [ADR-047](../adr/047-public-repository-hygiene.md)); code comments explain rather than record history; every relative link resolves |
+| `make lint-public` | `wfi public-check all`: no path on the author's machine in tracked files, nothing the private rules name (when the checkout has a rules file, [ADR-047](../adr/047-public-repository-hygiene.md)); code comments explain rather than record history; every relative link resolves |
 | `make vectors` | regenerates the Python ↔ Lua contract vectors (hash, align, report); see below |
 | `make toc-check` | the TOC's `## Interface` matches `pipeline/clients.toml` |
 
@@ -81,10 +81,10 @@ The Lua and luarocks versions CI uses are the inputs of `.github/actions/lua-too
 
 | Target | Runs |
 |---|---|
-| `make check` | `wfj check --report`: the status rules over `data/` (writes `status`, `reasons`, `checks`, `english`) and the yield report. Idempotent, a few seconds |
-| `make stats` | the same report, no writes; per type it includes `shipped by provenance: human N · correction N · machine N`. `wfj stats --stale <file.jsonl> [--dump <SavedVariables>]…` writes the shipped quest lines that are `stale` or whose English differs across sources; `wfj stats --delta <git ref> [--capture <file.jsonl>]` prints what `data/english/` gained, lost or changed since the ref |
-| `make generate` | `data/` → `addon/WoWForeverJapanese/Data/` (`Meta.lua`, `Vectors.lua`, the per-type shards, `Reading/`, `Gloss/`) and the TOC's generated block. Deterministic: a rerun is a byte no-op, unchanged files are not rewritten, emptied shards are deleted. Run it after any `data/` change and commit the result with the data |
-| `make validate` | `wfj validate $(VALIDATE_FLAGS)` then `luac`: the CI gate. Schema, the provenance rule, English hash collisions, referential integrity, regenerate-and-diff of `Data/` and the TOC block, no unknown player placeholder on a shipped line, UI strings that keep their English specifiers, colour codes and line breaks and are unambiguous, and the readings. `VALIDATE_FLAGS="--base origin/main"` adds the check that no human line became machine (CI passes it on pull requests) |
+| `make check` | `wfi check --report`: the status rules over `data/` (writes `status`, `reasons`, `checks`, `english`) and the yield report. Idempotent, a few seconds |
+| `make stats` | the same report, no writes; per type it includes `shipped by provenance: human N · correction N · machine N`. `wfi stats --stale <file.jsonl> [--dump <SavedVariables>]…` writes the shipped quest lines that are `stale` or whose English differs across sources; `wfi stats --delta <git ref> [--capture <file.jsonl>]` prints what `data/english/` gained, lost or changed since the ref |
+| `make generate` | `data/` → `addon/WoWForeverItalian/Data/` (`Meta.lua`, `Vectors.lua`, the per-type shards, `Reading/`, `Gloss/`) and the TOC's generated block. Deterministic: a rerun is a byte no-op, unchanged files are not rewritten, emptied shards are deleted. Run it after any `data/` change and commit the result with the data |
+| `make validate` | `wfi validate $(VALIDATE_FLAGS)` then `luac`: the CI gate. Schema, the provenance rule, English hash collisions, referential integrity, regenerate-and-diff of `Data/` and the TOC block, no unknown player placeholder on a shipped line, UI strings that keep their English specifiers, colour codes and line breaks and are unambiguous, and the readings. `VALIDATE_FLAGS="--base origin/main"` adds the check that no human line became machine (CI passes it on pull requests) |
 | `make coverage` | how much of the game ships in Japanese → [Coverage](coverage.md). Run it before every pull request that changes `data/`; a test fails while the committed file is out of date |
 | `make import-draft DRAFT=<file.jsonl> TYPE=<type> NAME=<draft name> MODEL=<model id> [CRITIC=<model id>] DATE=<YYYY-MM-DD> [REVERIFY=1]` | merges machine-drafted text into `data/<type>/` as `machine` variants; never edits a `human` or `correction` variant. See [Machine drafts](#machine-drafts) |
 | `make import-collector DUMP=<file>` | adds one player's collector dump (a SavedVariables file at hand) to `data/english/`, replacing stand-in English with what the Forever client showed. The path may contain spaces. See [Collector dumps](#collector-dumps) |
@@ -98,7 +98,7 @@ These need the import inputs ([Import inputs](#import-inputs)) or an installed F
 | Target | Runs |
 |---|---|
 | `make data` | `import` → `check` → `generate`. Rebuilds the imported text of `data/` from the pinned inputs. Corrections, machine drafts, rulings and prior English baselines are carried ([ADR-012](../adr/012-human-decisions-survive-regeneration.md), [ADR-014](../adr/014-machine-drafted-text-and-ui-dictionary.md)), so a line whose English changed comes out `stale` |
-| `make import` | `wdb-preflight` (every client, before anything is written), then one `wfj import predecessor` pass with the lineage files, then the shared English (pfQuest, VMaNGOS), then per client in `CLIENTS` order (`classic-era`, then `forever`) the quest cache, ids, client text and UI strings, all merged. The later client wins where it has a line. Last, `import-served` drops the English for ids no Forever build has served, so Classic Era-only content is not generated ([ADR-034](../adr/034-forever-is-the-only-target.md)). It is additive: an id an earlier Forever build served keeps its English, and the step records every served id in `pipeline/served/<kind>.tsv` ([ADR-050](../adr/050-english-is-additive.md)); the Japanese stays in `data/` |
+| `make import` | `wdb-preflight` (every client, before anything is written), then one `wfi import predecessor` pass with the lineage files, then the shared English (pfQuest, VMaNGOS), then per client in `CLIENTS` order (`classic-era`, then `forever`) the quest cache, ids, client text and UI strings, all merged. The later client wins where it has a line. Last, `import-served` drops the English for ids no Forever build has served, so Classic Era-only content is not generated ([ADR-034](../adr/034-forever-is-the-only-target.md)). It is additive: an id an earlier Forever build served keeps its English, and the step records every served id in `pipeline/served/<kind>.tsv` ([ADR-050](../adr/050-english-is-additive.md)); the Japanese stays in `data/` |
 | `make import-english` | only the English imports: refreshes `data/english/` and leaves `data/` lines (rulings, prior hashes) alone; `make check` then derives the same `stale` lines a full `make data` does |
 | `make import-served` | the last step of `import` / `import-english`, runnable alone. Updates the served record `pipeline/served/<kind>.tsv` and prints, per kind, how many ids an earlier build served that this build did not (their English is kept). Refuses, writing nothing, on a missing input, unstamped or mixed-stamp CSVs, a cache of another build, or a kind that would lose every line |
 | `make rebuild-check` | the rebuild proof: deletes `data/english/**/*.jsonl`, runs `make data`, and fails, listing the changed files, if anything under `data/` or the addon differs from `HEAD`. Refuses on uncommitted changes to `data/`, the addon, `pipeline/` or the `Makefile`, or a missing shared input |
@@ -111,13 +111,13 @@ These need the import inputs ([Import inputs](#import-inputs)) or an installed F
 | `make ui-inventory` / `make forever-addons` / `make forever-titles` | from a Forever UI extract: the UI strings each hooked surface can show (`pipeline/ui_inventory.txt`) and every other string a loaded file of a translated addon names (`pipeline/ui_loadset.txt`, the load-set sweep), every Blizzard addon and its load state (`pipeline/forever_addons.txt`), and every `SetTitle(` call site. Commit the generated files; tests read them |
 | `make forever-table-counts WOW_DIR=<client folder>` | row counts of the client tables behind windows with no content on Forever; re-run per build |
 
-`python -m wfj.dev.client_ui --wow "<World of Warcraft folder>" --product wowf --out <dir> --listfile <id;path csv>` extracts the interface files (FrameXML, `Blizzard_*`) from a local install, read-only. The path list must include every addon's `.toc` for `make forever-addons` to resolve load sets. `python -m wfj.dev.client_surface` builds the list of client names the addon depends on and the probe file that checks them in game (loaded by the WFJScan dev addon).
+`python -m wfi.dev.client_ui --wow "<World of Warcraft folder>" --product wowf --out <dir> --listfile <id;path csv>` extracts the interface files (FrameXML, `Blizzard_*`) from a local install, read-only. The path list must include every addon's `.toc` for `make forever-addons` to resolve load sets. `python -m wfi.dev.client_surface` builds the list of client names the addon depends on and the probe file that checks them in game (loaded by the WFIScan dev addon).
 
 ### Release
 
 | Target | Runs |
 |---|---|
-| `make package` | a rehearsal of the next release on this machine: clones the committed `HEAD` into `build/package-src`, cuts the changelog and tags there, runs the pinned BigWigsMods packager (downloaded once into `build/`), runs `wfj package-check`, and copies the zip to `build/`. Nothing is pushed or uploaded; uncommitted changes are not included. Needs bash 4 or later (macOS ships 3.2: `brew install bash`, or pass `PACKAGER_BASH=`). Log: `build/package.log`. [Release → Dry run](release.md#dry-run) |
+| `make package` | a rehearsal of the next release on this machine: clones the committed `HEAD` into `build/package-src`, cuts the changelog and tags there, runs the pinned BigWigsMods packager (downloaded once into `build/`), runs `wfi package-check`, and copies the zip to `build/`. Nothing is pushed or uploaded; uncommitted changes are not included. Needs bash 4 or later (macOS ships 3.2: `brew install bash`, or pass `PACKAGER_BASH=`). Log: `build/package.log`. [Release → Dry run](release.md#dry-run) |
 | `make release [VERSION=x.y.z]` | starts the Release workflow on `main` with the GitHub CLI and follows it to the end. Needs `gh`, signed in, with write access. [Release](release.md) |
 
 ## Config files
@@ -130,9 +130,9 @@ These need the import inputs ([Import inputs](#import-inputs)) or an installed F
 
 Three Python ↔ Lua contracts are committed as vector pairs; `make vectors` regenerates them all.
 
-- **Hash**: the cases live in `pipeline/wfj/dev/gen_vectors.py` (`CASES`) and are written as `vectors/hash_vectors.jsonl` (read by pytest) and `vectors/hash_vectors.lua` (read by busted). `wfj generate` ships a third copy, `addon/WoWForeverJapanese/Data/Vectors.lua`, which `/wfj debug hash` checks in the client.
-- **Align**: `pipeline/wfj/dev/gen_align_vectors.py` → `vectors/align_vectors.{jsonl,lua}`, run by busted against `Core/Align.lua`. A test also checks that `Align.ALLOWLIST` in `Core/Align.lua` equals `pipeline/allowlist.txt`: add a term to both.
-- **Report**: `pipeline/wfj/dev/gen_report_vectors.py` → `vectors/report_vectors.{jsonl,lua}`, the fix-report text format both sides read and write.
+- **Hash**: the cases live in `pipeline/wfi/dev/gen_vectors.py` (`CASES`) and are written as `vectors/hash_vectors.jsonl` (read by pytest) and `vectors/hash_vectors.lua` (read by busted). `wfi generate` ships a third copy, `addon/WoWForeverItalian/Data/Vectors.lua`, which `/wfi debug hash` checks in the client.
+- **Align**: `pipeline/wfi/dev/gen_align_vectors.py` → `vectors/align_vectors.{jsonl,lua}`, run by busted against `Core/Align.lua`. A test also checks that `Align.ALLOWLIST` in `Core/Align.lua` equals `pipeline/allowlist.txt`: add a term to both.
+- **Report**: `pipeline/wfi/dev/gen_report_vectors.py` → `vectors/report_vectors.{jsonl,lua}`, the fix-report text format both sides read and write.
 
 Drift tests regenerate each pair in memory and fail if the result differs from the committed files. To add a case: append to `CASES`, run `make vectors` (and `make generate` for the hash case, which ships), and commit the regenerated files.
 
@@ -161,7 +161,7 @@ Staging a client folder (the preflight refuses the import until every client's f
 
 `CLIENT` (default `forever`) picks the client for the single-client targets (`wago-fetch`, `tables-extract`, `wdb-copy`, `import-tables`). The per-client knobs (`WAGO_BUILD`, `WDB_BUILD`, `TABLES_SRC`, `WDB_QUEST`, `WAGO_QUESTV2`, `CLIENT_DIR`, `PRODUCT`, …) derive from `CLIENT`; pass them on the command line only to a single-client target. `make import`, `import-english`, `data` and `rebuild-check` refuse them, because a value would apply to every client. A new client build is a `Makefile` change (bump `<client>_BUILD`, stage the new folder; for Forever, while its tables ship ahead of the quest scan, `forever_QUEST_BUILD` names the last scanned build, and the line is deleted before the build's quest cache is copied), committed with the regenerated data.
 
-**Source stamp.** Each client folder's CSVs carry `tables-source.txt`, one `<table> <src>@<build>` line per table, written only by `make tables-extract` and `make wago-fetch`. The preflight stops the import when a CSV has no stamp or a stamp other than its client's pins. CSVs downloaded by hand need one too: `python -m wfj.dev.tables_stamp write --dir <client folder> --src wago --build <build> <Table> …`.
+**Source stamp.** Each client folder's CSVs carry `tables-source.txt`, one `<table> <src>@<build>` line per table, written only by `make tables-extract` and `make wago-fetch`. The preflight stops the import when a CSV has no stamp or a stamp other than its client's pins. CSVs downloaded by hand need one too: `python -m wfi.dev.tables_stamp write --dir <client folder> --src wago --build <build> <Table> …`.
 
 | Input | Where it comes from | Makefile variable |
 |---|---|---|
@@ -171,7 +171,7 @@ Staging a client folder (the preflight refuses the import until every client's f
 | QuestJapanizer 0.5.8 (`QuestData.lua`) | CurseForge project 15442, file 395901: `curl -L -o predecessors/lineage/QuestJapanizer-0.5.8.zip https://www.curseforge.com/api/v1/mods/15442/files/395901/download`, then `unzip -d predecessors/lineage/qjp` | `QJP`, `QJP_VERSION` |
 | CraftJapanizer_Quest 2012031300 (`CraftJapanizer_QuestData.lua`) | CurseForge project 23293, file 580134: `…/mods/23293/files/580134/download`, then `unzip -d predecessors/lineage/cjq` | `CJQ`, `CJQ_VERSION` |
 | Client tables | `make tables-extract` (Forever) or `make wago-fetch` (Classic Era), above. Only the UI keys in `pipeline/ui_keys.txt` are imported from `GlobalStrings`; only stat lines ("+3 Fire Spell Damage") become `SpellItemEnchantment:<ID>` keys | `WOW_DIR`, `HOTFIXES`, `<client>_SRC`, `<client>_BUILD`, `CLIENT_SPELL` (Spell.csv), `CLIENT_ITEMEFFECT` (ItemEffect.csv) |
-| Quest cache `questcache.wdb` (quest title, objectives, description, objective and area text) | the client's `Cache/WDB/enUS/questcache.wdb` after a quest scan and a full **Exit Game** (the client does not write it on logout): `make wdb-copy`. The payload layout is pinned per build in `io/wdb.LAYOUTS`; a build with no pinned layout is refused (`python -m wfj.dev.wdb_layout <cache>` says which layout reads it) | `WDB_QUEST`, `WDB_BUILD`, `WDB_MISSING` |
+| Quest cache `questcache.wdb` (quest title, objectives, description, objective and area text) | the client's `Cache/WDB/enUS/questcache.wdb` after a quest scan and a full **Exit Game** (the client does not write it on logout): `make wdb-copy`. The payload layout is pinned per build in `io/wdb.LAYOUTS`; a build with no pinned layout is refused (`python -m wfi.dev.wdb_layout <cache>` says which layout reads it) | `WDB_QUEST`, `WDB_BUILD`, `WDB_MISSING` |
 | Forever UI extract and GlobalStrings | the `client_ui` extract under `predecessors/forever-ui-<build>/`, and the Forever client folder's `GlobalStrings.csv`. Needed only for `make ui-inventory`, `forever-addons` and `forever-titles` | `FOREVER_UI`, `FOREVER_GLOBALSTRINGS` |
 
 ```sh
@@ -192,10 +192,10 @@ The source tags in `data/` (`cqjt@<sha>`, `ctjt@<sha>`, `qjp@<version>`, `cjq@<v
 
 ## Collector dumps
 
-Players send what their game recorded from the game itself, in a `collector-send` issue; take those with `make collector-intake ISSUE=N` ([Collector sends](collector-sends.md)), which ends in the same merge as below. This section is for a SavedVariables file at hand. In game, `/wfj collector path` prints where it is: `<World of Warcraft folder>/_forever_/WTF/Account/<ACCOUNT>/SavedVariables/WoWForeverJapanese.lua`. It is not committed.
+Players send what their game recorded from the game itself, in a `collector-send` issue; take those with `make collector-intake ISSUE=N` ([Collector sends](collector-sends.md)), which ends in the same merge as below. This section is for a SavedVariables file at hand. In game, `/wfi collector path` prints where it is: `<World of Warcraft folder>/_forever_/WTF/Account/<ACCOUNT>/SavedVariables/WoWForeverItalian.lua`. It is not committed.
 
 ```sh
-make import-collector DUMP="<path to WoWForeverJapanese.lua>"
+make import-collector DUMP="<path to WoWForeverItalian.lua>"
 ```
 
 The path may contain spaces (the SavedVariables folder of a default install does); quote it.
@@ -204,7 +204,7 @@ Lines are tagged `collector@<client build>`. Entries that fail validation are co
 
 ## Machine drafts
 
-Machine-drafted text ([ADR-014](../adr/014-machine-drafted-text-and-ui-dictionary.md)) enters `data/` only through `make import-draft`. A draft is a JSONL file, one row per entry, exactly `{"id": …, "field": …, "ja": …}`. UI keys are strings such as `"ACCEPT"`; quest, item, spell, book and objective ids are integers; a gossip id is the 16-hex gossip key (`/wfj debug gossip` prints it for each open line) with field `text`.
+Machine-drafted text ([ADR-014](../adr/014-machine-drafted-text-and-ui-dictionary.md)) enters `data/` only through `make import-draft`. A draft is a JSONL file, one row per entry, exactly `{"id": …, "field": …, "ja": …}`. UI keys are strings such as `"ACCEPT"`; quest, item, spell, book and objective ids are integers; a gossip id is the 16-hex gossip key (`/wfi debug gossip` prints it for each open line) with field `text`.
 
 ```sh
 make import-draft DRAFT=<file.jsonl> TYPE=ui NAME=<draft name> MODEL=<model id> DATE=<YYYY-MM-DD>
@@ -215,7 +215,7 @@ Provenance is `{"class": "machine", "model": …, "critic": …?, "source": "dra
 
 For `ui`, a new key is first listed in `pipeline/ui_keys.txt` (curation rules in its header), then `make import-english`, then drafted. Keep every format specifier (`%s`, `%d`, `%.1f`, `%1$s` when Japanese word order moves an argument), every colour code (`|cAARRGGBB` … `|r`) and line break, and keep two whitespace-adjacent text captures in their English order. A `|4singular:plural;` group may be dropped.
 
-Enchantment stat lines are not drafted row by row: `python -m wfj.dev.enchant_drafts <client folder>/SpellItemEnchantment.csv <phrases.tsv> > <draft.jsonl>` builds one row per `SpellItemEnchantment:<id>` from a phrase table (`<English words>\t<Japanese label>`; "+3 Fire Spell Damage" → `炎呪文ダメージ +3`). A stat line whose words are not in the table fails the run by name.
+Enchantment stat lines are not drafted row by row: `python -m wfi.dev.enchant_drafts <client folder>/SpellItemEnchantment.csv <phrases.tsv> > <draft.jsonl>` builds one row per `SpellItemEnchantment:<id>` from a phrase table (`<English words>\t<Japanese label>`; "+3 Fire Spell Damage" → `炎呪文ダメージ +3`). A stat line whose words are not in the table fails the run by name.
 
 To replace a machine line by hand, add a correction (below) with `"corrects": "draft-<NAME>@<DATE>"`.
 
@@ -232,7 +232,7 @@ To replace a machine line by hand, add a correction (below) with `"corrects": "d
 
 A correction is a variant a person wrote: the translation is right but a name is misspelled (so `alignment_failed` rejects it), or the text needs a fix, including replacing a machine draft. It is carried across `make data` and ranks first in the tie-break ([ADR-012](../adr/012-human-decisions-survive-regeneration.md)).
 
-1. Find candidates: `python -m wfj.dev.list_name_typos [--cutoff 0.7] [--context 30]` lists rejected quest variants whose only failures are near-miss names, with context. A candidate is not a fix: read each against the English. A plural the checker misses (`Missionary` / `Missionaries`), a zone the English shortens, a name the English never uses, or a typo in the English itself (`Quatermaster`) is not a typo in the translation.
+1. Find candidates: `python -m wfi.dev.list_name_typos [--cutoff 0.7] [--context 30]` lists rejected quest variants whose only failures are near-miss names, with context. A candidate is not a fix: read each against the English. A plural the checker misses (`Missionary` / `Missionaries`), a zone the English shortens, a name the English never uses, or a typo in the English itself (`Quatermaster`) is not a typo in the translation.
 2. Append the corrected variant to the line's `conflicts` (the line's own text can stay):
 
    ```json
@@ -248,12 +248,12 @@ An edit to an imported line's `ja` that is **not** marked `correction` is overwr
 ## Repo layout
 
 ```
-addon/WoWForeverJapanese/   WoWForeverJapanese.toc (hand-maintained outside the generated block) · Core/ (lookup, state,
+addon/WoWForeverItalian/   WoWForeverItalian.toc (hand-maintained outside the generated block) · Core/ (lookup, state,
                             settings; never touches a frame) · UI/ (one module per surface or window) · Main.lua ·
                             Bindings.xml · Data/ (generated by `make generate`) · Fonts/ · Media/
-pipeline/wfj/               core/ (pure rules: normalize, hashing, align, status, readings, …) · io/ (readers: stores,
+pipeline/wfi/               core/ (pure rules: normalize, hashing, align, status, readings, …) · io/ (readers: stores,
                             Lua, wago, VMaNGOS, quest cache, the client's archive) · emit/ (schema, Lua writer) ·
-                            cmd/ (the `wfj` verbs) · dev/ (maintainer tools: batches, inventories, fixtures, vectors)
+                            cmd/ (the `wfi` verbs) · dev/ (maintainer tools: batches, inventories, fixtures, vectors)
 pipeline/*.txt, *.tsv       curated lists: allowlist, ui_keys, ui_exclusions, not-names, glossary, name lists, and the
                             generated inventories (ui_inventory, forever_addons, served_columns, …) with
                             their hand-written decisions (served_dispositions, …)
@@ -282,19 +282,19 @@ tests/                      python/ · lua/spec/ · fixtures/ (small excerpts of
 | luarocks install fails on missing headers | Re-run with `LUA_INCDIR=$(brew --prefix luajit)/include/luajit-2.1` (macOS), or the include folder of your Lua 5.1. |
 | A vector drift test fails after editing a `gen_*vectors.py`, `core/align.py` or `allowlist.txt` | `make vectors` and commit the vector files; `make generate` for the shipped `Data/Vectors.lua`. If the allowlist changed, mirror it in `Align.ALLOWLIST`. |
 | `make validate` reports `regenerate: … differs from a regeneration` or a TOC block difference | A generated file or the TOC markers were edited by hand, or `data/` changed without a regeneration. Run `make generate` and commit; never patch `Data/` directly. |
-| `collector_dump_spec` fails after changing `Core/Collector.lua` or a surface's record call | The committed SavedVariables fixture drifted. If the change is intended, `WFJ_WRITE_FIXTURES=1 make test-lua` and commit `tests/fixtures/collector/WoWForeverJapanese.lua`. |
-| `make validate` reports `placeholders: <type> <id>/<field> ships unknown token(s) {…}` | A shipped `ja` carries a `{word}` the addon does not expand. Fix the token as a correction (tokens are case-sensitive), or teach the addon the new token: its expansion in `Placeholders.expand` and its name in `KNOWN` in `Core/Placeholders.lua` and `pipeline/wfj/core/placeholders.py` (a test checks the two lists match), and strip it in both name checks (`stripPlaceholders` in `Core/Align.lua`, `PLACEHOLDER` in `core/align.py`). |
+| `collector_dump_spec` fails after changing `Core/Collector.lua` or a surface's record call | The committed SavedVariables fixture drifted. If the change is intended, `WFI_WRITE_FIXTURES=1 make test-lua` and commit `tests/fixtures/collector/WoWForeverItalian.lua`. |
+| `make validate` reports `placeholders: <type> <id>/<field> ships unknown token(s) {…}` | A shipped `ja` carries a `{word}` the addon does not expand. Fix the token as a correction (tokens are case-sensitive), or teach the addon the new token: its expansion in `Placeholders.expand` and its name in `KNOWN` in `Core/Placeholders.lua` and `pipeline/wfi/core/placeholders.py` (a test checks the two lists match), and strip it in both name checks (`stripPlaceholders` in `Core/Align.lua`, `PLACEHOLDER` in `core/align.py`). |
 | `make validate` reports `ui <KEY>: specifiers differ from the English (…)` or `ui ambiguous: A, B share the English …` | A UI draft changed a format specifier, or two keys with the same English were drafted differently. Fix the draft (or add a correction); `make import-draft`, `make check`, `make generate`. |
 | `make check` rejects `markup_changed:<detail>`, or `validate` reports `markup differs from the English` / `adjacent_captures_reordered` | The Japanese dropped or altered a colour code, `\|r` or line break, has a malformed `\|4` group, or swapped two captures the English separates only by whitespace. Fix the draft so the markup matches and the captures stay in order. |
 | `make import` fails `wago-ui: N listed key(s) absent or empty at <build>` | A key in `pipeline/ui_keys.txt` is not in that build's tables (renamed or removed, or the CSV is another build). Check the CSV build, then drop or rename the key. |
 | `make import` fails on the vmangos step | `mangos.sqlite: not a file`: fetch it (Import inputs). `no table 'quest_template'` or `lacks column(s)`: the file is not the VMaNGOS world database or its schema changed; nothing is written. `--commit must be a 7–40 hex commit`: `VMANGOS_SHA` is not the asset's sha. |
 | `make import` fails in the preflight: `no quest cache at …` / `no QuestV2 at …` / `no Spell / ItemEffect CSV` | That client's folder is incomplete: `make wdb-copy` or `make tables-extract` / `make wago-fetch` for it. |
-| `wdb: N quest(s) with wdb@<build> English are not in <file>` | The cache is smaller than the one already imported at this build (a wiped cache, the wrong install). Copy the right one (the `.prev` file holds the previous copy). `--allow-shrink` on `wfj import english wdb` deletes those quests' English on purpose. |
+| `wdb: N quest(s) with wdb@<build> English are not in <file>` | The cache is smaller than the one already imported at this build (a wiped cache, the wrong install). Copy the right one (the `.prev` file holds the previous copy). `--allow-shrink` on `wfi import english wdb` deletes those quests' English on purpose. |
 | `wdb: questcache.wdb is build N, --build is …` or `questcache.wdb: quest <id>: …` | The cache is another build than the pin, or its layout differs. Copy the right cache, or bump `<client>_BUILD`; a new layout needs `io/wdb.py` updated first ([ADR-020](../adr/020-quest-cache-harvest.md)). |
 | `tables-stamp: <csv>: no source stamp …` or `stamped <src>@<build>, the import was told …` | The CSV was copied by hand, a fetch was cut off, or it came from another source or build than the pins. Nothing was written. Re-run `make tables-extract` or `make wago-fetch` for that client, or fix the pin in the `Makefile`. |
 | `make wago-fetch` fails `wago-fetch: <table> failed at <build>; no CSV replaced` | wago.tools does not list that build or is unreachable. Read the tables from the installed client instead (`make tables-extract`). |
 | `make tables-extract` fails `client-tables: …` | Nothing was written. `no product '<x>' (have […])`: set `PRODUCT` to one listed. `truncated or unreadable` / `does not match its checksum`: the client is running or patching; exit it and retry. `layout hash X, column map verified on Y`: that table's layout changed and its column map in `io/client_tables.py` must be re-verified. A hotfix decode error: re-run with `HOTFIXES=` (archive rows only). |
-| `make ui-inventory` prints `no UI extract at …` or `no GlobalStrings at …` | Extract the UI with `wfj.dev.client_ui`, or pass `FOREVER_UI=` / `FOREVER_GLOBALSTRINGS=`. |
+| `make ui-inventory` prints `no UI extract at …` or `no GlobalStrings at …` | Extract the UI with `wfi.dev.client_ui`, or pass `FOREVER_UI=` / `FOREVER_GLOBALSTRINGS=`. |
 | `make package` stops with `package: the packager needs bash 4+` | Install a newer bash (`brew install bash` on macOS) or pass `PACKAGER_BASH=<path to bash 4+>`. |
 
 ## Related

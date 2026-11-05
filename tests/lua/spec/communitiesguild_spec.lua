@@ -65,20 +65,20 @@ local function build()
 end
 
 describe("the guild info texts of the Communities window", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     build()
-    assert.is_true(WFJ.CommunitiesGuild.init())
+    assert.is_true(WFI.CommunitiesGuild.init())
   end)
 
   after_each(function()
@@ -95,7 +95,7 @@ describe("the guild info texts of the Communities window", function()
       assert.are.equal("ThrallがJainaをOfficerに昇格させました|cff009999   ( 3時間前 )|r|n"
         .. "Guildがギルドに加入しました|cff009999   ( 2日前 )|r|n"
         .. "Thrall does something new|cff009999   ( 2 days ago )|r|n", html().shown)
-      assert.are.equal(WFJ.Font.PATH, (html():GetFont("P")))
+      assert.are.equal(WFI.Font.PATH, (html():GetFont("P")))
       alt(true)
       assert.are.equal(EVENT_EN, html().shown)
       alt(false)
@@ -150,12 +150,12 @@ describe("the guild info texts of the Communities window", function()
   it("frames bound to the wrong type degrade with no error", function()
     H.uiTeardown()
     for _, g in ipairs(GLOBALS) do _G[g] = nil end
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     build()
     _G.CommunitiesGuildLogFrame.Container = 3
     _G.CommunitiesFrame.GuildBenefitsFrame.FactionFrame = "x"
     _G.GuildNewsButton_SetText = 7
-    assert.has_no.errors(function() assert.is_true(WFJ.CommunitiesGuild.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.CommunitiesGuild.init()) end)
   end)
 end)

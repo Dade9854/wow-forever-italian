@@ -45,7 +45,7 @@ jobs:
         run: |
           printf '%s' "$BODY" > "$RUNNER_TEMP/body.txt"
           set +e
-          (cd pipeline && python -m wfj collector check --body-file "$RUNNER_TEMP/body.txt") > "$RUNNER_TEMP/summary.md"
+          (cd pipeline && python -m wfi collector check --body-file "$RUNNER_TEMP/body.txt") > "$RUNNER_TEMP/summary.md"
           code=$?
           set -e
           # 0 reads · 1 does not read · anything else (3: internal error) fails the job with no comment or label

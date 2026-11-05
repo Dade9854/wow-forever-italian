@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd.import_ import run
-from wfj.dev import tables_stamp as stamp_cli
-from wfj.io import tables_stamp
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.dev import tables_stamp as stamp_cli
+from wfi.io import tables_stamp
+from wfi.io.jsonl_store import Store
 
 BUILD = "1.15.9.69722"
 

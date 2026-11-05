@@ -4,7 +4,7 @@ black corners in the AddOn List (the minimap ring hides them), so this test guar
 
 from pathlib import Path
 
-ICON = Path(__file__).resolve().parents[2] / "addon/WoWForeverJapanese/Media/icon.tga"
+ICON = Path(__file__).resolve().parents[2] / "addon/WoWForeverItalian/Media/icon.tga"
 
 
 def _pixels():

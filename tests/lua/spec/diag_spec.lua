@@ -3,7 +3,7 @@ local H = require("tests.lua.spec.helpers")
 
 local function fresh()
   local ns = {}
-  H.loadPure("Core/Diag.lua", "WoWForeverJapanese", ns)
+  H.loadPure("Core/Diag.lua", "WoWForeverItalian", ns)
   local printed = {}
   ns.Diag.setDeps({ now = function() return 12.7 end, mem = function() return 2048.4 end,
     clock = function() return "2026-10-03 14:40:00" end, print = function(s) printed[#printed + 1] = s end })
@@ -34,8 +34,8 @@ describe("Core/Diag", function()
     local D = fresh()
     local db = D.load(nil)
     D.session({ build = "b", version = "v" })
-    for _ = 1, 3 do D.onBlocked("ADDON_ACTION_BLOCKED", "WoWForeverJapanese", "MainActionBar:SetPointBase()",
-      "WoWForeverJapanese") end
+    for _ = 1, 3 do D.onBlocked("ADDON_ACTION_BLOCKED", "WoWForeverItalian", "MainActionBar:SetPointBase()",
+      "WoWForeverItalian") end
     assert.are.equal(2, #db.entries)
     assert.are.same({ 3, "2026-10-03 14:40:00" }, { db.entries[2].n, db.entries[2].last })
     assert.matches("×3", D.lines(1)[1])
@@ -65,8 +65,8 @@ describe("Core/Diag", function()
   it("logs a blocked action only when it names this addon, and the session with any failed setup", function()
     local D = fresh()
     local db = D.load(nil)
-    assert.is_nil(D.onBlocked("ADDON_ACTION_BLOCKED", "OtherAddon", "CastSpell()", "WoWForeverJapanese"))
-    local e = D.onBlocked("ADDON_ACTION_FORBIDDEN", "WoWForeverJapanese", "UNKNOWN()", "WoWForeverJapanese")
+    assert.is_nil(D.onBlocked("ADDON_ACTION_BLOCKED", "OtherAddon", "CastSpell()", "WoWForeverItalian"))
+    local e = D.onBlocked("ADDON_ACTION_FORBIDDEN", "WoWForeverItalian", "UNKNOWN()", "WoWForeverItalian")
     assert.are.same({ "blocked", "UNKNOWN()", "ADDON_ACTION_FORBIDDEN" }, { e.kind, e.fn, e.event })
     D.initFailed("gossip", "boom")
     D.session({ build = "1.60.1.70205", version = "0.1.0", initErrors = { { surface = "gossip", err = "boom" } } })
@@ -144,13 +144,13 @@ describe("Core/Diag", function()
     local D = fresh()
     local db = D.load(nil)
     D.setDeps({ stack = function() return table.concat({
-      "[Interface/AddOns/WoWForeverJapanese/Main.lua]:414: in function <Main.lua:391>",
+      "[Interface/AddOns/WoWForeverItalian/Main.lua]:414: in function <Main.lua:391>",
       "[C]: in function 'SetPointBase'",
       "[Interface/AddOns/Blizzard_EditMode/Shared/EditModeSystemTemplates.lua]:148: in function 'SetPoint'",
       "[Interface/AddOns/Blizzard_EditMode/Shared/EditModeManager.lua]:317: in function 'SetToLayoutAnchor'" }, "\n")
     end, inCombat = function() return true end })
-    local e = D.onBlocked("ADDON_ACTION_BLOCKED", "WoWForeverJapanese", "MainActionBar:SetPointBase()",
-      "WoWForeverJapanese")
+    local e = D.onBlocked("ADDON_ACTION_BLOCKED", "WoWForeverItalian", "MainActionBar:SetPointBase()",
+      "WoWForeverItalian")
     assert.are.equal("[Interface/AddOns/Blizzard_EditMode/Shared/EditModeSystemTemplates.lua]:148", e.site)
     assert.are.equal("MainActionBar:SetPointBase() <" .. e.site .. ">", e.msg)
     assert.are.equal("MainActionBar:SetPointBase()", e.fn)
@@ -159,6 +159,6 @@ describe("Core/Diag", function()
     assert.are.equal(1, #db.entries)
     assert.are.equal("?", (D.blockedSite("")))
     D.setDeps({ inCombat = function() return false end })
-    assert.is_false(D.onBlocked("ADDON_ACTION_BLOCKED", "WoWForeverJapanese", "X()", "WoWForeverJapanese").combat)
+    assert.is_false(D.onBlocked("ADDON_ACTION_BLOCKED", "WoWForeverItalian", "X()", "WoWForeverItalian").combat)
   end)
 end)

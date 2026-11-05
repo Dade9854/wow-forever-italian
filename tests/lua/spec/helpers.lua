@@ -1,16 +1,16 @@
--- Test helpers: load one addon chunk the way the client does (vararg = ADDON, WFJ).
+-- Test helpers: load one addon chunk the way the client does (vararg = ADDON, WFI).
 local H = {}
 local ROOT = (debug.getinfo(1, "S").source:match("^@(.*)/tests/lua/spec/helpers%.lua$")) or "."
 H.ROOT = ROOT
-H.ADDON_DIR = ROOT .. "/addon/WoWForeverJapanese"
+H.ADDON_DIR = ROOT .. "/addon/WoWForeverItalian"
 
 -- Under `make coverage-lua` the generated data is loaded with the coverage hook paused: it is not code
 -- under test, and counting every line of its tables makes the run many times slower.
 local function run(relpath, chunk, addonName, ns)
   local runner = package.loaded["luacov.runner"]
-  if not (runner and relpath:find("^Data/")) then return chunk(addonName or "WoWForeverJapanese", ns) end
+  if not (runner and relpath:find("^Data/")) then return chunk(addonName or "WoWForeverItalian", ns) end
   runner.pause()
-  local ok, result = pcall(chunk, addonName or "WoWForeverJapanese", ns)
+  local ok, result = pcall(chunk, addonName or "WoWForeverItalian", ns)
   runner.resume()
   if not ok then error(result, 0) end
   return result
@@ -86,37 +86,37 @@ H.UI_FILES = { "Core/Const.lua", "Core/Compat.lua", "Core/Align.lua", "Core/Stat
 -- The English of a global-string key is set as that global (cleared by H.uiTeardown); `ItemSubClass:` /
 -- `SpellItemEnchantment:` keys are fingerprint rows. Settings are loaded fresh. → rows
 -- `opts` (optional): { lookup(kind, id) → entry | nil for kinds other than "ui", expand(ja) → ja }.
-function H.uiSetup(WFJ, ui, opts)
+function H.uiSetup(WFI, ui, opts)
   opts = opts or {}
-  WFJ.Compat.init(function(name) return _G[name] end)
-  WFJ.Settings.load(nil, 1, {})
-  local function h1(text) return (WFJ.Hash.h32x2(WFJ.Normalize.v1(text))) end
+  WFI.Compat.init(function(name) return _G[name] end)
+  WFI.Settings.load(nil, 1, {})
+  local function h1(text) return (WFI.Hash.h32x2(WFI.Normalize.v1(text))) end
   local rows = {}
   H._uiGlobals = {}
   for key, pair in pairs(ui) do
     rows[key] = { pair[2], h1(pair[1]), "." }
     if not key:find(":") then _G[key] = pair[1]; H._uiGlobals[#H._uiGlobals + 1] = key end
   end
-  WFJ.UIIndex = WFJ.UIStrings.build({ rows = rows, hash = h1, english = function(key)
-    if WFJ.UIStrings.isFingerprintKey(key) then return nil end
+  WFI.UIIndex = WFI.UIStrings.build({ rows = rows, hash = h1, english = function(key)
+    if WFI.UIStrings.isFingerprintKey(key) then return nil end
     return _G[key]
   end })
-  WFJ.Render.init(WFJ.Translator.new({
-    enabled = function() return WFJ.State.enabled end,
-    areaEnabled = WFJ.State.areaEnabled,
-    modifierHeld = WFJ.Modifier.isDown,
+  WFI.Render.init(WFI.Translator.new({
+    enabled = function() return WFI.State.enabled end,
+    areaEnabled = WFI.State.areaEnabled,
+    modifierHeld = WFI.Modifier.isDown,
     lookup = function(kind, id)
       if kind == "ui" then local r = rows[id]; return r and { ja = r[1], status = r[3] } end
       return opts.lookup and opts.lookup(kind, id) or nil
     end,
     expand = opts.expand,
-    marker = function(n) return WFJ.Settings.get("marker." .. n) end,
-    align = WFJ.Align.check,
-    fill = function(ja, args) return WFJ.UIIndex:fill(ja, args) end,
+    marker = function(n) return WFI.Settings.get("marker." .. n) end,
+    align = WFI.Align.check,
+    fill = function(ja, args) return WFI.UIIndex:fill(ja, args) end,
   }))
-  WFJ.LoadOnDemand.init(function(name) return C_AddOns.IsAddOnLoaded(name) end)
-  WFJ.ButtonText.init()
-  WFJ.HelpTooltip.init()
+  WFI.LoadOnDemand.init(function(name) return C_AddOns.IsAddOnLoaded(name) end)
+  WFI.ButtonText.init()
+  WFI.HelpTooltip.init()
   return rows
 end
 

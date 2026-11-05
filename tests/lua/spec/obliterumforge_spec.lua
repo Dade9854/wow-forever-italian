@@ -18,25 +18,25 @@ C.suite(getfenv(1), {
   addon = "Blizzard_ObliterumUI", root = "ObliterumForgeFrame", ui = UI, build = build,
   globals = { "ObliterumForgeFrame" },
   cases = {
-    { "the button is Japanese, Alt shows English, and it stays shown (a static label)", function(frame, WFJ)
+    { "the button is Japanese, Alt shows English, and it stays shown (a static label)", function(frame, WFI)
       frame:Show()
       assert.are.equal("抹消", frame.ObliterateButton:GetText())
-      C.alt(WFJ, true)
+      C.alt(WFI, true)
       assert.are.equal("Obliterate", frame.ObliterateButton:GetText())
-      C.alt(WFJ, false)
+      C.alt(WFI, false)
       frame:Hide()
       assert.are.equal("抹消", frame.ObliterateButton:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Show()
     local title = frame.TitleContainer.TitleText
     assert.are.equal("Obliterate", title:GetText())
-    assert.are.equal(0, WFJ.Labels.show("obliterumforge", "x", title))
-    assert.is_true(C.unrecorded(WFJ, title))
+    assert.are.equal(0, WFI.Labels.show("obliterumforge", "x", title))
+    assert.is_true(C.unrecorded(WFI, title))
   end,
   wrong = function(frame)
     frame.ObliterateButton = Stub -- a table that is no widget
-    return function(f, WFJ) assert.is_true(C.unrecorded(WFJ, f.TitleContainer.TitleText)) end
+    return function(f, WFI) assert.is_true(C.unrecorded(WFI, f.TitleContainer.TitleText)) end
   end,
 })

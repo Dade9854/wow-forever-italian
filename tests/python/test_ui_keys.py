@@ -6,14 +6,14 @@ from pathlib import Path
 
 from local_inputs import forever_build
 
-from wfj.core import specifiers
-from wfj.io import wago
-from wfj.io.jsonl_store import Store
+from wfi.core import specifiers
+from wfi.io import wago
+from wfi.io.jsonl_store import Store
 
 BUILD = "1.15.9.69722"
 # The dictionary's English comes from two clients. A key Forever provides is restamped
 # db2@<forever build>; one Forever does not have keeps its Vanilla stamp (the union merge), and that stamp is
-# what `wfj stats --unseen-since` reads to find what the newer client has never had. Both are pinned builds:
+# what `wfi stats --unseen-since` reads to find what the newer client has never had. Both are pinned builds:
 # the assertion is that no line carries an unpinned or unknown source, not that there is only ever one.
 # One exception (ADR-050): a listed key whose row left the pinned Forever build keeps the English of the last
 # build that served it, the build `pipeline/served/ui.tsv` records for it.
@@ -191,7 +191,7 @@ def test_no_listed_english_carries_a_refused_link_key_markup_or_tokens(root):
     # links and on |K key markup; a $ quest token is never a key
     import re
 
-    from wfj.core.markup import link_refused
+    from wfi.core.markup import link_refused
 
     token_dollar = re.compile(r"(?<!%\d)\$")  # a $N / $B quest token, never the `$` of a `%1$s` positional
     for ln in Store(root / "data", english=True).load("ui"):
@@ -263,7 +263,7 @@ def test_window_name_collision_keys_are_named_in_a_ui_module(root):
     import re
 
     assert WINDOW_COLLISIONS <= KNOWN_NAME_COLLISIONS
-    source = "\n".join(p.read_text(encoding="utf-8") for p in (root / "addon/WoWForeverJapanese/UI").glob("*.lua"))
+    source = "\n".join(p.read_text(encoding="utf-8") for p in (root / "addon/WoWForeverItalian/UI").glob("*.lua"))
     # a key-building prefix: `"<PREFIX>" ..`, at least four characters (record-key prefixes such as "L" .. i are not)
     prefixes = {p for p in re.findall(r'"([A-Z][A-Z0-9_]*)"\s*\.\.', source) if len(p) >= 4}
     english = {ln["id"]: ln["en"] for ln in Store(root / "data", english=True).load("ui")}
@@ -304,10 +304,10 @@ def test_family_name_collisions_are_restricted_family_keys(root):
     family key (Core/UIStrings.lua RESTRICTED_PREFIXES), so the open match can never meet that name."""
     import re
 
-    lua = (root / "addon/WoWForeverJapanese/Core/UIStrings.lua").read_text(encoding="utf-8")
+    lua = (root / "addon/WoWForeverItalian/Core/UIStrings.lua").read_text(encoding="utf-8")
     block = lua[lua.index("local RESTRICTED_PREFIXES"): lua.index("function UIStrings.isRestrictedKey")]
     restricted = set(re.findall(r'"\^(\w+):"', block))
-    from wfj.core.model import RESTRICTED_FAMILIES
+    from wfi.core.model import RESTRICTED_FAMILIES
 
     assert restricted == set(RESTRICTED_FAMILIES)
     # every restricted family is a fingerprint family too (the addon's two lists kept in step)
@@ -327,7 +327,7 @@ def test_a_listed_link_holds_only_literal_text_and_plain_specifiers(root):
     specifiers (a player link, a loot-history link, a store link): the Japanese keeps the whole link byte for
     byte, label included, and the arguments inside it keep the English order. A link holding a positional
     specifier, a |K key, a `$` token or any other escape is still never a key."""
-    from wfj.core import markup
+    from wfi.core import markup
 
     assert markup.link_refused("|Hplayer:%s|h[%s]|h has come online.") is None
     assert markup.link_refused("|HlootHistory:%d|h[Loot]|h: %s won: %s") is None

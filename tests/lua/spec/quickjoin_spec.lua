@@ -61,29 +61,29 @@ local function install(o)
 end
 
 describe("the quick join panel on Forever", function()
-  local WFJ
-  before_each(function() WFJ = S.load(FILES, UI); C.lfglist = false end)
+  local WFI
+  before_each(function() WFI = S.load(FILES, UI); C.lfglist = false end)
   after_each(function()
     S.teardown({ "FriendsFrame", "QuickJoinFrame", "QuickJoinToastButton", "SocialQueueUtil_SetTooltip" })
   end)
 
   it("the join button follows UpdateJoinButtonState; Alt shows English", function()
     install()
-    assert.is_true(WFJ.QuickJoin.init())
+    assert.is_true(WFI.QuickJoin.init())
     local button = _G.QuickJoinFrame.JoinQueueButton
     assert.are.equal("参加をリクエスト", button:GetText())
     C.lfglist = true
     _G.QuickJoinFrame:UpdateJoinButtonState()
     assert.are.equal("申し込む", button:GetText())
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal("Sign Up", button:GetText())
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
     assert.are.equal("申し込む", button:GetText())
   end)
 
   it("tooltips: the fixed lines translate; names do not translate; the toast text is untouched", function()
     install()
-    WFJ.QuickJoin.init()
+    WFI.QuickJoin.init()
     assert.are.same({ "すでにグループに参加しています。このキューに参加するにはグループを抜けてください。" },
       S.tooltip(_G.QuickJoinFrame.JoinQueueButton, { S.en("QUICK_JOIN_ALREADY_IN_PARTY") }))
     assert.are.same({ "ソーシャル |cffffd200(O)|r" }, S.tooltip(_G.QuickJoinToastButton, { "Social |cffffd200(O)|r" }))
@@ -93,12 +93,12 @@ describe("the quick join panel on Forever", function()
       S.tooltip(_G.QuickJoinToastButton.Toast, { "Close", "queued for", "- Close", " ", "Auto Accept", " ",
         "<Click to Join>" }))
     assert.are.equal("Close queued for Close", _G.QuickJoinToastButton.Toast.Text:GetText())
-    assert.is_true(S.unrecorded(WFJ, _G.QuickJoinToastButton.Toast.Text))
+    assert.is_true(S.unrecorded(WFI, _G.QuickJoinToastButton.Toast.Text))
   end)
 
   it("a pooled row's tooltip: the queue tooltip's fixed lines translate, its title and queues do not", function()
     install()
-    WFJ.QuickJoin.init()
+    WFI.QuickJoin.init()
     local row = C.row()
     assert.are.same({ "Close", "このグループの募集は取り下げられました。" },
       S.tooltip(row, { "Close", "This group has been delisted." }))
@@ -109,7 +109,7 @@ describe("the quick join panel on Forever", function()
 
   it("dash: queue lines show the dash and the queue in Japanese, map and player names kept", function()
     install()
-    WFJ.QuickJoin.init()
+    WFI.QuickJoin.init()
     _G.SocialQueueUtil_SetTooltip(_G.GameTooltip, "Thrall", { "Arena (2v2)", "Arena Skirmish",
       "Battleground: Warsong Gulch", "Molten Core" })
     local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
@@ -120,14 +120,14 @@ describe("the quick join panel on Forever", function()
     assert.are.equal("- 戦場: Warsong Gulch", left(5))
     assert.are.equal("- Molten Core", left(6))
     assert.are.equal("募集中のロール: |Ttank:0|t", left(7))
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal("- Arena Skirmish", left(4))
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
   end)
 
   it("toast: the player's name kept, a queue that is an entry in Japanese, a listing title kept", function()
     install()
-    WFJ.QuickJoin.init()
+    WFI.QuickJoin.init()
     local text = _G.QuickJoinToastButton.Toast.Text
     _G.QuickJoinToastButton:ShowToast("Thrall queued for Arena Skirmish")
     assert.are.equal("Thrallがアリーナ小競り合いの順番待ちに登録しました", text:GetText())
@@ -135,9 +135,9 @@ describe("the quick join panel on Forever", function()
     assert.are.equal("ThrallがMolten Coreの順番待ちに登録しました", text:GetText())
     _G.QuickJoinToastButton:ShowToast('Jaina joined "Arena Skirmish."')
     assert.are.equal("Jainaが「Arena Skirmish.」に参加しました", text:GetText())
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal('Jaina joined "Arena Skirmish."', text:GetText())
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
   end)
 
   it("a client name bound to the wrong type degrades to English with no error", function()
@@ -146,17 +146,17 @@ describe("the quick join panel on Forever", function()
     _G.QuickJoinFrame.UpdateJoinButtonState = "?"
     _G.QuickJoinToastButton = true
     _G.QuickJoinFrame.ScrollBox = "?"
-    assert.has_no.errors(function() assert.is_true(WFJ.QuickJoin.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.QuickJoin.init()) end)
   end)
 
   it("hooks install once; without the mainline social window init returns false and touches nothing", function()
-    assert.is_false(WFJ.QuickJoin.init())
+    assert.is_false(WFI.QuickJoin.init())
     install({ untitled = true })
-    assert.is_false(WFJ.QuickJoin.init())
+    assert.is_false(WFI.QuickJoin.init())
     assert.are.equal("Request to Join", _G.QuickJoinFrame.JoinQueueButton:GetText())
     install()
-    assert.is_true(WFJ.QuickJoin.init())
-    assert.is_false(WFJ.QuickJoin.init())
+    assert.is_true(WFI.QuickJoin.init())
+    assert.is_false(WFI.QuickJoin.init())
     assert.are.equal(1, #Stub.hooks["QuickJoinFrame:UpdateJoinButtonState"])
   end)
 end)

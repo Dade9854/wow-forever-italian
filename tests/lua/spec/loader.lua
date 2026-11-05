@@ -1,4 +1,4 @@
--- Loads the addon exactly as the client does: TOC order, one chunk per file, vararg = (ADDON, WFJ).
+-- Loads the addon exactly as the client does: TOC order, one chunk per file, vararg = (ADDON, WFI).
 local H = require("tests.lua.spec.helpers")
 local Loader = {}
 
@@ -16,13 +16,13 @@ function Loader.tocFiles(tocPath)
 end
 
 function Loader.load(addonName)
-  addonName = addonName or "WoWForeverJapanese"
-  local WFJ = {}
+  addonName = addonName or "WoWForeverItalian"
+  local WFI = {}
   local toc = H.ADDON_DIR .. "/" .. addonName .. ".toc"
   for _, rel in ipairs(Loader.tocFiles(toc)) do
-    H.loadChunk(rel, addonName, WFJ)
+    H.loadChunk(rel, addonName, WFI)
   end
-  return WFJ, toc
+  return WFI, toc
 end
 
 return Loader

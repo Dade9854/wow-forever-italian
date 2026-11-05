@@ -59,22 +59,22 @@ local function installSubtitles()
 end
 
 describe("cinematic subtitles on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function line(i) return _G.SubtitlesFrame.Subtitles[i]:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     installSubtitles()
-    assert.is_true(WFJ.Subtitles.init())
+    assert.is_true(WFI.Subtitles.init())
   end)
 
   after_each(function()
@@ -104,9 +104,9 @@ describe("cinematic subtitles on Forever", function()
     alt(true)
     assert.are.equal(en, line(1))
     alt(false)
-    WFJ.State.setEnabled(false)
+    WFI.State.setEnabled(false)
     assert.are.equal(en, line(1))
-    WFJ.State.setEnabled(true)
+    WFI.State.setEnabled(true)
   end)
 
   it("a line that is no BroadcastText row stays English, a dictionary word too; a speaker named like a row keeps"
@@ -150,20 +150,20 @@ describe("cinematic subtitles on Forever", function()
   end)
 
   it("hooks install once; no frame or a frame of the wrong shape sets nothing up with no error", function()
-    assert.is_false(WFJ.Subtitles.init())
+    assert.is_false(WFI.Subtitles.init())
     assert.are.equal(1, #Stub.hooks["SubtitlesFrame:AddSubtitle"])
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     _G.SubtitlesFrame = nil
-    assert.has_no.errors(function() assert.is_false(WFJ.Subtitles.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Subtitles.init()) end)
     _G.SubtitlesFrame = { AddSubtitle = "text" }
-    assert.has_no.errors(function() assert.is_false(WFJ.Subtitles.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Subtitles.init()) end)
     _G.SubtitlesFrame = CreateFrame("Frame", "SubtitlesFrame")
     _G.SubtitlesFrame.AddSubtitle = function() end
     _G.SubtitlesFrame.Subtitles = "lines"
     assert.has_no.errors(function()
-      assert.is_true(WFJ.Subtitles.setup())
+      assert.is_true(WFI.Subtitles.setup())
       _G.SubtitlesFrame:AddSubtitle("The Horde will prevail.")
     end)
   end)

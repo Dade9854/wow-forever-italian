@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import import_predecessor as imp
-from wfj.core import decisions, paragraphs
-from wfj.core.model import validate_line
-from wfj.core.status import Scope, decide
-from wfj.io.jsonl_store import Store
+from wfi.cmd import import_predecessor as imp
+from wfi.core import decisions, paragraphs
+from wfi.core.model import validate_line
+from wfi.core.status import Scope, decide
+from wfi.io.jsonl_store import Store
 
 PRED = "tests/fixtures/predecessor"
 QJP = "tests/fixtures/questjapanizer/QuestData.excerpt.lua"

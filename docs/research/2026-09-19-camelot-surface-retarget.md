@@ -4,7 +4,7 @@
 - **Question:** For every surface the addon hooks that is absent on Forever, which client files does `camelot` load
   instead, who writes the text, and by what name or path can the addon reach it?
 - **Client:** World of Warcraft: Forever beta. TOCs were extracted read-only at build **1.60.1.69913** with
-  `wfj.dev.client_ui` (the read-only ADR-021 path): 347 Blizzard TOCs. The `.lua` / `.xml` extract is the one from
+  `wfi.dev.client_ui` (the read-only ADR-021 path): 347 Blizzard TOCs. The `.lua` / `.xml` extract is the one from
   the first Forever survey (build 1.60.1.69893 era, not stamped). Every `Blizzard_UIPanels_Game.toc` line cited below reads the same,
   at the same line number, in both builds.
 - **Citations:** `path:line`, with paths relative to the extract's `interface/addons/` root, lowercased as extracted.
@@ -21,7 +21,7 @@ How one addon build can serve both clients once the camelot frames are known:
 
 | Option | Pros | Cons |
 |---|---|---|
-| A. Keep one file per surface; Classic Era `Compat` candidates first, camelot names or dotted paths after; install only the hooks that resolve | One file per surface (ADR-009); Classic Era path untouched; `/wfj debug` already reports what did not resolve | Each surface file carries two hook shapes |
+| A. Keep one file per surface; Classic Era `Compat` candidates first, camelot names or dotted paths after; install only the hooks that resolve | One file per surface (ADR-009); Classic Era path untouched; `/wfi debug` already reports what did not resolve | Each surface file carries two hook shapes |
 | B. New surface file where camelot shows a different feature, not a renamed frame | Keeps a Classic surface from being bent around an unrelated window | More files registered in Main's init order |
 | C. Separate Forever build | No branching in Lua | Two packages, two TOCs; the first Forever pass already showed one build works (ADR-025) |
 
@@ -151,7 +151,7 @@ the live client; `GetQuestLogTitle`, `GetQuestLogSelection` and `GetQuestLogSele
 replayable or disabled quests, dungeon and raid tags and non-normal classifications. For those quests the header does
 not equal `GetTitleForQuestID`.
 
-`SurfaceState.release` restores `rec.en` without checking who owns the widget now (`addon/WoWForeverJapanese/Core/SurfaceState.lua:109–146`).
+`SurfaceState.release` restores `rec.en` without checking who owns the widget now (`addon/WoWForeverItalian/Core/SurfaceState.lua:109–146`).
 With three surfaces on one set of FontStrings, a surface that releases on hide could write its old English over
 another surface's Japanese. Hence the design rule that each surface forgets the other surfaces' records before it shows.
 
@@ -481,7 +481,7 @@ blizzard_performancebar/blizzard_performancebar.toc
 7:Classic\PerformanceBarOverrides.lua [AllowLoadGameType classic]
 ```
 
-- **Micro menu.** The addon's button list (`addon/WoWForeverJapanese/UI/MicroMenu.lua:44–46`) names `SocialsMicroButton` and
+- **Micro menu.** The addon's button list (`addon/WoWForeverItalian/UI/MicroMenu.lua:44–46`) names `SocialsMicroButton` and
   `WorldMapMicroButton`, which the mainline menu does not have. It never hooks nine mainline buttons: Profession,
   PlayerSpells, Legacy, Housing, LFD, Collections, EJ, Store and Achievement. Uncovered keys: `PROFESSIONS_BUTTON`,
   `PLAYERSPELLS_BUTTON`, `SPELLBOOK_BUTTON`, `DUNGEONS_BUTTON`, `HOUSING_MICRO_BUTTON`, `ADVENTURE_JOURNAL`,
@@ -494,7 +494,7 @@ blizzard_performancebar/blizzard_performancebar.toc
   `MAINMENUBAR_LATENCY_LABEL` "Latency:" → "Latency:\n%.0f ms (home)\n%.0f ms (world)" (the `data/ui` line is
   rejected: its specifiers no longer match) and `NEWBIE_TOOLTIP_LATENCY` is reworded (stale). The only caller is the
   `MainMenuMicroButtonMixin` OnUpdate (`blizzard_micromenu/mainline/mainmenubarmicrobuttons.lua:1982–1984`).
-  `MainMenuBarPerformanceBarFrame[Button]` do not exist, so the addon's `LATENCY_OWNERS` (`addon/WoWForeverJapanese/UI/MicroMenu.lua:47`)
+  `MainMenuBarPerformanceBarFrame[Button]` do not exist, so the addon's `LATENCY_OWNERS` (`addon/WoWForeverItalian/UI/MicroMenu.lua:47`)
   resolve to nil and are skipped. `MainMenuMicroButton` is registered, so the tooltip walk runs; the lines stay English
   because their entries are stale or rejected.
 
@@ -518,7 +518,7 @@ Their source was not read for this doc.
 
 ### 12. The UI string inventory on camelot
 
-`pipeline/wfj/dev/ui_inventory.py` has a hard-coded Classic Era file map and reads paths case-sensitively
+`pipeline/wfi/dev/ui_inventory.py` has a hard-coded Classic Era file map and reads paths case-sensitively
 (`(addons / rel).read_text()`, ui_inventory.py:168); the Forever extract is lowercased. A scratch run with a camelot
 file map built from the TOC gating above (the counts are measurements from that run, which is not committed):
 

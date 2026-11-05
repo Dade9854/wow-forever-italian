@@ -3,10 +3,10 @@
 import json
 from pathlib import Path
 
-from wfj.core.hashing import key
-from wfj.core.normalize import normalize_v1
-from wfj.dev import rehash_english
-from wfj.io.jsonl_store import Store
+from wfi.core.hashing import key
+from wfi.core.normalize import normalize_v1
+from wfi.dev import rehash_english
+from wfi.io.jsonl_store import Store
 
 SPACED = "A favor for me, $g lad : lass;?"
 OLD = "0000000000000001"

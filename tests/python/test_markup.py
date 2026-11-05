@@ -1,6 +1,6 @@
 """Link markup in the UI dictionary (core/markup.py)."""
 
-from wfj.core import markup
+from wfi.core import markup
 
 
 def test_a_static_link_is_one_token_kept_verbatim():

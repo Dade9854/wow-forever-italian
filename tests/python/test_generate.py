@@ -6,16 +6,16 @@ from pathlib import Path
 import pytest
 from local_inputs import forever_quest_build
 
-from wfj.cmd import generate
-from wfj.dev import gen_vectors
-from wfj.emit import schema
-from wfj.io.jsonl_store import Store
+from wfi.cmd import generate
+from wfi.dev import gen_vectors
+from wfi.emit import schema
+from wfi.io.jsonl_store import Store
 
-ADDON = "addon/WoWForeverJapanese"
+ADDON = "addon/WoWForeverItalian"
 
 
 def _addon_copy(root: Path, tmp_path: Path) -> Path:
-    dst = tmp_path / "WoWForeverJapanese"
+    dst = tmp_path / "WoWForeverItalian"
     shutil.copytree(root / ADDON, dst, ignore=shutil.ignore_patterns("Fonts"))
     return dst
 
@@ -81,7 +81,7 @@ def test_vectors_lua_is_the_busted_twin_with_another_head(root):
     twin = (root / "vectors/hash_vectors.lua").read_text(encoding="utf-8")
     shipped = (root / ADDON / "Data/Vectors.lua").read_text(encoding="utf-8")
     head, _, body = twin.partition("\n")
-    assert shipped == head + "\nlocal _, WFJ = ...\n" + body.replace(
+    assert shipped == head + "\nlocal _, WFI = ...\n" + body.replace(
         "return {", generate.VECTORS_HEAD + " {", 1
     )
     assert gen_vectors.to_lua(generate.vectors_rows(root / "data")) == twin
@@ -89,7 +89,7 @@ def test_vectors_lua_is_the_busted_twin_with_another_head(root):
 
 def test_plan_refuses_invalid_or_hashless_lines(root, tmp_path):
     """A hand-edited store never becomes Lua; the error names the record."""
-    from wfj.core.model import entry, provenance
+    from wfi.core.model import entry, provenance
 
     prov = provenance("human", "cqjt@3446c82", "2026-09-13", translator="T", origins=["cqjt@3446c82#1"])
     data = tmp_path / "data"
@@ -107,7 +107,7 @@ def test_plan_refuses_invalid_or_hashless_lines(root, tmp_path):
 
 
 def test_whitespace_only_ja_never_ships():
-    from wfj.emit import lua_writer
+    from wfi.emit import lua_writer
 
     assert not lua_writer.shipped({"status": "trusted", "ja": "   \n"})
     assert lua_writer.shipped({"status": "trusted", "ja": " x "})
@@ -152,9 +152,9 @@ def test_english_only_types_leave_the_generated_addon_data_unchanged(root, tmp_p
     """Area, objective, book and trainer-greeting English are stored only: generate
     plans byte-identical files (Meta.lua included) with or without them. The copy is the committed store
     until the English is added, so its plan before that is the committed plan."""
-    from wfj.core.hashing import key
-    from wfj.core.model import english_line
-    from wfj.core.normalize import normalize_v1
+    from wfi.core.hashing import key
+    from wfi.core.model import english_line
+    from wfi.core.normalize import normalize_v1
 
     data = tmp_path / "data"
     shutil.copytree(root / "data", data)
@@ -179,10 +179,10 @@ def test_area_rows_ship_as_text_h1_status_in_their_own_shards_and_toc_slot(root,
     the quest id, listed in the TOC after the objective shards; Meta counts and lays out the type."""
     import re
 
-    from wfj.core.hashing import key
-    from wfj.core.model import english_line, entry
-    from wfj.core.normalize import normalize_v1
-    from wfj.emit import lua_writer
+    from wfi.core.hashing import key
+    from wfi.core.model import english_line, entry
+    from wfi.core.normalize import normalize_v1
+    from wfi.emit import lua_writer
 
     en = "Scout through the Fargodeep Mine"
     data = tmp_path / "data"
@@ -197,7 +197,7 @@ def test_area_rows_ship_as_text_h1_status_in_their_own_shards_and_toc_slot(root,
     planned = generate.plan(Store(data), generate.vectors_rows(root / "data"))
     shard = planned["Data/Area/Area_0000.lua"]
     h1 = lua_writer.h1_literal(key(normalize_v1(en)))
-    assert 'WFJ.Data.add("area", {' in shard
+    assert 'WFI.Data.add("area", {' in shard
     assert f'[62] = {{ "Fargodeep Mineを偵察する", {h1}, "." }},' in shard
     files = generate.toc_files(planned)
     assert files.index("Data/Objective/Objective_0380.lua") < files.index("Data/Area/Area_0000.lua")
@@ -214,8 +214,8 @@ def test_area_rows_ship_as_text_h1_status_in_their_own_shards_and_toc_slot(root,
 def test_the_committed_area_english_is_the_former_quest_area(root):
     """The 223 quest-cache area lines live under data/english/area (field text, keyed by quest id);
     no quest `area` line remains."""
-    from wfj.core.hashing import key
-    from wfj.core.normalize import normalize_v1
+    from wfi.core.hashing import key
+    from wfi.core.normalize import normalize_v1
 
     english = Store(root / "data", english=True)
     area = english.load("area")

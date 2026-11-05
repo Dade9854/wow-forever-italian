@@ -15,12 +15,12 @@ R.suite(getfenv(1), {
   title = "the download icon's tooltip on Forever", module = "StreamingIcon",
   file = "UI/StreamingIcon.lua", root = "StreamingIcon", globals = GLOBALS, ui = UI, build = build,
   cases = {
-    { "the tooltip line is Japanese; Alt shows English", function(frame, WFJ)
+    { "the tooltip line is Japanese; Alt shows English", function(frame, WFI)
       R.tooltip(frame, { _G.STATUS_CORE_FILE_TOOLTIP })
       assert.are.equal("コアゲームデータをダウンロード中です。", _G.GameTooltipTextLeft1:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("Core game data is currently being downloaded.", _G.GameTooltipTextLeft1:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
   },
   name = function(frame)
@@ -28,6 +28,6 @@ R.suite(getfenv(1), {
     assert.are.equal("None", _G.GameTooltipTextLeft1:GetText())
   end,
   wrong = function()
-    return function(_, WFJ) assert.is_true(WFJ.HelpTooltip.registered(_G.StreamingIcon)) end
+    return function(_, WFI) assert.is_true(WFI.HelpTooltip.registered(_G.StreamingIcon)) end
   end,
 })

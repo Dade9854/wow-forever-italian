@@ -6,7 +6,7 @@ import io
 from contextlib import redirect_stdout
 from pathlib import Path
 
-from wfj.dev import client_addons
+from wfi.dev import client_addons
 
 TREE = {
     # [Family] / [Game] expansion, line gating, the XML include walk

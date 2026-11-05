@@ -1,13 +1,13 @@
 # ADR-029: Forever's `camelot` targets the mainline family; one surface file serves both clients
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/UI/QuestMap.lua`,
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/UI/QuestMap.lua`,
   `UI/PvPRank.lua`, `UI/Communities.lua`; `UI/QuestFrame.lua` (the branching `QuestInfo_Display` hook, the
   cross-surface forget, `Compat` routing); `UI/SpellBook.lua`, `Talents.lua`, `Skills.lua`, `Mail.lua`, `Friends.lua`,
   `Character.lua`, `Reputation.lua`, `Bank.lua`, `Bags.lua`, `Merchant.lua`, `Trainer.lua`, `Raid.lua`,
   `MicroMenu.lua`, `GameMenu.lua` (camelot candidates); `UI/KeyCapture.lua`, `UI/RevealBinding.lua` (`Compat` routing);
   `UI/HelpTooltip.lua` (`walkAs`); `Core/UIStrings.lua`, `Core/UIStringKeys.lua`; `Main.lua` and the TOC (three surfaces);
-  `pipeline/wfj/dev/ui_inventory.py` and `pipeline/wfj/dev/ui_windows.py` (`FOREVER_WINDOWS`), `pipeline/ui_inventory.txt`,
-  `pipeline/wfj/dev/client_surface.py`. Not yet verified in game on Forever (the re-target checklist in
+  `pipeline/wfi/dev/ui_inventory.py` and `pipeline/wfi/dev/ui_windows.py` (`FOREVER_WINDOWS`), `pipeline/ui_inventory.txt`,
+  `pipeline/wfi/dev/client_surface.py`. Not yet verified in game on Forever (the re-target checklist in
   [Testing strategy](../testing/strategy.md)).
 - **Date:** 2026-09-19
 
@@ -113,7 +113,7 @@ At the time the addon also had to keep working unchanged on Classic Era, from on
    `UI/Honor.lua` still serves Classic Era.
 
 9. **The UI inventory is per client** (superseded by [ADR-034](034-forever-is-the-only-target.md) §8: one inventory,
-   Forever's, in `pipeline/ui_inventory.txt`). `wfj.dev.ui_inventory` took `--client era|forever`. `era` wrote
+   Forever's, in `pipeline/ui_inventory.txt`). `wfi.dev.ui_inventory` took `--client era|forever`. `era` wrote
    `pipeline/ui_inventory.txt`; `forever` read a Forever UI extract through a casefold path index (the extract is
    lowercased), used the camelot file map `FOREVER_WINDOWS`, and wrote a second, committed inventory.
    `test_ui_coverage.py` held `ui_keys.txt` and `ui_exclusions.txt` to both.
@@ -122,7 +122,7 @@ At the time the addon also had to keep working unchanged on Classic Era, from on
 
 - One build serves both clients, as ADR-025 set out. Each surface file carries two hook shapes, which is the cost of
   not shipping a second package.
-- `/wfj debug`'s unresolved list is longer by design: Classic Era names read unresolved on Forever and camelot names
+- `/wfi debug`'s unresolved list is longer by design: Classic Era names read unresolved on Forever and camelot names
   on Classic Era. It is grouped by surface, so the expected misses are readable as such.
 - Three new surfaces join Main's guarded init order (`questmap`, `pvprank`, `communities`). A surface broken in game
   is disabled by removing its one `step`, with nothing else touched.

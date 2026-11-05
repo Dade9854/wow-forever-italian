@@ -11,8 +11,8 @@ import pytest
 from casc_fixture import PRODUCT, build
 from db2_fixture import wdc5
 
-from wfj.dev import verify_columns as vc
-from wfj.io import casc, client_tables
+from wfi.dev import verify_columns as vc
+from wfi.io import casc, client_tables
 
 LAYOUT, FIELDS = 0xAABBCCDD, 2
 

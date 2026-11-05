@@ -25,12 +25,12 @@ local UI = {
 }
 
 describe("numbered rows and the widget-text families in UIStrings", function()
-  local WFJ, index
+  local WFI, index
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(H.UI_FILES)
-    H.uiSetup(WFJ, UI)
-    index = WFJ.UIIndex
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(H.UI_FILES)
+    H.uiSetup(WFI, UI)
+    index = WFI.UIIndex
   end)
   after_each(function() H.uiTeardown() end)
 
@@ -39,13 +39,13 @@ describe("numbered rows and the widget-text families in UIStrings", function()
       "CustomizationChoice", "CustomizationSource", "PvpColumn", "PvpColumnTooltip", "PvpStat", "LfgCategory",
       "LfgActivityGroup", "LfgActivity", "ItemNameDescription", "WidgetText" }) do
       local key = family .. ":1"
-      assert.is_true(WFJ.UIStrings.isFingerprintKey(key), key)
-      assert.is_true(WFJ.UIStrings.isRestrictedKey(key), key)
-      assert.are.equal(family == "WidgetText", WFJ.UIStrings.isNumberedKey(key), key)
-      assert.is_false(WFJ.UIStrings.isSlottedKey(key), key)
+      assert.is_true(WFI.UIStrings.isFingerprintKey(key), key)
+      assert.is_true(WFI.UIStrings.isRestrictedKey(key), key)
+      assert.are.equal(family == "WidgetText", WFI.UIStrings.isNumberedKey(key), key)
+      assert.is_false(WFI.UIStrings.isSlottedKey(key), key)
     end
-    assert.is_false(WFJ.UIStrings.isNumberedKey("EmoteText:1"))
-    assert.is_false(WFJ.UIStrings.isNumberedKey(nil))
+    assert.is_false(WFI.UIStrings.isNumberedKey("EmoteText:1"))
+    assert.is_false(WFI.UIStrings.isNumberedKey(nil))
   end)
 
   it("matchNumbers: one number → the row and the number; the Japanese takes it", function()
@@ -84,14 +84,14 @@ describe("numbered rows and the widget-text families in UIStrings", function()
 
   it("no numbered rows shipped → matchNumbers is nil", function()
     H.uiTeardown()
-    H.uiSetup(WFJ, { ["CustomizationChoice:12"] = { "Brown", "茶色" } })
-    assert.is_nil(WFJ.UIIndex:matchNumbers("Towers Controlled: 3"))
+    H.uiSetup(WFI, { ["CustomizationChoice:12"] = { "Brown", "茶色" } })
+    assert.is_nil(WFI.UIIndex:matchNumbers("Towers Controlled: 3"))
   end)
 
   it("a numbered row is found only where a widget's set names it, never by the open match", function()
     assert.is_nil(index:match("Towers Controlled: 3"))
     assert.is_nil(index:matchOnly("Towers Controlled: 3", { ["PvpColumn:1"] = true }))
-    local widgetText = WFJ.UIStrings.familyKeys(index.rows, "WidgetText")
+    local widgetText = WFI.UIStrings.familyKeys(index.rows, "WidgetText")
     local key, numbers = index:matchOnly("Towers Controlled: 3", widgetText)
     assert.are.equal("WidgetText:4401", key)
     assert.are.equal("制圧した塔: 3", index:fill(index.rows[key][1], numbers))
@@ -102,8 +102,8 @@ describe("numbered rows and the widget-text families in UIStrings", function()
     assert.is_nil(index:exactKey("Staves"))
     assert.are.same({ "ItemSubClassName:2:10" }, index:restrictedKeys("Staves"))
     assert.are.equal("ItemSubClassName:2:10",
-      (index:matchOnly("Staves", WFJ.UIStrings.familyKeys(index.rows, "ItemSubClassName"))))
-    assert.is_nil(index:matchOnly("Staves", WFJ.UIStrings.familyKeys(index.rows, "LfgActivity")))
+      (index:matchOnly("Staves", WFI.UIStrings.familyKeys(index.rows, "ItemSubClassName"))))
+    assert.is_nil(index:matchOnly("Staves", WFI.UIStrings.familyKeys(index.rows, "LfgActivity")))
     assert.are.same({}, index:restrictedKeys(""))
     assert.are.same({}, index:restrictedKeys(nil))
     assert.are.same({}, index:restrictedKeys("Towers Controlled: 3")) -- a numbered row is not in this index
@@ -111,7 +111,7 @@ describe("numbered rows and the widget-text families in UIStrings", function()
 
   it("a restricted family keeps its own Japanese beside an open global string of the same English", function()
     assert.are.equal("CLOSE", (index:match("Close")))
-    local choices = WFJ.UIStrings.familyKeys(index.rows, "CustomizationChoice")
+    local choices = WFI.UIStrings.familyKeys(index.rows, "CustomizationChoice")
     local key = index:matchOnly("Close", choices)
     assert.are.equal("CustomizationChoice:40", key)
     assert.are.equal("短髪", index.rows[key][1])
@@ -121,14 +121,14 @@ describe("numbered rows and the widget-text families in UIStrings", function()
     local restricted = {}
     for _, rk in ipairs(index:restrictedKeys("Close")) do restricted[rk] = true end
     assert.are.same({ ["CustomizationChoice:40"] = true, ["LfgActivity:9"] = true }, restricted)
-    assert.are.equal("LfgActivity:9", (index:matchOnly("Close", WFJ.UIStrings.familyKeys(index.rows, "LfgActivity"))))
+    assert.are.equal("LfgActivity:9", (index:matchOnly("Close", WFI.UIStrings.familyKeys(index.rows, "LfgActivity"))))
   end)
 
   it("one English with two Japanese inside one family is ambiguous and shown by neither", function()
     local amb = {}
     for _, k in ipairs(index.problems.ambiguous) do amb[k] = true end
     assert.is_true(amb["ItemNameDescription:8"] and amb["ItemNameDescription:9"])
-    local only = WFJ.UIStrings.familyKeys(index.rows, "ItemNameDescription")
+    local only = WFI.UIStrings.familyKeys(index.rows, "ItemNameDescription")
     assert.is_nil(index:matchOnly("Blue", only))
     assert.are.equal("ItemNameDescription:7", (index:matchOnly("Green", only)))
   end)

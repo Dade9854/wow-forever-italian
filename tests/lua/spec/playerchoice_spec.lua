@@ -54,40 +54,40 @@ R.suite(getfenv(1), {
   title = "the player choice window on Forever", module = "PlayerChoice", file = "UI/PlayerChoice.lua",
   addon = "Blizzard_PlayerChoice", root = "PlayerChoiceFrame", globals = GLOBALS, ui = UI, build = build,
   cases = {
-    { "the grid labels and the toggle's Hide are Japanese; Alt shows English", function(frame, WFJ)
+    { "the grid labels and the toggle's Hide are Japanese; Alt shows English", function(frame, WFI)
       frame:Show()
       assert.are.equal("どの物語を聞きたい？", frame.GridNoSelectionHeader:GetText())
       local button = _G.GenericPlayerChoiceToggleButton
       button:UpdateButtonState()
       assert.are.equal("隠す", button.Text:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("Hide", button.Text:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
     { "playerChoicePrefix: the rarity word is Japanese, the server description kept; Alt shows English",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         local o = option("|cff0070ddRare|r|n|n", "Gain 5% Haste. Stacks.")
         o:SetupOptionText()
         assert.are.equal("|cff0070ddレア|r|n|nGain 5% Haste. Stacks.", o.OptionText.html:GetText())
-        R.alt(WFJ, true)
+        R.alt(WFI, true)
         assert.are.equal("|cff0070ddRare|r|n|nGain 5% Haste. Stacks.", o.OptionText.html:GetText())
-        R.alt(WFJ, false)
+        R.alt(WFI, false)
         local plain = option("", "Rare") -- no rarity: the description alone, even a dictionary-like word, stays
         plain:SetupOptionText()
         assert.are.equal("Rare", plain.OptionText.html:GetText())
       end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Hide()
     local button = _G.CypherPlayerChoiceToggleButton
     button:UpdateButtonState("Choose Your Fate") -- the choice's pending text from the server
     assert.are.equal("Choose Your Fate", button.Text:GetText())
-    assert.is_true(R.unrecorded(WFJ, button.Text))
+    assert.is_true(R.unrecorded(WFI, button.Text))
     frame.Title.text = "Hide"
     frame:Show()
     assert.are.equal("Hide", frame.Title:GetText())
-    assert.is_true(R.unrecorded(WFJ, frame.Title))
+    assert.is_true(R.unrecorded(WFI, frame.Title))
   end,
   wrong = function(frame)
     frame.GridNoSelectionDescription = Stub

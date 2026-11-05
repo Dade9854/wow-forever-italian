@@ -11,7 +11,7 @@ local UI = {
 }
 
 describe("UI/HelpTooltip", function()
-  local WFJ, tt, owner, S
+  local WFI, tt, owner, S
 
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
 
@@ -24,14 +24,14 @@ describe("UI/HelpTooltip", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
-    WFJ = H.loadChunks(H.UI_FILES)
-    H.uiSetup(WFJ, UI)
-    S = WFJ.Settings
+    WFI = H.loadChunks(H.UI_FILES)
+    H.uiSetup(WFI, UI)
+    S = WFI.Settings
     tt = _G.GameTooltip
     owner = Stub.button("CharacterMicroButton", "")
-    WFJ.HelpTooltip.register(owner)
+    WFI.HelpTooltip.register(owner)
   end)
 
   after_each(H.uiTeardown)
@@ -40,7 +40,7 @@ describe("UI/HelpTooltip", function()
     hover(owner, "Character Info |cffffd200(C)|r", "Information about your character.")
     assert.are.equal("キャラクター情報 |cffffd200(C)|r", left(1):GetText())
     assert.are.equal("キャラクターの情報です。", left(2):GetText())
-    assert.are.equal(WFJ.Font.PATH, (left(1):GetFont()))
+    assert.are.equal(WFI.Font.PATH, (left(1):GetFont()))
   end)
 
   it("refits with one Show() only when a pass changed a line", function()
@@ -55,15 +55,15 @@ describe("UI/HelpTooltip", function()
 
   it("a refresh that re-runs a captured writer (English again) is Japanese again", function()
     local slot = Stub.button("CharacterBag0Slot", "")
-    WFJ.HelpTooltip.register(slot)
+    WFI.HelpTooltip.register(slot)
     local captured = function(self) tt:SetOwner(self); tt:SetText("Equip Container") end -- UpdateTooltip
     captured(slot)
     assert.are.equal("バッグを装備", left(1):GetText())
     captured(slot) -- GameTooltip_OnUpdate calls owner:UpdateTooltip() again
     assert.are.equal("バッグを装備", left(1):GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Equip Container", left(1):GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("バッグを装備", left(1):GetText())
   end)
 
@@ -77,7 +77,7 @@ describe("UI/HelpTooltip", function()
       tt:AddLine("Equip Container")
       tt:Show()
       assert.are.equal("Equip Container", left(2):GetText()) -- foreign until the pass
-      WFJ.HelpTooltip.walkAs(tt, { only = { "EQUIP_CONTAINER" } })
+      WFI.HelpTooltip.walkAs(tt, { only = { "EQUIP_CONTAINER" } })
       assert.are.equal("バッグを装備", left(2):GetText())
     end
 
@@ -101,7 +101,7 @@ describe("UI/HelpTooltip", function()
 
     it("a module's setter hooked through after() ends the hold", function()
       tt.SetCustom = function() end
-      assert.is_true(WFJ.HelpTooltip.after("SetCustom"))
+      assert.is_true(WFI.HelpTooltip.after("SetCustom"))
       pass()
       tt:SetCustom()
       tt:Show()
@@ -139,7 +139,7 @@ describe("UI/HelpTooltip", function()
     Stub.setItemTooltip(tt, "|Hitem:4500:0:0:0|h[Traveler's Backpack]|h", { "Traveler's Backpack", "Character Info" })
     tt.owner = owner
     tt:Show()
-    assert.is_nil(WFJ.SurfaceState.get("help", "L2"))
+    assert.is_nil(WFI.SurfaceState.get("help", "L2"))
     assert.are.equal("Traveler's Backpack", left(1):GetText())
   end)
 
@@ -150,39 +150,39 @@ describe("UI/HelpTooltip", function()
     S.set("area.interface", true)
     assert.are.equal("キャラクター情報", left(1):GetText())
     tt:Hide()
-    assert.are.equal(0, WFJ.SurfaceState.count("help"))
+    assert.are.equal(0, WFI.SurfaceState.count("help"))
     assert.are.equal("Character Info", left(1):GetText())
   end)
 
   it("a modifier change re-lays the tooltip out for the new text (refit on toggle)", function()
     hover(owner, "Character Info", "Information about your character.")
     local shows = tt.calls.Show
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Character Info", left(1):GetText())
     assert.are.equal(shows + 1, tt.calls.Show) -- one Show for the refresh, not one per line
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(shows + 2, tt.calls.Show)
   end)
 
   it("a title Blizzard copies from the owner's translated label is matched as its English", function()
     local tab = Stub.button("SpellBookFrameTabButton1", "Character Info")
-    WFJ.Labels.show("test.static", "tab", tab) -- the tab now reads キャラクター情報
-    WFJ.HelpTooltip.register(tab)
+    WFI.Labels.show("test.static", "tab", tab) -- the tab now reads キャラクター情報
+    WFI.HelpTooltip.register(tab)
     tt:SetOwner(tab)
     tt:SetText(tab:GetText() .. " |cFFFFD200(P)|r") -- MicroButtonTooltipText(self:GetText(), …)
     tt:Show()
     assert.are.equal("キャラクター情報 |cFFFFD200(P)|r", left(1):GetText())
-    assert.are.equal(WFJ.Font.PATH, (left(1):GetFont()))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    assert.are.equal(WFI.Font.PATH, (left(1):GetFont()))
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Character Info |cFFFFD200(P)|r", left(1):GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("walks after a client setter a module names", function()
     local talent = Stub.button("PlayerTalentFrameTalent1", "")
-    WFJ.HelpTooltip.register(talent, { only = { EQUIP_CONTAINER = true } })
+    WFI.HelpTooltip.register(talent, { only = { EQUIP_CONTAINER = true } })
     function tt.SetTalent(self) self:SetText("Equip Container"); self:AddLine("Character Info") end
-    assert.is_true(WFJ.HelpTooltip.after("SetTalent"))
+    assert.is_true(WFI.HelpTooltip.after("SetTalent"))
     tt:SetOwner(talent)
     tt:SetTalent(1, 1)
     assert.are.equal("バッグを装備", left(1):GetText())

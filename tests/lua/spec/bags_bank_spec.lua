@@ -24,12 +24,12 @@ local UI = {
 local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
 
 describe("bag and bank-tab filter lines (entryList)", function()
-  local WFJ
+  local WFI
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     for key, pair in pairs(UI) do _G[key] = pair[1] end
     CI.install()
@@ -46,10 +46,10 @@ describe("bag and bank-tab filter lines (entryList)", function()
     for i, f in ipairs(H.UI_FILES) do files[i] = f end
     files[#files + 1] = "UI/Bags.lua"
     files[#files + 1] = "UI/Bank.lua"
-    WFJ = H.loadChunks(files)
-    H.uiSetup(WFJ, UI)
-    assert.is_true(WFJ.Bags.init())
-    assert.is_true(WFJ.Bank.init())
+    WFI = H.loadChunks(files)
+    H.uiSetup(WFI, UI)
+    assert.is_true(WFI.Bags.init())
+    assert.is_true(WFI.Bank.init())
   end)
 
   after_each(function()

@@ -7,16 +7,16 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import check, import_english, validate
-from wfj.cmd import import_ as imp
-from wfj.core import markup
-from wfj.core.hashing import key
-from wfj.core.model import english_line, validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.core.status import Scope, decide
-from wfj.dev import enchant_drafts, ui_inventory
-from wfj.io import wago
-from wfj.io.jsonl_store import Store
+from wfi.cmd import check, import_english, validate
+from wfi.cmd import import_ as imp
+from wfi.core import markup
+from wfi.core.hashing import key
+from wfi.core.model import english_line, validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.core.status import Scope, decide
+from wfi.dev import enchant_drafts, ui_inventory
+from wfi.io import wago
+from wfi.io.jsonl_store import Store
 
 BUILD = "1.15.9.69722"
 MACHINE = {"class": "machine", "model": "draft-model-1", "critic": "critic-model-1",
@@ -99,7 +99,7 @@ def test_adjacent_captures_reordered():
 
 
 def test_ui_arg_kinds_are_read_from_the_addon(root):
-    kinds = validate.ui_arg_kinds(root / "addon/WoWForeverJapanese")
+    kinds = validate.ui_arg_kinds(root / "addon/WoWForeverItalian")
     # Forever's PLAYER_LEVEL is "Level %s |c%s%s %s|r" (level, colour, race, class), all four text captures
     assert kinds["PLAYER_LEVEL"] == {1: "text", 2: "text", 3: "text", 4: "text"}
     assert kinds["SINGLE_DAMAGE_TEMPLATE_WITH_SCHOOL"] == {2: "word"}

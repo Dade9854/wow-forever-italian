@@ -37,20 +37,20 @@ local UI = {
 }
 
 describe("HUD Edit Mode on Forever", function()
-  local WFJ, manager, dialog, layout
+  local WFI, manager, dialog, layout
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   before_each(function()
     load()
     manager, dialog, layout = S.installEditMode()
-    WFJ.Labels.forbidNames(WFJ.EditMode.NEVER_TOUCH)
-    assert.is_true(WFJ.EditMode.init())
+    WFI.Labels.forbidNames(WFI.EditMode.NEVER_TOUCH)
+    assert.is_true(WFI.EditMode.init())
   end)
 
   after_each(function()
@@ -106,7 +106,7 @@ describe("HUD Edit Mode on Forever", function()
     local inner = S.label(container, "FontString", _G.HUD_EDIT_MODE_SHOW_GRID)
     function scrolling:GetFontString() return self.ScrollBox.FontStringContainer.FontString end
     local only = { only = { HUD_EDIT_MODE_SHOW_GRID = true } }
-    assert.are.equal(0, WFJ.Labels.show("editmode", "scrolling", scrolling, nil, only))
+    assert.are.equal(0, WFI.Labels.show("editmode", "scrolling", scrolling, nil, only))
     manager.AccountSettings:SetExpandedState(true)
     assert.are.equal("グリッドを表示", inner:GetText())
   end)
@@ -133,10 +133,10 @@ describe("HUD Edit Mode on Forever", function()
     assert.are.equal("コンパクトなアクションバーを使用", dialog.pool[1].Label:GetText())
     assert.are.equal("アクションバーの拡大縮小を有効化", dialog.pool[2].Label:GetText())
     assert.are.equal("Show Some Addon Thing", dialog.pool[3].Label:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Gamepad Action Bar", dialog.Title:GetText())
     assert.are.equal("Use Compact Action Bar", dialog.pool[1].Label:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("コンパクトなアクションバーを使用", dialog.pool[1].Label:GetText())
   end)
 
@@ -150,7 +150,7 @@ describe("HUD Edit Mode on Forever", function()
     system.Selection.selected = true
     system.Selection:UpdateLabelVisibility()
     assert.are.equal("ミニマップ", system.Selection.Label:GetText())
-    assert.is_true(WFJ.HelpTooltip.registered(system.Selection))
+    assert.is_true(WFI.HelpTooltip.registered(system.Selection))
   end)
 
   it("a selection another surface already registered keeps its own keys (the cooldown viewers)",
@@ -158,14 +158,14 @@ describe("HUD Edit Mode on Forever", function()
     local system = S.system(manager, "Minimap")
     local theirs = { only = { "HUD_EDIT_MODE_SYSTEM_ESSENTIAL_COOLDOWNS" } }
     local calls = {}
-    local register = WFJ.HelpTooltip.register
-    WFJ.HelpTooltip.register = function(owner, opts)
+    local register = WFI.HelpTooltip.register
+    WFI.HelpTooltip.register = function(owner, opts)
       calls[#calls + 1] = opts
       return register(owner, opts)
     end
-    WFJ.HelpTooltip.register(system.Selection, theirs) -- UI/CooldownViewer's registration comes first
+    WFI.HelpTooltip.register(system.Selection, theirs) -- UI/CooldownViewer's registration comes first
     manager:Show()
-    WFJ.HelpTooltip.register = register
+    WFI.HelpTooltip.register = register
     assert.are.equal(1, #calls) -- Edit Mode did not register the same Selection again
     assert.are.equal(theirs, calls[1])
   end)
@@ -194,9 +194,9 @@ describe("HUD Edit Mode on Forever", function()
         dialog:UpdateSettings()
       end
     end)
-    assert.is_false(WFJ.EditMode.init()) -- hooks install once
+    assert.is_false(WFI.EditMode.init()) -- hooks install once
     load()
     S.removeEditMode()
-    assert.has_no.errors(function() assert.is_false(WFJ.EditMode.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.EditMode.init()) end)
   end)
 end)

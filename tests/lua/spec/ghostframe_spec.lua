@@ -11,26 +11,26 @@ local function install()
 end
 
 describe("the Return to Graveyard button on Forever", function()
-  local WFJ
+  local WFI
   before_each(function()
-    WFJ = X.load("UI/GhostFrame.lua", UI, { before = install })
-    assert.is_true(WFJ.GhostFrame.init())
+    WFI = X.load("UI/GhostFrame.lua", UI, { before = install })
+    assert.is_true(WFI.GhostFrame.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
   it("the label translates at init and on show; Alt shows English; another word there is left alone", function()
     assert.are.equal("墓地に戻る", _G.GhostFrameContentsFrameText:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Return to Graveyard", _G.GhostFrameContentsFrameText:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.GhostFrameContentsFrameText.text = "None" -- not this widget's key
     _G.GhostFrame:Show()
     assert.are.equal("None", _G.GhostFrameContentsFrameText:GetText())
-    assert.is_true(X.unrecorded(WFJ, _G.GhostFrameContentsFrameText))
+    assert.is_true(X.unrecorded(WFI, _G.GhostFrameContentsFrameText))
   end)
 
   it("init runs once; wrong types and a missing frame return false without error", function()
-    assert.is_false(WFJ.GhostFrame.init())
+    assert.is_false(WFI.GhostFrame.init())
     X.teardown(NAMES)
     local wrong = X.load("UI/GhostFrame.lua", UI, { before = function()
       install()

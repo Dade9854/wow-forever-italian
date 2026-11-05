@@ -1,9 +1,9 @@
 # ADR-039: Word meanings: written by the model in context, shown in a word card
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/core/readings.py` (the 5-item entry, `meaning_problems`),
-  `pipeline/wfj/core/glosses.py`, `pipeline/wfj/cmd/glosses.py` (`wfj glosses check`), `pipeline/wfj/cmd/generate.py`,
-  `pipeline/wfj/cmd/validate.py`, `pipeline/wfj/emit/lua_writer.py` (`gloss_text`), `pipeline/wfj/emit/schema.py`
-  (`gloss_relpath`, `TOC_ORDER`), `addon/WoWForeverJapanese/Core/Glosses.lua`, `Core/Readings.lua`,
+- **Status:** Accepted. Implemented in `pipeline/wfi/core/readings.py` (the 5-item entry, `meaning_problems`),
+  `pipeline/wfi/core/glosses.py`, `pipeline/wfi/cmd/glosses.py` (`wfi glosses check`), `pipeline/wfi/cmd/generate.py`,
+  `pipeline/wfi/cmd/validate.py`, `pipeline/wfi/emit/lua_writer.py` (`gloss_text`), `pipeline/wfi/emit/schema.py`
+  (`gloss_relpath`, `TOC_ORDER`), `addon/WoWForeverItalian/Core/Glosses.lua`, `Core/Readings.lua`,
   `UI/ReadingPopup.lua`, `UI/Readings.lua`, `Core/Settings.lua` (`readings.glosses`), `UI/Options.lua`, `UI/Slash.lua`.
   The word card is one of the allowed on-screen additions
   ([principle 3](../architecture/principles.md#3-japanese-by-default-english-one-key-away)); it is widened to window
@@ -51,7 +51,7 @@ The model already writes every line's readings with the sentence in front of it 
    readings); a reading row packs a word that carries one as `word=reading=n`. A stale reading's meanings are not
    emitted. `validate` prints how many words carry a meaning. (How meanings are numbered is now
    [ADR-060](060-stable-meaning-numbers.md): stable numbers, not sorted order.)
-5. **JMdict is a local cross-check only.** `wfj glosses check --jmdict FILE` lists the dictionary forms JMdict does
+5. **JMdict is a local cross-check only.** `wfi glosses check --jmdict FILE` lists the dictionary forms JMdict does
    not know, most used first. No JMdict data is committed or shipped (a test enforces it).
 6. **The word card.** `Core/Glosses.lua` is the pure read path; `UI/ReadingPopup.lua` draws the card: the word, its
    reading unless it is kana (shown once), `← dictionary form（reading）` only when it differs, then the meaning,
@@ -63,9 +63,9 @@ The model already writes every line's readings with the sentence in front of it 
    that spot. 人間 is left out (in prose it means "person"). Names stay English
    ([principle 2](../architecture/principles.md#2-names-stay-in-english)).
 8. **One setting**, `readings.glosses`, default on: "Show word meanings in the reading box", a checkbox in the main
-   page's translation section, under the readings checkbox. `/wfj glosses on|off`; `/wfj glosses` prints the state and
+   page's translation section, under the readings checkbox. `/wfi glosses on|off`; `/wfi glosses` prints the state and
    the count. Off → the reading-only box, and kana words stop being hover targets. `readings.enabled` off hides both.
-   `/wfj debug` has a glosses line.
+   `/wfi debug` has a glosses line.
 9. **What the card may show.** The word-reading box is widened to the word card: the word's dictionary form and a
    short English meaning of the word as the sentence uses it; nothing drawn until the mouse is on a word, never while
    English shows, one setting for the box and one for the meanings. "No stored English" means the game's English

@@ -28,14 +28,14 @@ R.suite(getfenv(1), {
   root = "PetFrameHappiness", globals = GLOBALS, ui = UI, build = build,
   args = { PET_DIET_TEMPLATE = { [1] = "text" } },
   cases = {
-    { "the pet frame's tooltip is Japanese; Alt shows English", function(frame, WFJ)
+    { "the pet frame's tooltip is Japanese; Alt shows English", function(frame, WFI)
       onEnter(frame, { "Happy", "Causes 125% of normal damage", "Gaining Loyalty", "|cffffd200Diet:|r None" })
       assert.are.equal("満足", _G.GameTooltipTextLeft1:GetText())
       assert.are.equal("通常の125%のダメージを与える", _G.GameTooltipTextLeft2:GetText())
       assert.are.equal("忠誠度上昇中", _G.GameTooltipTextLeft3:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("Happy", _G.GameTooltipTextLeft1:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
     { "the character window's and the stable's indicators are owners too", function()
       onEnter(_G.PetPaperDollPetHappinessInfo, { "Unhappy" })

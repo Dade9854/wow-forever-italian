@@ -8,14 +8,14 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import check, generate, stats, validate
-from wfj.cmd.import_ import run as import_run
-from wfj.core import markup
-from wfj.core.hashing import key
-from wfj.core.model import FIELDS, english_line, entry, validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.emit import lua_writer, schema
-from wfj.io.jsonl_store import Store
+from wfi.cmd import check, generate, stats, validate
+from wfi.cmd.import_ import run as import_run
+from wfi.core import markup
+from wfi.core.hashing import key
+from wfi.core.model import FIELDS, english_line, entry, validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.emit import lua_writer, schema
+from wfi.io.jsonl_store import Store
 
 SRC = "vmangos@13b49dc"
 PAGE_EN = "Kurdran Wildhammer\n\nRenowned Dragon Fighter. Gryphon Master of the Aerie Peak.$B$B- Falstad Wildhammer"
@@ -233,5 +233,5 @@ def test_committed_screen_test_lines(root):
         assert ln["provenance"]["class"] == "machine"
         assert ln["provenance"]["source"] == "draft-books-screens@2026-09-15" or re.match(
             r"^draft-book-sg\d+@", ln["provenance"]["source"]), ln["provenance"]
-    addon = root / "addon" / "WoWForeverJapanese" / "Data"
+    addon = root / "addon" / "WoWForeverItalian" / "Data"
     assert (addon / "Book" / f"Book_{books[287]['english']['hash'][:2]}.lua").is_file()

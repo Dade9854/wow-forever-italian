@@ -1,14 +1,14 @@
-"""`wfj import english vmangos`: quest progress / completion and gossip English (ADR-019)."""
+"""`wfi import english vmangos`: quest progress / completion and gossip English (ADR-019)."""
 
 from pathlib import Path
 
 import pytest
 
-from wfj.cmd.import_ import run
-from wfj.core.hashing import key
-from wfj.core.model import english_line, validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.core.hashing import key
+from wfi.core.model import english_line, validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 SRC = "vmangos@13b49dc"
 QUESTS = [
@@ -169,7 +169,7 @@ def test_empty_gossip_refused_and_nothing_written(tmp_path, monkeypatch, vmangos
 
 def test_gossip_hash_collision_is_an_error(tmp_path, monkeypatch, vmangos_db):
     """Two different normalized texts under one key are reported, never resolved silently."""
-    import wfj.cmd.import_english as imp
+    import wfi.cmd.import_english as imp
 
     _data(tmp_path, monkeypatch)
     monkeypatch.setattr(imp, "hash_key", lambda norm: "0" * 16)

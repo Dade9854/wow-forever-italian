@@ -34,17 +34,17 @@ C.suite(getfenv(1), {
   build = build, globals = { "ItemInteractionFrame" },
   cases = {
     { "the cost label and the recharge sentence translate; the interaction's own description does not",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         assert.are.equal("費用:", frame.CurrencyCost.Costs:GetText())
-        C.args(WFJ, UI, { SL_SET_CONVERSION_RECHARGE_TIME = { [1] = "time" } })
+        C.args(WFI, UI, { SL_SET_CONVERSION_RECHARGE_TIME = { [1] = "time" } })
         frame:UpdateDescription(string.format(en("SL_SET_CONVERSION_RECHARGE_TIME"), "2 Hr 5 Min")) -- :481
         assert.are.equal("Catalystは再チャージ中です。使用可能になるまで2 Hr 5 Min", frame.Description:GetText())
         frame:UpdateDescription("Convert") -- frameData.description
         assert.are.equal("Convert", frame.Description:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Costs:", frame.CurrencyCost.Costs:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:Hide()
         assert.are.equal("Costs:", frame.CurrencyCost.Costs:GetText())
       end },
@@ -58,12 +58,12 @@ C.suite(getfenv(1), {
       assert.are.equal("Honorが足りません", _G.GameTooltipTextLeft1:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Show()
     assert.are.equal("Convert", frame.TitleContainer.TitleText:GetText())
     assert.are.equal("Convert", frame.ButtonFrame.ActionButton:GetText())
-    assert.are.equal(0, WFJ.Labels.show("iteminteraction", "x", frame.ButtonFrame.ActionButton))
-    assert.is_true(C.unrecorded(WFJ, frame.TitleContainer.TitleText))
+    assert.are.equal(0, WFI.Labels.show("iteminteraction", "x", frame.ButtonFrame.ActionButton))
+    assert.is_true(C.unrecorded(WFI, frame.TitleContainer.TitleText))
   end,
   wrong = function(frame)
     frame.Description, frame.ButtonFrame, frame.ItemConversionFrame = 7, "buttons", true

@@ -2,8 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-18
-- **Implemented in:** `pipeline/wfj/io/client_tables.py` (`Layout`, `Table.layouts`, `for_layout`,
-  `Table.optional`, `TableAbsent`), `pipeline/wfj/dev/verify_columns.py`; evidence in
+- **Implemented in:** `pipeline/wfi/io/client_tables.py` (`Layout`, `Table.layouts`, `for_layout`,
+  `Table.optional`, `TableAbsent`), `pipeline/wfi/dev/verify_columns.py`; evidence in
   [Verifying the Forever client's DB2 column maps](../research/2026-09-18-forever-db2-columns.md)
 
 ## Context
@@ -60,7 +60,7 @@ And the pipeline reads **two live clients**, so a table needs a map per build, n
 
 ## Exception: id-only tables pinned in a dev tool
 
-`pipeline/wfj/dev/level1_spells.py` (`make level1-spells`) pins its own column maps for `SkillLineAbility` and
+`pipeline/wfi/dev/level1_spells.py` (`make level1-spells`) pins its own column maps for `SkillLineAbility` and
 `SkillLine` instead of adding a `Layout` to `io/client_tables.py`. The reason is that **nothing is imported
 from these tables**: the tool reads them only for spell ids and skill categories and writes a committed artifact
 (`pipeline/level1_spells.txt`). They carry no translatable text, so they need no CSV, source stamp, hotfix decode

@@ -174,29 +174,29 @@ for i = 1, 7 do GLOBALS[#GLOBALS + 1] = "CalendarWeekday" .. i .. "Name" end
 for i = 1, 42 do GLOBALS[#GLOBALS + 1] = "CalendarDayButton" .. i end
 
 describe("the calendar on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function boot()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
     boot()
     if loadedFirst then
       loadCalendar(true)
-      assert.is_true(WFJ.Calendar.init())
+      assert.is_true(WFI.Calendar.init())
     else
-      assert.is_false(WFJ.Calendar.init()) -- waits for the addon
+      assert.is_false(WFI.Calendar.init()) -- waits for the addon
       loadCalendar(true)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -263,11 +263,11 @@ describe("the calendar on Forever", function()
       it("a holiday's and a raid lockout's descriptions are Japanese; Alt shows English", function()
         local holiday = _G.CalendarViewHolidayFrame.ScrollingFont
         holiday:SetText("Gifts under the tree.|n|nBegins: 12/15 10:00|nEnds: 1/2 06:00")
-        assert.are.equal(1, WFJ.Calendar.onHoliday())
+        assert.are.equal(1, WFI.Calendar.onHoliday())
         assert.are.equal("Gifts under the tree.|n|n開始: 12/15 10:00|n終了: 1/2 06:00", holiday.fs:GetText())
         local raid = _G.CalendarViewRaidFrame.ScrollingFont
         raid:SetText("Your Molten Core instance unlocks at 07:00.")
-        assert.are.equal(1, WFJ.Calendar.onRaid())
+        assert.are.equal(1, WFI.Calendar.onRaid())
         assert.are.equal("Molten Coreのインスタンスは07:00にロック解除されます。", raid.fs:GetText())
         alt(true)
         assert.are.equal("Your Molten Core instance unlocks at 07:00.", raid.fs:GetText())
@@ -298,8 +298,8 @@ describe("the calendar on Forever", function()
         assert.are.equal("Invite", _G.CalendarViewEventCreatorName:GetText())
         assert.are.equal("Invite", _G.CalendarViewHolidayFrame.Header.Text:GetText())
         assert.are.equal("Invite", _G.CalendarCreateEventTitleEdit:GetText())
-        assert.is_true(WFJ.Labels.forbidden(_G.CalendarViewEventTitle))
-        assert.are.equal(0, WFJ.Labels.show("calendar", "x", _G.CalendarViewEventTitle))
+        assert.is_true(WFI.Labels.forbidden(_G.CalendarViewEventTitle))
+        assert.are.equal(0, WFI.Labels.show("calendar", "x", _G.CalendarViewEventTitle))
         assert.are.equal("Close", _G.CalendarViewEventTitle:GetText())
       end)
 
@@ -386,7 +386,7 @@ describe("the calendar on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.Calendar.setup())
+    assert.is_false(WFI.Calendar.setup())
     assert.are.equal(1, #Stub.hooks["CalendarFrame_Update"])
     assert.are.equal(1, #Stub.hooks["FilterButton:UpdateText"])
   end)
@@ -398,7 +398,7 @@ describe("the calendar on Forever", function()
     _G.CalendarViewEventDeclineButton = "x"
     _G.CalendarViewEventFrame_Update = true
     _G.CalendarMassInviteFrame = 3
-    assert.has_no.errors(function() assert.is_true(WFJ.Calendar.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Calendar.init()) end)
     assert.are.equal("日曜日", _G.CalendarWeekday1Name:GetText())
     assert.are.equal("仮承諾", _G.CalendarViewEventTentativeButton:GetText())
     assert.is_nil(Stub.hooks["CalendarViewEventFrame_Update"])
@@ -407,13 +407,13 @@ describe("the calendar on Forever", function()
   it("without the frame, or on a calendar without the FilterButton, init returns false and touches nothing",
     function()
       boot()
-      assert.is_false(WFJ.Calendar.init())
+      assert.is_false(WFI.Calendar.init())
       Stub.loadedAddons[ADDON] = true
-      assert.is_false(WFJ.Calendar.setup())
+      assert.is_false(WFI.Calendar.setup())
       loadCalendar(false)
-      assert.is_false(WFJ.Calendar.init())
+      assert.is_false(WFI.Calendar.init())
       assert.are.equal("Sunday", _G.CalendarWeekday1Name:GetText())
       assert.are.equal("Decline", _G.CalendarViewEventDeclineButton:GetText())
-      assert.is_false(WFJ.HelpTooltip.registered(_G.CalendarViewEventTentativeButton))
+      assert.is_false(WFI.HelpTooltip.registered(_G.CalendarViewEventTentativeButton))
     end)
 end)

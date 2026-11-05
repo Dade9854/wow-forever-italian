@@ -1,17 +1,17 @@
-"""`wfj check` over gossip: the key is the English hash (ADR-005 / ADR-017): Japanese required, hand-written
+"""`wfi check` over gossip: the key is the English hash (ADR-005 / ADR-017): Japanese required, hand-written
 before machine, trusted with english {hash: key}, never stale; `validate` agrees; the draft importer writes gossip."""
 
 from pathlib import Path
 
-from wfj.cmd import validate
-from wfj.cmd.check import GOSSIP_SRC, gossip_scopes
-from wfj.cmd.import_ import run as import_run
-from wfj.core.align import load_allowlist
-from wfj.core.hashing import key
-from wfj.core.model import entry, provenance
-from wfj.core.normalize import normalize_v1
-from wfj.core.status import decide
-from wfj.io.jsonl_store import Store
+from wfi.cmd import validate
+from wfi.cmd.check import GOSSIP_SRC, gossip_scopes
+from wfi.cmd.import_ import run as import_run
+from wfi.core.align import load_allowlist
+from wfi.core.hashing import key
+from wfi.core.model import entry, provenance
+from wfi.core.normalize import normalize_v1
+from wfi.core.status import decide
+from wfi.io.jsonl_store import Store
 
 EN = "Ah, the beauty of Shadowglen never ceases to delight my senses!"
 K = key(normalize_v1(EN))
@@ -44,7 +44,7 @@ def test_a_gossip_line_is_never_stale():
 
 
 def test_draft_check_validate_round_trip(tmp_path: Path, monkeypatch):
-    from wfj.cmd import check
+    from wfi.cmd import check
 
     (tmp_path / "data").mkdir()
     (tmp_path / "data" / "SCHEMA").write_text("1\n")

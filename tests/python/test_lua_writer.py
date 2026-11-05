@@ -4,8 +4,8 @@ import re
 
 import pytest
 
-from wfj.core.model import entry, provenance
-from wfj.emit import lua_writer, schema
+from wfi.core.model import entry, provenance
+from wfi.emit import lua_writer, schema
 
 PROV = provenance("human", "cqjt@3446c82", "2026-09-13", translator="T", origins=["cqjt@3446c82#1"])
 
@@ -70,7 +70,7 @@ def test_quest_rows_golden():
         '  [2] = { "Sharptalonの鉤爪", "目的", "説明", nil, "完了", '
         '0xd311f9a5, 0x0badf00d, 0xd311f9a5, nil, 0xd311f9a5, ".s.m." },'
     )
-    assert text.splitlines()[1:4] == ["local _, WFJ = ...", 'WFJ.Data.add("quest", {', row2]
+    assert text.splitlines()[1:4] == ["local _, WFI = ...", 'WFI.Data.add("quest", {', row2]
     assert text.endswith(
         '  [5] = { "五", nil, nil, nil, nil, 0xd311f9a5, nil, nil, nil, nil, ".mmmm" },\n})\n'
     )
@@ -154,7 +154,7 @@ def test_escape_fixture_matches_writer(root):
 
 
 def test_a_keyed_branch_slot_ships_its_keys_beside_the_shapes():
-    from wfj.emit.lua_writer import variants_literal
+    from wfi.emit.lua_writer import variants_literal
 
     assert variants_literal([("a", "1/0"), ("b", "1/0")]) == '{ "a", "b", shape = { "1/0", "1/0" } }'
     assert variants_literal([("a", "1/0", "0123456789abcdef"), ("b", "1/0", "fedcba9876543210")]) == (

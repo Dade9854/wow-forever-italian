@@ -18,19 +18,19 @@ end
 
 -- Installs the stub and loads the addon over `ui` = { KEY = { English, Japanese } }. `args` (optional) are
 -- Core/UIStrings ARGS / LABELS entries the spec needs: they are set only where the shared file does not have
--- them, so the spec exercises the real entry where there is one. → WFJ
+-- them, so the spec exercises the real entry where there is one. → WFI
 function S.load(files, ui, args)
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
-  local WFJ = H.loadChunks(files)
+  local WFI = H.loadChunks(files)
   for key, kinds in pairs(args and args.ARGS or {}) do
-    if WFJ.UIStrings.ARGS[key] == nil then WFJ.UIStrings.ARGS[key] = kinds end
+    if WFI.UIStrings.ARGS[key] == nil then WFI.UIStrings.ARGS[key] = kinds end
   end
   for key, form in pairs(args and args.LABELS or {}) do
-    if WFJ.UIStrings.LABELS[key] == nil then WFJ.UIStrings.LABELS[key] = form end
+    if WFI.UIStrings.LABELS[key] == nil then WFI.UIStrings.LABELS[key] = form end
   end
-  H.uiSetup(WFJ, ui)
-  return WFJ
+  H.uiSetup(WFI, ui)
+  return WFI
 end
 
 function S.teardown(names)
@@ -39,14 +39,14 @@ function S.teardown(names)
   for _, name in ipairs(names or {}) do _G[name] = nil end
 end
 
-function S.alt(WFJ, down)
+function S.alt(WFI, down)
   Stub.keys.alt = down
-  WFJ.Modifier.refresh()
+  WFI.Modifier.refresh()
 end
 
 -- → true when no surface holds a record on `widget` (a name the addon must never take).
-function S.unrecorded(WFJ, widget)
-  for _, bucket in pairs(WFJ.SurfaceState.surfaces()) do
+function S.unrecorded(WFI, widget)
+  for _, bucket in pairs(WFI.SurfaceState.surfaces()) do
     for _, rec in pairs(bucket) do
       if rec.fs == widget or (type(rec.fs) == "table" and rec.fs.button == widget) then return false end
     end

@@ -5,15 +5,15 @@ local Stub = require("tests.lua.spec.wow_stub")
 local Loader = require("tests.lua.spec.loader")
 local F = require("tests.lua.spec.stub_fixwindow")
 
--- The whole addon through ADDON_LOADED, with the tool window templates, from `saved` as WFJ_DB.
+-- The whole addon through ADDON_LOADED, with the tool window templates, from `saved` as WFI_DB.
 local function boot(saved)
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   F.install()
   Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI()
-  _G.WFJ_DB = saved
-  local WFJ = Loader.load("WoWForeverJapanese")
-  Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
-  return WFJ
+  _G.WFI_DB = saved
+  local WFI = Loader.load("WoWForeverItalian")
+  Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
+  return WFI
 end
 
 describe("Core/Intro", function()
@@ -76,26 +76,26 @@ describe("the intro at ADDON_LOADED and PLAYER_ENTERING_WORLD", function()
 
   local opened
   local function start(saved)
-    local WFJ = boot(saved)
+    local WFI = boot(saved)
     opened = 0
-    local open = WFJ.IntroWindow.open
-    WFJ.IntroWindow.open = function() opened = opened + 1; return open() end
-    return WFJ
+    local open = WFI.IntroWindow.open
+    WFI.IntroWindow.open = function() opened = opened + 1; return open() end
+    return WFI
   end
 
   it("a fresh install shows it at the first login, not on a zone change, and never again", function()
-    local WFJ = start(nil)
-    assert.is_false(_G.WFJ_DB.intro)
+    local WFI = start(nil)
+    assert.is_false(_G.WFI_DB.intro)
     Stub.fireAll("PLAYER_ENTERING_WORLD", false, false) -- a zone change
     assert.are.equal(0, opened)
     Stub.fireAll("PLAYER_ENTERING_WORLD", true, false) -- login
     assert.are.equal(1, opened)
-    assert.is_true(WFJ.IntroWindow.frame:IsShown())
-    assert.is_true(_G.WFJ_DB.intro)
-    assert.are.same({}, WFJ.initErrors)
+    assert.is_true(WFI.IntroWindow.frame:IsShown())
+    assert.is_true(_G.WFI_DB.intro)
+    assert.are.same({}, WFI.initErrors)
     Stub.fireAll("PLAYER_ENTERING_WORLD", false, true) -- a reload
     assert.are.equal(1, opened)
-    local saved = _G.WFJ_DB
+    local saved = _G.WFI_DB
     F.clear()
     start(saved) -- the next session
     Stub.fireAll("PLAYER_ENTERING_WORLD", true, false)
@@ -110,43 +110,43 @@ describe("the intro at ADDON_LOADED and PLAYER_ENTERING_WORLD", function()
 
   it("a player who already had the addon never sees it after updating", function()
     start({ schema = 1, settings = {} })
-    assert.is_true(_G.WFJ_DB.intro)
+    assert.is_true(_G.WFI_DB.intro)
     Stub.fireAll("PLAYER_ENTERING_WORLD", true, false)
     assert.are.equal(0, opened)
   end)
 
   it("settings reset by a downgrade never count as a fresh install", function()
     start({ schema = 999, settings = {} })
-    assert.is_true(_G.WFJ_DB.intro)
+    assert.is_true(_G.WFI_DB.intro)
     Stub.fireAll("PLAYER_ENTERING_WORLD", true, false)
     assert.are.equal(0, opened)
   end)
 
   it("a window that fails to open is caught, marked seen, and the reminder still runs", function()
-    local WFJ = start(nil)
-    WFJ.IntroWindow.open = function() error("broken window") end
+    local WFI = start(nil)
+    WFI.IntroWindow.open = function() error("broken window") end
     local reminded = 0
-    WFJ.CollectorRemind.run = function() reminded = reminded + 1 end
+    WFI.CollectorRemind.run = function() reminded = reminded + 1 end
     Stub.fireAll("PLAYER_ENTERING_WORLD", true, false)
     assert.are.equal(1, reminded)
-    assert.is_true(_G.WFJ_DB.intro)
+    assert.is_true(_G.WFI_DB.intro)
     local surfaces = {}
-    for _, e in ipairs(WFJ.initErrors) do surfaces[#surfaces + 1] = e.surface end
+    for _, e in ipairs(WFI.initErrors) do surfaces[#surfaces + 1] = e.surface end
     assert.are.same({ "intro" }, surfaces)
   end)
 end)
 
 describe("UI/IntroWindow, the window", function()
   after_each(function() F.clear() end)
-  local WFJ, IW, T
+  local WFI, IW, T
 
   before_each(function()
-    WFJ = boot({ schema = 1, settings = {} })
-    IW, T = WFJ.IntroWindow, WFJ.OptionsText.T
+    WFI = boot({ schema = 1, settings = {} })
+    IW, T = WFI.IntroWindow, WFI.OptionsText.T
   end)
 
   local function texts(f)
-    local key = ("|cffffd200%s|r"):format(WFJ.Options.keyName()) -- the key's name in gold
+    local key = ("|cffffd200%s|r"):format(WFI.Options.keyName()) -- the key's name in gold
     return {
       { f.lead, T["intro.lead"].ja, T["intro.lead"].en }, -- the opening line has no bullet
       { f.hold, "・" .. T["intro.hold"].ja:format(key), "• " .. T["intro.hold"].en:format(key) },
@@ -166,7 +166,7 @@ describe("UI/IntroWindow, the window", function()
   it("shows every line in Japanese and English at once, the reveal key named", function()
     local f = IW.open()
     assert.is_true(f:IsShown())
-    assert.are.equal("WoW Forever Japanese", f.title:GetText())
+    assert.are.equal("WoW Forever Italian", f.title:GetText())
     assert.are.same({ "TOP", 0, -135 }, f.point) -- where the client's own popups open
     assertBoth(f)
     assert.is_truthy(f.hold.en:GetText():find("Alt", 1, true))
@@ -176,14 +176,14 @@ describe("UI/IntroWindow, the window", function()
   it("keeps both languages while the reveal key is held and with translation off", function()
     local f = IW.open()
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assertBoth(f)
-    assert.are.equal("WoW Forever Japanese", f.title:GetText())
+    assert.are.equal("WoW Forever Italian", f.title:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
-    WFJ.State.setEnabled(false)
+    WFI.Modifier.refresh()
+    WFI.State.setEnabled(false)
     assertBoth(f)
-    WFJ.State.setEnabled(true)
+    WFI.State.setEnabled(true)
   end)
 
   it("shows the voice line and its address while no voice pack has loaded, and neither with one", function()
@@ -195,10 +195,10 @@ describe("UI/IntroWindow, the window", function()
     assert.is_true(f.voiceTitle:IsShown())
     assert.are.equal("日本語音声 / Japanese voice", f.voiceTitle:GetText())
     assert.is_true(f.box:IsShown())
-    assert.are.equal(WFJ.Options.VOICE_URL, f.box:GetText())
+    assert.are.equal(WFI.Options.VOICE_URL, f.box:GetText())
     local tall = f.size[2]
     IW.close()
-    WFJ.Voice.register({ format = 1, folder = "WoWForeverJapanese_Voice", lines = {} })
+    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
     IW.open()
     assert.is_false(f.voice.ja:IsShown())
     assert.is_false(f.voice.en:IsShown())
@@ -224,7 +224,7 @@ describe("UI/IntroWindow, the window", function()
     assert.are.equal(before, f.size[2]) -- still refused: nothing measured again yet
     assert.is_false(ticks[1].t.cancelled)
     Stub.fontSetFails = false
-    WFJ.Font.retryPending()
+    WFI.Font.retryPending()
     ticks[1].fn(ticks[1].t)
     assert.is_true(f.size[2] > before)
     assert.is_true(ticks[1].t.cancelled)
@@ -320,12 +320,12 @@ describe("UI/IntroWindow, the window", function()
 
   it("a window that fails to open a moment later is still recorded as the intro step", function()
     local run = timers()
-    WFJ.initErrors = {}
+    WFI.initErrors = {}
     IW.open = function() error("broken window") end
     IW.request()
     run()
     local surfaces = {}
-    for _, e in ipairs(WFJ.initErrors) do surfaces[#surfaces + 1] = e.surface end
+    for _, e in ipairs(WFI.initErrors) do surfaces[#surfaces + 1] = e.surface end
     assert.are.same({ "intro" }, surfaces)
   end)
 
@@ -340,12 +340,12 @@ describe("UI/IntroWindow, the window", function()
     assert.is_false(IW.frame:IsShown())
   end)
 
-  it("/wfj debug intro opens it, and novoice draws the voice line even with a pack loaded", function()
-    WFJ.Voice.register({ format = 1, folder = "WoWForeverJapanese_Voice", lines = {} })
-    SlashCmdList.WFJ("debug intro")
+  it("/wfi debug intro opens it, and novoice draws the voice line even with a pack loaded", function()
+    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
+    SlashCmdList.WFI("debug intro")
     assert.is_true(IW.frame:IsShown())
     assert.is_false(IW.frame.voice.ja:IsShown())
-    SlashCmdList.WFJ("debug intro novoice")
+    SlashCmdList.WFI("debug intro novoice")
     assert.is_true(IW.frame.voice.ja:IsShown())
     assert.is_true(IW.frame.box:IsShown())
   end)
@@ -356,14 +356,14 @@ describe("UI/IntroWindow, the window", function()
     assert.is_truthy(caption:find("閉じる", 1, true))
     assert.is_truthy(caption:find("Close", 1, true))
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal(caption, f.close.caption:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     f.close.scripts.OnClick(f.close, "LeftButton")
     assert.is_false(f:IsShown())
     local special = false
-    for _, name in ipairs(_G.UISpecialFrames) do if name == "WFJIntro" then special = true end end
+    for _, name in ipairs(_G.UISpecialFrames) do if name == "WFIIntro" then special = true end end
     assert.is_true(special)
   end)
 

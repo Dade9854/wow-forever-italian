@@ -15,7 +15,7 @@ local function loadSend()
 end
 
 describe("Core/CollectorSend", function()
-  local WFJ, C, S, payloads, out
+  local WFI, C, S, payloads, out
 
   -- an encoder whose output is `out` characters long (sizes are what the modes are about), keeping each payload
   local function encoder()
@@ -26,8 +26,8 @@ describe("Core/CollectorSend", function()
   end
 
   before_each(function()
-    WFJ = loadSend()
-    C, S = WFJ.Collector, WFJ.CollectorSend
+    WFI = loadSend()
+    C, S = WFI.Collector, WFI.CollectorSend
     payloads, out = {}, 100
     C.load(nil, H.collectorDeps({ player = function() return PLAYER end }))
     S.init({ encode = encoder(), version = function() return "1.2.3" end })
@@ -77,14 +77,14 @@ describe("Core/CollectorSend", function()
     C.record("quest", 7, "title", "A Title")
     S.init({ encode = function() return "ab-_c=" end })
     local pk = S.pack()
-    assert.are.equal(S.ISSUE_URL .. "&dump=WFJC1%3Aab-_c%3D", pk.url)
+    assert.are.equal(S.ISSUE_URL .. "&dump=WFIC1%3Aab-_c%3D", pk.url)
     assert.are.equal(C.ISSUE_URL, S.ISSUE_URL)
     assert.is_truthy(S.ISSUE_URL:find("template=collector-send.yml", 1, true))
   end)
 
   it("link up to 6,000 characters of URL, then paste up to 60,000 of string, then the file", function()
     C.record("quest", 7, "title", "A Title")
-    local overhead = #(S.ISSUE_URL .. "&dump=WFJC1%3A")
+    local overhead = #(S.ISSUE_URL .. "&dump=WFIC1%3A")
     out = S.URL_BUDGET - overhead
     assert.are.equal("link", S.pack().mode)
     out = out + 1
@@ -131,7 +131,7 @@ describe("Core/CollectorSend", function()
     C.record("quest", 2, "title", "Sharptalon's Claw")
     C.record("quest", 3, "title", "Still English")
     shipped["quest.title"] = { [2] = { ja = "x", status = ".",
-      h1 = (WFJ.Hash.h32x2(WFJ.Normalize.v1("Sharptalon's Claw"))) } }
+      h1 = (WFI.Hash.h32x2(WFI.Normalize.v1("Sharptalon's Claw"))) } }
     assert.are.equal(1, C.status().unsent)
     local pk = S.pack()
     assert.are.equal(1, pk.count)
@@ -181,7 +181,7 @@ end)
 -- the client's encoder as Main wires it, in a whole stub session: what it is handed holds nothing personal
 describe("CollectorSend through the loaded addon", function()
   it("Main hands C_EncodingUtil the payload with Zlib and the URL-safe alphabet; nothing personal in it", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI()
     local calls = {}
     _G.Enum = _G.Enum or {}
@@ -193,15 +193,15 @@ describe("CollectorSend through the loaded addon", function()
       CompressString = function(s, method) calls[#calls + 1] = "zlib:" .. method; return "z" .. s end,
       EncodeBase64 = function(s, variant) calls[#calls + 1] = "b64:" .. variant; return "B" .. s end,
     }
-    local WFJ = Loader.load("WoWForeverJapanese")
-    Stub.fireAll("ADDON_LOADED", "WoWForeverJapanese")
+    local WFI = Loader.load("WoWForeverItalian")
+    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     Stub.fireAll("PLAYER_ENTERING_WORLD")
     require("tests.lua.spec.collector_session").run()
-    local pk = WFJ.CollectorSend.pack(true)
+    local pk = WFI.CollectorSend.pack(true)
     _G.C_EncodingUtil = nil
     assert.are.equal("link", pk.mode)
     assert.are.same({ "json", "zlib:1", "b64:1" }, calls)
-    assert.are.equal("WFJC1:Bz{json}", pk.text)
+    assert.are.equal("WFIC1:Bz{json}", pk.text)
     assert.is_true(#payload.e >= 8)
     local function scan(v)
       if type(v) == "string" then

@@ -5,21 +5,21 @@ local FILES = { "Core/Const.lua", "Core/State.lua", "Core/Settings.lua", "Core/M
   "Core/Translator.lua", "Core/SurfaceState.lua", "UI/Font.lua", "UI/Render.lua" }
 
 describe("Render: refresh on state, per-FontString font", function()
-  local WFJ, R, S
+  local WFI, R, S
   local DATA = {
     quest = { [1] = { ja = "クエスト1", status = "." }, [2] = { ja = "クエスト2", status = "s" } },
     gossip = { g1 = { ja = "こんにちは", status = "." } },
   }
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(FILES)
-    R, S = WFJ.Render, WFJ.Settings
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(FILES)
+    R, S = WFI.Render, WFI.Settings
     S.load(nil, 1, {})
-    R.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    R.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
       marker = function(n) return S.get("marker." .. n) end,
     }))
@@ -35,16 +35,16 @@ describe("Render: refresh on state, per-FontString font", function()
     assert.is_true(showQuest(q))
     assert.is_true(R.show("gossip", 1, g, "Hello", "gossip", "gossip", "g1"))
     assert.are.equal("クエスト1", q:GetText())
-    assert.are.same({ WFJ.Font.PATH, 14, "OUTLINE" }, { q:GetFont() })
+    assert.are.same({ WFI.Font.PATH, 14, "OUTLINE" }, { q:GetFont() })
 
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Quest text", q:GetText())
     assert.are.same({ "F.ttf", 14, "OUTLINE" }, { q:GetFont() })
     assert.are.equal("Hello", g:GetText())
 
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("クエスト1", q:GetText())
-    assert.are.equal(WFJ.Font.PATH, (q:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (q:GetFont()))
     assert.are.equal("こんにちは", g:GetText())
 
     S.set("enabled", false)
@@ -60,7 +60,7 @@ describe("Render: refresh on state, per-FontString font", function()
   it("no flicker: with the modifier held, toggling the master writes nothing", function()
     local q = Stub.fontString("Quest text")
     showQuest(q)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     local n = q.calls.SetText
     S.set("enabled", false)
     S.set("enabled", true)
@@ -73,13 +73,13 @@ describe("Render: refresh on state, per-FontString font", function()
   it("applies the bundled font at the element's own size and flags; counts SetFont failures", function()
     local q = Stub.fontString("Quest text", "F.ttf", 16, "THICKOUTLINE")
     showQuest(q)
-    assert.are.same({ WFJ.Font.PATH, 16, "THICKOUTLINE" }, { q:GetFont() })
+    assert.are.same({ WFI.Font.PATH, 16, "THICKOUTLINE" }, { q:GetFont() })
     assert.are.equal(0, R.fontFailures)
     Stub.fontSetFails = true
     local q2 = Stub.fontString("Other")
     R.show("quest", "objectives", q2, "Other", "quests", "quest", 1)
     assert.are.equal(1, R.fontFailures)
-    -- where, for /wfj debug: per surface, the count and the first failing record's arguments
+    -- where, for /wfi debug: per surface, the count and the first failing record's arguments
     assert.are.same({ quest = { n = 1, key = "objectives", size = 13, flags = "" } }, R.fontFailureSurfaces)
   end)
 
@@ -94,7 +94,7 @@ describe("Render: refresh on state, per-FontString font", function()
     assert.are.equal(1, R.fontFailures)
     Stub.fontSetFails = false
     assert.are.equal(0, R.retryFonts())
-    assert.are.same({ WFJ.Font.PATH, 16, "" }, { q:GetFont() })
+    assert.are.same({ WFI.Font.PATH, 16, "" }, { q:GetFont() })
     assert.are.equal(0, R.pendingFonts())
     -- a record the client rewrote before the retry is dropped, never written over
     Stub.fontSetFails = true
@@ -109,24 +109,24 @@ describe("Render: refresh on state, per-FontString font", function()
   it("Font.set remembers a refused font for the addon's own widgets; a later set replaces it", function()
     local fs = Stub.fontString("x", "F.ttf", 12, "")
     Stub.fontSetFails = true
-    assert.is_false(WFJ.Font.set(fs, WFJ.Font.PATH, 14, ""))
-    assert.are.equal(1, WFJ.Font.retryPending())
+    assert.is_false(WFI.Font.set(fs, WFI.Font.PATH, 14, ""))
+    assert.are.equal(1, WFI.Font.retryPending())
     Stub.fontSetFails = false
-    assert.are.equal(0, WFJ.Font.retryPending())
-    assert.are.same({ WFJ.Font.PATH, 14, "" }, { fs:GetFont() })
+    assert.are.equal(0, WFI.Font.retryPending())
+    assert.are.same({ WFI.Font.PATH, 14, "" }, { fs:GetFont() })
     Stub.fontSetFails = true
-    WFJ.Font.set(fs, WFJ.Font.PATH, 14, "")
+    WFI.Font.set(fs, WFI.Font.PATH, 14, "")
     Stub.fontSetFails = false
-    WFJ.Font.set(fs, "F.ttf", 12, "") -- the widget went back to its own font: nothing left to retry
-    assert.are.equal(0, WFJ.Font.retryPending())
+    WFI.Font.set(fs, "F.ttf", 12, "") -- the widget went back to its own font: nothing left to retry
+    assert.are.equal(0, WFI.Font.retryPending())
     assert.are.same({ "F.ttf", 12, "" }, { fs:GetFont() })
   end)
 
-  local function inl(name) return WFJ.MARKER_INLINE_COLOR .. WFJ.MARKER[name] .. "|r" end
+  local function inl(name) return WFI.MARKER_INLINE_COLOR .. WFI.MARKER[name] .. "|r" end
 
   it("markers (no banner): stale message on its own line above a stale entry; missing message only when enabled",
   function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     local q = Stub.fontString("Quest text")
     showQuest(q, 2)
     assert.are.equal(inl("stale") .. "\nクエスト2", q:GetText())
@@ -138,7 +138,7 @@ describe("Render: refresh on state, per-FontString font", function()
     assert.are.equal("Untranslated", u:GetText())
     S.set("marker.missing", true)
     assert.are.equal(inl("missing") .. "\nUntranslated", u:GetText())
-    assert.are.same({ WFJ.Font.PATH, 12, "" }, { u:GetFont() }) -- bundled font while the message shows (kanji legible)
+    assert.are.same({ WFI.Font.PATH, 12, "" }, { u:GetFont() }) -- bundled font while the message shows (kanji legible)
     S.set("marker.missing", false)
     assert.are.equal("Untranslated", u:GetText())
     assert.are.same({ "F.ttf", 12, "" }, { u:GetFont() }) -- and the original font comes back with it
@@ -157,19 +157,19 @@ describe("Render: refresh on state, per-FontString font", function()
     local t = Stub.fontString("Use: heal")
     R.show("tooltip", 3, t, "Use: heal", "quests", "quest", 1, { refit = function() refits = refits + 1 end })
     assert.are.equal(1, refits)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(2, refits)
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(3, refits)
     assert.are.equal(1, R.release("tooltip"))
     assert.are.equal("Use: heal", t:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(3, refits) -- no records left
   end)
 
   it("translated quest, then an untranslated one on the same FontString → live English, original font",
   function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     local q = Stub.fontString("Quest A", "F.ttf", 14, "OUTLINE")
     showQuest(q, 1)
     assert.are.equal("クエスト1", q:GetText())
@@ -188,7 +188,7 @@ describe("Render: refresh on state, per-FontString font", function()
     local q = Stub.fontString("Quest text")
     showQuest(q, 2) -- stale entry
     assert.are.equal("クエスト2", q:GetText())
-    assert.are.equal(WFJ.MARKER.stale, b:GetText())
+    assert.are.equal(WFI.MARKER.stale, b:GetText())
     assert.is_true(b:IsShown())
 
     local u = Stub.fontString("Untranslated", "F.ttf", 12, "")
@@ -196,9 +196,9 @@ describe("Render: refresh on state, per-FontString font", function()
     R.show("quest", "progress", u, "Untranslated", "quests", "quest", 999)
     assert.are.equal("Untranslated", u:GetText()) -- English untouched …
     assert.are.same({ "F.ttf", 12, "" }, { u:GetFont() }) -- … in its own font
-    assert.are.equal(WFJ.MARKER.missing .. "  " .. WFJ.MARKER.stale, b:GetText()) -- both, missing first
+    assert.are.equal(WFI.MARKER.missing .. "  " .. WFI.MARKER.stale, b:GetText()) -- both, missing first
     S.set("marker.missing", false)
-    assert.are.equal(WFJ.MARKER.stale, b:GetText())
+    assert.are.equal(WFI.MARKER.stale, b:GetText())
     S.set("marker.stale", false)
     assert.is_false(b:IsShown())
     S.set("marker.stale", true)
@@ -224,7 +224,7 @@ describe("Render: refresh on state, per-FontString font", function()
       R.show("tooltip", i, Stub.fontString("Line " .. i), "Line " .. i, "quests", "quest", 1, ctx)
     end
     assert.are.equal(3, refits) -- one per show
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(4, refits) -- one per surface for the refresh
     assert.are.equal(0, R.release("tooltip")) -- already restored while held: nothing left to write
   end)
@@ -237,13 +237,13 @@ describe("Render: refresh on state, per-FontString font", function()
     R.show("items", 2, Stub.fontString("Use: y"), "Use: y", "quests", "quest", 1, ctxA)
     R.show("items", 3, Stub.fontString("Equip: z"), "Equip: z", "quests", "quest", 1, ctxB)
     assert.are.same({ 2, 1 }, { a, b })
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.same({ 3, 2 }, { a, b })
   end)
 
   -- Main guards every init step, so a failed Render.init is survivable and every later surface still installs its
   -- hooks. Raising here would turn one load failure into an error on every hover, quest update and window open.
-  -- Nothing to render against means nothing rendered, as Tooltip and Labels do for a missing WFJ.UIIndex.
+  -- Nothing to render against means nothing rendered, as Tooltip and Labels do for a missing WFI.UIIndex.
   it("show before init renders nothing instead of raising", function()
     local ns = H.loadChunks(FILES)
     local ok, shown
@@ -259,19 +259,19 @@ describe("Render: refresh on state, per-FontString font", function()
 end)
 
 describe("Render: companion records follow their primary", function()
-  local WFJ, R, S, refits
+  local WFI, R, S, refits
   local DATA = { ["item.description"] = { [117] = { ja = "18秒間でhealthを61回復。", status = "u" } } }
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(FILES)
-    R, S = WFJ.Render, WFJ.Settings
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(FILES)
+    R, S = WFI.Render, WFI.Settings
     S.load(nil, 1, {})
     refits = 0
-    R.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    R.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
       marker = function(n) return S.get("marker." .. n) end,
       align = function(ja, lines) return lines ~= nil and #lines == 2, ja end,
@@ -297,12 +297,12 @@ describe("Render: companion records follow their primary", function()
     assert.are.equal(2, refits) -- one per show that wrote
 
     refits = 0
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Use: Restores 61 health over 18 sec.", use:GetText())
     assert.are.equal('"Tough as leather."', quote:GetText())
     assert.are.equal(1, refits) -- one refit per refresh, deduped across the surface's records
 
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("18秒間でhealthを61回復。", use:GetText())
     assert.are.equal(R.BLANK, quote:GetText())
 
@@ -315,7 +315,7 @@ describe("Render: companion records follow their primary", function()
   end)
 
   it("never writes the companion when the primary never applies", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     DATA["item.description"][117].ja = ""
     local use, quote = run()
     assert.are.equal("Use: Restores 61 health over 18 sec.", use:GetText())
@@ -330,22 +330,22 @@ describe("Render: companion records follow their primary", function()
     R.release("tooltip.GameTooltip")
     assert.are.equal("Use: Restores 61 health over 18 sec.", use:GetText())
     assert.are.equal('"Tough as leather."', quote:GetText())
-    assert.are.equal(0, WFJ.SurfaceState.count("tooltip.GameTooltip"))
+    assert.are.equal(0, WFI.SurfaceState.count("tooltip.GameTooltip"))
   end)
 end)
 
 describe("Render: a companion never blanks when the primary shows English + missing marker", function()
-  local WFJ, R, S
+  local WFI, R, S
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(FILES)
-    R, S = WFJ.Render, WFJ.Settings
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(FILES)
+    R, S = WFI.Render, WFI.Settings
     S.load(nil, 1, {})
     S.set("marker.missing", true)
-    R.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    R.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function() return { ja = "18秒間でhealthを61回復。", status = "u" } end,
       marker = function(n) return S.get("marker." .. n) end,
       align = function() return false end, -- the gate fails
@@ -360,7 +360,7 @@ describe("Render: a companion never blanks when the primary shows English + miss
     R.show("tooltip.GameTooltip", "desc.2", quote, quote:GetText(), "items", "item.description", 117,
       { follow = "desc" })
     -- tooltips have no banner: the message goes inline, on its own line above the English
-    local msg = WFJ.MARKER_INLINE_COLOR .. WFJ.MARKER.missing .. "|r\n"
+    local msg = WFI.MARKER_INLINE_COLOR .. WFI.MARKER.missing .. "|r\n"
     assert.are.equal(msg .. "Use: Restores 70 health over 18 sec.", use:GetText())
     assert.are.equal('"Tough as leather."', quote:GetText())
     assert.are.equal(0, quote.calls.SetText)

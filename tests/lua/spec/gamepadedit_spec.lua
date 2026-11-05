@@ -33,15 +33,15 @@ local function installEditFrame()
 end
 
 describe("the gamepad action-bar edit window on Forever", function()
-  local WFJ
+  local WFI
 
   local function setup(install)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     if install then install() end
-    WFJ.Labels.forbidNames(WFJ.GamepadEdit.NEVER_TOUCH)
+    WFI.Labels.forbidNames(WFI.GamepadEdit.NEVER_TOUCH)
   end
 
   after_each(function()
@@ -52,7 +52,7 @@ describe("the gamepad action-bar edit window on Forever", function()
 
   it("the four labels render Japanese; Alt shows English; the action's name is never taken", function()
     setup(installEditFrame)
-    assert.is_true(WFJ.GamepadEdit.init())
+    assert.is_true(WFI.GamepadEdit.init())
     local frame = _G.GamepadActionBarEditFrame
     assert.are.equal("アクションバーに割り当て", frame.BindingInfoFrame.TitleBox.TitleText:GetText())
     assert.are.equal("割り当てたいボタンの組み合わせを押してください:", frame.BindingInfoFrame.BindInstructionText:GetText())
@@ -60,15 +60,15 @@ describe("the gamepad action-bar edit window on Forever", function()
     assert.are.equal("変更したいボタンの組み合わせを押してください。",
       frame.EditActionBarsInfoFrame.PickupInstructionText:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Edit Action Bars", frame.EditActionBarsInfoFrame.TitleBox.TitleText:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     -- a macro the player named exactly like a dictionary entry
     frame.BindingInfoFrame.ActionName.text = "Edit Action Bars"
     frame:Show()
     assert.are.equal("Edit Action Bars", frame.BindingInfoFrame.ActionName:GetText())
-    assert.are.equal(0, WFJ.Labels.show("gamepadedit", "x", frame.BindingInfoFrame.ActionName))
+    assert.are.equal(0, WFI.Labels.show("gamepadedit", "x", frame.BindingInfoFrame.ActionName))
   end)
 
   it("client names bound to the wrong type degrade to English with no error", function()
@@ -77,17 +77,17 @@ describe("the gamepad action-bar edit window on Forever", function()
       frame.BindingInfoFrame.TitleBox = "moved"
       frame.EditActionBarsInfoFrame = 4
     end)
-    assert.has_no.errors(function() assert.is_true(WFJ.GamepadEdit.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.GamepadEdit.init()) end)
     assert.are.equal("割り当てたいボタンの組み合わせを押してください:",
       _G.GamepadActionBarEditFrame.BindingInfoFrame.BindInstructionText:GetText())
   end)
 
   it("init runs once; without the frame it returns false", function()
     setup(installEditFrame)
-    assert.is_true(WFJ.GamepadEdit.init())
-    assert.is_false(WFJ.GamepadEdit.init())
+    assert.is_true(WFI.GamepadEdit.init())
+    assert.is_false(WFI.GamepadEdit.init())
     _G.GamepadActionBarEditFrame = nil
     setup(nil)
-    assert.has_no.errors(function() assert.is_false(WFJ.GamepadEdit.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.GamepadEdit.init()) end)
   end)
 end)

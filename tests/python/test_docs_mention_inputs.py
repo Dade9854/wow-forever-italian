@@ -8,7 +8,7 @@ def test_local_setup_names_inputs(root):
         "classic-wow-tooltips-japanese-translator",
         "pfQuest",
         "wago.tools",
-        "wfj import",
+        "wfi import",
         "ItemSparse",
         "SpellName",
     ):

@@ -60,7 +60,7 @@ C.suite(getfenv(1), {
   addon = "Blizzard_GuildControlUI", root = "GuildControlUI", ui = UI, build = build, globals = GLOBALS,
   cases = {
     { "the title, buttons, permission checkboxes and the unnamed rank label are Japanese; hide releases them",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         assert.are.equal("ギルド管理", _G.GuildControlUITitle:GetText())
         assert.are.equal("新しいランク", frame.orderFrame.newButton:GetText())
@@ -69,20 +69,20 @@ C.suite(getfenv(1), {
         assert.are.equal("ギルド銀行", _G[P .. "BankLabel"]:GetText())
         local _, label = frame.rankPermFrame.dropdown:GetRegions()
         assert.are.equal("変更するランク:", (label or frame.rankPermFrame.dropdown:GetRegions()):GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal("Guild Control", _G.GuildControlUITitle:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:Hide()
         assert.are.equal("New Rank", frame.orderFrame.newButton:GetText())
       end },
     { "lineList: the officer permission lines in Japanese, rejoined; one unknown line keeps it all English",
-      function(frame, WFJ)
+      function(frame, WFI)
         frame:Show()
         local fs = frame.rankPermFrame.OfficerPermissions
         assert.are.equal("- オフィサーチャンネルを利用|n- 今日のメッセージを編集", fs:GetText())
-        C.alt(WFJ, true)
+        C.alt(WFI, true)
         assert.are.equal(PERMS, fs:GetText())
-        C.alt(WFJ, false)
+        C.alt(WFI, false)
         frame:Hide()
         fs.text = PERMS .. "|n- Something new"
         frame:Show()
@@ -112,12 +112,12 @@ C.suite(getfenv(1), {
       assert.are.equal("そのギルドランクは使用中です。", _G.GameTooltipTextLeft2:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Show()
     local rank = frame.rankPermFrame.dropdown.Text
     assert.are.equal("Guild Bank", rank:GetText())
-    assert.are.equal(0, WFJ.Labels.show("guildcontrol", "x", rank))
-    assert.is_true(C.unrecorded(WFJ, rank))
+    assert.are.equal(0, WFI.Labels.show("guildcontrol", "x", rank))
+    assert.is_true(C.unrecorded(WFI, rank))
   end,
   wrong = function(frame)
     frame.orderFrame, frame.dropdown, frame.rankPermFrame = 7, "nav", true

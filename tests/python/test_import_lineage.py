@@ -6,11 +6,11 @@ import json
 
 import pytest
 
-from wfj.cmd import import_, import_draft, import_english
-from wfj.cmd import import_predecessor as imp
-from wfj.core.model import validate_line
-from wfj.io.jsonl_store import Store
-from wfj.io.lua_reader import parse_assignment
+from wfi.cmd import import_, import_draft, import_english
+from wfi.cmd import import_predecessor as imp
+from wfi.core.model import validate_line
+from wfi.io.jsonl_store import Store
+from wfi.io.lua_reader import parse_assignment
 
 QJP = "tests/fixtures/questjapanizer/QuestData.excerpt.lua"
 CJQ = "tests/fixtures/craftjapanizer/QuestData.excerpt.lua"

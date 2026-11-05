@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from wfj.core import align
-from wfj.io.jsonl_store import Store
+from wfi.core import align
+from wfi.io.jsonl_store import Store
 
 SPELLS = {
     (434, "description"): "Restores $o1 health over $d.  Must remain seated while eating.",
@@ -329,8 +329,8 @@ def test_a_variant_key_is_the_wording_with_its_values_masked():
     assert align.variant_key("$I1 Fire: $s1") == align.variant_key("Fire: 5")
     assert align.variant_key("Hit  $s1\r\n") == align.variant_key("Hit 5")  # normalized whitespace
     # the masked wording is what the key hashes
-    from wfj.core.hashing import key as hash_key
-    from wfj.core.normalize import normalize_v1
+    from wfi.core.hashing import key as hash_key
+    from wfi.core.normalize import normalize_v1
     assert a == hash_key(normalize_v1("Increases all damage you deal by #%.", player_tokens=False))
 
 

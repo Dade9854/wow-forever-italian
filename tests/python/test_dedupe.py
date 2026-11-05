@@ -1,4 +1,4 @@
-from wfj.core.dedupe import Candidate, promote, resolve, variants
+from wfi.core.dedupe import Candidate, promote, resolve, variants
 
 P = {"class": "human", "translator": "a", "source": "cqjt@1234567", "imported": "2026-09-13"}
 

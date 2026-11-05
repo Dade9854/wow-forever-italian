@@ -1,4 +1,4 @@
-"""wfj public-check: each rule fails on a one-line example and passes on clean text.
+"""wfi public-check: each rule fails on a one-line example and passes on clean text.
 
 The private rules are kept outside the repository, so these tests bring their own: invented names that mean
 nothing. The examples of the public rules are assembled from pieces so that this file does not itself trip the
@@ -11,9 +11,9 @@ import subprocess
 
 import pytest
 
-from wfj.cmd import public_check as pc
-from wfj.core import public_text as pt
-from wfj.io import private_rules
+from wfi.cmd import public_check as pc
+from wfi.core import public_text as pt
+from wfi.io import private_rules
 
 J = "".join
 
@@ -36,7 +36,7 @@ RULES = pt.private_rules(SPEC)
 CONTENT_FAILS = {
     "home path": J(["/Us", "ers/someone/Code/x"]),
     "external drive path": J(["/Vol", "umes/Games/World of Warcraft"]),
-    "tracker id": J(["W", "FJ-12 added this"]),
+    "tracker id": J(["W", "FI-12 added this"]),
 }
 
 # More spellings of the same rules.
@@ -47,9 +47,9 @@ CONTENT_VARIANTS = [
     ("home path", J(["C:\\Us", "ers\\someone"])),
     ("home path", J(["c:\\us", "ers\\someone\\x"])),
     ("home path", J(['"C:\\\\Us', 'ers\\\\someone\\\\x"'])),
-    ("tracker id", J(["W", "FJ 31"])),
-    ("tracker id", J(["W", "FJ\u201331"])),
-    ("tracker id", J(["w", "fj_31"])),
+    ("tracker id", J(["W", "FI 31"])),
+    ("tracker id", J(["W", "FI\u201331"])),
+    ("tracker id", J(["w", "fi_31"])),
 ]
 
 
@@ -59,13 +59,13 @@ def test_content_rule_fails(rule, line):
 
 
 def test_content_rules_leave_near_misses_alone():
-    text = J(["/Us", "ers/ alone\nC:\\Program Files\nSLASH_W", "FJ1 = 1\nthe /w", "fjscan command\n"])
+    text = J(["/Us", "ers/ alone\nC:\\Program Files\nSLASH_W", "FI1 = 1\nthe /w", "fiscan command\n"])
     assert list(pt.content_hits(text)) == []
 
 
 def test_public_rules_reach_comments_and_file_names():
-    assert pt.history_hits(J(["-- W", "FJ-40: the widget"])) == ["tracker id"]
-    assert pt.path_hits(J(["tests/lua/spec/bags_w", "fj45_spec.lua"])) == ["tracker id"]
+    assert pt.history_hits(J(["-- W", "FI-40: the widget"])) == ["tracker id"]
+    assert pt.path_hits(J(["tests/lua/spec/bags_w", "fi45_spec.lua"])) == ["tracker id"]
 
 
 def test_content_clean_text_passes():

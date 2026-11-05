@@ -57,10 +57,10 @@ local function promptFrame(legend)
 end
 
 describe("the gamepad-mode HUD on Forever", function()
-  local WFJ, frames
+  local WFI, frames
 
   local function setup(install)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     frames = {}
     _G.EnumerateFrames = function(prev)
       local i = 0
@@ -69,8 +69,8 @@ describe("the gamepad-mode HUD on Forever", function()
     end
     installPromptMixin()
     if install then install() end
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   after_each(function()
@@ -83,7 +83,7 @@ describe("the gamepad-mode HUD on Forever", function()
   it("a footer prompt made after load shows Japanese, is re-fitted and its legend re-laid out; Alt shows English",
     function()
       setup()
-      assert.is_truthy(WFJ.Gamepad.init())
+      assert.is_truthy(WFI.Gamepad.init())
       local legend = { laidOut = 0 }
       function legend:ApplyDefaultPromptPositioning() self.laidOut = self.laidOut + 1 end
       local prompt = promptFrame(legend) -- copies the hooked mixin, like a frame the client makes now
@@ -93,11 +93,11 @@ describe("the gamepad-mode HUD on Forever", function()
       assert.are.equal(#"戻る" * 7, prompt.ControlDescText.width) -- sized to the Japanese, as the writer sizes
       assert.is_true(legend.laidOut >= 1)
       Stub.keys.alt = true
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       assert.are.equal("Back", fs:GetText())
       assert.are.equal(#"Back" * 7, prompt.ControlDescText.width)
       Stub.keys.alt = false
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       assert.are.equal("戻る", fs:GetText())
     end)
 
@@ -108,7 +108,7 @@ describe("the gamepad-mode HUD on Forever", function()
     frames[1] = old
     old:SetPromptText("Select")
     assert.are.equal("Select", old.ControlDescText.FontString:GetText())
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     assert.are.equal("選択", old.ControlDescText.FontString:GetText())
     old:SetPromptText("Back") -- a focus change rewrites it in English
     assert.are.equal("戻る", old.ControlDescText.FontString:GetText())
@@ -119,12 +119,12 @@ describe("the gamepad-mode HUD on Forever", function()
     UI.FRAME_ACTION_BACK, UI.BACK = nil, { "Back", "戻る" } -- containerframe.lua:3403: BACK, not FRAME_ACTION_BACK
     setup()
     UI.FRAME_ACTION_BACK, UI.BACK = frameBack, nil
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     local prompt = promptFrame({ ApplyDefaultPromptPositioning = function() end })
     prompt:SetPromptText("Back")
     assert.are.equal("戻る", prompt.ControlDescText.FontString:GetText())
     local set = {}
-    for _, k in ipairs(WFJ.Gamepad.PROMPT_KEYS) do set[k] = true end
+    for _, k in ipairs(WFI.Gamepad.PROMPT_KEYS) do set[k] = true end
     -- the bag search box (containerframe.lua:3403, 3408), the channels window (channelframe.lua:169) and the
     -- invite manager (communitiesticketmanagerdialog.lua:255) footers
     for _, k in ipairs({ "BACK", "SEARCH", "ADD_CHAT_CHANNEL", "COMMUNITIES_INVITE_MANAGER_REVOKE_INVITE",
@@ -135,7 +135,7 @@ describe("the gamepad-mode HUD on Forever", function()
 
   it("any label that is exactly a dictionary English is taken; anything else stays as written", function()
     setup()
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     local prompt = promptFrame({})
     prompt:SetPromptText("Okay")
     assert.are.equal("OK", prompt.ControlDescText.FontString:GetText())
@@ -145,7 +145,7 @@ describe("the gamepad-mode HUD on Forever", function()
 
   it("the combined bag's expand / collapse prompt follows the bag; Alt shows English", function()
     setup()
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     local prompt = promptFrame({ ApplyDefaultPromptPositioning = function() end })
     local fs = prompt.ControlDescText.FontString
     prompt:SetPromptText("Expand")
@@ -153,15 +153,15 @@ describe("the gamepad-mode HUD on Forever", function()
     prompt:SetPromptText("Collapse")
     assert.are.equal("折りたたむ", fs:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Collapse", fs:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end)
 
   it("the persistent legend's colour-wrapped header keeps its colour around the Japanese", function()
     setup()
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     local entry = promptFrame({})
     entry:SetPromptText("|cffffffffFriendly Targeting Actions|r")
     assert.are.equal("|cffffffff味方ターゲットの操作|r", entry.ControlDescText.FontString:GetText())
@@ -176,7 +176,7 @@ describe("the gamepad-mode HUD on Forever", function()
         _G.GamepadRadial = { HeaderText = fontString("Main Menu"), SegmentList = { seg } }
         _G.GamepadRadial.ActivateRadial = function() seg.IconLabel:SetText("Train") end
       end)
-      WFJ.Gamepad.init()
+      WFI.Gamepad.init()
       local prompt = promptFrame({})
       prompt:SetPromptText("Train")
       assert.are.equal("訓練", prompt.ControlDescText.FontString:GetText())
@@ -186,19 +186,19 @@ describe("the gamepad-mode HUD on Forever", function()
 
   it("a font object set after the label (the legend's header rows) gets the Japanese font back", function()
     setup()
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     local entry = promptFrame({})
     entry:SetPromptText("|cffffffffFriendly Targeting Actions|r")
     local fs = entry.ControlDescText.FontString
-    assert.are.equal(WFJ.Font.PATH, (fs:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (fs:GetFont()))
     entry:SetPromptFont({ font = { path = "Fonts\\FRIZQT__.TTF", size = 12, flags = "" } })
     assert.are.equal("|cffffffff味方ターゲットの操作|r", fs:GetText())
-    assert.are.equal(WFJ.Font.PATH, (fs:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (fs:GetFont()))
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("|cffffffffFriendly Targeting Actions|r", fs:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end)
 
   it("the radial menu's header, segments and D-pad indicators show Japanese on every ActivateRadial", function()
@@ -214,7 +214,7 @@ describe("the gamepad-mode HUD on Forever", function()
         seg.IconLabel:SetText("Bags")
       end
     end)
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     local radial = _G.GamepadRadial
     radial:ActivateRadial(1)
     assert.are.equal("メインメニュー", radial.HeaderText:GetText())
@@ -238,7 +238,7 @@ describe("the gamepad-mode HUD on Forever", function()
         end,
       }
     end)
-    WFJ.Gamepad.init()
+    WFI.Gamepad.init()
     local button = _G.GamepadMode.CreateHoldButtonWithTextFromTemplate("GamepadMovieSkipButton", {}, nil, "Skip")
     button.scripts.OnUpdate(button)
     assert.are.equal("スキップ", button.text:GetText())
@@ -250,24 +250,24 @@ describe("the gamepad-mode HUD on Forever", function()
   it("without the gamepad HUD init returns false and raises nothing", function()
     setup()
     _G.InputPromptMixin = nil
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.has_no.errors(function() assert.is_false(WFJ.Gamepad.init()) end)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.has_no.errors(function() assert.is_false(WFI.Gamepad.init()) end)
   end)
 end)
 
 describe("the gamepad \"More Actions\" menu is the tagged MORE_CONTEXT_ACTIONS menu", function()
   it("UI/MenusTags appends UI/Gamepad's MENU_KEYS to that tag", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     local files = {}
     for i, f in ipairs(H.UI_FILES) do files[i] = f end
     for _, f in ipairs({ "UI/MenusUnit.lua", "UI/Gamepad.lua", "UI/Menus.lua", "UI/MenusTags.lua" }) do
       files[#files + 1] = f
     end
-    local WFJ = H.loadChunks(files)
+    local WFI = H.loadChunks(files)
     local keys = {}
-    for _, k in ipairs(WFJ.Menus.TAGS.MORE_CONTEXT_ACTIONS.keys) do keys[k] = true end
-    for _, k in ipairs(WFJ.Gamepad.MENU_KEYS) do assert.is_true(keys[k], k) end
+    for _, k in ipairs(WFI.Menus.TAGS.MORE_CONTEXT_ACTIONS.keys) do keys[k] = true end
+    for _, k in ipairs(WFI.Gamepad.MENU_KEYS) do assert.is_true(keys[k], k) end
     -- the equipment and bag item "More Actions" entries (camelot/paperdollframe.lua:1906, containerframe.lua:3529)
     assert.is_true(keys.SHARE_IN_CHAT)
     -- the gamepad chat channel menu is gone; the chat footer's label opens the channels window directly

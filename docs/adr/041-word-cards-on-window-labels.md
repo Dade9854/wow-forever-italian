@@ -1,9 +1,9 @@
 # ADR-041: Word cards on plain-text window labels
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/UI/Readings.lua`
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/UI/Readings.lua`
   (`View.NON_WINDOW`, `View.nonWindow`, `View.tooltipSurface`, `inWindow`, `eligible`), `UI/TooltipLines.lua`
-  (`follow` registers the exact surface it follows as non-window), `Core/Readings.lua` (the `ui` kind), `pipeline/wfj/core/readings.py`
-  (`TYPES["ui"]`, the UI key check), `pipeline/wfj/cmd/readings.py`, `pipeline/wfj/cmd/generate.py` (`ui:<KEY>` rows),
+  (`follow` registers the exact surface it follows as non-window), `Core/Readings.lua` (the `ui` kind), `pipeline/wfi/core/readings.py`
+  (`TYPES["ui"]`, the UI key check), `pipeline/wfi/cmd/readings.py`, `pipeline/wfi/cmd/generate.py` (`ui:<KEY>` rows),
   `data/reading/ui/`. Until a `ui` line has a word list, its label shows no card. The in-game checks are in the word
   card checklist in [Testing strategy](../testing/strategy.md).
 - **Date:** 2026-09-25
@@ -71,7 +71,7 @@ names across its UI modules.
 - The denylist must follow new surfaces. One pytest checks that every `NON_WINDOW` entry names a surface some UI
   module registers, so the list cannot rot into names that match nothing; `test_every_registered_surface_is_classified`
   resolves every surface name a module hands to `Labels` / `LabelTree` / the Communities kit / `Render` /
-  `TooltipLines` (by literal, constant or the `local show = WFJ.Labels.show` alias) and fails on one that is neither in
+  `TooltipLines` (by literal, constant or the `local show = WFI.Labels.show` alias) and fails on one that is neither in
   its `WINDOW_SURFACES` set nor non-window; `test_no_new_surface_named_by_a_variable` pins the reviewed call sites whose
   surface is a variable (pane fields, a module's `surface` parameter), so a new one fails too. A new surface (a
   HUD-like module included) fails the tests until someone classifies it. Edit Mode's HUD selection overlays have

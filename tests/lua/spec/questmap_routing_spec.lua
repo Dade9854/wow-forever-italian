@@ -28,7 +28,7 @@ local function snapshot()
 end
 
 local function load(bind)
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installQuestAPI(); Stub.installTooltipAPI()
   local Q = QStub.install()
   Q.quests[5] = { title = "Wolf Pelts", description = "The wolves grow bold.", objectives = "Collect 8.", level = 10 }
@@ -41,13 +41,13 @@ local function load(bind)
   _G.QuestInfoObjectivesText.text, _G.QuestInfoRewardText.text = Stub.quest.objectives, Stub.quest.completion
   _G.QuestProgressTitleText.text, _G.QuestProgressText.text = Stub.quest.title, Stub.quest.progress
   _G.GreetingText.text = GREETING
-  local WFJ = H.loadChunks(FILES)
-  H.uiSetup(WFJ, {}, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
+  local WFI = H.loadChunks(FILES)
+  H.uiSetup(WFI, {}, { lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end })
   for _, name in ipairs(bind) do
     local head, rest = name:match("^([^.]+)%.?(.*)$")
     if rest == "" then _G[head] = {} else _G[head] = _G[head] or {}; _G[head][rest] = {} end
   end
-  return WFJ, Q
+  return WFI, Q
 end
 
 describe("UI/QuestFrame's client names bound to a table degrade to untouched English", function()
@@ -56,50 +56,50 @@ describe("UI/QuestFrame's client names bound to a table degrade to untouched Eng
     "GetQuestID", "UnitGUID", "UnitName", "GetGreetingText" }
 
   it("every reader bound to a table: no error, no record, the client's English stays", function()
-    local WFJ = load(READERS)
+    local WFI = load(READERS)
     local before = snapshot()
     assert.has_no.errors(function()
-      assert.is_true(WFJ.QuestFrame.init({ key = function() return "k" end }))
-      WFJ.QuestFrame.onDisplay(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame)
-      WFJ.QuestFrame.onDisplay(QUEST_TEMPLATE_REWARD, QuestRewardScrollChildFrame)
-      WFJ.QuestFrame.onProgress()
-      WFJ.QuestFrame.onGreeting()
-      WFJ.QuestFrame.release()
+      assert.is_true(WFI.QuestFrame.init({ key = function() return "k" end }))
+      WFI.QuestFrame.onDisplay(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame)
+      WFI.QuestFrame.onDisplay(QUEST_TEMPLATE_REWARD, QuestRewardScrollChildFrame)
+      WFI.QuestFrame.onProgress()
+      WFI.QuestFrame.onGreeting()
+      WFI.QuestFrame.release()
     end)
     assert.are.same(before, snapshot())
     for _, s in ipairs({ "questframe.detail", "questframe.reward", "questframe.progress", "questframe.greeting" }) do
-      for key in pairs(WFJ.SurfaceState.records(s)) do
+      for key in pairs(WFI.SurfaceState.records(s)) do
         assert.is_truthy(key:find("^ui%."), s .. " holds a quest record: " .. key) -- labels are not client API
       end
     end
   end)
 
   it("the writers and frames bound to a table: init installs nothing and raises nothing", function()
-    local WFJ = load({ "QuestInfo_Display", "QuestFrameGreetingPanel_OnShow", "QuestFrame", "QuestFrameProgressPanel",
+    local WFI = load({ "QuestInfo_Display", "QuestFrameGreetingPanel_OnShow", "QuestFrame", "QuestFrameProgressPanel",
       "QuestFrameGreetingPanel", "QuestDetailScrollFrame" })
-    assert.has_no.errors(function() assert.is_true(WFJ.QuestFrame.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.QuestFrame.init()) end)
     assert.is_nil(Stub.hooks.QuestInfo_Display)
     assert.is_nil(Stub.hooks.QuestFrameGreetingPanel_OnShow)
-    assert.is_nil(WFJ.QuestFrame.banner)
+    assert.is_nil(WFI.QuestFrame.banner)
   end)
 
   it("the field and greeting widgets bound to a table: the panel shows nothing and raises nothing", function()
-    local WFJ = load({ "QuestInfoTitleHeader", "QuestInfoDescriptionText", "QuestInfoObjectivesText",
+    local WFI = load({ "QuestInfoTitleHeader", "QuestInfoDescriptionText", "QuestInfoObjectivesText",
       "QuestInfoRewardText", "QuestProgressTitleText", "QuestProgressText", "GreetingText",
       "QuestInfoRewardsFrame" })
     assert.has_no.errors(function()
-      WFJ.QuestFrame.init({ key = function() return "k" end })
-      assert.are.equal(0, WFJ.QuestFrame.onDisplay(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame))
-      assert.are.equal(0, WFJ.QuestFrame.onProgress())
-      WFJ.QuestFrame.onGreeting()
+      WFI.QuestFrame.init({ key = function() return "k" end })
+      assert.are.equal(0, WFI.QuestFrame.onDisplay(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame))
+      assert.are.equal(0, WFI.QuestFrame.onProgress())
+      WFI.QuestFrame.onGreeting()
     end)
-    assert.are.equal(0, WFJ.SurfaceState.count("questframe.greeting"))
+    assert.are.equal(0, WFI.SurfaceState.count("questframe.greeting"))
   end)
 
   it("with nothing moved, the same calls translate (the bindings above are what stopped them)", function()
-    local WFJ = load({})
-    WFJ.QuestFrame.init()
-    assert.are.equal(3, WFJ.QuestFrame.onDisplay(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame))
+    local WFI = load({})
+    WFI.QuestFrame.init()
+    assert.are.equal(3, WFI.QuestFrame.onDisplay(QUEST_TEMPLATE_DETAIL, QuestDetailScrollChildFrame))
     assert.are.equal("Sharptalonの鉤爪", _G.QuestInfoTitleHeader:GetText())
   end)
 end)
@@ -127,25 +127,25 @@ describe("UI/QuestMap's client names bound to a table degrade to untouched Engli
   end)
 
   it("the writers, frames and widgets bound to a table: init and every hook target raise nothing", function()
-    local WFJ = load({ "QuestMapFrame_UpdateQuestDetailsButtons", "QuestLogQuests_Update", "QuestMapFrame",
+    local WFI = load({ "QuestMapFrame_UpdateQuestDetailsButtons", "QuestLogQuests_Update", "QuestMapFrame",
       "QuestLogPopupDetailFrame", "QuestScrollFrame", "QuestObjectiveTracker", "CampaignQuestObjectiveTracker",
       "ObjectiveTrackerFrame",
       "QuestInfoTitleHeader", "QuestInfoObjectivesText", "QuestInfoDescriptionText", "QuestLogQuestCount",
       "MapQuestInfoRewardsFrame", "QuestMapDetailsScrollFrame", "QuestLogPopupDetailFrameScrollFrame" })
     assert.has_no.errors(function()
-      assert.is_true(WFJ.QuestMap.init())
-      WFJ.QuestMap.onDisplay(QUEST_TEMPLATE_LOG, {})
-      WFJ.QuestMap.showPane("map")
-      WFJ.QuestMap.showPane("popup")
-      WFJ.QuestMap.onButtons()
-      WFJ.QuestMap.showTrackerLabels()
-      WFJ.QuestMap.onListUpdate()
-      WFJ.QuestMap.onTrackerUpdate({}, { GetID = {} })
-      WFJ.QuestMap.onTrackerUpdate({ GetExistingBlock = {} }, { GetID = function() return 5 end })
+      assert.is_true(WFI.QuestMap.init())
+      WFI.QuestMap.onDisplay(QUEST_TEMPLATE_LOG, {})
+      WFI.QuestMap.showPane("map")
+      WFI.QuestMap.showPane("popup")
+      WFI.QuestMap.onButtons()
+      WFI.QuestMap.showTrackerLabels()
+      WFI.QuestMap.onListUpdate()
+      WFI.QuestMap.onTrackerUpdate({}, { GetID = {} })
+      WFI.QuestMap.onTrackerUpdate({ GetExistingBlock = {} }, { GetID = function() return 5 end })
     end)
     assert.is_nil(Stub.hooks.QuestMapFrame_UpdateQuestDetailsButtons)
     assert.is_nil(Stub.hooks.QuestLogQuests_Update)
     assert.is_nil(Stub.hooks["QuestObjectiveTracker:UpdateSingle"])
-    assert.are.equal(0, WFJ.SurfaceState.count("questmap"))
+    assert.are.equal(0, WFI.SurfaceState.count("questmap"))
   end)
 end)

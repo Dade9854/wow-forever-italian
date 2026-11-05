@@ -23,19 +23,19 @@ local UI = {
 }
 
 describe("quick keybind mode on Forever", function()
-  local WFJ, frame
+  local WFI, frame
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   before_each(function()
     load()
     frame = S.installQuickKeybind()
-    assert.is_true(WFJ.QuickKeybind.init())
+    assert.is_true(WFI.QuickKeybind.init())
   end)
 
   after_each(function()
@@ -70,7 +70,7 @@ describe("quick keybind mode on Forever", function()
     assert.are.equal("未割り当て", _G.QuickKeybindTooltipTextLeft3:GetText())
     assert.are.equal("キーを押すとこのアクションに割り当てます。", _G.QuickKeybindTooltipTextLeft4:GetText())
     tt:Hide()
-    assert.are.equal(0, WFJ.SurfaceState.count("quickkeybind.tooltip"))
+    assert.are.equal(0, WFI.SurfaceState.count("quickkeybind.tooltip"))
   end)
 
   it("wrong-typed client names degrade with no error; a client without the frame is skipped", function()
@@ -80,12 +80,12 @@ describe("quick keybind mode on Forever", function()
         frame:Show()
         _G.QuickKeybindTooltip.GetName = function() return bad end
         _G.QuickKeybindTooltip:Show()
-        WFJ.QuickKeybind.onOutput()
+        WFI.QuickKeybind.onOutput()
       end
     end)
-    assert.is_false(WFJ.QuickKeybind.init())
+    assert.is_false(WFI.QuickKeybind.init())
     load()
     S.removeQuickKeybind()
-    assert.has_no.errors(function() assert.is_false(WFJ.QuickKeybind.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.QuickKeybind.init()) end)
   end)
 end)

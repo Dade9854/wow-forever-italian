@@ -1,11 +1,11 @@
 """ADR-034: a line whose English left the store (its id is no longer listed by Forever) keeps the baseline it
 was last checked against, so English that comes back reworded makes it stale, not fresh."""
 
-from wfj.cmd.check import build_scopes, check_type
-from wfj.core.hashing import key
-from wfj.core.model import english_line, entry, provenance
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd.check import build_scopes, check_type
+from wfi.core.hashing import key
+from wfi.core.model import english_line, entry, provenance
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 WDB = "wdb@1.15.9.69722"
 PROV = provenance("human", "cqjt@3446c82", "2026-09-13", translator="Tammy")

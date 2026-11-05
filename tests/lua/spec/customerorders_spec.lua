@@ -75,27 +75,27 @@ local function loadOrders()
 end
 
 describe("the crafting-orders customer window on the Forever client", function()
-  local WFJ, SS
+  local WFI, SS
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function frame() return _G.ProfessionsCustomerOrdersFrame end
   local function title(f) return f.TitleContainer.TitleText:GetText() end
 
   local function setup(loadedFirst, shape)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     if loadedFirst then
       local f = loadOrders()
       if shape then shape(f) end
-      assert.is_true(WFJ.CustomerOrders.init())
+      assert.is_true(WFI.CustomerOrders.init())
     else
-      assert.is_false(WFJ.CustomerOrders.init()) -- waits for the addon
+      assert.is_false(WFI.CustomerOrders.init()) -- waits for the addon
       local f = loadOrders()
       if shape then shape(f) end
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -141,8 +141,8 @@ describe("the crafting-orders customer window on the Forever client", function()
         assert.are.equal("依頼を出す", form.PaymentContainer.ListOrderButton:GetText())
         assert.are.equal("依頼完了!", form.OrderStateText:GetText())
         assert.are.equal("Search", form.RecipeName:GetText()) -- an item whose name is a dictionary word
-        assert.is_true(WFJ.Labels.forbidden(form.RecipeName))
-        assert.is_true(WFJ.Labels.forbidden(frame().BrowseOrders.SearchBar.SearchBox))
+        assert.is_true(WFI.Labels.forbidden(form.RecipeName))
+        assert.is_true(WFI.Labels.forbidden(frame().BrowseOrders.SearchBar.SearchBox))
         form:Init({ item = "Copper Bar", committed = true, expired = true })
         assert.are.equal("提供済みの材料:", form.ReagentContainer.Reagents.Label:GetText())
         assert.are.equal("依頼の期限切れ", form.OrderStateText:GetText())
@@ -152,7 +152,7 @@ describe("the crafting-orders customer window on the Forever client", function()
       end)
 
       it("hooks install once", function()
-        assert.is_false(WFJ.CustomerOrders.setup())
+        assert.is_false(WFI.CustomerOrders.setup())
         assert.are.equal(1, #Stub.hooks["Form:Init"])
       end)
     end)
@@ -172,30 +172,30 @@ describe("the crafting-orders customer window on the Forever client", function()
     frame():Show()
     assert.are.equal("自分の依頼", frame().OrdersTab:GetText()) -- the rest still renders
     _G.ProfessionsCustomerOrdersFrame = "moved"
-    assert.has_no.errors(function() WFJ.CustomerOrders.show() end)
+    assert.has_no.errors(function() WFI.CustomerOrders.show() end)
   end)
 
   it("without the frame init returns false and touches nothing", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_false(WFJ.CustomerOrders.init())
-    assert.is_false(WFJ.CustomerOrders.setup())
-    assert.are.equal(0, WFJ.SurfaceState.count("customerorders"))
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_false(WFI.CustomerOrders.init())
+    assert.is_false(WFI.CustomerOrders.setup())
+    assert.are.equal(0, WFI.SurfaceState.count("customerorders"))
   end)
 end)
 
 -- the order's state "Not Claimed" and the order's type (OrderRecipientDisplay.PostedTo) follow Form:Init; the
 -- crafter value (a name, or "Not Claimed Yet") is never ours [blizzard_professionscustomerordersform.lua:1334–1370].
 describe("the crafting-orders customer window: order state and type", function()
-  local WFJ
+  local WFI
 
   local function setup()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     local f = loadOrders()
     local form = f.Form
     form.OrderRecipientDisplay = { PostedTo = fs(""), CrafterValue = fs("") }
@@ -207,7 +207,7 @@ describe("the crafting-orders customer window: order state and type", function()
         or ""
       if order.unclaimed then self.OrderStateText.text = en("CRAFTING_ORDER_NOT_CLAIMED") end
     end
-    WFJ.CustomerOrders.init()
+    WFI.CustomerOrders.init()
     return f
   end
 
@@ -224,7 +224,7 @@ describe("the crafting-orders customer window: order state and type", function()
     assert.are.equal("未受注", f.Form.OrderStateText:GetText())
     assert.are.equal("ギルド依頼", f.Form.OrderRecipientDisplay.PostedTo:GetText())
     assert.are.equal("Not Claimed", f.Form.OrderRecipientDisplay.CrafterValue:GetText())
-    assert.is_true(WFJ.Labels.forbidden(f.Form.OrderRecipientDisplay.CrafterValue))
+    assert.is_true(WFI.Labels.forbidden(f.Form.OrderRecipientDisplay.CrafterValue))
   end)
 end)
 
@@ -232,13 +232,13 @@ end)
 -- name and a duration kept), the reagent slot's not-enough checkbox tooltip (:793) and the provider line appended to
 -- a reagent's item tooltip (:826–866, itemAppended); the reagent's own lines untouched.
 describe("the crafting-orders customer window: profession, pending time and reagent lines", function()
-  local WFJ
+  local WFI
 
   local function setup()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     local f = loadOrders()
     local form = f.Form
     form.ProfessionText = fs("")
@@ -253,7 +253,7 @@ describe("the crafting-orders customer window: profession, pending time and reag
       self.PaymentContainer.TimeRemainingDisplay.Text.text = en("CRAFTING_ORDER_TIME_PENDING_FMT"):format("12 hours")
       self:UpdateReagentSlots()
     end
-    WFJ.CustomerOrders.init()
+    WFI.CustomerOrders.init()
     return f, slot
   end
 
@@ -271,7 +271,7 @@ describe("the crafting-orders customer window: profession, pending time and reag
       f.Form:Init({ item = "Copper Bar", profession = "Blacksmithing" })
       assert.are.equal("Blacksmithingのレシピ", f.Form.ProfessionText:GetText())
       assert.are.equal("12時間(保留中)", f.Form.PaymentContainer.TimeRemainingDisplay.Text:GetText())
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal("Blacksmithing Recipe", f.Form.ProfessionText:GetText())
     end)
 

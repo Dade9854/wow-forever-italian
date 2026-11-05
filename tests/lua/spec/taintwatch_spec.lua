@@ -4,21 +4,21 @@ local H = require("tests.lua.spec.helpers")
 local Stub = require("tests.lua.spec.wow_stub")
 
 describe("UI/TaintWatch", function()
-  local WFJ, TW, taint
+  local WFI, TW, taint
 
   local function entriesOf(kind)
     local out = {}
-    for _, e in ipairs(WFJ_Log.entries) do if e.kind == kind then out[#out + 1] = e end end
+    for _, e in ipairs(WFI_Log.entries) do if e.kind == kind then out[#out + 1] = e end end
     return out
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/Diag.lua", "UI/TaintWatch.lua" })
-    WFJ.Compat.init(function(name) return _G[name] end)
-    TW = WFJ.TaintWatch
-    WFJ_Log = WFJ.Diag.load(nil)
-    WFJ.Diag.setDeps({ clock = function() return "2026-10-04 10:00:00" end, print = function() end })
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/Diag.lua", "UI/TaintWatch.lua" })
+    WFI.Compat.init(function(name) return _G[name] end)
+    TW = WFI.TaintWatch
+    WFI_Log = WFI.Diag.load(nil)
+    WFI.Diag.setDeps({ clock = function() return "2026-10-04 10:00:00" end, print = function() end })
     _G.date = function() return "10:00:00" end
     taint = {}
     _G.issecurevariable = function(t, key)
@@ -41,29 +41,29 @@ describe("UI/TaintWatch", function()
     function()
       TW.push("ADDON_LOADED Blizzard_PlayerSpells")
       assert.are.equal(0, TW.checkFields("load"))
-      taint.snappedToFrame = { t = _G.StanceBar, by = "WoWForeverJapanese" }
+      taint.snappedToFrame = { t = _G.StanceBar, by = "WoWForeverItalian" }
       assert.are.equal(1, TW.checkFields("timer"))
       assert.are.equal(0, TW.checkFields("timer"))
       local turned = entriesOf("turned")
       assert.are.equal(1, #turned)
       assert.are.equal("StanceBar.snappedToFrame", turned[1].msg)
-      assert.are.equal("WoWForeverJapanese", turned[1].by)
+      assert.are.equal("WoWForeverItalian", turned[1].by)
       assert.is_truthy(turned[1].events:find("ADDON_LOADED Blizzard_PlayerSpells", 1, true))
       taint.snappedToFrame = nil
       TW.checkFields("timer")
-      taint.snappedToFrame = { t = _G.StanceBar, by = "WoWForeverJapanese" }
+      taint.snappedToFrame = { t = _G.StanceBar, by = "WoWForeverItalian" }
       assert.are.equal(1, TW.checkFields("timer"))
       assert.are.equal(2, entriesOf("turned")[1].n)
     end)
 
   it("a writer logs its stack only when the value comes out tainted; a global counts too", function()
     assert.is_nil(TW.wrote("MultiBarLeft.showAllButtons", _G.MultiBarLeft, "showAllButtons"))
-    taint.showAllButtons = { t = _G.MultiBarLeft, by = "WoWForeverJapanese" }
+    taint.showAllButtons = { t = _G.MultiBarLeft, by = "WoWForeverItalian" }
     local e = TW.wrote("MultiBarLeft.showAllButtons", _G.MultiBarLeft, "showAllButtons")
     assert.are.equal("write", e.kind)
     assert.is_truthy(e.msg:find("<[Interface/AddOns/Blizzard_X/X.lua]:12>", 1, true)) -- the Blizzard writer
     assert.is_truthy(e.stack:find("Blizzard_X", 1, true))
-    taint.ON_BAR_HIGHLIGHT_MARKS = { by = "WoWForeverJapanese" }
+    taint.ON_BAR_HIGHLIGHT_MARKS = { by = "WoWForeverItalian" }
     assert.is_table(TW.wrote("ON_BAR_HIGHLIGHT_MARKS", nil, "ON_BAR_HIGHLIGHT_MARKS"))
   end)
 
@@ -101,19 +101,19 @@ describe("UI/TaintWatch", function()
   end)
 
   it("the scan lists the tainted fields under its roots and this addon's globals; a block scans once", function()
-    taint.snappedToFrame = { t = _G.StanceBar, by = "WoWForeverJapanese" }
-    taint.WFJ_DB = { by = "WoWForeverJapanese" }
-    _G.WFJ_DB = {}
+    taint.snappedToFrame = { t = _G.StanceBar, by = "WoWForeverItalian" }
+    taint.WFI_DB = { by = "WoWForeverItalian" }
+    _G.WFI_DB = {}
     local fields, globals = TW.scan("slash")
     assert.are.same({ 1, 1 }, { fields, globals })
     local scan = entriesOf("taint")[1]
-    assert.is_truthy(scan.fields:find("StanceBar.snappedToFrame (WoWForeverJapanese)", 1, true))
-    assert.are.equal("WFJ_DB", scan.globals)
+    assert.is_truthy(scan.fields:find("StanceBar.snappedToFrame (WoWForeverItalian)", 1, true))
+    assert.are.equal("WFI_DB", scan.globals)
     assert.is_true(TW.onBlocked())
     assert.is_false(TW.onBlocked())
     assert.are.equal(2, entriesOf("taint")[1].n) -- the slash scan and the first block's (one clock second)
     assert.are.equal(2, entriesOf("context")[1].n) -- every block counts on the first block's entry
-    _G.WFJ_DB = nil
+    _G.WFI_DB = nil
   end)
 
   it("a block in combat queues its scan until combat is over", function()

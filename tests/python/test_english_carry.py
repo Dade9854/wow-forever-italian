@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from wfj.cmd import check
-from wfj.cmd import import_ as imp
-from wfj.io.jsonl_store import Store
+from wfi.cmd import check
+from wfi.cmd import import_ as imp
+from wfi.io.jsonl_store import Store
 
 DATE = "2026-09-13"
 TYPES = ("quest", "item", "spell")
@@ -318,7 +318,7 @@ def test_lineage_flags_are_checked_before_anything_is_written(repo, capsys, extr
             "--commit-quest", "3446c82", "--commit-tooltip", "84db736", "--date", DATE]
     capsys.readouterr()
     assert imp.run(args + extra) == 1
-    assert capsys.readouterr().err.strip() == f"wfj import: {message}"
+    assert capsys.readouterr().err.strip() == f"wfi import: {message}"
     assert _bytes(data) == before
 
 
@@ -334,5 +334,5 @@ def test_a_bad_lineage_file_leaves_data_untouched(repo, capsys):
     for path in (truncated, where / "quest-repo", where / "missing.lua"):  # truncated · a directory · absent
         assert imp.run(args + ["--questjapanizer", str(path)]) == 1
         err = capsys.readouterr().err
-        assert err.startswith("wfj import: ") and "Traceback" not in err, (path, err)
+        assert err.startswith("wfi import: ") and "Traceback" not in err, (path, err)
         assert _bytes(data) == before

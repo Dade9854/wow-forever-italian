@@ -1,19 +1,19 @@
 from pathlib import Path
 
-from wfj.cmd import toc_check
+from wfi.cmd import toc_check
 
-TOC = "addon/WoWForeverJapanese/WoWForeverJapanese.toc"
+TOC = "addon/WoWForeverItalian/WoWForeverItalian.toc"
 CLIENTS = "pipeline/clients.toml"
 
 
 def test_real_toc_fields_and_load_order(root):
     meta, files = toc_check.parse_toc(root / TOC)
     assert meta["Version"] == "@project-version@"
-    assert meta["SavedVariables"] == "WFJ_DB, WFJ_Collector, WFJ_Log"
+    assert meta["SavedVariables"] == "WFI_DB, WFI_Collector, WFI_Log"
     assert meta["Interface"].isdigit()
     # An icon for the AddOn List (a client icon Blizzard's own Vanilla/QuestInfo.xml references) and Notes
     # that say where the settings are.
-    assert meta["IconTexture"] == "Interface\\AddOns\\WoWForeverJapanese\\Media\\icon"
+    assert meta["IconTexture"] == "Interface\\AddOns\\WoWForeverItalian\\Media\\icon"
     assert "Esc > Options > AddOns" in meta["Notes"]
     assert "Hold Alt to see" not in meta["Notes"]
     # Dependency order as shipped: Core, then Data, the generated block, the Lookup slot, then the UI modules.
@@ -101,7 +101,7 @@ def test_real_toc_fields_and_load_order(root):
     assert files[: len(head)] == head and files[-len(tail) :] == tail
     generated = files[len(head) : -len(tail)]
     assert generated[:2] == ["Data/Meta.lua", "Data/Vectors.lua"]
-    assert all(f.startswith("Data/") and (root / "addon/WoWForeverJapanese" / f).is_file() for f in generated)
+    assert all(f.startswith("Data/") and (root / "addon/WoWForeverItalian" / f).is_file() for f in generated)
     assert generated == sorted(
         generated,
         key=lambda f: (

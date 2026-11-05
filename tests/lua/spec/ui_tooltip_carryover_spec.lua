@@ -23,38 +23,38 @@ local UI = {
 local RUN_JA = "【装備】翻訳済みの説明。"
 
 describe("item tooltip carry-overs", function()
-  local WFJ, tt
+  local WFI, tt
 
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     local files = {}
     for i, f in ipairs(H.UI_FILES) do files[i] = f end
     files[#files + 1] = "UI/TimeLine.lua"
     files[#files + 1] = "UI/Tooltip.lua"
-    WFJ = H.loadChunks(files)
-    local rows = H.uiSetup(WFJ, UI)
-    WFJ.Render.init(WFJ.Translator.new({ -- as uiSetup, plus one translated item for the applied-run case
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI = H.loadChunks(files)
+    local rows = H.uiSetup(WFI, UI)
+    WFI.Render.init(WFI.Translator.new({ -- as uiSetup, plus one translated item for the applied-run case
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id)
         if kind == "ui" then local r = rows[id]; return r and { ja = r[1], status = r[3] } end
         if kind == "item.description" and id == 7000 then return { ja = RUN_JA, status = "." } end
         return nil
       end,
-      marker = function(n) return WFJ.Settings.get("marker." .. n) end,
+      marker = function(n) return WFI.Settings.get("marker." .. n) end,
       align = function() return true end,
-      fill = function(ja, args) return WFJ.UIIndex:fill(ja, args) end,
+      fill = function(ja, args) return WFI.UIIndex:fill(ja, args) end,
     }))
     -- the addon's translation lookup (Core/Lookup): item 7000 has a translation, every other item none
-    WFJ.Lookup = { get = function(kind, id)
+    WFI.Lookup = { get = function(kind, id)
       if kind == "item.description" and id == 7000 then return { ja = RUN_JA, status = "." } end
       return nil
     end }
-    WFJ.Tooltip.init()
+    WFI.Tooltip.init()
     tt = _G.GameTooltip
   end)
 
@@ -76,7 +76,7 @@ describe("item tooltip carry-overs", function()
     Stub.setItemTooltip(tt, "|Hitem:15000:0:0:0|h[Robe of the Sorcerer]|h",
       { "Robe of the Sorcerer", "+3 Fire Spell Damage" })
     assert.are.equal("炎呪文ダメージ +3", left(2):GetText())
-    assert.are.equal(WFJ.Font.PATH, (left(2):GetFont()))
+    assert.are.equal(WFI.Font.PATH, (left(2):GetFont()))
   end)
 
   it("Equip: template lines of an untranslated run translate one by one; other run lines stay", function()
@@ -86,9 +86,9 @@ describe("item tooltip carry-overs", function()
     assert.are.equal("装備時: 命中率が1%上昇。", left(4):GetText())
     assert.are.equal("Use: Restores 500 health.", left(5):GetText())
     assert.are.equal(0, left(5).calls.SetText)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Equip: Increases spell power by 12.", left(3):GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("装備時: 呪文パワーが12上昇。", left(3):GetText())
   end)
 
@@ -98,30 +98,30 @@ describe("item tooltip carry-overs", function()
       "Equip: Improves your chance to get a critical strike by 1.0%." })
     assert.are.equal("装備時: 呪文と効果によるダメージと回復量が最大2増加。", left(3):GetText())
     assert.are.equal("装備時: クリティカル率が1.0%上昇。", left(4):GetText())
-    assert.is_truthy(WFJ.UIIndex:statLine("Equip: Improves your chance to get a critical strike by 1.0%."))
-    assert.is_nil(WFJ.UIIndex:statLine("Use: Restores 500 health."))
+    assert.is_truthy(WFI.UIIndex:statLine("Equip: Improves your chance to get a critical strike by 1.0%."))
+    assert.is_nil(WFI.UIIndex:statLine("Use: Restores 500 health."))
   end)
 
   it("an untranslated item hovered with the modifier held gets its Equip lines on release, never the marker",
     function()
-    assert.is_true(WFJ.Settings.get("marker.missing")) -- the default
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    assert.is_true(WFI.Settings.get("marker.missing")) -- the default
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     Stub.setItemTooltip(tt, "|Hitem:8000:0:0:0|h[Plain Ring]|h", { "Plain Ring", "Finger",
       "Equip: Increases spell power by 12.", "Use: Restores 500 health." })
     assert.are.equal("Equip: Increases spell power by 12.", left(3):GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("装備時: 呪文パワーが12上昇。", left(3):GetText())
     assert.are.equal("Use: Restores 500 health.", left(4):GetText())
   end)
 
   it("a translated item hovered with the modifier held keeps its description run on release", function()
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     Stub.setItemTooltip(tt, "|Hitem:7000:0:0:0|h[Fine Ring]|h", { "Fine Ring", "Finger",
       "Equip: Increases spell power by 12.", "Equip: Improves your chance to hit by 1%." })
     assert.are.equal("Equip: Increases spell power by 12.", left(3):GetText())
-    assert.is_nil(WFJ.SurfaceState.get("tooltip.GameTooltip", "ui.L3"))
-    assert.is_nil(WFJ.SurfaceState.get("tooltip.GameTooltip", "ui.L4"))
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    assert.is_nil(WFI.SurfaceState.get("tooltip.GameTooltip", "ui.L3"))
+    assert.is_nil(WFI.SurfaceState.get("tooltip.GameTooltip", "ui.L4"))
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(RUN_JA, left(3):GetText())
     assert.are.equal(" ", left(4):GetText()) -- the run's companion line, blank while the primary applies
   end)
@@ -130,6 +130,6 @@ describe("item tooltip carry-overs", function()
     Stub.setItemTooltip(tt, "|Hitem:7000:0:0:0|h[Fine Ring]|h", { "Fine Ring", "Finger",
       "Equip: Increases spell power by 12." })
     assert.are.equal(RUN_JA, left(3):GetText())
-    assert.is_nil(WFJ.SurfaceState.get("tooltip.GameTooltip", "ui.L3"))
+    assert.is_nil(WFI.SurfaceState.get("tooltip.GameTooltip", "ui.L3"))
   end)
 end)

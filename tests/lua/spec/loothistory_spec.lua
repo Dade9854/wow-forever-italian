@@ -38,10 +38,10 @@ local function install()
 end
 
 describe("the group loot rolls window on Forever", function()
-  local WFJ
+  local WFI
   before_each(function()
-    WFJ = X.load("UI/LootHistory.lua", UI, { before = install })
-    assert.is_true(WFJ.LootHistory.init())
+    WFI = X.load("UI/LootHistory.lua", UI, { before = install })
+    assert.is_true(WFI.LootHistory.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
@@ -53,9 +53,9 @@ describe("the group loot rolls window on Forever", function()
     assert.are.equal("ロット履歴", f.TitleContainer.TitleText:GetText())
     f:SetTitle("Loot Rolls")
     assert.are.equal("ロット履歴", f.TitleContainer.TitleText:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Loot Rolls", f.TitleContainer.TitleText:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
   end)
 
   it("rows translate as the view initializes them; item and player names stay English", function()
@@ -68,7 +68,7 @@ describe("the group loot rolls window on Forever", function()
     assert.are.equal("パス", label:GetText())
     assert.are.equal("Passed", row.ItemName:GetText())
     assert.are.equal("All Passed", row.WinningRollInfo.WinningRoll:GetText())
-    assert.is_true(X.unrecorded(WFJ, row.ItemName))
+    assert.is_true(X.unrecorded(WFI, row.ItemName))
     -- the row is reused; on show every existing frame is walked again
     row.AllPassedInfo.AllPassedText.text = "All Passed"
     _G.GroupLootHistoryFrame:Show()
@@ -86,9 +86,9 @@ describe("the group loot rolls window on Forever", function()
     end
     box:initFrame(row, {}, function(r) r:Init({ isTied = true, roll = 87 }) end)
     assert.are.equal("同点（87）", winner:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Tie (87)", winner:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     row:Init({ isTied = false, leader = "Tie", roll = 90 }) -- OnEvent re-Init: a player called Tie
     assert.are.equal("Tie (90)", winner:GetText())
     row:Init({ isTied = true, roll = 12 })
@@ -105,7 +105,7 @@ describe("the group loot rolls window on Forever", function()
   end)
 
   it("hooks once; wrong types raise nothing; without the frame init returns false", function()
-    assert.is_false(WFJ.LootHistory.init())
+    assert.is_false(WFI.LootHistory.init())
     X.teardown(NAMES)
     local wrong = X.load("UI/LootHistory.lua", UI, { before = function()
       install()

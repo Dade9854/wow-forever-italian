@@ -93,17 +93,17 @@ end
 local GLOBALS = { "ChannelFrame", "VoiceChatPromptActivateChannel", "VoiceChatChannelActivatedNotification" }
 
 describe("the chat channels window on Forever", function()
-  local WFJ
+  local WFI
 
   before_each(function()
-    WFJ = S.load(FILES, UI, NEEDS)
+    WFI = S.load(FILES, UI, NEEDS)
     C.community, C.openMic, C.channels = false, false, 1
   end)
   after_each(function() S.teardown(GLOBALS) end)
 
   it("the title renders after SetTitle and again after a second SetTitle; the buttons are Japanese", function()
     installChannels()
-    assert.is_true(WFJ.Channels.init())
+    assert.is_true(WFI.Channels.init())
     local frame = _G.ChannelFrame
     assert.are.equal("チャットチャンネル", frame.TitleContainer.TitleText:GetText())
     frame:SetTitle(S.en("CHAT_CHANNELS"))
@@ -112,16 +112,16 @@ describe("the chat channels window on Forever", function()
     assert.are.equal("Close", frame.TitleContainer.TitleText:GetText())
     assert.are.equal("追加", frame.NewButton:GetText())
     assert.are.equal("設定", frame.SettingsButton:GetText())
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal("Add", frame.NewButton:GetText())
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
     assert.are.equal("Close", frame.ChannelRoster.ChannelName:GetText())
-    assert.is_true(S.unrecorded(WFJ, frame.ChannelRoster.ChannelName))
+    assert.is_true(S.unrecorded(WFI, frame.ChannelRoster.ChannelName))
   end)
 
   it("voice prompts follow their Setup; a community's name is left as written", function()
     installChannels()
-    WFJ.Channels.init()
+    WFI.Channels.init()
     local prompt, activated = _G.VoiceChatPromptActivateChannel, _G.VoiceChatChannelActivatedNotification
     assert.are.equal("承諾", prompt.AcceptButton:GetText())
     prompt:Setup()
@@ -137,7 +137,7 @@ describe("the chat channels window on Forever", function()
 
   it("roster rows: the voice buttons' tooltips translate; a member's name in the row tooltip does not", function()
     installChannels()
-    WFJ.Channels.init()
+    WFI.Channels.init()
     local row = C.row()
     assert.are.same({ "ミュート" }, S.tooltip(row.MemberMuteButton, { "Mute" }))
     assert.are.same({ "ボイスチャットの音声を切る |cffffd200(F9)|r" },
@@ -145,12 +145,12 @@ describe("the chat channels window on Forever", function()
     assert.are.same({ "待機中..." }, S.tooltip(row, { "Waiting..." }))
     assert.are.same({ "Close" }, S.tooltip(row, { "Close" })) -- a member called like a UI word
     assert.are.same({ "Mute" }, S.tooltip(row.SelfDeafenButton, { "Mute" })) -- not this button's key
-    assert.is_true(S.unrecorded(WFJ, row.Name))
+    assert.is_true(S.unrecorded(WFI, row.Name))
   end)
 
   it("the self-mute button's parental-controls title, the binding kept after the |n|n sentence", function()
     installChannels()
-    WFJ.Channels.init()
+    WFI.Channels.init()
     local row = C.row()
     local en = "Mute|n|nYour account has been marked as voice-chat listen-only in Parental Controls."
     assert.are.same({ "ミュート|n|nペアレンタルコントロールでボイスチャットが聞き取り専用に設定されています。 |cffffd200(F10)|r" },
@@ -162,7 +162,7 @@ describe("the chat channels window on Forever", function()
 
   it("channel list: the headset and transcription buttons' tooltips translate after ChannelList:Update", function()
     installChannels()
-    WFJ.Channels.init()
+    WFI.Channels.init()
     C.channels = 2
     _G.ChannelFrame.ChannelList:Update()
     local row = _G.ChannelFrame.ChannelList.textChannelButtonPool.active[2]
@@ -170,15 +170,15 @@ describe("the chat channels window on Forever", function()
     assert.are.same({ "ボイスチャットは無効です" }, S.tooltip(row.Speaker.Button, { "Voice Chat Disabled" }))
     local minor = UI.AGE_RESTRICTED_VOICE_CHAT_MINOR_TOOLTIP
     assert.are.same({ minor[2] }, S.tooltip(row.Speaker.Button, { minor[1] }))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(minor[1], _G.GameTooltipTextLeft1:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     local discord = UI.DISCORD_VOICE_TTS_STT_UNSUPPORTED
     assert.are.same({ "ボイスチャットから退出", discord[2] },
       S.tooltip(row.Speaker.Button, { "Leave Voice Chat", discord[1] }))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(discord[1], _G.GameTooltipTextLeft2:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.same({ "ボイスチャットに参加", "Speech features are off." },
       S.tooltip(row.Speaker.Button, { "Join Voice Chat", "Speech features are off." }))
     assert.are.same({ "音声の文字起こしを有効化" },
@@ -196,18 +196,18 @@ describe("the chat channels window on Forever", function()
     _G.VoiceChatChannelActivatedNotification = "?"
     _G.ChannelFrame.ChannelList.voiceChannelButtonPool = 7
     _G.ChannelFrame.ChannelList.textChannelButtonPool.active[1].Speaker = "?"
-    assert.has_no.errors(function() assert.is_true(WFJ.Channels.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Channels.init()) end)
     assert.are.equal("設定", _G.ChannelFrame.SettingsButton:GetText())
   end)
 
   it("hooks install once; without the mainline ChannelFrame init returns false and touches nothing", function()
-    assert.is_false(WFJ.Channels.init()) -- no ChannelFrame at all
+    assert.is_false(WFI.Channels.init()) -- no ChannelFrame at all
     installChannels({ untitled = true }) -- a ChannelFrame without SetTitle
-    assert.is_false(WFJ.Channels.init())
+    assert.is_false(WFI.Channels.init())
     assert.are.equal("Add", _G.ChannelFrame.NewButton:GetText())
     installChannels()
-    assert.is_true(WFJ.Channels.init())
-    assert.is_false(WFJ.Channels.init())
+    assert.is_true(WFI.Channels.init())
+    assert.is_false(WFI.Channels.init())
     assert.are.equal(1, #Stub.hooks["ChannelFrame:SetTitle"])
     assert.are.equal(1, #Stub.hooks["VoiceChatPromptActivateChannel:Setup"])
   end)

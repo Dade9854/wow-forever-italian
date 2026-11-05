@@ -28,52 +28,52 @@ local UI = {
 }
 
 describe("talents on the Forever client", function()
-  local WFJ, SS
+  local WFI, SS
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function talents() return _G.PlayerSpellsFrame.TalentsFrame end
   local function tab(id) return talents().TabSystem:GetTabButton(id) end
   local function line(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     PS.install()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end)
 
   after_each(function() H.uiTeardown() end)
 
   it("waits for Blizzard_PlayerSpells; after its ADDON_LOADED the static labels are Japanese", function()
-    assert.is_false(WFJ.Talents.init())
+    assert.is_false(WFI.Talents.init())
     assert.are.equal(0, SS.count("talents.static"))
     PS.loadPlayerSpells()
-    assert.are.equal(1, WFJ.LoadOnDemand.loaded("Blizzard_PlayerSpells"))
+    assert.are.equal(1, WFI.LoadOnDemand.loaded("Blizzard_PlayerSpells"))
     assert.are.equal("変更を適用", talents().ApplyButton:GetText())
     assert.are.equal("有効化", talents().ActiveSpec.ActivateButton:GetText())
     assert.are.equal("有効", talents().ActiveSpec.ActiveLabel:GetText())
     assert.are.equal("未使用タレント", talents().ClassCurrencyDisplay.UnspentLabel:GetText())
-    assert.are.equal(WFJ.Font.PATH, (talents().ClassCurrencyDisplay.UnspentLabel:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (talents().ClassCurrencyDisplay.UnspentLabel:GetFont()))
     alt(true)
     assert.are.equal("Apply Changes", talents().ApplyButton:GetText())
     alt(false)
     PS.openTalents(); _G.PlayerSpellsFrame:Hide()
     assert.are.equal("変更を適用", talents().ApplyButton:GetText()) -- static: never released
-    assert.is_false(WFJ.Talents.setupCamelot())
+    assert.is_false(WFI.Talents.setupCamelot())
   end)
 
   describe("loaded", function()
     before_each(function()
       PS.loadPlayerSpells()
-      WFJ.SpellBook.init()
-      WFJ.Talents.init()
+      WFI.SpellBook.init()
+      WFI.Talents.init()
     end)
 
     it("the window title (watched, set up by the spellbook) reads Talents in Japanese", function()
       PS.openTalents()
-      WFJ.TextWatch.tick() -- the watcher's next frame
+      WFI.TextWatch.tick() -- the watcher's next frame
       assert.are.equal("タレント", _G.PlayerSpellsFrame.TitleContainer.TitleText:GetText())
     end)
 
@@ -85,7 +85,7 @@ describe("talents on the Forever client", function()
         talents():UpdateTabs()
         assert.are.equal("メイン", tab(1).Text:GetText())
         assert.are.equal("サブ " .. PS.CHECKMARK, tab(2).Text:GetText())
-        assert.are.equal(WFJ.Font.PATH, (tab(2).Text:GetFont()))
+        assert.are.equal(WFI.Font.PATH, (tab(2).Text:GetFont()))
         alt(true)
         assert.are.equal("Secondary " .. PS.CHECKMARK, tab(2).Text:GetText())
         alt(false)
@@ -123,7 +123,7 @@ describe("talents on the Forever client", function()
       assert.are.equal("Mortal Strikeに置き換え", line(4))
       assert.are.equal("次のランク:", line(6))
       assert.are.equal("クリックで習得", line(9))
-      assert.are.equal(WFJ.Font.PATH, (_G.GameTooltipTextLeft2:GetFont()))
+      assert.are.equal(WFI.Font.PATH, (_G.GameTooltipTextLeft2:GetFont()))
       local shows = _G.GameTooltip.calls.Show
       alt(true)
       assert.are.equal("Rank |cffffffff1|r/5", line(2))
@@ -135,7 +135,7 @@ describe("talents on the Forever client", function()
       assert.are.equal("", line(6)) -- the earlier record on a line the client cleared is gone, not restored
       _G.GameTooltip:Hide()
       assert.are.equal("Rank |cffffffff5|r/5", line(2))
-      assert.are.equal(0, SS.count(WFJ.Talents.TOOLTIP_SURFACE))
+      assert.are.equal(0, SS.count(WFI.Talents.TOOLTIP_SURFACE))
     end)
 
     it("the action-bar status and edge-requirements lines translate", function()
@@ -152,10 +152,10 @@ describe("talents on the Forever client", function()
     PS.loadPlayerSpells()
     talents().TabSystem.GetTabButton = "moved"
     _G.EventRegistry = { RegisterCallback = {} }
-    assert.has_no.errors(function() WFJ.Talents.init() end)
-    assert.are.equal(0, WFJ.Talents.showTabs())
-    assert.are.equal(0, WFJ.Talents.onTooltip(nil, nil, { GetName = true }))
-    assert.are.equal(0, WFJ.Talents.showTab("tabPrimary", { Text = { GetText = "x" } }))
+    assert.has_no.errors(function() WFI.Talents.init() end)
+    assert.are.equal(0, WFI.Talents.showTabs())
+    assert.are.equal(0, WFI.Talents.onTooltip(nil, nil, { GetName = true }))
+    assert.are.equal(0, WFI.Talents.showTab("tabPrimary", { Text = { GetText = "x" } }))
     assert.are.equal("Primary " .. PS.CHECKMARK, tab ~= nil and talents().TabSystem.tabs[1].Text:GetText())
   end)
 end)

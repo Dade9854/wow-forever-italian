@@ -29,7 +29,7 @@ R.suite(getfenv(1), {
   root = "LossOfControlFrame", globals = GLOBALS, ui = UI, build = build,
   args = { LOSS_OF_CONTROL_DISPLAY_INTERRUPT_SCHOOL = { [1] = "word" } },
   cases = {
-    { "the effect and 'seconds' are Japanese after each SetUpDisplay; Alt shows English", function(frame, WFJ)
+    { "the effect and 'seconds' are Japanese after each SetUpDisplay; Alt shows English", function(frame, WFI)
       frame:SetUpDisplay(true, { text = "Stunned", time = "3.2" })
       assert.are.equal("スタン", frame.AbilityName:GetText())
       assert.are.equal("秒", frame.TimeLeft.SecondsText:GetText())
@@ -37,22 +37,22 @@ R.suite(getfenv(1), {
       assert.are.equal("恐怖", frame.AbilityName:GetText())
       frame:SetUpDisplay(true, { text = "Fire Locked", time = "4" })
       assert.are.equal("火炎封印", frame.AbilityName:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("Fire Locked", frame.AbilityName:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
-    { "'Disabled' shows its own word, while the shared English keeps the other key's", function(frame, WFJ)
+    { "'Disabled' shows its own word, while the shared English keeps the other key's", function(frame, WFI)
       frame:SetUpDisplay(true, { text = "Disabled", time = "2" })
       assert.are.equal("行動不能", frame.AbilityName:GetText())
-      assert.are.equal("ADDON_DISABLED", (WFJ.UIIndex:match("Disabled")))
-      assert.are.equal(0, WFJ.UIIndex.counts.ambiguous)
+      assert.are.equal("ADDON_DISABLED", (WFI.UIIndex:match("Disabled")))
+      assert.are.equal(0, WFI.UIIndex.counts.ambiguous)
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:SetUpDisplay(true, { text = "Hammer of Justice", time = "Stunned" }) -- a spell's own text, a number field
     assert.are.equal("Hammer of Justice", frame.AbilityName:GetText())
     assert.are.equal("Stunned", frame.TimeLeft.NumberText:GetText())
-    assert.is_true(R.unrecorded(WFJ, frame.TimeLeft.NumberText))
+    assert.is_true(R.unrecorded(WFI, frame.TimeLeft.NumberText))
     frame:SetUpDisplay(true, { text = "Fire", time = "1" }) -- a dictionary word that is not an alert word
     assert.are.equal("Fire", frame.AbilityName:GetText())
   end,

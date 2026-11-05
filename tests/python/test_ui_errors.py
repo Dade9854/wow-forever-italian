@@ -7,7 +7,7 @@ from pathlib import Path
 
 from test_ui_coverage import _exclusions, _inventory
 
-from wfj.dev import ui_inventory
+from wfi.dev import ui_inventory
 
 ERROR_KEY = re.compile(r"^(ERR|SPELL_FAILED)_[A-Z0-9_]+$")
 
@@ -64,7 +64,7 @@ def test_no_errors_key_is_excluded_for_being_an_errors_frame_line(root: Path):
 
 def test_validate_mirrors_the_addon_argument_kinds():
     # Core/UIStrings.lua argKinds: the declared kinds, else every `%s` of an error key is `text`, else none
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     declared = {"ERR_ATTACK_PREVENTED_BY_MECHANIC_S": {1: "words"}}
     assert validate.key_arg_kinds("ERR_ATTACK_PREVENTED_BY_MECHANIC_S", declared) == {1: "words"}
@@ -76,9 +76,9 @@ def test_validate_mirrors_the_addon_argument_kinds():
 def test_validate_reads_the_chat_families_from_the_addon(root: Path):
     # Core/UIStringKeys.lua CHAT_FAMILIES is the one list; validate reads it and gives a family key the
     # addon's all-`text` kinds, a declared key its declared kinds, and a key outside every family none
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
-    chat = validate.ui_chat_families(root / "addon" / "WoWForeverJapanese")
+    chat = validate.ui_chat_families(root / "addon" / "WoWForeverItalian")
     assert len(chat) >= 30
     assert validate.key_arg_kinds("LOOT_ITEM_SELF", {}, chat).get(1) == "text"
     assert validate.key_arg_kinds("COMBATLOG_XPGAIN_FIRSTPERSON", {}, chat).get(2) == "text"
@@ -92,13 +92,13 @@ def test_no_listed_system_chat_template_matches_unrestricted(root: Path):
     # surface. CHAT_FAMILIES and ui_inventory's chatsystem families are two lists, so this test keeps them in step.
     import json
 
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
-    lua = (root / "addon/WoWForeverJapanese/Core/UIStringKeys.lua").read_text(encoding="utf-8")
+    lua = (root / "addon/WoWForeverItalian/Core/UIStringKeys.lua").read_text(encoding="utf-8")
     block = re.search(r"UIStrings\.ONLY = \{(.*?)\n\}", lua, re.S)
     assert block
     only = set(re.findall(r"([A-Z0-9_]+) = true", block.group(1)))
-    chat = validate.ui_chat_families(root / "addon" / "WoWForeverJapanese")
+    chat = validate.ui_chat_families(root / "addon" / "WoWForeverItalian")
     listed = {ln.strip() for ln in (root / "pipeline/ui_keys.txt").read_text(encoding="utf-8").splitlines()
               if ln.strip() and not ln.startswith("#")}
     english = {}

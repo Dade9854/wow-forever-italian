@@ -1,4 +1,4 @@
-# Book pages a letter shows, written by `make letter-pages` (pipeline/wfj/dev/letter_pages.py).
+# Book pages a letter shows, written by `make letter-pages` (pipeline/wfi/dev/letter_pages.py).
 # Do not edit by hand. `<page id>  # <the item that opens it>` per line. Every other page is a book page.
 16  # A Dusty Unsent Letter
 17  # A Dusty Unsent Letter

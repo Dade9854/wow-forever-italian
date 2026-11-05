@@ -430,26 +430,26 @@ function C.loadDialogs(CF)
 end
 
 describe("the rest of the Communities window on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function setup(loadedFirst)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     C.battleNet, C.leader, C.club = false, false, "Night Watch"
     if loadedFirst then
       loadWindow()
-      for _, m in ipairs(MODULES) do assert.is_true(WFJ[m].init(), m) end
+      for _, m in ipairs(MODULES) do assert.is_true(WFI[m].init(), m) end
     else
-      for _, m in ipairs(MODULES) do assert.is_false(WFJ[m].init(), m) end -- each waits for the addon
+      for _, m in ipairs(MODULES) do assert.is_false(WFI[m].init(), m) end -- each waits for the addon
       loadWindow()
-      assert.are.equal(#MODULES, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(#MODULES, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -708,10 +708,10 @@ describe("the rest of the Communities window on Forever", function()
   end
 
   it("a name bound to the wrong type degrades to English with no error", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     local CF = loadWindow()
     -- camelot-shaped names bound to the wrong types: a number, a string, a frame with no text
     CF.TitleContainer = 7
@@ -721,7 +721,7 @@ describe("the rest of the Communities window on Forever", function()
     _G.CommunitiesSettingsDialog.NameLabel = 42
     CF.ApplicantList.ColumnDisplay = 3
     _G.CommunitiesTicketManagerDialog.InviteManager = false
-    for _, m in ipairs(MODULES) do assert.is_true(WFJ[m].init(), m) end
+    for _, m in ipairs(MODULES) do assert.is_true(WFI[m].init(), m) end
     assert.are.equal("ギルド報酬", CF.GuildBenefitsFrame.Rewards.TitleText:GetText()) -- its sibling Perks is broken
     assert.are.equal("ログを表示", CF.GuildLogButton:GetText()) -- the rest still renders
     CF.CommunitiesControlFrame:Update()
@@ -730,7 +730,7 @@ describe("the rest of the Communities window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    for _, m in ipairs(MODULES) do assert.is_false(WFJ[m].setup(), m) end
+    for _, m in ipairs(MODULES) do assert.is_false(WFI[m].setup(), m) end
     assert.are.equal(1, #Stub.hooks["CommunitiesControlFrame:Update"])
     assert.are.equal(1, #Stub.hooks["InvitationFrame:DisplayInvitation"])
     assert.are.equal(1, #Stub.hooks["RequestToJoinFrame:Initialize"])

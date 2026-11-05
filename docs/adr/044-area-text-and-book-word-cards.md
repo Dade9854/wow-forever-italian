@@ -1,13 +1,13 @@
 # ADR-044: Area text as its own type, and word cards on plain-text book pages
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/core/model.py` (`FIELDS` /
-  `ENGLISH_FIELDS` `area`), `pipeline/wfj/emit/schema.py` (`SLOTS` / `TYPES` / `FILE_PREFIX` `area`),
-  `pipeline/wfj/cmd/import_english.py` (`run_wdb` writes `area`), `pipeline/wfj/cmd/check.py` (`NOT_IN_SCOPE`
-  removed; `Scope.dotted`), `pipeline/wfj/core/status.py` (`DOTS`, `PROSE_KINDS`), `pipeline/wfj/cmd/validate.py`
-  (`rule_objective` over `OBJECTIVE_INDEX_TYPES`; book lines owed), `pipeline/wfj/core/readings.py` (`TYPES["book"]`,
-  `html_page`, `addon_keyed`), `pipeline/wfj/cmd/generate.py`, `pipeline/wfj/cmd/readings.py`,
-  `pipeline/wfj/dev/translate_batch.py` (kind `area`), `pipeline/wfj/cmd/served.py`, `stats.py`, `import_draft.py`
-  (`REVERIFY_TYPES`), `addon/WoWForeverJapanese/Core/Const.lua` / `Core/Data.lua` (`area`), `Core/Objectives.lua`
+- **Status:** Accepted. Implemented in `pipeline/wfi/core/model.py` (`FIELDS` /
+  `ENGLISH_FIELDS` `area`), `pipeline/wfi/emit/schema.py` (`SLOTS` / `TYPES` / `FILE_PREFIX` `area`),
+  `pipeline/wfi/cmd/import_english.py` (`run_wdb` writes `area`), `pipeline/wfi/cmd/check.py` (`NOT_IN_SCOPE`
+  removed; `Scope.dotted`), `pipeline/wfi/core/status.py` (`DOTS`, `PROSE_KINDS`), `pipeline/wfi/cmd/validate.py`
+  (`rule_objective` over `OBJECTIVE_INDEX_TYPES`; book lines owed), `pipeline/wfi/core/readings.py` (`TYPES["book"]`,
+  `html_page`, `addon_keyed`), `pipeline/wfi/cmd/generate.py`, `pipeline/wfi/cmd/readings.py`,
+  `pipeline/wfi/dev/translate_batch.py` (kind `area`), `pipeline/wfi/cmd/served.py`, `stats.py`, `import_draft.py`
+  (`REVERIFY_TYPES`), `addon/WoWForeverItalian/Core/Const.lua` / `Core/Data.lua` (`area`), `Core/Objectives.lua`
   (several sources), `Main.lua` (`BuildObjectiveIndex`), `UI/QuestMap.lua`, `Core/Readings.lua` (`split("book")`),
   `UI/ItemText.lua` (the page FontString, `page:spanRegion`), `UI/Readings.lua` (`itemtext` surface), `UI/Slash.lua`.
 - **Date:** 2026-09-27
@@ -67,7 +67,7 @@ it is showing.
 
 ## Consequences
 
-- Area lines ship Japanese (name-only lines stay English). `/wfj debug objective` prints `shipped N (objective n · area n)`.
+- Area lines ship Japanese (name-only lines stay English). `/wfi debug objective` prints `shipped N (objective n · area n)`.
 - An objective and an area row with one English must ship one Japanese; a drafted pair that disagrees is refused at
   `validate`, not discovered in game.
 - There is no `quest.area`; anything that read it reads `data/english/area/`. The quest type's joined hash is

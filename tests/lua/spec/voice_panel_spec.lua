@@ -20,7 +20,7 @@ local DATA = {
   ["quest.progress"] = { [2] = { ja = "まだか？", status = "." } },
 }
 local EN = "Kill Sharptalon at Silverwind Refuge."
-local SOUND = "Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\%s.mp3"
+local SOUND = "Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\%s.mp3"
 
 -- Frame, texture and FontString methods the panel uses that the shared stub does not carry: the ones a spec reads
 -- are recorded, every other one is accepted and does nothing (what the client draws is the in-game checklist's).
@@ -64,17 +64,17 @@ local function extendFrames()
   end
 end
 
-local WFJ, S, db, sounds, stopped, timers, newTimers, cvars, clock
+local WFI, S, db, sounds, stopped, timers, newTimers, cvars, clock
 
 local function pack(lines)
-  WFJ.Voice.register({ format = 1, folder = "WoWForeverJapanese_Voice", lines = lines })
+  WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = lines })
 end
 
 local function packLines()
   local lines = {}
   for _, k in ipairs({ { 2, "description" }, { 2, "progress" }, { 2, "completion" }, { 3, "description" } }) do
     local ja = DATA["quest." .. k[2]][k[1]].ja
-    lines[k[1] .. "-" .. k[2]] = { k[1] .. "-" .. k[2] .. ".mp3", WFJ.Hash.key(ja), 3.0 }
+    lines[k[1] .. "-" .. k[2]] = { k[1] .. "-" .. k[2] .. ".mp3", WFI.Hash.key(ja), 3.0 }
   end
   return lines
 end
@@ -97,7 +97,7 @@ local function settle()
   for _, t in ipairs(due) do if not t.cancelled then t.fn() end end
 end
 
-local function panel() return _G.WFJVoicePanel end
+local function panel() return _G.WFIVoicePanel end
 local function tick(f, at)
   clock = at or clock
   f.scripts.OnUpdate(f, 0.2)
@@ -109,7 +109,7 @@ local function frameWith(event, parent)
 end
 
 local function setup(withPack)
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   extendFrames()
   Stub.installQuestAPI(); Stub.installTooltipAPI()
   _G.UIParent = CreateFrame("Frame", "UIParent")
@@ -148,39 +148,39 @@ local function setup(withPack)
   map.DetailsFrame = CreateFrame("Frame", nil, map)
   map.DetailsFrame.BackFrame = CreateFrame("Frame", nil, map.DetailsFrame)
   _G.QuestMapFrame_ShowQuestDetails = function(id) map.DetailsFrame.questID = id end
-  WFJ = H.loadChunks(FILES)
-  S = WFJ.Settings
-  WFJ.Compat.init(function(name) return _G[name] end)
+  WFI = H.loadChunks(FILES)
+  S = WFI.Settings
+  WFI.Compat.init(function(name) return _G[name] end)
   db = S.load(nil, 1, {})
-  WFJ.VoiceQueue.init(db)
-  WFJ.Render.init(WFJ.Translator.new({
-    enabled = function() return WFJ.State.enabled end,
-    areaEnabled = WFJ.State.areaEnabled,
-    modifierHeld = WFJ.Modifier.isDown,
+  WFI.VoiceQueue.init(db)
+  WFI.Render.init(WFI.Translator.new({
+    enabled = function() return WFI.State.enabled end,
+    areaEnabled = WFI.State.areaEnabled,
+    modifierHeld = WFI.Modifier.isDown,
     lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
     marker = function(n) return S.get("marker." .. n) end,
     expand = function(ja) return (ja:gsub("{name}", "Reyn")) end, -- Main's player tokens (Placeholders.expand)
   }))
-  WFJ.Voice.init({
+  WFI.Voice.init({
     lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
-    hash = WFJ.Hash.key,
+    hash = WFI.Hash.key,
     setting = S.get,
-    revealed = WFJ.Modifier.isDown,
-    enabled = function() return WFJ.State.enabled end,
+    revealed = WFI.Modifier.isDown,
+    enabled = function() return WFI.State.enabled end,
   })
-  assert.is_true(WFJ.QuestFrame.init())
-  assert.is_true(WFJ.VoicePlayer.init(db))
-  assert.is_true(WFJ.VoicePanel.init())
-  assert.is_true(WFJ.VoiceQuestLog.init(db))
+  assert.is_true(WFI.QuestFrame.init())
+  assert.is_true(WFI.VoicePlayer.init(db))
+  assert.is_true(WFI.VoicePanel.init())
+  assert.is_true(WFI.VoiceQuestLog.init(db))
   if withPack then pack(packLines()) end
   setQuest(2)
 end
 
 local function teardown()
   _G.PlaySoundFile, _G.StopSound, _G.C_CVar, _G.C_Timer, _G.C_Texture, _G.C_TooltipInfo = nil, nil, nil, nil, nil, nil
-  _G.UnitFactionGroup, _G.QuestMapFrame, _G.QuestMapFrame_ShowQuestDetails, _G.WFJVoicePanel = nil, nil, nil, nil
-  _G.InCombatLockdown, _G.WFJVoicePanelTip = nil, nil
-  _G.WFJVoicePanelText, _G.C_QuestLog, _G.QuestMapFrame_OpenToQuestDetails = nil, nil, nil
+  _G.UnitFactionGroup, _G.QuestMapFrame, _G.QuestMapFrame_ShowQuestDetails, _G.WFIVoicePanel = nil, nil, nil, nil
+  _G.InCombatLockdown, _G.WFIVoicePanelTip = nil, nil
+  _G.WFIVoicePanelText, _G.C_QuestLog, _G.QuestMapFrame_OpenToQuestDetails = nil, nil, nil
   Stub.units.questnpc = nil
 end
 
@@ -201,7 +201,7 @@ describe("the voice player with the voice panel on", function()
   local P
   before_each(function()
     setup(true)
-    P = WFJ.VoicePlayer
+    P = WFI.VoicePlayer
   end)
   after_each(teardown)
 
@@ -247,13 +247,13 @@ describe("the voice player with the voice panel on", function()
     Stub.showDetail()
     local f = panel()
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     tick(f, 0.5)
     assert.are.same({}, stopped)
     assert.are.equal("2-description", P.current())
     assert.are.equal(EN, f.text:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     tick(f, 0.7)
     assert.are.equal("御機嫌よう、Reyn。Silverwind Refugeへ行け。", f.text:GetText())
   end)
@@ -339,8 +339,8 @@ describe("the voice player with the voice panel on", function()
     tick(f, 16)
     tick(f, 17)
     assert.is_false(f:IsShown())
-    WFJ.Modifier.refresh()
-    WFJ.State.fire("voice")
+    WFI.Modifier.refresh()
+    WFI.State.fire("voice")
     assert.is_false(f:IsShown())
   end)
 
@@ -385,12 +385,12 @@ describe("the voice player with the voice panel on", function()
     function()
     -- the details pane shows quest 2 (UI/QuestMap's records)
     local fs = Stub.fontString(EN)
-    WFJ.Render.show("questmap.info", "description", fs, EN, "quests", "quest.description", 2, { live = EN })
+    WFI.Render.show("questmap.info", "description", fs, EN, "quests", "quest.description", 2, { live = EN })
     local title = Stub.fontString("Sharptalon's Claw")
-    WFJ.Render.show("questmap.info", "title", title, "Sharptalon's Claw", "quests", "quest.title", 2)
+    WFI.Render.show("questmap.info", "title", title, "Sharptalon's Claw", "quests", "quest.title", 2)
     db.voiceSpeakers = { ["2-description"] = { c = 1992, s = 2, n = "Senani Thunderheart", t = "Trainer" } }
     _G.QuestMapFrame_ShowQuestDetails(2)
-    local b = WFJ.VoiceQuestLog.button()
+    local b = WFI.VoiceQuestLog.button()
     assert.are.equal(_G.QuestMapFrame.DetailsFrame.BackFrame, b.parent)
     assert.is_true(b:IsShown())
     b.scripts.OnClick(b)
@@ -419,13 +419,13 @@ describe("the voice player with the voice panel on", function()
     local f = panel()
     f.textButton.scripts.OnClick(f.textButton)
     assert.are.equal(2, opened)
-    assert.is_nil(_G.WFJVoicePanelText)
+    assert.is_nil(_G.WFIVoicePanelText)
     S.set("voice.panel.questLog", false)
     f.textButton.scripts.OnClick(f.textButton)
-    assert.is_true(_G.WFJVoicePanelText:IsShown())
-    assert.are.equal("御機嫌よう、Reyn。Silverwind Refugeへ行け。", _G.WFJVoicePanelText.text:GetText())
+    assert.is_true(_G.WFIVoicePanelText:IsShown())
+    assert.are.equal("御機嫌よう、Reyn。Silverwind Refugeへ行け。", _G.WFIVoicePanelText.text:GetText())
     f.textButton.scripts.OnClick(f.textButton) -- a second press closes it
-    assert.is_false(_G.WFJVoicePanelText:IsShown())
+    assert.is_false(_G.WFIVoicePanelText:IsShown())
     assert.are.same({}, Stub.prints)
   end)
 
@@ -434,12 +434,12 @@ describe("the voice player with the voice panel on", function()
     setQuest(3)
     Stub.showDetail()
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     runTimers() -- the first line ends with English showing
     assert.are.equal(1, #sounds)
     assert.is_nil(P.current())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal(SOUND:format("3-description"), sounds[2].path)
   end)
 
@@ -449,13 +449,13 @@ describe("the voice player with the voice panel on", function()
     S.set("voice.panel.questLog", false)
     f.textButton.scripts.OnClick(f.textButton)
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     tick(f, 0.5)
-    assert.are.equal(EN, _G.WFJVoicePanelText.text:GetText())
+    assert.are.equal(EN, _G.WFIVoicePanelText.text:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     tick(f, 0.7)
-    assert.are.equal("御機嫌よう、Reyn。Silverwind Refugeへ行け。", _G.WFJVoicePanelText.text:GetText())
+    assert.are.equal("御機嫌よう、Reyn。Silverwind Refugeへ行け。", _G.WFIVoicePanelText.text:GetText())
   end)
 
   it("a new line takes over from a paused one and plays at once; the lines waiting stay waiting", function()
@@ -480,17 +480,17 @@ describe("the voice player with the voice panel on", function()
 
   it("an error in the panel never stops the other listeners of an event", function()
     Stub.showDetail()
-    WFJ.VoicePanel.update = function() error("broken") end
-    assert.has_no.errors(function() WFJ.State.fire("modifier", true) end)
-    assert.has_no.errors(function() WFJ.State.fire("enabled", true) end)
+    WFI.VoicePanel.update = function() error("broken") end
+    assert.has_no.errors(function() WFI.State.fire("modifier", true) end)
+    assert.has_no.errors(function() WFI.State.fire("enabled", true) end)
   end)
 
   it("the waiting list shows six rows and counts the rest; its words follow the language", function()
     Stub.showDetail()
     for i = 1, 8 do
-      WFJ.VoiceQueue.push({ key = "x" .. i, name = "NPC " .. i, surface = "gossip", window = "GossipFrame" })
+      WFI.VoiceQueue.push({ key = "x" .. i, name = "NPC " .. i, surface = "gossip", window = "GossipFrame" })
     end
-    WFJ.State.fire("voiceQueue")
+    WFI.State.fire("voiceQueue")
     local box = panel().box
     local shown = 0
     for _, row in ipairs(box.rows) do if row:IsShown() then shown = shown + 1 end end
@@ -498,10 +498,10 @@ describe("the voice player with the voice panel on", function()
     assert.are.equal("次に読む（クリックで再生）ほか2件", box.header:GetText())
     assert.are.equal("NPC 1  ·  あいさつ", box.rows[1].text:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Up next (click to play), 2 more", box.header:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end)
 
   it("built in combat it starts dimmed; locked, it lets clicks through", function()
@@ -523,7 +523,7 @@ describe("the voice player with the voice panel on", function()
 
   it("the reward panel's NPC is remembered too, and the quest window says which panel showed", function()
     local seen = {}
-    WFJ.State.on("questShown", function(id, panelName) seen[#seen + 1] = id .. ":" .. panelName end)
+    WFI.State.on("questShown", function(id, panelName) seen[#seen + 1] = id .. ":" .. panelName end)
     Stub.units.questnpc = { name = "Senani Thunderheart", guid = "Creature-0-1-0-1-1992-0000ABCD" }
     Stub.showReward()
     assert.are.equal(1992, db.voiceSpeakers["2-completion"].c)
@@ -545,24 +545,24 @@ describe("the voice player with the voice panel on", function()
     assert.is_nil(P.current())
   end)
 
-  it("/wfj panel reset puts it back at the bottom centre; nothing else is a panel command", function()
+  it("/wfi panel reset puts it back at the bottom centre; nothing else is a panel command", function()
     local said = {}
     local function say(fmt, ...) said[#said + 1] = fmt:format(...) end
-    WFJ.VoiceQueue.opt.point = { "TOP", "TOP", 0, -50 }
-    WFJ.VoicePanel.command({ "reset" }, say)
-    assert.is_nil(WFJ.VoiceQueue.opt.point)
-    WFJ.VoicePanel.command({ "look", "2" }, say)
-    assert.are.equal("panel: /wfj panel reset puts the voice panel back at the bottom centre", said[#said])
+    WFI.VoiceQueue.opt.point = { "TOP", "TOP", 0, -50 }
+    WFI.VoicePanel.command({ "reset" }, say)
+    assert.is_nil(WFI.VoiceQueue.opt.point)
+    WFI.VoicePanel.command({ "look", "2" }, say)
+    assert.are.equal("panel: /wfi panel reset puts the voice panel back at the bottom centre", said[#said])
   end)
 end)
 
 describe("Core/VoiceQueue", function()
   local Q
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks({ "Core/Const.lua", "Core/State.lua", "Core/Settings.lua", "Core/Modifier.lua",
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks({ "Core/Const.lua", "Core/State.lua", "Core/Settings.lua", "Core/Modifier.lua",
       "Core/VoiceQueue.lua" })
-    S, Q = WFJ.Settings, WFJ.VoiceQueue
+    S, Q = WFI.Settings, WFI.VoiceQueue
   end)
 
   it("keeps order, never holds a key twice, puts a line in front, drops a window's lines", function()
@@ -619,10 +619,10 @@ end)
 describe("UI/VoicePanelText: pages and their words", function()
   local T
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/Data.lua", "Core/Readings.lua", "UI/Font.lua",
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/Data.lua", "Core/Readings.lua", "UI/Font.lua",
       "UI/VoicePanelText.lua" })
-    T = WFJ.VoicePanelText
+    T = WFI.VoicePanelText
   end)
 
   it("splits after 。！？ and line breaks, joins a short sentence to the next, and gives each page its share", function()
@@ -657,7 +657,7 @@ describe("UI/VoicePanelText: pages and their words", function()
   end)
 
   it("a page's words are found in the whole line: an earlier sentence's word never steals the cursor", function()
-    WFJ.Data.add("reading", { ["gossip:k"] = { text = "光=ひかり=1 あなた=あなた=2 共=とも=3 あります=あります=4 "
+    WFI.Data.add("reading", { ["gossip:k"] = { text = "光=ひかり=1 あなた=あなた=2 共=とも=3 あります=あります=4 "
       .. "ように=ように=5 今日=きょう=6 何か=なにか=7 お手伝い=おてつだい=8 できる=できる=9 こと=こと=10 "
       .. "あります=あります=11" } })
     local item = { kind = "gossip", id = "k",
@@ -666,11 +666,11 @@ describe("UI/VoicePanelText: pages and their words", function()
     local words = {}
     for _, sp in ipairs(T.pageSpans(item, segs[2], pages[2])) do words[#words + 1] = sp.word end
     assert.are.same({ "今日", "何か", "お手伝い", "できる", "こと", "あります" }, words)
-    assert.are.equal(1, #WFJ.Readings.lookup("gossip", "k", pages[2])) -- on its own: one word
+    assert.are.equal(1, #WFI.Readings.lookup("gossip", "k", pages[2])) -- on its own: one word
   end)
 
   it("a short sentence joined across a paragraph break keeps its words in the right place", function()
-    WFJ.Data.add("reading", { ["gossip:p"] = { text = "来た=きた=1 今日=きょう=2 天気=てんき=3" } })
+    WFI.Data.add("reading", { ["gossip:p"] = { text = "来た=きた=1 今日=きょう=2 天気=てんき=3" } })
     local item = { kind = "gossip", id = "p", ja = "よく来た。\n\n今日は良い天気だ。" }
     local pages, _, segs = T.paginate(item.ja)
     assert.are.same({ "よく来た。今日は良い天気だ。" }, pages)

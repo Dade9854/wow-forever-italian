@@ -64,29 +64,29 @@ local GLOBALS = { "TimeManagerFrame", "TimeManagerFrameTicker", "TimeManagerStop
   "TimeManagerClockButton", "TimeManagerClockTicker", "StopwatchFrame", "StopwatchTitle", "StopwatchTickerHour" }
 
 describe("the clock window on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function boot()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
     boot()
     if loadedFirst then
       loadTimeManager(true)
-      assert.is_true(WFJ.TimeManager.init())
+      assert.is_true(WFI.TimeManager.init())
     else
-      assert.is_false(WFJ.TimeManager.init()) -- waits for the addon
+      assert.is_false(WFI.TimeManager.init()) -- waits for the addon
       loadTimeManager(true)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -127,8 +127,8 @@ describe("the clock window on Forever", function()
       it("the alarm message and the tickers are never touched", function()
         assert.are.equal("Close", _G.TimeManagerAlarmMessageEditBox:GetText())
         assert.are.equal("10:42", _G.TimeManagerFrameTicker:GetText())
-        assert.is_true(WFJ.Labels.forbidden(_G.TimeManagerAlarmMessageEditBox))
-        assert.are.equal(0, WFJ.Labels.show("timemanager", "x", _G.TimeManagerAlarmMessageEditBox))
+        assert.is_true(WFI.Labels.forbidden(_G.TimeManagerAlarmMessageEditBox))
+        assert.are.equal(0, WFI.Labels.show("timemanager", "x", _G.TimeManagerAlarmMessageEditBox))
         assert.are.equal("Close", _G.TimeManagerAlarmMessageEditBox:GetText())
       end)
 
@@ -166,7 +166,7 @@ describe("the clock window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.TimeManager.setup())
+    assert.is_false(WFI.TimeManager.setup())
     assert.are.equal(1, #Stub.hooks["AMPMDropdown:UpdateText"])
   end)
 
@@ -177,7 +177,7 @@ describe("the clock window on Forever", function()
     _G.StopwatchFrame = "x"
     _G.TimeManagerClockButton = true
     _G.TimeManagerFrame.AlarmTimeFrame = 3
-    assert.has_no.errors(function() assert.is_true(WFJ.TimeManager.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.TimeManager.init()) end)
     assert.are.equal("アラームメッセージ", _G.TimeManagerAlarmMessageLabel:GetText())
     assert.are.equal("Stopwatch", en("STOPWATCH_TITLE"))
   end)
@@ -185,12 +185,12 @@ describe("the clock window on Forever", function()
   it("without the frame, or on a frame without a TitleContainer, init returns false and touches nothing",
     function()
       boot()
-      assert.is_false(WFJ.TimeManager.init())
+      assert.is_false(WFI.TimeManager.init())
       Stub.loadedAddons[ADDON] = true
-      assert.is_false(WFJ.TimeManager.setup())
+      assert.is_false(WFI.TimeManager.setup())
       loadTimeManager(false)
-      assert.is_false(WFJ.TimeManager.init())
+      assert.is_false(WFI.TimeManager.init())
       assert.are.equal("Alarm Time", _G.TimeManagerAlarmTimeLabel:GetText())
-      assert.is_false(WFJ.HelpTooltip.registered(_G.TimeManagerClockButton))
+      assert.is_false(WFI.HelpTooltip.registered(_G.TimeManagerClockButton))
     end)
 end)

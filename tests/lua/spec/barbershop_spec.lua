@@ -54,25 +54,25 @@ local function loadBarberShop()
 end
 
 describe("the barber shop on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
     load()
     if loadedFirst then
       loadBarberShop()
-      WFJ.Labels.forbidNames(WFJ.BarberShop.NEVER_TOUCH)
-      assert.is_true(WFJ.BarberShop.init())
+      WFI.Labels.forbidNames(WFI.BarberShop.NEVER_TOUCH)
+      assert.is_true(WFI.BarberShop.init())
     else
-      assert.is_false(WFJ.BarberShop.init()) -- waits for the addon
+      assert.is_false(WFI.BarberShop.init()) -- waits for the addon
       loadBarberShop()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -93,10 +93,10 @@ describe("the barber shop on Forever", function()
         assert.are.equal("リセット", frame.ResetButton:GetText())
         assert.are.equal("承諾", frame.AcceptButton:GetText())
         Stub.keys.alt = true
-        WFJ.Modifier.refresh()
+        WFI.Modifier.refresh()
         assert.are.equal("Accept", frame.AcceptButton:GetText())
         Stub.keys.alt = false
-        WFJ.Modifier.refresh()
+        WFI.Modifier.refresh()
         frame:Hide()
         assert.are.equal("Cancel", frame.CancelButton:GetText())
       end)
@@ -116,8 +116,8 @@ describe("the barber shop on Forever", function()
         end)
 
       it("hooks install once", function()
-        assert.is_false(WFJ.BarberShop.init())
-        assert.is_false(WFJ.BarberShop.setup())
+        assert.is_false(WFI.BarberShop.init())
+        assert.is_false(WFI.BarberShop.setup())
       end)
     end)
   end
@@ -129,13 +129,13 @@ describe("the barber shop on Forever", function()
         if order[1] then
           installMixins()
           loadBarberShop()
-          assert.is_true(WFJ.BarberShop.init())
+          assert.is_true(WFI.BarberShop.init())
         else
-          assert.is_false(WFJ.BarberShop.init())
+          assert.is_false(WFI.BarberShop.init())
           installMixins()
           loadBarberShop()
-          assert.are.equal(1, WFJ.LoadOnDemand.loaded(CUSTOMIZATION))
-          assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+          assert.are.equal(1, WFI.LoadOnDemand.loaded(CUSTOMIZATION))
+          assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
         end
         _G.BarberShopFrame:Show()
       end)
@@ -147,7 +147,7 @@ describe("the barber shop on Forever", function()
       it("the four mixin methods are hooked once, on the mixin tables", function()
         assert.are.equal(3, #Stub.hooks["?:SetupOption"])
         assert.are.equal(1, #Stub.hooks["?:UpdateText"])
-        assert.are.equal(0, WFJ.BarberShop.hookMixins())
+        assert.are.equal(0, WFI.BarberShop.hookMixins())
       end)
 
       it("an option's label and a choice's name are Japanese; a name choice with no row stays; Alt English",
@@ -173,11 +173,11 @@ describe("the barber shop on Forever", function()
           assert.are.equal("Hair Style", details.SelectionName:GetText())
           details:UpdateText({ name = "Brown" })
           Stub.keys.alt = true
-          WFJ.Modifier.refresh()
+          WFI.Modifier.refresh()
           assert.are.equal("Hair Style", check.Label:GetText())
           assert.are.equal("Brown", details.SelectionName:GetText())
           Stub.keys.alt = false
-          WFJ.Modifier.refresh()
+          WFI.Modifier.refresh()
           assert.are.equal("茶色", details.SelectionName:GetText())
         end)
 
@@ -202,12 +202,12 @@ describe("the barber shop on Forever", function()
     load()
     loadBarberShop()
     Stub.loadedAddons[CUSTOMIZATION] = true
-    assert.has_no.errors(function() assert.is_true(WFJ.BarberShop.init()) end)
-    assert.are.equal(0, WFJ.BarberShop.hookMixins())
+    assert.has_no.errors(function() assert.is_true(WFI.BarberShop.init()) end)
+    assert.are.equal(0, WFI.BarberShop.hookMixins())
     assert.has_no.errors(function()
-      WFJ.BarberShop.onOption(nil)
-      WFJ.BarberShop.onOption({})
-      WFJ.BarberShop.onChoice("x")
+      WFI.BarberShop.onOption(nil)
+      WFI.BarberShop.onOption({})
+      WFI.BarberShop.onChoice("x")
     end)
   end)
 
@@ -215,7 +215,7 @@ describe("the barber shop on Forever", function()
     setup(true)
     _G.BarberShopFrame:Show()
     assert.are.equal("Reset", _G.BarberShopFrame.SDToggleButton.Text:GetText())
-    assert.are.equal(0, WFJ.Labels.show("barbershop", "x", _G.BarberShopFrame.SDToggleButton.Text))
+    assert.are.equal(0, WFI.Labels.show("barbershop", "x", _G.BarberShopFrame.SDToggleButton.Text))
   end)
 
   it("a client name bound to the wrong type degrades to English with no error", function()
@@ -224,18 +224,18 @@ describe("the barber shop on Forever", function()
     frame.ResetButton = 7
     frame.AcceptButton = "text"
     assert.has_no.errors(function()
-      assert.is_true(WFJ.BarberShop.init())
+      assert.is_true(WFI.BarberShop.init())
       frame:Show()
     end)
     assert.are.equal("キャンセル", frame.CancelButton:GetText())
     load()
     _G.BarberShopFrame = 42
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() assert.is_false(WFJ.BarberShop.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.BarberShop.init()) end)
   end)
 
   it("the addon never loads → init is false and nothing is set up", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.BarberShop.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.BarberShop.init()) end)
   end)
 end)

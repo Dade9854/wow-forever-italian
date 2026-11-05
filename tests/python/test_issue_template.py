@@ -11,17 +11,17 @@ def test_collector_send_issue_form(root):
     for field_id in ("id: dump", "id: note", "id: consent"):
         assert field_id in text, field_id
     assert "type: checkboxes" in text and text.count("required: true") >= 2
-    for word in ("character", "account", "realm", "location", "WoWForeverJapanese.lua", "WFJC1:", "I sent it"):
+    for word in ("character", "account", "realm", "location", "WoWForeverItalian.lua", "WFIC1:", "I sent it"):
         assert word in text, word
     assert not (root / ".github/ISSUE_TEMPLATE/collector-dump.yml").exists()
 
 
 def test_the_link_and_the_form_agree(root):
     """The send window's link opens this form and fills its `dump` box; the check reads the box by its label."""
-    from wfj.io import collector_send
+    from wfi.io import collector_send
 
-    collector = (root / "addon/WoWForeverJapanese/Core/Collector.lua").read_text(encoding="utf-8")
-    send = (root / "addon/WoWForeverJapanese/Core/CollectorSend.lua").read_text(encoding="utf-8")
+    collector = (root / "addon/WoWForeverItalian/Core/Collector.lua").read_text(encoding="utf-8")
+    send = (root / "addon/WoWForeverItalian/Core/CollectorSend.lua").read_text(encoding="utf-8")
     form = (root / ".github/ISSUE_TEMPLATE/collector-send.yml").read_text(encoding="utf-8")
     assert "issues/new?template=collector-send.yml" in collector
     assert '"&dump="' in send
@@ -32,7 +32,7 @@ def test_the_link_and_the_form_agree(root):
 
 def test_the_bug_link_and_the_bug_form_agree(root):
     """The report window's bug link fills the bug form's fields by their ids, and opens the idea form by name."""
-    report = (root / "addon/WoWForeverJapanese/Core/BugReport.lua").read_text(encoding="utf-8")
+    report = (root / "addon/WoWForeverItalian/Core/BugReport.lua").read_text(encoding="utf-8")
     bug = (root / ".github/ISSUE_TEMPLATE/bug-report.yml").read_text(encoding="utf-8")
     assert '"bug-report.yml"' in report and '"idea.yml"' in report
     assert (root / ".github/ISSUE_TEMPLATE/idea.yml").is_file()
@@ -40,4 +40,4 @@ def test_the_bug_link_and_the_bug_form_agree(root):
     assert fields == {"build": "client-build", "version": "addon-version", "errors": "errors"}
     for field_id in fields.values():
         assert re.search(rf"^    id: {field_id}$", bug, re.M), field_id
-    assert "/wfj bug" in bug
+    assert "/wfi bug" in bug

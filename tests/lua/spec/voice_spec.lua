@@ -16,20 +16,20 @@ local DATA = {
 }
 
 describe("Core/Voice: the pack registry and the decision", function()
-  local WFJ, V
+  local WFI, V
   local settings, revealed, enabled
 
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/Hash.lua", nil, WFJ)
-    H.loadPure("Core/Voice.lua", nil, WFJ) -- pure: no frame, no sound API, no global
-    V = WFJ.Voice
+    WFI = {}
+    H.loadPure("Core/Hash.lua", nil, WFI)
+    H.loadPure("Core/Voice.lua", nil, WFI) -- pure: no frame, no sound API, no global
+    V = WFI.Voice
     settings = { ["voice.enabled"] = true, ["voice.offer"] = true, ["voice.progress"] = true,
       ["voice.turnin"] = true, ["voice.greeting"] = true }
     revealed, enabled = false, true
     V.init({
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
-      hash = WFJ.Hash.key,
+      hash = WFI.Hash.key,
       setting = function(id) return settings[id] end,
       revealed = function() return revealed end,
       enabled = function() return enabled end,
@@ -37,15 +37,15 @@ describe("Core/Voice: the pack registry and the decision", function()
   end)
 
   local function pack(lines)
-    return { format = 1, folder = "WoWForeverJapanese_Voice", lines = lines }
+    return { format = 1, folder = "WoWForeverItalian_Voice", lines = lines }
   end
 
-  local function entry(file, ja, seconds) return { file, WFJ.Hash.key(ja), seconds } end
+  local function entry(file, ja, seconds) return { file, WFI.Hash.key(ja), seconds } end
 
   it("registers a valid table and drops malformed entries, counting them", function()
     local n, bad = V.register(pack({
       ["2-description"] = entry("2-description.mp3", DATA["quest.description"][2].ja, 4.2),
-      ["2-progress"] = { "../../Other/evil.mp3", WFJ.Hash.key("x"), 1 }, -- outside the Sound folder
+      ["2-progress"] = { "../../Other/evil.mp3", WFI.Hash.key("x"), 1 }, -- outside the Sound folder
       ["2-completion"] = { "2-completion.mp3", "nothex", 1 },
       ["g-0123456789abcdef"] = { "g-0123456789abcdef.mp3", "0123456789ABCDEF" }, -- no length is fine
     }))
@@ -56,8 +56,8 @@ describe("Core/Voice: the pack registry and the decision", function()
   end)
 
   it("refuses a table of another format or folder as a whole", function()
-    assert.are.same({ 0, 1 }, { V.register({ format = 3, folder = "WoWForeverJapanese_Voice", lines = {} }) })
-    assert.are.same({ 0, 1 }, { V.register({ format = 2, folder = "WoWForeverJapanese_Voice/../X", lines = {} }) })
+    assert.are.same({ 0, 1 }, { V.register({ format = 3, folder = "WoWForeverItalian_Voice", lines = {} }) })
+    assert.are.same({ 0, 1 }, { V.register({ format = 2, folder = "WoWForeverItalian_Voice/../X", lines = {} }) })
     assert.are.same({ 0, 1 }, { V.register(pack(nil)) })
     assert.are.same({ 0, 1 }, { V.register({ format = 1, folder = "SomeOtherAddon", lines = {} }) })
     assert.is_false(V.hasPack())
@@ -75,7 +75,7 @@ describe("Core/Voice: the pack registry and the decision", function()
   it("voices only the offer, progress, turn-in and greeting lines", function()
     V.register(pack({ ["2-description"] = entry("2-description.mp3", DATA["quest.description"][2].ja, 4.2) }))
     local path, seconds = V.decide("questframe.detail", "description", "quest.description", 2)
-    assert.are.equal("Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\2-description.mp3", path)
+    assert.are.equal("Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\2-description.mp3", path)
     assert.are.equal(4.2, seconds)
     assert.are.same({ nil, "kind" }, { V.decide("questframe.detail", "objectives", "quest.objectives", 2) })
     assert.are.same({ nil, "kind" }, { V.decide("questframe.detail", "title", "quest.title", 2) })
@@ -116,22 +116,22 @@ describe("Core/Voice: the pack registry and the decision", function()
   local PATH = "Interface\\AddOns\\%s\\Sound\\%s"
 
   it("packs merge, and a pack registering again replaces only its own lines", function()
-    V.register({ format = 2, folder = "WoWForeverJapanese_Voice_1",
+    V.register({ format = 2, folder = "WoWForeverItalian_Voice_1",
       lines = { ["2-description"] = entry("a.mp3", desc, 1) } })
-    V.register({ format = 2, folder = "WoWForeverJapanese_Voice_2",
+    V.register({ format = 2, folder = "WoWForeverItalian_Voice_2",
       lines = { ["3-description"] = entry("b.mp3", "x", 1), ["2-progress"] = entry("c.mp3", "y", 1) } })
-    assert.are.same({ WoWForeverJapanese_Voice_1 = 1, WoWForeverJapanese_Voice_2 = 2 }, V.packs())
+    assert.are.same({ WoWForeverItalian_Voice_1 = 1, WoWForeverItalian_Voice_2 = 2 }, V.packs())
     assert.are.equal(3, V.counts.registered)
-    V.register({ format = 2, folder = "WoWForeverJapanese_Voice_2",
+    V.register({ format = 2, folder = "WoWForeverItalian_Voice_2",
       lines = { ["3-description"] = entry("b.mp3", "x", 1) } })
     assert.are.equal(2, V.counts.registered)
-    assert.are.equal(PATH:format("WoWForeverJapanese_Voice_1", "a.mp3"),
+    assert.are.equal(PATH:format("WoWForeverItalian_Voice_1", "a.mp3"),
       (V.decide("questframe.detail", "description", "quest.description", 2)))
   end)
 
   it("a pack registering again also drops the creatures and error lines it brought before", function()
-    local F = "WoWForeverJapanese_Voice_1"
-    local line = { "2-description.mp3", WFJ.Hash.key(desc), 3, v = { deep = { "2-description_deep.mp3", 2 } } }
+    local F = "WoWForeverItalian_Voice_1"
+    local line = { "2-description.mp3", WFI.Hash.key(desc), 3, v = { deep = { "2-description_deep.mp3", 2 } } }
     V.register({ format = 2, folder = F, creatures = { [10] = "deep" }, lines = { ["2-description"] = line },
       errors = { kinds = { [10] = "outofrange" }, voices = { ["tauren-f"] = { outofrange = { "e-o.mp3", 1 } } } } })
     settings["voice.errors"] = true
@@ -145,26 +145,26 @@ describe("Core/Voice: the pack registry and the decision", function()
   end)
 
   it("a creature two packs carry keeps its voice when one of them registers again without it", function()
-    local line = { "2-description.mp3", WFJ.Hash.key(desc), 3, v = { deep = { "2-description_deep.mp3", 2 } } }
-    V.register({ format = 2, folder = "WoWForeverJapanese_VoiceA", creatures = { [10] = "deep" },
+    local line = { "2-description.mp3", WFI.Hash.key(desc), 3, v = { deep = { "2-description_deep.mp3", 2 } } }
+    V.register({ format = 2, folder = "WoWForeverItalian_VoiceA", creatures = { [10] = "deep" },
       lines = { ["2-description"] = line } })
-    V.register({ format = 2, folder = "WoWForeverJapanese_VoiceB", creatures = { [10] = "deep" },
+    V.register({ format = 2, folder = "WoWForeverItalian_VoiceB", creatures = { [10] = "deep" },
       lines = { ["3-description"] = entry("b.mp3", "x", 1) } })
-    V.register({ format = 2, folder = "WoWForeverJapanese_VoiceB", lines = {} }) -- B rebuilt without creature 10
-    assert.are.same({ PATH:format("WoWForeverJapanese_VoiceA", "2-description_deep.mp3"), 2 },
+    V.register({ format = 2, folder = "WoWForeverItalian_VoiceB", lines = {} }) -- B rebuilt without creature 10
+    assert.are.same({ PATH:format("WoWForeverItalian_VoiceA", "2-description_deep.mp3"), 2 },
       { V.decide("questframe.detail", "description", "quest.description", 2, { creature = 10 }) })
-    V.register({ format = 2, folder = "WoWForeverJapanese_VoiceA", lines = { ["2-description"] = line } })
-    assert.are.same({ PATH:format("WoWForeverJapanese_VoiceA", "2-description.mp3"), 3 },
+    V.register({ format = 2, folder = "WoWForeverItalian_VoiceA", lines = { ["2-description"] = line } })
+    assert.are.same({ PATH:format("WoWForeverItalian_VoiceA", "2-description.mp3"), 3 },
       { V.decide("questframe.detail", "description", "quest.description", 2, { creature = 10 }) })
   end)
 
   it("a line several creatures say plays the voice of the one on screen, else its main voice", function()
-    V.register({ format = 2, folder = "WoWForeverJapanese_Voice",
+    V.register({ format = 2, folder = "WoWForeverItalian_Voice",
       creatures = { [10] = "deep", [11] = { "deep", "soft" } },
-      lines = { ["2-description"] = { "2-description.mp3", WFJ.Hash.key(desc), 3,
+      lines = { ["2-description"] = { "2-description.mp3", WFI.Hash.key(desc), 3,
         v = { deep = { "2-description_deep.mp3", 2.5 }, soft = { "2-description_soft.mp3", 2 } } } } })
     local function play(who) return { V.decide("questframe.detail", "description", "quest.description", 2, who) } end
-    local F = "WoWForeverJapanese_Voice"
+    local F = "WoWForeverItalian_Voice"
     assert.are.same({ PATH:format(F, "2-description_deep.mp3"), 2.5 }, play({ creature = 10 }))
     assert.are.same({ PATH:format(F, "2-description_soft.mp3"), 2 }, play({ creature = 11, sex = 3 }))
     assert.are.same({ PATH:format(F, "2-description_deep.mp3"), 2.5 }, play({ creature = 11, sex = 2 }))
@@ -183,7 +183,7 @@ describe("Core/Voice: the pack registry and the decision", function()
   end)
 
   it("a sectioned or missing Japanese plays nothing", function()
-    V.register(pack({ ["9-description"] = { "9-description.mp3", WFJ.Hash.key("x") } }))
+    V.register(pack({ ["9-description"] = { "9-description.mp3", WFI.Hash.key("x") } }))
     assert.are.same({ nil, "notext" }, { V.decide("questframe.detail", "description", "quest.description", 9) })
   end)
 end)
@@ -191,7 +191,7 @@ end)
 -- With the voice panel Off: the player as it was before the panel (one line at a time, stopped by the reveal key
 -- and the window closing). voice_panel_spec.lua covers it with the panel on.
 describe("UI/VoicePlayer: playing the pack's line in the quest window (voice panel Off)", function()
-  local WFJ, S, db, sounds, stopped, timers, cvars, willPlay
+  local WFI, S, db, sounds, stopped, timers, cvars, willPlay
 
   local function setQuest(id)
     Stub.quest = { id = id, title = "Sharptalon's Claw", description = "Kill Sharptalon at Silverwind Refuge.",
@@ -203,7 +203,7 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
     local lines = {}
     for _, k in ipairs({ { 2, "description" }, { 2, "progress" }, { 2, "completion" }, { 3, "description" } }) do
       local ja = DATA["quest." .. k[2]][k[1]].ja
-      lines[k[1] .. "-" .. k[2]] = { k[1] .. "-" .. k[2] .. ".mp3", WFJ.Hash.key(ja), 3.0 }
+      lines[k[1] .. "-" .. k[2]] = { k[1] .. "-" .. k[2] .. ".mp3", WFI.Hash.key(ja), 3.0 }
     end
     return lines
   end
@@ -215,7 +215,7 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     sounds, stopped, timers, cvars, willPlay = {}, {}, {}, { Sound_EnableDialog = "1" }, true
     _G.PlaySoundFile = function(path, channel)
@@ -229,29 +229,29 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
       SetCVar = function(name, value) cvars[name] = tostring(value) end,
     }
     _G.C_Timer = { After = function(delay, fn) timers[#timers + 1] = { delay = delay, fn = fn } end }
-    WFJ = H.loadChunks(FILES)
-    S = WFJ.Settings
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI = H.loadChunks(FILES)
+    S = WFI.Settings
+    WFI.Compat.init(function(name) return _G[name] end)
     db = S.load(nil, 1, {})
-    WFJ.VoiceQueue.init(db)
+    WFI.VoiceQueue.init(db)
     S.set("voice.panel.size", "off")
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
       marker = function(n) return S.get("marker." .. n) end,
     }))
-    WFJ.Voice.init({
+    WFI.Voice.init({
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
-      hash = WFJ.Hash.key,
+      hash = WFI.Hash.key,
       setting = S.get,
-      revealed = WFJ.Modifier.isDown,
-      enabled = function() return WFJ.State.enabled end,
+      revealed = WFI.Modifier.isDown,
+      enabled = function() return WFI.State.enabled end,
     })
-    assert.is_true(WFJ.QuestFrame.init())
-    assert.is_true(WFJ.VoicePlayer.init(db))
-    WFJ.Voice.register({ format = 1, folder = "WoWForeverJapanese_Voice", lines = packLines() })
+    assert.is_true(WFI.QuestFrame.init())
+    assert.is_true(WFI.VoicePlayer.init(db))
+    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = packLines() })
     setQuest(2)
   end)
 
@@ -262,11 +262,11 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
   it("plays the offer on the Master channel when the window shows its Japanese, and mutes the English voice", function()
     Stub.showDetail()
     assert.are.equal(1, #sounds)
-    assert.are.equal("Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\2-description.mp3", sounds[1].path)
+    assert.are.equal("Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\2-description.mp3", sounds[1].path)
     assert.are.equal("Master", sounds[1].channel)
     assert.are.equal("0", cvars.Sound_EnableDialog)
     assert.is_true(db.voiceDialogMuted)
-    assert.are.equal("2-description", WFJ.VoicePlayer.current())
+    assert.are.equal("2-description", WFI.VoicePlayer.current())
     assert.are.equal(3.5, timers[1].delay) -- the pack's length plus the margin
   end)
 
@@ -275,14 +275,14 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
     runTimers()
     assert.are.equal("1", cvars.Sound_EnableDialog)
     assert.is_nil(db.voiceDialogMuted)
-    assert.is_nil(WFJ.VoicePlayer.current())
+    assert.is_nil(WFI.VoicePlayer.current())
   end)
 
   it("plays progress and turn-in on their panels", function()
     Stub.showProgress()
-    assert.are.equal("Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\2-progress.mp3", sounds[1].path)
+    assert.are.equal("Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\2-progress.mp3", sounds[1].path)
     Stub.showReward()
-    assert.are.equal("Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\2-completion.mp3", sounds[2].path)
+    assert.are.equal("Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\2-completion.mp3", sounds[2].path)
     assert.are.same({ 1 }, stopped) -- the turn-in stopped the progress line
   end)
 
@@ -291,7 +291,7 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
     QuestFrame:Hide()
     assert.are.same({ 1 }, stopped)
     assert.are.equal("1", cvars.Sound_EnableDialog)
-    assert.is_nil(WFJ.VoicePlayer.current())
+    assert.is_nil(WFI.VoicePlayer.current())
     runTimers() -- the old line's end timer finds nothing to do
     assert.are.equal("1", cvars.Sound_EnableDialog)
   end)
@@ -299,16 +299,16 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
   it("stops when the reveal key goes down, and does not start again when it comes up", function()
     Stub.showDetail()
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.same({ 1 }, stopped)
     Stub.keys.alt = false
-    WFJ.Modifier.refresh() -- a refresh shows the Japanese again but never starts a line
+    WFI.Modifier.refresh() -- a refresh shows the Japanese again but never starts a line
     assert.are.equal(1, #sounds)
   end)
 
   it("never plays while the reveal key is held", function()
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     Stub.showDetail()
     assert.are.equal(0, #sounds)
     Stub.keys.alt = false
@@ -339,13 +339,13 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
 
   it("a new quest's line replaces the one playing; the same line shown again is not restarted", function()
     Stub.showDetail()
-    WFJ.VoicePlayer.onShown("questframe.detail", "description", "quest.description", 2)
+    WFI.VoicePlayer.onShown("questframe.detail", "description", "quest.description", 2)
     assert.are.equal(1, #sounds)
     setQuest(3)
     Stub.showDetail()
     assert.are.equal(2, #sounds)
     assert.are.same({ 1 }, stopped)
-    assert.are.equal("3-description", WFJ.VoicePlayer.current())
+    assert.are.equal("3-description", WFI.VoicePlayer.current())
   end)
 
   it("leaves the English voice alone when the player had it off, or when the setting says so", function()
@@ -366,14 +366,14 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
     Stub.showDetail()
     assert.are.equal(1, #sounds)
     assert.are.equal("1", cvars.Sound_EnableDialog)
-    assert.are.equal(1, WFJ.VoicePlayer.counts.refused)
-    assert.is_nil(WFJ.VoicePlayer.current())
+    assert.are.equal(1, WFI.VoicePlayer.counts.refused)
+    assert.is_nil(WFI.VoicePlayer.current())
   end)
 
   it("a reload or crash during a line: the next load puts the English voice back", function()
     db.voiceDialogMuted = true
     cvars.Sound_EnableDialog = "0"
-    local P = WFJ.VoicePlayer
+    local P = WFI.VoicePlayer
     P.init(db)
     assert.are.equal("1", cvars.Sound_EnableDialog)
     assert.is_nil(db.voiceDialogMuted)
@@ -381,13 +381,13 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
 
   it("logout stops the line and puts the English voice back", function()
     Stub.showDetail()
-    WFJ.VoicePlayer.stop() -- what Main runs on PLAYER_LOGOUT
+    WFI.VoicePlayer.stop() -- what Main runs on PLAYER_LOGOUT
     assert.are.equal("1", cvars.Sound_EnableDialog)
     assert.is_nil(db.voiceDialogMuted)
   end)
 
   it("the button shows pause while the line plays, the play arrow once it ends, gone once the window closes", function()
-    local b = WFJ.VoicePlayer.button("QuestFrame")
+    local b = WFI.VoicePlayer.button("QuestFrame")
     assert.is_false(b:IsShown()) -- nothing played yet
     assert.are.same({ "TOPRIGHT", QuestFrame, "TOPRIGHT", -8, -31 }, b.point)
     Stub.showDetail()
@@ -402,7 +402,7 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
 
   it("a click stops the line; a second click plays it again from the start", function()
     Stub.showDetail()
-    local b = WFJ.VoicePlayer.button("QuestFrame")
+    local b = WFI.VoicePlayer.button("QuestFrame")
     b.scripts.OnClick(b)
     assert.are.same({ 1 }, stopped)
     assert.are.equal("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up", b.textures.normal)
@@ -416,14 +416,14 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
 
   it("a click never plays while English is showing or voice is off", function()
     Stub.showDetail()
-    local b = WFJ.VoicePlayer.button("QuestFrame")
+    local b = WFI.VoicePlayer.button("QuestFrame")
     b.scripts.OnClick(b) -- stop
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     b.scripts.OnClick(b)
     assert.are.equal(1, #sounds)
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     S.set("voice.enabled", false)
     b.scripts.OnClick(b)
     assert.are.equal(1, #sounds)
@@ -431,23 +431,23 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
 
   it("a new line of the window with no file hides the button, so it never replays the previous line", function()
     Stub.showDetail()
-    local b = WFJ.VoicePlayer.button("QuestFrame")
-    WFJ.Voice.register({ format = 1, folder = "WoWForeverJapanese_Voice", lines = {} })
+    local b = WFI.VoicePlayer.button("QuestFrame")
+    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
     Stub.showProgress()
     assert.is_false(b:IsShown())
-    assert.is_nil(WFJ.VoicePlayer.current())
+    assert.is_nil(WFI.VoicePlayer.current())
   end)
 
   it("the button setting hides it", function()
     S.set("voice.button", false)
     Stub.showDetail()
     assert.are.equal(1, #sounds)
-    assert.is_false(WFJ.VoicePlayer.button("QuestFrame"):IsShown())
+    assert.is_false(WFI.VoicePlayer.button("QuestFrame"):IsShown())
   end)
 
   it("the button never replays a line whose kind was switched off since", function()
     Stub.showDetail()
-    local b = WFJ.VoicePlayer.button("QuestFrame")
+    local b = WFI.VoicePlayer.button("QuestFrame")
     S.set("voice.offer", false) -- stops the line; the offer is now off
     assert.is_false(b:IsShown())
     b.scripts.OnClick(b)
@@ -463,7 +463,7 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
   it("a new line whose kind is off hides the button: progress never replays over the reward page", function()
     S.set("voice.turnin", false)
     Stub.showProgress()
-    local b = WFJ.VoicePlayer.button("QuestFrame")
+    local b = WFI.VoicePlayer.button("QuestFrame")
     assert.is_true(b:IsShown())
     Stub.showReward() -- the turn-in is off: the reward page's line will not play
     assert.is_false(b:IsShown())
@@ -471,61 +471,61 @@ describe("UI/VoicePlayer: playing the pack's line in the quest window (voice pan
     assert.are.equal(1, #sounds) -- the progress line was not played again over the reward page
   end)
 
-  it("asking whether the button can replay leaves /wfj debug's counts alone", function()
+  it("asking whether the button can replay leaves /wfi debug's counts alone", function()
     Stub.showDetail()
-    local b = WFJ.VoicePlayer.button("QuestFrame")
-    local before = WFJ.Voice.counts.matched
+    local b = WFI.VoicePlayer.button("QuestFrame")
+    local before = WFI.Voice.counts.matched
     S.set("voice.progress", false) -- a setting change re-checks the window's line
     S.set("voice.progress", true)
-    assert.are.equal(before, WFJ.Voice.counts.matched)
+    assert.are.equal(before, WFI.Voice.counts.matched)
     b.scripts.OnClick(b) -- stop
     b.scripts.OnClick(b) -- replay: one more play; the check before it does not count
     assert.are.equal(2, #sounds)
-    assert.are.equal(before, WFJ.Voice.counts.matched)
+    assert.are.equal(before, WFI.Voice.counts.matched)
   end)
 
   it("passes the NPC on screen, so a line several creatures say plays that NPC's voice", function()
     Stub.units.questnpc = { name = "Tarindrella", guid = "Creature-0-1-0-1-1992-0000ABCD" }
-    WFJ.Voice.register({ format = 2, folder = "WoWForeverJapanese_Voice", creatures = { [1992] = "soft" },
-      lines = { ["2-description"] = { "2-description.mp3", WFJ.Hash.key(DATA["quest.description"][2].ja), 3,
+    WFI.Voice.register({ format = 2, folder = "WoWForeverItalian_Voice", creatures = { [1992] = "soft" },
+      lines = { ["2-description"] = { "2-description.mp3", WFI.Hash.key(DATA["quest.description"][2].ja), 3,
         v = { soft = { "2-description_soft.mp3", 2 } } } } })
     Stub.showDetail()
-    assert.are.equal("Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\2-description_soft.mp3", sounds[1].path)
+    assert.are.equal("Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\2-description_soft.mp3", sounds[1].path)
     Stub.units.questnpc = nil
   end)
 
   it("a stale file stays silent and is counted", function()
-    WFJ.Voice.register({ format = 1, folder = "WoWForeverJapanese_Voice",
-      lines = { ["2-description"] = { "2-description.mp3", WFJ.Hash.key("older"), 3 } } })
+    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice",
+      lines = { ["2-description"] = { "2-description.mp3", WFI.Hash.key("older"), 3 } } })
     Stub.showDetail()
     assert.are.equal(0, #sounds)
-    assert.are.equal(1, WFJ.Voice.counts.stale)
+    assert.are.equal(1, WFI.Voice.counts.stale)
   end)
 end)
 
 describe("voice settings: shown only with a pack", function()
   it("the voice settings are hidden from lists until a pack registers", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    local WFJ = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua",
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    local WFI = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua",
       "Core/Voice.lua", "Core/Modifier.lua" })
-    WFJ.Settings.load(nil, 1, {})
+    WFI.Settings.load(nil, 1, {})
     local function hiddenVoice()
       local n = 0
-      for _, d in ipairs(WFJ.Settings.list()) do
-        if d.id:find("^voice%.") and WFJ.Settings.isHidden(d) then n = n + 1 end
+      for _, d in ipairs(WFI.Settings.list()) do
+        if d.id:find("^voice%.") and WFI.Settings.isHidden(d) then n = n + 1 end
       end
       return n
     end
     assert.are.equal(18, hiddenVoice()) -- the nine voice settings and the voice panel's nine
-    WFJ.Voice.register({ format = 1, folder = "WoWForeverJapanese_Voice", lines = {} })
+    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
     assert.are.equal(0, hiddenVoice())
-    assert.is_true(WFJ.Settings.get("voice.enabled")) -- on by default
-    assert.is_true(WFJ.Settings.get("voice.muteDialog"))
+    assert.is_true(WFI.Settings.get("voice.enabled")) -- on by default
+    assert.is_true(WFI.Settings.get("voice.muteDialog"))
   end)
 end)
 
 describe("UI/VoiceErrors: the character's own error lines in Japanese", function()
-  local WFJ, db, sounds, cvars, timers
+  local WFI, db, sounds, cvars, timers
 
   local function frames() -- the next frame: run what C_Timer.After(0) queued
     local due = timers
@@ -534,7 +534,7 @@ describe("UI/VoiceErrors: the character's own error lines in Japanese", function
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     sounds, cvars, timers = {}, { Sound_EnableErrorSpeech = "1" }, {}
     _G.C_Timer = { After = function(_, f) timers[#timers + 1] = f end }
     _G.GetGameMessageInfo = function(t) if t == 51 then return "ERR_USE_TOO_FAR", nil, 10 end end
@@ -554,14 +554,14 @@ describe("UI/VoiceErrors: the character's own error lines in Japanese", function
     _G.UnitRace = function() return "Tauren", "Tauren", 6 end
     _G.UnitSex = function() return 3 end
     _G.GetTime = function() return 100 end
-    WFJ = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua", "Core/Voice.lua",
+    WFI = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Settings.lua", "Core/Voice.lua",
       "Core/Modifier.lua", "Core/Hash.lua", "UI/VoiceErrors.lua" })
-    WFJ.Compat.init(function(name) return _G[name] end)
-    db = WFJ.Settings.load(nil, 1, {})
-    WFJ.State.enabled = true
-    WFJ.Voice.init({ setting = WFJ.Settings.get, revealed = function() return false end,
-      enabled = function() return WFJ.State.enabled end })
-    WFJ.Voice.register({ format = 2, folder = "WoWForeverJapanese_Voice", lines = {},
+    WFI.Compat.init(function(name) return _G[name] end)
+    db = WFI.Settings.load(nil, 1, {})
+    WFI.State.enabled = true
+    WFI.Voice.init({ setting = WFI.Settings.get, revealed = function() return false end,
+      enabled = function() return WFI.State.enabled end })
+    WFI.Voice.register({ format = 2, folder = "WoWForeverItalian_Voice", lines = {},
       errors = { kinds = { [10] = "outofrange", [15] = "nomana" },
         voices = { ["tauren-f"] = { outofrange = { "e-ERR_OUT_OF_RANGE-tauren-f.mp3", 1.2 },
           ERR_USE_TOO_FAR = { "e-ERR_USE_TOO_FAR-tauren-f.mp3", 0.8 } } } } })
@@ -573,13 +573,13 @@ describe("UI/VoiceErrors: the character's own error lines in Japanese", function
   end)
 
   it("turns the English error speech off, plays the Japanese line after the game's call, and puts it back", function()
-    assert.is_true(WFJ.VoiceErrors.init(db))
+    assert.is_true(WFI.VoiceErrors.init(db))
     assert.are.equal("0", cvars.Sound_EnableErrorSpeech)
     assert.is_true(db.voiceErrorSpeechMuted)
     _G.C_Sound.PlayVocalErrorSound(10) -- from outside the error frame: the kind's line, on the next frame
     assert.are.equal(0, #sounds)
     frames()
-    assert.are.same({ path = "Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\e-ERR_OUT_OF_RANGE-tauren-f.mp3",
+    assert.are.same({ path = "Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\e-ERR_OUT_OF_RANGE-tauren-f.mp3",
       channel = "Master" }, sounds[1])
     _G.C_Sound.PlayVocalErrorSound(10) -- spammed: not started again within two seconds
     frames()
@@ -587,7 +587,7 @@ describe("UI/VoiceErrors: the character's own error lines in Japanese", function
     _G.C_Sound.PlayVocalErrorSound(15) -- a kind the pack has no line for stays silent
     frames()
     assert.are.equal(1, #sounds)
-    WFJ.VoiceErrors.restore()
+    WFI.VoiceErrors.restore()
     assert.are.equal("1", cvars.Sound_EnableErrorSpeech)
   end)
 
@@ -598,8 +598,8 @@ describe("UI/VoiceErrors: the character's own error lines in Japanese", function
       if name == "TryDisplayMessage" then hooks = hooks + 1 end
       return real(t, name, fn)
     end
-    WFJ.VoiceErrors.init(db)
-    WFJ.VoiceErrors.init(db)
+    WFI.VoiceErrors.init(db)
+    WFI.VoiceErrors.init(db)
     _G.hooksecurefunc = real
     assert.are.equal(1, hooks)
     _G.UIErrorsFrame:TryDisplayMessage(51, "You are too far away.")
@@ -608,35 +608,35 @@ describe("UI/VoiceErrors: the character's own error lines in Japanese", function
   end)
 
   it("speaks the message the error frame shows, once, not the kind's line", function()
-    WFJ.VoiceErrors.init(db)
+    WFI.VoiceErrors.init(db)
     _G.UIErrorsFrame:TryDisplayMessage(51, "You are too far away.")
     frames()
     assert.are.equal(1, #sounds)
-    assert.are.equal("Interface\\AddOns\\WoWForeverJapanese_Voice\\Sound\\e-ERR_USE_TOO_FAR-tauren-f.mp3",
+    assert.are.equal("Interface\\AddOns\\WoWForeverItalian_Voice\\Sound\\e-ERR_USE_TOO_FAR-tauren-f.mp3",
       sounds[1].path)
   end)
 
   it("leaves the setting alone for a character the pack has no lines for, or when switched off", function()
     _G.UnitSex = function() return 2 end -- a tauren man: no lines in this pack
-    WFJ.VoiceErrors.init(db)
+    WFI.VoiceErrors.init(db)
     assert.are.equal("1", cvars.Sound_EnableErrorSpeech)
     _G.C_Sound.PlayVocalErrorSound(10)
     frames()
     assert.are.equal(0, #sounds)
     _G.UnitSex = function() return 3 end
-    WFJ.VoiceErrors.refresh()
+    WFI.VoiceErrors.refresh()
     assert.are.equal("0", cvars.Sound_EnableErrorSpeech)
-    WFJ.Settings.set("voice.errors", false)
-    WFJ.VoiceErrors.refresh()
+    WFI.Settings.set("voice.errors", false)
+    WFI.VoiceErrors.refresh()
     assert.are.equal("1", cvars.Sound_EnableErrorSpeech)
   end)
 
   it("never turns error speech on for a player who had it off", function()
     cvars.Sound_EnableErrorSpeech = "0"
-    WFJ.VoiceErrors.init(db)
+    WFI.VoiceErrors.init(db)
     assert.is_nil(db.voiceErrorSpeechMuted)
-    WFJ.Settings.set("voice.errors", false)
-    WFJ.VoiceErrors.refresh()
+    WFI.Settings.set("voice.errors", false)
+    WFI.VoiceErrors.refresh()
     assert.are.equal("0", cvars.Sound_EnableErrorSpeech)
   end)
 end)

@@ -1,12 +1,12 @@
 # ADR-028: A duration is copied from the live line, never named by the translation
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/Core/Align.lua` (`Align.durations`, `Align.fill`,
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/Core/Align.lua` (`Align.durations`, `Align.fill`,
   `Align.fillValues`, the `duration` parameter of `Align.check`), `Core/Translator.lua` (`filled`, `liveDiffers`),
   `Core/Collector.lua`, `Main.lua` (the `align` and `fillValues` deps pass `UIIndex:duration`),
-  `pipeline/wfj/core/align.py` (`DURATION_CODE`, `DURATION_UNITS`, `slots`, `slot_problems`, `duration_slots`,
-  `duration_indices`), `pipeline/wfj/core/normalize.py` (`mask_values`), `pipeline/wfj/cmd/generate.py`
-  (`masked_fields`), `pipeline/wfj/dev/translate_lint.py`, `pipeline/wfj/dev/translate_batch.py`,
-  `pipeline/wfj/dev/rule_baked_numbers.py` (`--durations`), `docs/content/translation-style-guide.md` (the
+  `pipeline/wfi/core/align.py` (`DURATION_CODE`, `DURATION_UNITS`, `slots`, `slot_problems`, `duration_slots`,
+  `duration_indices`), `pipeline/wfi/core/normalize.py` (`mask_values`), `pipeline/wfi/cmd/generate.py`
+  (`masked_fields`), `pipeline/wfi/dev/translate_lint.py`, `pipeline/wfi/dev/translate_batch.py`,
+  `pipeline/wfi/dev/rule_baked_numbers.py` (`--durations`), `docs/content/translation-style-guide.md` (the
   **Tooltips** section), `tests/lua/spec/align_spec.lua`, `tests/python/test_align.py`,
   `tests/python/test_translate_lint.py`.
 - **Date:** 2026-09-18

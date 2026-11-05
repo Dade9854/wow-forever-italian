@@ -5,11 +5,11 @@ import re
 
 import pytest
 
-from wfj.cmd import generate
-from wfj.cmd import readings as cmd
-from wfj.core import readings
-from wfj.emit import lua_writer, schema
-from wfj.io.jsonl_store import Store
+from wfi.cmd import generate
+from wfi.cmd import readings as cmd
+from wfi.core import readings
+from wfi.emit import lua_writer, schema
+from wfi.io.jsonl_store import Store
 
 HUMAN = {
     "class": "human",
@@ -365,7 +365,7 @@ def test_generate_emits_reading_shards_in_the_toc_and_is_deterministic(data):
     store = Store(data)
     planned = generate.plan(store, [])
     quest = planned["Data/Reading/Reading_quest_0000.lua"]
-    assert 'WFJ.Data.add("reading", {' in quest
+    assert 'WFI.Data.add("reading", {' in quest
     assert (
         '["quest:456"] = { description = "私=わたし 森=もり 仕事=しごと 少し=すこし'
         in quest
@@ -394,7 +394,7 @@ def test_the_reading_prefix_is_a_generated_folder():
         schema.FILE_PREFIX["reading"] == "Reading" and schema.TOC_ORDER[-2:] == ("reading", "gloss")
     )
     assert lua_writer.reading_text("quest", 0, []).endswith(
-        'WFJ.Data.add("reading", {\n})\n'
+        'WFI.Data.add("reading", {\n})\n'
     )
 
 
@@ -407,19 +407,19 @@ def test_the_span_call_has_exactly_one_call_site_in_the_addon(root):
     import re
 
     sites = []
-    for path in sorted((root / "addon/WoWForeverJapanese").rglob("*.lua")):
+    for path in sorted((root / "addon/WoWForeverItalian").rglob("*.lua")):
         code = re.sub(r"--[^\n]*", "", path.read_text(encoding="utf-8"))
         n = code.count("CalculateScreenAreaFromCharacterSpan")
         if n:
             sites.append(
-                (path.relative_to(root / "addon/WoWForeverJapanese").as_posix(), n)
+                (path.relative_to(root / "addon/WoWForeverItalian").as_posix(), n)
             )
     # one call (pcall(fs.CalculateScreenAreaFromCharacterSpan, …)) and one capability check in `eligible`
     assert sites == [("UI/Readings.lua", 2)]
 
 
 def test_validate_prints_how_many_lines_have_readings(data, capsys):
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     Store(data / "reading").save("quest", [_rec()])
     assert validate.rule_readings(Store(data)) == []
@@ -519,7 +519,7 @@ def test_correction_mode_needs_by(data, tmp_path):
 
 def test_validate_lists_the_lines_still_owed_a_reading(data, capsys):
     # a kanji line with no reading is listed; a colour-coded one is marked as the known exception
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     Store(data).save(
         "quest",
@@ -629,7 +629,7 @@ def test_export_leaves_out_lines_holding_an_escape_sequence(data, tmp_path):
 
 def test_validate_prints_the_words_without_a_meaning(data, capsys):
     # a 2-item word is counted per type until a batch gives it a meaning
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     Store(data / "reading").save("quest", [_rec()])
     validate.rule_readings(Store(data))
@@ -651,7 +651,7 @@ UI_WORDS = [
 
 def test_ui_readings_import_validate_and_generate(data, tmp_path, capsys):
     # a ui record keyed by its UI string key goes through the batch path and generates a ui:<KEY> row
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     Store(data).save("ui", [_line("REWARD_CHOICES", "text", UI_JA)])
     rows = _export(tmp_path, "ui", "REWARD_CHOICES\n")
@@ -676,7 +676,7 @@ def test_a_bad_ui_key_is_refused():
 def _non_window(root):
     import re
 
-    src = (root / "addon/WoWForeverJapanese/UI/Readings.lua").read_text(encoding="utf-8")
+    src = (root / "addon/WoWForeverItalian/UI/Readings.lua").read_text(encoding="utf-8")
     body = src[src.index("View.NON_WINDOW = {") : src.index("}", src.index("View.NON_WINDOW = {"))]
     return set(re.findall(r'\["([a-z.]+)"\] = true', body)) | set(re.findall(r"\b([a-z]+) = true", body))
 
@@ -689,7 +689,7 @@ def test_every_non_window_surface_is_one_the_addon_registers(root):
 
     names = _non_window(root)
     assert {"tracker", "errors", "combattext", "zonetext", "alerts", "unitframes", "help"} <= names
-    ui = {p.name: p.read_text(encoding="utf-8") for p in (root / "addon/WoWForeverJapanese/UI").glob("*.lua")}
+    ui = {p.name: p.read_text(encoding="utf-8") for p in (root / "addon/WoWForeverItalian/UI").glob("*.lua")}
     literals = {m for text in ui.values() for m in re.findall(r'"([a-z][a-z0-9]*(?:\.[a-z0-9]+)*)"', text)}
     composed = set()
     for text in ui.values():
@@ -732,12 +732,12 @@ WINDOW_SURFACES = frozenset({
 })
 
 # Every form that hands a surface to Labels / Render: the Labels functions, UI/LabelTree, the Communities kit, Render,
-# UI/TooltipLines, and a module's `local show = WFJ.Labels.show` alias (matched only where the alias is declared).
+# UI/TooltipLines, and a module's `local show = WFI.Labels.show` alias (matched only where the alias is declared).
 _SURFACE_CALL = re.compile(
     r"(?:Labels\.(?:show|showAll|title|dropdown|showArgs)|LabelTree\.show|Kit\.new|Render\.show|"
     r"TooltipLines\.follow)\(\s*([^,)]+)"
 )
-_SHOW_ALIAS = re.compile(r"^\s*local show = WFJ\.Labels\.show\s*$", re.M)
+_SHOW_ALIAS = re.compile(r"^\s*local show = WFI\.Labels\.show\s*$", re.M)
 _ALIAS_CALL = re.compile(r"(?<![\w.:])show\(\s*([^,)]+)")
 _SURFACE_NAME = re.compile(r"[a-z][a-z0-9]*(?:\.[a-zA-Z0-9]+)*")
 
@@ -759,7 +759,7 @@ def _registered_surfaces(root, unresolved=None):
     """→ ({surface: [module, …]}, {surfaces UI/TooltipLines.follow is given}); `unresolved` (a list) collects
     the call sites whose surface is a variable (module:expression)"""
     found, followed = {}, set()
-    for path in sorted((root / "addon/WoWForeverJapanese/UI").glob("*.lua")):
+    for path in sorted((root / "addon/WoWForeverItalian/UI").glob("*.lua")):
         src = path.read_text(encoding="utf-8")
         env = {}
         for _ in range(4):  # constants built from other constants (`SURFACE .. ".static"`)
@@ -886,7 +886,7 @@ def _book(id_, ja, en_hash, status="trusted"):
 def test_book_readings_import_validate_and_generate_under_the_english_hash(data, tmp_path, capsys):
     # a book record keyed by page id goes through the batch path; the generated row is keyed by the
     # page's English hash (the addon finds a page by its live English), in the shard of that hash
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     Store(data).save("book", [_book(12, BOOK_JA, "ab12cd34ef567890")])
     rows = _export(tmp_path, "book", "12\n")
@@ -921,7 +921,7 @@ def test_a_book_reading_for_a_page_with_no_japanese_is_refused(data, tmp_path, c
 
 def test_an_html_book_page_is_never_exported_or_owed(data, tmp_path, capsys):
     # an HTML page keeps the client's SimpleHTML, which cannot place a word card
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     html = "<HTML><BODY><P>この悪魔の鎧は古い。</P></BODY></HTML>"
     Store(data).save("book", [_book(12, BOOK_JA, "ab12cd34ef567890"), _book(13, html, "cd12cd34ef567890")])
@@ -969,4 +969,4 @@ def test_a_repeat_inside_another_card_needs_no_card_of_its_own():
 def test_check_reports_a_reading_that_misses_a_repeat():
     """`validate` fails on it: a build cannot ship a word whose second place has no card."""
     result = _check([_rec(ja=JOKE, words=[JOKE_CARD])], japanese={(456, "description"): JOKE})
-    assert result["problems"] == ["reading quest 456/description: '冗談' stands again with no card (wfj readings fill-repeats)"]
+    assert result["problems"] == ["reading quest 456/description: '冗談' stands again with no card (wfi readings fill-repeats)"]

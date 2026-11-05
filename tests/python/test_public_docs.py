@@ -72,7 +72,7 @@ def test_issue_form_values_are_plain_yaml(root, form):
 
 
 def test_the_report_form_keeps_the_labels_the_report_check_reads(root):
-    """`wfj report` finds the sections of an issue by these labels; a translated label would hide them."""
+    """`wfi report` finds the sections of an issue by these labels; a translated label would hide them."""
     text = _read(root, ".github/ISSUE_TEMPLATE/translation-report.yml")
     for label in ("label: Report\n", "label: Credit me as\n", "label: Permission\n"):
         assert label in text, label
@@ -103,13 +103,13 @@ def test_the_trademark_notice_is_in_both_languages(root):
 
 
 def test_the_settings_command_is_the_one_the_addon_has(root):
-    """Bare `/wfj` prints the status; the settings open with `/wfj config`."""
-    slash = _read(root, "addon/WoWForeverJapanese/UI/Slash.lua")
+    """Bare `/wfi` prints the status; the settings open with `/wfi config`."""
+    slash = _read(root, "addon/WoWForeverItalian/UI/Slash.lua")
     assert 'lower == "config"' in slash
     for path in ("README.md", "docs/curseforge.md", "CHANGELOG.md"):
         for line in _read(root, path).splitlines():
-            if re.search(r"Options > AddOns|オプション > AddOns", line) and "/wfj" in line:
-                assert "/wfj config" in line, f"{path}: {line[:80]}"
+            if re.search(r"Options > AddOns|オプション > AddOns", line) and "/wfi" in line:
+                assert "/wfi config" in line, f"{path}: {line[:80]}"
 
 
 def test_pull_request_template_is_short_and_public(root):

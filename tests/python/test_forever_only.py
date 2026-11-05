@@ -8,11 +8,11 @@ from pathlib import Path
 import pytest
 from local_inputs import forever_build, forever_quest_build, predecessors
 
-from wfj.emit import lua_writer, schema
-from wfj.io import wago, wdb
-from wfj.io.jsonl_store import Store
+from wfi.emit import lua_writer, schema
+from wfi.io import wago, wdb
+from wfi.io.jsonl_store import Store
 
-ADDON = Path("addon/WoWForeverJapanese")
+ADDON = Path("addon/WoWForeverItalian")
 FOREVER = f"forever-{forever_build()}"
 FOREVER_QUESTS = f"forever-{forever_quest_build()}"
 
@@ -28,7 +28,7 @@ ERA_ONLY = (
     "RaidInfoSubheader", "ItemTextTitleText", "QuestFrameCancelButton", "OnTooltipSetItem", "OnTooltipSetSpell",
     r"CharacterFrameTab\d", "PetPaperDollFrame_Update",
 )
-GATES = ("classicGuild", "WFJ.Camelot", "Camelot.present", '"WorldMapConstants"')
+GATES = ("classicGuild", "WFI.Camelot", "Camelot.present", '"WorldMapConstants"')
 REMOVED = ("UI/Guild.lua", "UI/Honor.lua", "UI/QuestLog.lua", "UI/Camelot.lua")
 
 
@@ -40,10 +40,10 @@ def _addon_lua(root):
 
 def test_era_only_modules_are_gone(root):
     assert [f for f in REMOVED if (root / ADDON / f).exists()] == []
-    toc = (root / ADDON / "WoWForeverJapanese.toc").read_text(encoding="utf-8")
+    toc = (root / ADDON / "WoWForeverItalian.toc").read_text(encoding="utf-8")
     assert [f for f in REMOVED if f.replace("/", "\\") in toc] == []
     hits = [f"{p.name}: {m}" for p, text in _addon_lua(root)
-            for m in ("WFJ.Guild", "WFJ.Honor", "WFJ.QuestLog", "WFJ.Camelot") if re.search(re.escape(m) + r"\b", text)]
+            for m in ("WFI.Guild", "WFI.Honor", "WFI.QuestLog", "WFI.Camelot") if re.search(re.escape(m) + r"\b", text)]
     assert hits == []
 
 
@@ -63,7 +63,7 @@ def test_no_client_gates(root):
 def test_no_trainer_greeting(root):
     assert not (root / ADDON / "Data/TrainerGreeting").exists()
     assert not (root / "data/trainer_greeting").exists() and not (root / "data/english/trainer_greeting").exists()
-    hits = [str(p.relative_to(root)) for base in ("addon", "pipeline/wfj")
+    hits = [str(p.relative_to(root)) for base in ("addon", "pipeline/wfi")
             for p in sorted((root / base).rglob("*")) if p.suffix in (".lua", ".toc", ".py")
             and "trainer_greeting" in p.read_text(encoding="utf-8")]
     assert hits == []

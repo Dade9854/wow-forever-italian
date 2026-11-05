@@ -25,24 +25,24 @@ local JERKY_LINES = { "Tough Jerky", "Use: Restores 61 health over 18 sec. Must 
   "Sell Price: 5c" }
 
 describe("UI/Tooltip: item and spell tooltips", function()
-  local WFJ, S, SS, TT, tt
+  local WFI, S, SS, TT, tt
 
   local function fs(frameName, i) return _G[frameName .. "TextLeft" .. i] end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    S, SS, TT = WFJ.Settings, WFJ.SurfaceState, WFJ.Tooltip
-    WFJ.Compat.init(function(name) return _G[name] end)
+    WFI = H.loadChunks(FILES)
+    S, SS, TT = WFI.Settings, WFI.SurfaceState, WFI.Tooltip
+    WFI.Compat.init(function(name) return _G[name] end)
     S.load(nil, 1, {})
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
       marker = function(n) return S.get("marker." .. n) end,
-      align = WFJ.Align.check,
+      align = WFI.Align.check,
     }))
     assert.are.equal(6, TT.init())
     tt = _G.GameTooltip
@@ -54,7 +54,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
   it("replaces the Use: line in place and leaves name and price alone", function()
     Stub.setItemTooltip(tt, JERKY, JERKY_LINES)
     assert.are.equal(DATA["item.description"][117].ja, fs("GameTooltip", 2):GetText())
-    assert.are.equal(WFJ.Font.PATH, (fs("GameTooltip", 2):GetFont()))
+    assert.are.equal(WFI.Font.PATH, (fs("GameTooltip", 2):GetFont()))
     assert.are.equal("Tough Jerky", fs("GameTooltip", 1):GetText())
     assert.are.equal("Sell Price: 5c", fs("GameTooltip", 3):GetText())
     assert.are.equal(0, fs("GameTooltip", 1).calls.SetText)
@@ -70,8 +70,8 @@ describe("UI/Tooltip: item and spell tooltips", function()
         .. "eating you will become well fed and gain 4 Stamina and Spirit for 15 min.",
       "Equip: Something.", '"Tastes like liver."', "Sell Price: 5c" })
     assert.are.equal(DATA["item.description"][724].ja, fs("GameTooltip", 3):GetText())
-    assert.are.equal(WFJ.Render.BLANK, fs("GameTooltip", 4):GetText())
-    assert.are.equal(WFJ.Render.BLANK, fs("GameTooltip", 5):GetText())
+    assert.are.equal(WFI.Render.BLANK, fs("GameTooltip", 4):GetText())
+    assert.are.equal(WFI.Render.BLANK, fs("GameTooltip", 5):GetText())
     assert.are.equal("Binds when picked up", fs("GameTooltip", 2):GetText())
     assert.are.equal("Sell Price: 5c", fs("GameTooltip", 6):GetText())
     assert.are.equal(3, SS.count("tooltip.GameTooltip"))
@@ -89,13 +89,13 @@ describe("UI/Tooltip: item and spell tooltips", function()
       "Wild Harvest", { "Use: Increases your Herbalism skill by 2.", color = GREEN },
       { '"An instruction manual for picking wild herbs."', color = GREEN } })
     assert.are.equal(DATA["item.description"][2001].ja, fs("GameTooltip", 2):GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh() -- Alt shows the client's English, colour and all
+    Stub.keys.alt = true; WFI.Modifier.refresh() -- Alt shows the client's English, colour and all
     assert.are.equal("Use: Increases your Herbalism skill by 2.", fs("GameTooltip", 2):GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("colourRuns colours a whole number found once, from the right, never inside a longer number", function()
-    local cr = WFJ.Render.colourRuns
+    local cr = WFI.Render.colourRuns
     local G, R = "|cff20ff20", "|cffff2020"
     assert.are.equal("アーマー " .. G .. "+17|r", cr("アーマー +17", { { run = "+17", code = G } }))
     assert.are.equal("アーマー +170", cr("アーマー +170", { { run = "+17", code = G } })) -- part of a longer number
@@ -106,7 +106,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
   end)
 
   it("part colours skip empty parts on both sides: a blank line or a paragraph break never shifts them", function()
-    local cp = WFJ.Render.colourParts
+    local cp = WFI.Render.colourParts
     local gold = { n = 2, [2] = "ffffd100" }
     assert.are.equal("説明。\n\n|cffffd100フレーバー。|r", cp("説明。\n\nフレーバー。", gold))
     assert.are.equal("説明。\n|cffffd100フレーバー。|r", cp("説明。\nフレーバー。", gold))
@@ -114,7 +114,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
   end)
 
   it("no description run, no item, or a gate failure → nothing written", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     Stub.setItemTooltip(tt, "|Hitem:117:0:0:0:0:0:0:0|h[x]|h",
       { "Tough Jerky", "Binds when picked up", "Sell Price: 5c" })
     assert.are.equal(0, SS.count("tooltip.GameTooltip"))
@@ -185,9 +185,9 @@ describe("UI/Tooltip: item and spell tooltips", function()
     assert.is_nil(TT.spellLine({ "desc", "x" }, "desc")) -- never line 1
   end)
 
-  it("without GetSpellDescription the positional rule stands in and /wfj debug can tell", function()
+  it("without GetSpellDescription the positional rule stands in and /wfi debug can tell", function()
     Stub.noSpellDescriptionAPI = true
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     Stub.noSpellDescriptionAPI = false
     local ns = H.loadChunks(FILES)
@@ -212,7 +212,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
       "Use: Restores 243 health over 21 sec. If you spend at least 10 seconds eating you will become well fed and "
         .. "gain 4 Stamina and Spirit for 15 min.", "", "Equip: Nothing special.", "Sell Price: 5c" })
     assert.are.equal(DATA["item.description"][724].ja, fs("GameTooltip", 2):GetText())
-    assert.are.equal(WFJ.Render.BLANK, fs("GameTooltip", 4):GetText())
+    assert.are.equal(WFI.Render.BLANK, fs("GameTooltip", 4):GetText())
     assert.are.equal("Sell Price: 5c", fs("GameTooltip", 5):GetText())
     assert.are.same({ 2, 4 }, { TT.itemRun({ "n", "Use: x", "", "Equip: y", "Sell" }) })
     assert.are.same({ 2, 2 }, { TT.itemRun({ "n", "Use: x", "", "Requires Level 20", "Equip: y" }) })
@@ -228,7 +228,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
   end)
 
   it("a $N placeholder without a value fails closed", function()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
     Stub.setSpellTooltip(tt, 17, { "Power Word: Shield", "Rank 1", "Absorbs damage." })
     Stub.spellDescriptions[17] = "Absorbs damage."
     Stub.setSpellTooltip(tt, 17, { "Power Word: Shield", "Rank 1", "Absorbs damage." })
@@ -259,15 +259,15 @@ describe("UI/Tooltip: item and spell tooltips", function()
     Stub.setItemTooltip(tt, "|Hitem:724:0:0:0:0:0:0:0|h[x]|h", { "Goretusk Liver Pie",
       "Use: Restores 243 health over 21 sec. If you spend at least 10 seconds eating you will become well fed and "
         .. "gain 4 Stamina and Spirit for 15 min.", '"Tastes like liver."' })
-    assert.are.equal(WFJ.Render.BLANK, fs("GameTooltip", 3):GetText())
+    assert.are.equal(WFI.Render.BLANK, fs("GameTooltip", 3):GetText())
     tt.calls.Show = 0
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.is_truthy(fs("GameTooltip", 2):GetText():find("^Use: Restores 243"))
     assert.are.equal('"Tastes like liver."', fs("GameTooltip", 3):GetText())
     assert.are.equal(2, tt.calls.Show) -- one refit (two Shows)
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(DATA["item.description"][724].ja, fs("GameTooltip", 2):GetText())
-    assert.are.equal(WFJ.Render.BLANK, fs("GameTooltip", 3):GetText())
+    assert.are.equal(WFI.Render.BLANK, fs("GameTooltip", 3):GetText())
     tt:Hide()
     assert.is_truthy(fs("GameTooltip", 2):GetText():find("^Use: Restores 243"))
     assert.are.equal('"Tastes like liver."', fs("GameTooltip", 3):GetText())
@@ -287,11 +287,11 @@ describe("UI/Tooltip: item and spell tooltips", function()
     Stub.setItemTooltip(tt, "|Hitem:724:0:0:0:0:0:0:0|h[x]|h", { "Goretusk Liver Pie",
       "Use: Restores 243 health over 21 sec. If you spend at least 10 seconds eating you will become well fed and "
         .. "gain 4 Stamina and Spirit for 15 min.", '"Tastes like liver."' })
-    assert.are.equal(WFJ.Render.BLANK, fs("GameTooltip", 3):GetText())
+    assert.are.equal(WFI.Render.BLANK, fs("GameTooltip", 3):GetText())
     Stub.setItemTooltip(tt, JERKY, JERKY_LINES) -- line 3 is now "Sell Price: 5c", written by the client
     assert.are.equal("Sell Price: 5c", fs("GameTooltip", 3):GetText())
     assert.are.equal(1, SS.count("tooltip.GameTooltip"))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Sell Price: 5c", fs("GameTooltip", 3):GetText())
   end)
 
@@ -309,7 +309,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
 
   describe("feeds the Collector", function()
     it("records an item's description run, paragraph by line, before translating it", function()
-      local db = WFJ.Collector.load(nil, H.collectorDeps())
+      local db = WFI.Collector.load(nil, H.collectorDeps())
       Stub.setItemTooltip(tt, "|Hitem:724:0:0:0:0:0:0:0|h[Goldenbark Apple]|h",
         { "Goldenbark Apple", "Use: Restores 243 health over 21 sec.", "",
           "Equip: Well Fed.", "\"Crisp.\"", "Sell Price: 1s" })
@@ -321,7 +321,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
     end)
 
     it("records a spell's GetSpellDescription string only", function()
-      local db = WFJ.Collector.load(nil, H.collectorDeps())
+      local db = WFI.Collector.load(nil, H.collectorDeps())
       Stub.setSpellTooltip(tt, 17, { "Power Word: Shield", "Rank 1", Stub.spellDescriptions[17] })
       assert.are.equal(Stub.spellDescriptions[17], db.entries["spell:17:description"].e)
       tt:Hide()
@@ -332,7 +332,7 @@ describe("UI/Tooltip: item and spell tooltips", function()
 
     it("records nothing for a spell when the client has no GetSpellDescription", function()
       Stub.noSpellDescriptionAPI = true
-      Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+      Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
       Stub.installTooltipAPI()
       Stub.noSpellDescriptionAPI = false
       local ns = H.loadChunks(FILES)

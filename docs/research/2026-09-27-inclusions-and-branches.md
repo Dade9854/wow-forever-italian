@@ -3,7 +3,7 @@
 > Measurement. The Forever tooltip lines (build 1.60.1.70009) that still shipped English after the tooltip-template
 > audit, because the slot model could not count their template: what the inclusion and branch mechanism
 > ([ADR-043](../adr/043-included-text-icons-and-branch-variants.md)) drafts, and what stays English, with the reason.
-> Tooling: `wfj.dev.translate_batch cut` / `translate_lint`, `wfj.dev.apply_review --scope templates`.
+> Tooling: `wfi.dev.translate_batch cut` / `translate_lint`, `wfi.dev.apply_review --scope templates`.
 
 - **Date:** 2026-09-27
 - **Question:** how many of the 854 lines the audit left can ship once included text is spliced into the draft and

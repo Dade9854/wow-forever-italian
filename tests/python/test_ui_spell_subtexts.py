@@ -6,11 +6,11 @@ import shutil
 
 import pytest
 
-from wfj.cmd import check, import_english
-from wfj.cmd import import_ as imp
-from wfj.core.model import validate_line
-from wfj.io import client_tables, wago
-from wfj.io.jsonl_store import Store
+from wfi.cmd import check, import_english
+from wfi.cmd import import_ as imp
+from wfi.core.model import validate_line
+from wfi.io import client_tables, wago
+from wfi.io.jsonl_store import Store
 
 BUILD = "1.15.9.69722"
 SPELL_CSV = (
@@ -100,7 +100,7 @@ def test_the_repo_lists_no_name_subtext(root):
 def test_the_spellbook_writes_no_spell_subtext(root):
     """ADR-058: UI/SpellBook.lua writes nothing into the spell items (Blizzard measures them on the way to the action
     bars), so it lists no SpellSubtext id and no subtext keys; the 12 listed subtexts stay in the data."""
-    lua = (root / "addon/WoWForeverJapanese/UI/SpellBook.lua").read_text("utf-8")
+    lua = (root / "addon/WoWForeverItalian/UI/SpellBook.lua").read_text("utf-8")
     assert "SpellSubtext:" not in lua
     assert "SUBTEXT_KEYS" not in lua
     listed = {ln.split("#")[0].strip() for ln in (root / "pipeline/ui_keys.txt").read_text("utf-8").splitlines()}

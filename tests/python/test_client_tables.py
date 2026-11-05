@@ -9,8 +9,8 @@ import pytest
 from casc_fixture import PRODUCT, VERSION, blte_chunks, build
 from db2_fixture import wdc5
 
-from wfj.dev import client_tables as cli
-from wfj.io import casc, client_tables, tables_stamp, wago
+from wfi.dev import client_tables as cli
+from wfi.io import casc, client_tables, tables_stamp, wago
 
 HEADERS = {
     "ItemSparse": ["ID", "Description_lang", "Display_lang"],
@@ -208,7 +208,7 @@ def test_unknown_table_and_missing_product_exit_1(root: Path, tmp_path: Path, ca
     assert "unknown table ['Nope']" in err and "no product 'wow_forever'" in err
 
 
-STATIC = ("wfj/io/casc.py", "wfj/io/blte.py", "wfj/io/db2.py", "wfj/io/client_tables.py", "wfj/dev/client_tables.py")
+STATIC = ("wfi/io/casc.py", "wfi/io/blte.py", "wfi/io/db2.py", "wfi/io/client_tables.py", "wfi/dev/client_tables.py")
 
 
 @pytest.mark.parametrize("rel", STATIC)
@@ -219,7 +219,7 @@ def test_no_write_no_network_static(root: Path, rel: str):
     assert not re.search(r"^\s*(import|from)\s+(socket|urllib|http|requests|ssl)\b", src, re.M)
     assert not re.search(r"""open\([^)]*["'][wax+]""", src)
     writes = re.findall(r"\.(write_bytes|write_text|unlink|rename|mkdir|rmdir|touch)\(", src)
-    allowed = {"wfj/io/client_tables.py": ["write_text"], "wfj/dev/client_tables.py": ["mkdir"]}  # --out only
+    allowed = {"wfi/io/client_tables.py": ["write_text"], "wfi/dev/client_tables.py": ["mkdir"]}  # --out only
     assert writes == allowed.get(rel, [])
 
 

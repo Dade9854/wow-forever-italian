@@ -36,11 +36,11 @@ local UI = {
 local STATE = { points = 11, max = 40, available = 3, cap = 25 }
 
 describe("the Legacy window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -53,22 +53,22 @@ describe("the Legacy window on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
     load()
     if loadedFirst then
       L.load(STATE)
-      assert.is_true(WFJ.Legacy.init())
+      assert.is_true(WFI.Legacy.init())
     else
-      assert.is_false(WFJ.Legacy.init()) -- waits for the addon
+      assert.is_false(WFI.Legacy.init()) -- waits for the addon
       L.load(STATE)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(L.ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(L.ADDON))
     end
   end
 
@@ -176,7 +176,7 @@ describe("the Legacy window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    assert.is_false(WFJ.Legacy.setup())
+    assert.is_false(WFI.Legacy.setup())
     assert.are.equal(1, #Stub.hooks["LegacyTreeTraitPanel:SelectTree"])
     assert.are.equal(1, #Stub.hooks["LegacyTreePointSummary:RefreshText"])
     assert.are.equal(1, #Stub.hooks["LegacySystem:UpdateCurrencyInfo"])
@@ -193,7 +193,7 @@ describe("the Legacy window on Forever", function()
     f.ChallengesPage.DetailPane.ScrollBox = "nope"
     f.LegacyTreeTab = false
     f.TitleContainer = "nope"
-    assert.has_no.errors(function() assert.is_true(WFJ.Legacy.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Legacy.init()) end)
     assert.are.equal("レガシーポイント", f.RewardTrackPage.PointsLabel:GetText()) -- the rest still works
     assert.is_nil(Stub.hooks["LegacyTreeTraitPanel:SelectTree"])
   end)
@@ -202,10 +202,10 @@ describe("the Legacy window on Forever", function()
     load()
     local before = 0
     for _ in pairs(Stub.hooks) do before = before + 1 end
-    assert.is_false(WFJ.Legacy.init())
+    assert.is_false(WFI.Legacy.init())
     Stub.loadedAddons[L.ADDON] = true -- the addon name loaded, but no LegacySystemFrame
-    assert.is_false(WFJ.Legacy.init())
-    assert.is_false(WFJ.Legacy.setup())
+    assert.is_false(WFI.Legacy.init())
+    assert.is_false(WFI.Legacy.setup())
     local after = 0
     for _ in pairs(Stub.hooks) do after = after + 1 end
     assert.are.equal(before, after) -- nothing hooked
@@ -217,7 +217,7 @@ end)
 -- family; the category list's rows write the category name through GetTitleRegion (listtemplates.lua:58–61), the
 -- AchievementCategory family only.
 describe("the Legacy window's client-table text", function()
-  local WFJ, list
+  local WFI, list
 
   local ROWS = {}
   for k, v in pairs(UI) do ROWS[k] = v end
@@ -226,18 +226,18 @@ describe("the Legacy window's client-table text", function()
   ROWS["AchievementReward:9001"] = { "Reward: 10 Legacy Points", "報酬: レガシーポイント10" }
   ROWS["AchievementCategory:15300"] = { "Dungeons", "ダンジョン" }
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function fs(text) return Stub.fontString(text or "") end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
     local f = L.load(STATE)
     list = f.ChallengesPage.CategoryList
     list.ScrollBox = Stub.scrollBox() -- LegacyChallengeCategoryList's ScrollBox
-    assert.is_true(WFJ.Legacy.init())
+    assert.is_true(WFI.Legacy.init())
   end)
 
   after_each(function()
@@ -298,8 +298,8 @@ describe("the Legacy window's client-table text", function()
     assert.are.equal("Dungeons", dungeons.title:GetText())
     alt(false)
     assert.has_no.errors(function()
-      WFJ.Legacy.onCategory(WFJ.Legacy, { GetTitleRegion = function() error("moved") end })
-      WFJ.Legacy.onCategory("x")
+      WFI.Legacy.onCategory(WFI.Legacy, { GetTitleRegion = function() error("moved") end })
+      WFI.Legacy.onCategory("x")
     end)
   end)
 end)
@@ -311,7 +311,7 @@ end)
 -- (rewardtracktemplates.lua:38-63); TryInit calls each card's SetRewardName (:367-386, 493-495), the
 -- RenownRewardName family; each card's tooltip (:517-549) the RenownRewardName / RenownRewardDescription families.
 describe("the Legacy window's criteria and reward track", function()
-  local WFJ, SS, objectives, track
+  local WFI, SS, objectives, track
 
   local ROWS = {}
   for k, v in pairs(UI) do ROWS[k] = v end
@@ -322,7 +322,7 @@ describe("the Legacy window's criteria and reward track", function()
   ROWS["RenownRewardToast:1832"] = { "Faction Tabard Unlocked", "陣営タバード解放" }
   ROWS["RENOWN_REWARD_MILESTONE_TOOLTIP_TITLE"] = { "Renown %d Rewards", "名声 %d の報酬" }
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function fs(text) return Stub.fontString(text or "") end
   local function unrecorded(widget)
     for _, bucket in pairs(SS.surfaces()) do
@@ -390,15 +390,15 @@ describe("the Legacy window's criteria and reward track", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, ROWS)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, ROWS)
     local f = L.load(STATE)
     objectives = installObjectives()
     track = installTrack(f)
-    assert.is_true(WFJ.Legacy.init())
+    assert.is_true(WFI.Legacy.init())
   end)
 
   after_each(function()
@@ -465,10 +465,10 @@ describe("the Legacy window's criteria and reward track", function()
 
   it("wrong shapes raise nothing", function()
     assert.has_no.errors(function()
-      assert.are.equal(0, WFJ.Legacy.onObjectives({ criteriaPool = 1 }))
-      assert.are.equal(0, WFJ.Legacy.onTrack({ Elements = "x" }))
-      assert.are.equal(0, WFJ.Legacy.onRewardName("x"))
-      WFJ.Legacy.onTrack({ Elements = { 1, { RewardName = 2 } } })
+      assert.are.equal(0, WFI.Legacy.onObjectives({ criteriaPool = 1 }))
+      assert.are.equal(0, WFI.Legacy.onTrack({ Elements = "x" }))
+      assert.are.equal(0, WFI.Legacy.onRewardName("x"))
+      WFI.Legacy.onTrack({ Elements = { 1, { RewardName = 2 } } })
     end)
   end)
 end)

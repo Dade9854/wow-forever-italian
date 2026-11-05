@@ -21,7 +21,7 @@ local UI = {
 }
 
 describe("UI/TooltipUnit: unit mouseover lines", function()
-  local WFJ, tt
+  local WFI, tt
 
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
   -- The client's own order: C_TooltipInfo fills the lines, the post-calls run, then it Shows the frame
@@ -36,14 +36,14 @@ describe("UI/TooltipUnit: unit mouseover lines", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.UIParent = _G.UIParent or CreateFrame("Frame", "UIParent")
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    WFJ.HelpTooltip.init() -- the help surface hooks GameTooltip's Show / OnHide too: the unit lines survive it
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    WFI.HelpTooltip.init() -- the help surface hooks GameTooltip's Show / OnHide too: the unit lines survive it
     tt = _G.GameTooltip
-    assert.is_true(WFJ.TooltipUnit.init())
+    assert.is_true(WFI.TooltipUnit.init())
   end)
 
   after_each(function() H.uiTeardown(); Stub.noTooltipDataProcessor = false end)
@@ -55,9 +55,9 @@ describe("UI/TooltipUnit: unit mouseover lines", function()
     assert.are.equal("皮はぎ可能", left(3))
     assert.are.equal("<Raid>", left(4)) -- a guild line
     assert.are.equal("Raid", left(5)) -- a dictionary word outside the unit keys
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Level 11 Elite Humanoid", left(2))
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
   end)
 
   it("a game object's lock and requirement lines take their client-table rows; its name stays", function()
@@ -80,9 +80,9 @@ describe("UI/TooltipUnit: unit mouseover lines", function()
   end)
 
   it("another tooltip frame, or a client without the data processor, is left alone", function()
-    assert.are.equal(0, WFJ.TooltipUnit.onUnit(_G.ItemRefTooltip))
+    assert.are.equal(0, WFI.TooltipUnit.onUnit(_G.ItemRefTooltip))
     Stub.noTooltipDataProcessor = true
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     local W = H.loadChunks(FILES)
     W.Compat.init(function(name) return _G[name] end)
@@ -94,14 +94,14 @@ describe("UI/TooltipUnit: unit mouseover lines", function()
     tt:Show() -- a refresh: still ours
     assert.are.equal("レベル1 Humanoid", left(2))
     tt:Hide()
-    assert.are.equal(0, WFJ.SurfaceState.count(WFJ.TooltipUnit.SURFACE))
+    assert.are.equal(0, WFI.SurfaceState.count(WFI.TooltipUnit.SURFACE))
   end)
 end)
 
 -- ADR-042: the level line's creature-type slot is a `creatureType` argument: a CreatureType row's Japanese
 -- when the word is one, anything else (a race, a class, a pet family) kept as written.
 describe("UI/TooltipUnit: the creature type", function()
-  local WFJ, tt
+  local WFI, tt
 
   local ROWS = {
     UNIT_TYPE_LEVEL_TEMPLATE = { "Level %d %s", "レベル%d %s" },
@@ -126,14 +126,14 @@ describe("UI/TooltipUnit: the creature type", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.UIParent = _G.UIParent or CreateFrame("Frame", "UIParent")
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
-    WFJ.HelpTooltip.init()
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
+    WFI.HelpTooltip.init()
     tt = _G.GameTooltip
-    assert.is_true(WFJ.TooltipUnit.init())
+    assert.is_true(WFI.TooltipUnit.init())
   end)
 
   after_each(function() H.uiTeardown(); Stub.keys.alt = false end)
@@ -157,9 +157,9 @@ describe("UI/TooltipUnit: the creature type", function()
   it("a CreatureType row fills the slot in Japanese; Alt shows the English line", function()
     hover({ "Kobold Vermin", "Level 10 Humanoid" })
     assert.are.equal("レベル10 人型", left(2))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Level 10 Humanoid", left(2))
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("レベル10 人型", left(2))
     hover({ "Hogger", "Level 11 Elite Humanoid" })
     assert.are.equal("レベル11 エリート 人型", left(2))

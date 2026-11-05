@@ -5,7 +5,7 @@ Paste everything under "Description" into the project's description with the edi
 `<span style="color:…">` tags are the editor's own colour syntax. The page has no images: the maintainer
 prefers it as text only.
 
-- **Project name:** WoW Forever Japanese (日本語化)
+- **Project name:** WoW Forever Italian (日本語化)
 - **Summary:** Play WoW Forever in Japanese: quests, NPC dialogue, tooltips and menus, with the English one
   key away.
 - **Categories:** Quests & Leveling; also Tooltip, Chat & Communication, Miscellaneous.
@@ -14,7 +14,7 @@ prefers it as text only.
 
 <span style="color:#E8C77E;">**日本語の説明は下にあります。**</span>
 
-**WoW Forever Japanese** shows World of Warcraft: Forever in Japanese. The game's own <span style="color:#8CB8E8;">English</span> is always one key away: hold <span style="color:#E0605A;">**Alt**</span> and it comes back, let go and the Japanese returns. It is for players who read Japanese, and for learners who want to play in it.
+**WoW Forever Italian** shows World of Warcraft: Forever in Japanese. The game's own <span style="color:#8CB8E8;">English</span> is always one key away: hold <span style="color:#E0605A;">**Alt**</span> and it comes back, let go and the Japanese returns. It is for players who read Japanese, and for learners who want to play in it.
 
 <span style="color:#E8C77E;">**New: Japanese voice.**</span> With the free voice download it also reads its Japanese aloud: over 14,000 quest texts, NPC lines and book pages, each NPC in a voice cast for who they are.
 
@@ -38,31 +38,31 @@ Point at a Japanese word in quest text, NPC dialogue, a book page or a window la
 
 ### <span style="color:#E8C77E;">Japanese voice</span>
 
-With **WoW Forever Japanese Voice** installed (a free, separate download), quest offers, progress and turn-ins, NPC greetings and talk, and book and letter pages are read aloud in Japanese: over 14,000 lines. Each NPC speaks in a voice cast for their race or kind of creature, gender and age, and your character says its own error lines, such as being out of range, in Japanese too.
+With **WoW Forever Italian Voice** installed (a free, separate download), quest offers, progress and turn-ins, NPC greetings and talk, and book and letter pages are read aloud in Japanese: over 14,000 lines. Each NPC speaks in a voice cast for their race or kind of creature, gender and age, and your character says its own error lines, such as being out of range, in Japanese too.
 
 While a line plays, a **voice panel** at the bottom of the screen shows the speaker's face, their name and title, and the Japanese a sentence at a time, with the popup dictionary on every word. Close the window and the line keeps playing, so you can walk on while the NPC finishes; lines that start meanwhile wait their turn in a list above the panel. Hold <span style="color:#E0605A;">**Alt**</span> and the panel shows the line's English while the voice goes on. The quest log has a play button too. The panel can be moved, shrunk to a small strip, switched to a dark style or turned off.
 
 ### <span style="color:#E8C77E;">Settings</span>
 
-**Esc > Options > AddOns**, or type **/wfj config**. Turn translation on or off, for everything or per area; change the key you hold for English; set a key that switches translation on and off; turn the markers (<span style="color:#FFD100;">**[未翻訳 / Not Translated]**</span>, <span style="color:#FFD100;">**[要更新 / English Changed]**</span>), the popup dictionary and the minimap button on or off. With the voice installed, the **Voice** page sets what is read aloud and how the voice panel looks.
+**Esc > Options > AddOns**, or type **/wfi config**. Turn translation on or off, for everything or per area; change the key you hold for English; set a key that switches translation on and off; turn the markers (<span style="color:#FFD100;">**[未翻訳 / Not Translated]**</span>, <span style="color:#FFD100;">**[要更新 / English Changed]**</span>), the popup dictionary and the minimap button on or off. With the voice installed, the **Voice** page sets what is read aloud and how the voice panel looks.
 
 ### <span style="color:#E8C77E;">What the addon records</span>
 
 When the game shows English the addon has no translation for, the addon notes that English in its saved settings file, so it can be translated later. It saves your class and race, because some game lines change depending on them. It never saves your character's name, account, realm or location. Nothing is sent anywhere unless you send it yourself. You can turn it off under **English Collector** in the settings.
 
-To send what it noted, click **Send English** on that page (or type **/wfj collector send**). Copy the link the window shows, open it in your web browser and submit the GitHub issue form it opens, already filled in; then click **I sent it** in the game. If the window shows a second box, paste that text into the form too. When the window says the text is too long even to paste, it asks you to zip the saved file and drag it into the same form (type **/reload** first if you played since logging in).
+To send what it noted, click **Send English** on that page (or type **/wfi collector send**). Copy the link the window shows, open it in your web browser and submit the GitHub issue form it opens, already filled in; then click **I sent it** in the game. If the window shows a second box, paste that text into the form too. When the window says the text is too long even to paste, it asks you to zip the saved file and drag it into the same form (type **/reload** first if you played since logging in).
 
-When 10 or more lines are waiting, a small window at login or reload says how many, with **Send English** and **Later**, at most once a day (**Don't remind me again** in that window, or **/wfj collector remind off**, stops it). While any line is waiting, the minimap button's menu has **Send collected English** too.
+When 10 or more lines are waiting, a small window at login or reload says how many, with **Send English** and **Later**, at most once a day (**Don't remind me again** in that window, or **/wfi collector remind off**, stops it). While any line is waiting, the minimap button's menu has **Send collected English** too.
 
 ### <span style="color:#E8C77E;">Install</span>
 
 Install it with the CurseForge app (make sure your **Forever** install is selected), or unzip the download into your Forever client's `Interface/AddOns` folder. World of Warcraft: Forever only; no other addons or libraries needed.
 
-**Japanese voice:** a separate download of about 1.1 GB. After the addon, install **WoW Forever Japanese Voice** with the CurseForge app; it brings every voice pack. The addon's About & Help page says whether the voice is installed.
+**Japanese voice:** a separate download of about 1.1 GB. After the addon, install **WoW Forever Italian Voice** with the CurseForge app; it brings every voice pack. The addon's About & Help page says whether the voice is installed.
 
 ### <span style="color:#E8C77E;">Report a translation problem</span>
 
-Click the <span style="color:#E0605A;">**字**</span> minimap button (or type **/wfj fix**), pick the line you just read, choose what is wrong, and paste the report into the form on GitHub: https://github.com/zyaga/wow-forever-japanese/issues
+Click the <span style="color:#E0605A;">**字**</span> minimap button (or type **/wfi fix**), pick the line you just read, choose what is wrong, and paste the report into the form on GitHub: https://github.com/zyaga/wow-forever-italian/issues
 
 ### <span style="color:#E8C77E;">FAQ</span>
 
@@ -87,7 +87,7 @@ The hand-written translations are the work of the Japanese translators of WoWJap
 
 ### <span style="color:#E8C77E;">License</span>
 
-GPL-2.0-or-later. Website: https://foreverjapanese.com. Source and translation data: https://github.com/zyaga/wow-forever-japanese. The bundled font is IPA UI Gothic, under the IPA Font License v1.0.
+GPL-2.0-or-later. Website: https://foreverjapanese.com. Source and translation data: https://github.com/zyaga/wow-forever-italian. The bundled font is IPA UI Gothic, under the IPA Font License v1.0.
 
 This addon is made by fans. It is not affiliated with or endorsed by Blizzard Entertainment. Game screenshots: ©2004 Blizzard Entertainment, Inc. All rights reserved. World of Warcraft, Warcraft and Blizzard Entertainment are trademarks or registered trademarks of Blizzard Entertainment, Inc. in the U.S. and/or other countries.
 
@@ -95,7 +95,7 @@ This addon is made by fans. It is not affiliated with or endorsed by Blizzard En
 
 ## <span style="color:#E8C77E;">日本語</span>
 
-**WoW Forever Japanese** は、World of Warcraft: Forever を日本語で遊べるようにするアドオンです。<span style="color:#E0605A;">**Alt**</span> キーを押している間だけゲーム本来の<span style="color:#8CB8E8;">英語</span>が表示され、離すと日本語に戻ります。日本語で遊びたい方にも、日本語を勉強中の方にもおすすめです。
+**WoW Forever Italian** は、World of Warcraft: Forever を日本語で遊べるようにするアドオンです。<span style="color:#E0605A;">**Alt**</span> キーを押している間だけゲーム本来の<span style="color:#8CB8E8;">英語</span>が表示され、離すと日本語に戻ります。日本語で遊びたい方にも、日本語を勉強中の方にもおすすめです。
 
 <span style="color:#E8C77E;">**新機能：日本語音声。**</span>無料の音声を追加すると、日本語を読み上げることもできます。クエスト、NPC の会話、本のページなど 14,000 行以上を、NPC ごとに合わせて選んだ声で読み上げます。
 
@@ -119,31 +119,31 @@ This addon is made by fans. It is not affiliated with or endorsed by Blizzard En
 
 ### <span style="color:#E8C77E;">日本語音声</span>
 
-**WoW Forever Japanese Voice**（無料の別ダウンロード）を入れると、クエストの受注・進行・完了の文、NPC のあいさつや会話、本や手紙のページを日本語で読み上げます。合わせて 14,000 行以上です。NPC はそれぞれ、種族やモンスターの種類・性別・年齢に合わせて選んだ声で話し、自分のキャラクターも射程外などのエラーの一言を日本語で話します。
+**WoW Forever Italian Voice**（無料の別ダウンロード）を入れると、クエストの受注・進行・完了の文、NPC のあいさつや会話、本や手紙のページを日本語で読み上げます。合わせて 14,000 行以上です。NPC はそれぞれ、種族やモンスターの種類・性別・年齢に合わせて選んだ声で話し、自分のキャラクターも射程外などのエラーの一言を日本語で話します。
 
 読み上げ中は、画面下の **音声パネル** に話している NPC の顔、名前と肩書き、読み上げ中の日本語が 1 文ずつ表示されます。どの単語にもポップアップ辞書が使えます。ウィンドウを閉じても読み上げは続くので、NPC の話を聞きながら先へ進めます。その間に始まった行はパネルの上の一覧で順番を待ちます。<span style="color:#E0605A;">**Alt**</span> を押している間は、声はそのままでパネルにその行の英語が表示されます。クエストログにも再生ボタンがあります。パネルは移動でき、小さな帯の表示、暗い背景、オフに切り替えられます。
 
 ### <span style="color:#E8C77E;">設定</span>
 
-**Esc > オプション > AddOns**、または **/wfj config** で開きます。翻訳のオン・オフ（全体または項目ごと）、英語を表示するキーの変更、翻訳を切り替えるキーの設定、マーカー（<span style="color:#FFD100;">**[未翻訳 / Not Translated]**</span>、<span style="color:#FFD100;">**[要更新 / English Changed]**</span>）・ポップアップ辞書・ミニマップボタンの表示を切り替えられます。音声を入れている場合は、**音声** ページで読み上げる内容と音声パネルの見た目を設定できます。
+**Esc > オプション > AddOns**、または **/wfi config** で開きます。翻訳のオン・オフ（全体または項目ごと）、英語を表示するキーの変更、翻訳を切り替えるキーの設定、マーカー（<span style="color:#FFD100;">**[未翻訳 / Not Translated]**</span>、<span style="color:#FFD100;">**[要更新 / English Changed]**</span>）・ポップアップ辞書・ミニマップボタンの表示を切り替えられます。音声を入れている場合は、**音声** ページで読み上げる内容と音声パネルの見た目を設定できます。
 
 ### <span style="color:#E8C77E;">アドオンが記録するもの</span>
 
 ゲームに表示された英語のうち、アドオンに日本語訳がないものは、あとで翻訳できるようにアドオンの設定ファイルに記録されます。クラスと種族は保存されます。ゲームの文章の一部がそれによって変わるためです。キャラクター名、アカウント、レルム、位置は保存されません。自分で送らない限り、どこにも送信されません。設定の **英語テキスト収集** でオフにできます。
 
-記録した英語を送るには、そのページの **英語を送る** をクリックします（**/wfj collector send** でも同じです）。ウィンドウに表示されたリンクをコピーしてブラウザで開き、入力済みで開く GitHub の Issue フォームを送信してから、ゲーム内で **送信しました** をクリックします。ウィンドウに 2 つ目の欄があるときは、その文字列もフォームに貼り付けてください。貼り付けられないほど長いとウィンドウに表示されたときは、保存ファイルを zip にして同じフォームにドラッグするよう案内されます（ログイン後に遊んだ場合は先に **/reload** してください）。
+記録した英語を送るには、そのページの **英語を送る** をクリックします（**/wfi collector send** でも同じです）。ウィンドウに表示されたリンクをコピーしてブラウザで開き、入力済みで開く GitHub の Issue フォームを送信してから、ゲーム内で **送信しました** をクリックします。ウィンドウに 2 つ目の欄があるときは、その文字列もフォームに貼り付けてください。貼り付けられないほど長いとウィンドウに表示されたときは、保存ファイルを zip にして同じフォームにドラッグするよう案内されます（ログイン後に遊んだ場合は先に **/reload** してください）。
 
-送っていない行が 10 以上あると、ログイン時と /reload 時に小さなウィンドウでその数をお知らせし、**英語を送る** と **あとで** を表示します（1 日 1 回まで、ウィンドウの **今後は知らせない** か **/wfj collector remind off** で止められます）。送っていない行があるあいだは、ミニマップボタンのメニューにも **集めた英語を送る** が表示されます。
+送っていない行が 10 以上あると、ログイン時と /reload 時に小さなウィンドウでその数をお知らせし、**英語を送る** と **あとで** を表示します（1 日 1 回まで、ウィンドウの **今後は知らせない** か **/wfi collector remind off** で止められます）。送っていない行があるあいだは、ミニマップボタンのメニューにも **集めた英語を送る** が表示されます。
 
 ### <span style="color:#E8C77E;">インストール</span>
 
 CurseForge アプリでインストールしてください（**Forever** のインストール先が選ばれていることを確認）。手動の場合は、ダウンロードした zip を Forever クライアントの `Interface/AddOns` フォルダに展開します。World of Warcraft: Forever 専用です。ほかのアドオンやライブラリは不要です。
 
-**日本語音声:** 約 1.1 GB の別ダウンロードです。アドオンのあとに、CurseForge アプリで **WoW Forever Japanese Voice** をインストールしてください。すべての音声パックが一緒に入ります。音声が入っているかどうかは、アドオンの「情報とヘルプ」ページに表示されます。
+**日本語音声:** 約 1.1 GB の別ダウンロードです。アドオンのあとに、CurseForge アプリで **WoW Forever Italian Voice** をインストールしてください。すべての音声パックが一緒に入ります。音声が入っているかどうかは、アドオンの「情報とヘルプ」ページに表示されます。
 
 ### <span style="color:#E8C77E;">翻訳の問題を報告する</span>
 
-ミニマップの <span style="color:#E0605A;">**字**</span> ボタン（または **/wfj fix**）を押し、直前に読んだ行を選んで何が問題かを選び、表示された報告文を GitHub のフォームに貼り付けてください: https://github.com/zyaga/wow-forever-japanese/issues
+ミニマップの <span style="color:#E0605A;">**字**</span> ボタン（または **/wfi fix**）を押し、直前に読んだ行を選んで何が問題かを選び、表示された報告文を GitHub のフォームに貼り付けてください: https://github.com/zyaga/wow-forever-italian/issues
 
 ### <span style="color:#E8C77E;">よくある質問</span>
 
@@ -168,6 +168,6 @@ CurseForge アプリでインストールしてください（**Forever** のイ
 
 ### <span style="color:#E8C77E;">ライセンス</span>
 
-GPL-2.0-or-later。ウェブサイト: https://foreverjapanese.com 。ソースコードと翻訳データ: https://github.com/zyaga/wow-forever-japanese 。同梱のフォントは IPA UI ゴシック（IPA フォントライセンス v1.0）です。
+GPL-2.0-or-later。ウェブサイト: https://foreverjapanese.com 。ソースコードと翻訳データ: https://github.com/zyaga/wow-forever-italian 。同梱のフォントは IPA UI ゴシック（IPA フォントライセンス v1.0）です。
 
 このアドオンはファンが制作したものです。Blizzard Entertainment とは関係がなく、承認も受けていません。ゲーム画面: ©2004 Blizzard Entertainment, Inc. All rights reserved. World of Warcraft、Warcraft、Blizzard Entertainment は、米国およびその他の国における Blizzard Entertainment, Inc. の商標または登録商標です。

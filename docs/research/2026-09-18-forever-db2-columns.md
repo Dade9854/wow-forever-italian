@@ -119,7 +119,7 @@ placeholders: a translation fix, not a harvest one.
 ## Reproducing this
 
 ```
-python -m wfj.dev.verify_columns --wow "<World of Warcraft>" \
+python -m wfi.dev.verify_columns --wow "<World of Warcraft>" \
     --product wow_classic_beta --against-product wow_classic_era [--tables ItemSparse …]
 ```
 

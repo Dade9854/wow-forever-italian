@@ -43,10 +43,10 @@ local function regions(frame, list)
 end
 
 describe("the alert toasts on Forever", function()
-  local WFJ
+  local WFI
   before_each(function()
-    WFJ = X.load("UI/Alerts.lua", UI, { before = install })
-    assert.is_true(WFJ.Alerts.init())
+    WFI = X.load("UI/Alerts.lua", UI, { before = install })
+    assert.is_true(WFI.Alerts.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
@@ -57,10 +57,10 @@ describe("the alert toasts on Forever", function()
     assert.are.equal("獲得！", alert.Label:GetText())
     assert.are.equal("You Won!", alert.ItemName:GetText())
     assert.are.equal("Achievement Earned", alert.Name:GetText())
-    assert.is_true(X.unrecorded(WFJ, alert.ItemName))
-    X.alt(WFJ, true)
+    assert.is_true(X.unrecorded(WFI, alert.ItemName))
+    X.alt(WFI, true)
     assert.are.equal("You Won!", alert.Label:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     -- the pooled frame is reused for another result
     alert.Label.text = "You received"
     _G.AlertFrame_ShowNewAlert(alert)
@@ -88,9 +88,9 @@ describe("the alert toasts on Forever", function()
       Name = Stub.fontString("Minor Healing Potion (Rank 2)" .. star) }
     _G.AlertFrame_ShowNewAlert(recipe)
     assert.are.equal("Minor Healing Potion(ランク2)" .. star, recipe.Name:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Minor Healing Potion (Rank 2)" .. star, recipe.Name:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     _G.AlertFrame_ShowNewAlert(recipe) -- shown again: still ours
     assert.are.equal("Minor Healing Potion(ランク2)" .. star, recipe.Name:GetText())
     -- another alert's Name holding the same shape is never walked
@@ -108,9 +108,9 @@ describe("the alert toasts on Forever", function()
       assert.are.equal("エルウィンの森を探検", toast.Name:GetText())
       assert.are.equal("アチーブメント達成", toast.Unlocked:GetText())
       assert.are.equal("10", toast.Shield.Points:GetText())
-      X.alt(WFJ, true)
+      X.alt(WFI, true)
       assert.are.equal("Explore Elwynn Forest", toast.Name:GetText())
-      X.alt(WFJ, false)
+      X.alt(WFI, false)
       assert.are.equal("エルウィンの森を探検", toast.Name:GetText())
       -- the pooled toast reused for an achievement no row has, named like a dictionary word
       toast.Name.text = "Achievement Earned"
@@ -120,7 +120,7 @@ describe("the alert toasts on Forever", function()
       local loot = { Label = Stub.fontString("You Won!"), Name = Stub.fontString("Explore Elwynn Forest") }
       _G.AlertFrame_ShowNewAlert(loot)
       assert.are.equal("Explore Elwynn Forest", loot.Name:GetText())
-      assert.is_true(X.unrecorded(WFJ, loot.Name))
+      assert.is_true(X.unrecorded(WFI, loot.Name))
       local shieldOnly = { Shield = {}, Name = Stub.fontString("Explore Elwynn Forest") }
       _G.AlertFrame_ShowNewAlert(shieldOnly)
       assert.are.equal("Explore Elwynn Forest", shieldOnly.Name:GetText())
@@ -129,13 +129,13 @@ describe("the alert toasts on Forever", function()
   it("a wrong-typed alert or field raises nothing", function()
     assert.has_no.errors(function()
       _G.AlertFrame_ShowNewAlert({ Label = "text", Title = 4, GetRegions = "x" })
-      WFJ.Alerts.onShowAlert(nil)
-      WFJ.Alerts.onShowAlert("x")
+      WFI.Alerts.onShowAlert(nil)
+      WFI.Alerts.onShowAlert("x")
     end)
   end)
 
   it("hooks once; a wrong-typed global and no global return false", function()
-    assert.is_false(WFJ.Alerts.init())
+    assert.is_false(WFI.Alerts.init())
     assert.are.equal(1, #Stub.hooks["AlertFrame_ShowNewAlert"])
     X.teardown(NAMES)
     local wrong = X.load("UI/Alerts.lua", UI, { before = function() _G.AlertFrame_ShowNewAlert = {} end })
@@ -151,9 +151,9 @@ describe("the alert toasts on Forever", function()
     local toast = manager.currentDisplayingToast
     assert.are.equal("到達", toast.Title:GetText())
     assert.are.equal("レベル2", toast.SubTitle:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("Level 2", toast.SubTitle:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     manager.next = { title = "Achievement Earned", subtitle = "Elwynn Forest" } -- not a level-up word
     manager:DisplayToast()
     assert.are.equal("Achievement Earned", manager.currentDisplayingToast.Title:GetText())
@@ -167,9 +167,9 @@ describe("the alert toasts on Forever", function()
     local toast = manager.currentDisplayingToast
     assert.are.equal("Rank Up!", toast.Title:GetText()) -- no row: left as written
     assert.are.equal("ランク4に到達した。", toast.SubTitle:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("You have reached Rank 4.", toast.SubTitle:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
     assert.are.equal("ランク4に到達した。", toast.SubTitle:GetText())
     manager.next = { title = "Your Lotus Claw enchant allows you to carefully extract a Death Lotus!", subtitle = "" }
     manager:DisplayToast()

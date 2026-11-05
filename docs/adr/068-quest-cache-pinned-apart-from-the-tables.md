@@ -21,7 +21,7 @@ A pre-launch Forever build, 1.60.1.70685, could be installed but not played. Its
    - `wdb-copy`: it copies into the quest pin's folder, and its build guard compares the cache's header with the quest pin.
    - The served step: `--cache-build` names the cache's build. It accepts a cache that matches that pin and is not newer than the tables. With an older cache, only QuestV2 counts as served by the tables' build; the ids only that cache answered were recorded when their own build was pulled (ADR-050).
    - The voice speaker and level steps (`voice-speakers`, `voice-levels`).
-   - `scan-install`: the scan plan is the quest pin's build, so WFJScan starts by itself on every newer build.
+   - `scan-install`: the scan plan is the quest pin's build, so WFIScan starts by itself on every newer build.
    - The private build alert: it compares the installed build with the quest pin, so tables pulled before the scan still wait for it.
 
 3. **A build's tables ship before its scan.** On a new build whose tables ship before its scan, `forever_BUILD` moves and `forever_QUEST_BUILD` is set to the last scanned build; otherwise the line is absent and the quest pin is `forever_BUILD`. After the scan, the quest re-pull deletes the `forever_QUEST_BUILD` line before `wdb-copy`, and the tables are pulled again with the play session's hotfix cache.

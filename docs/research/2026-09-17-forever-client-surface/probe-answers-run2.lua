@@ -1,5 +1,5 @@
 
-WFJProbeDB = {
+WFIProbeDB = {
 ["manifest"] = "01d52237a743",
 ["answers"] = {
 ["global|PanelTemplates_SelectTab|buttontext"] = "function",
@@ -299,9 +299,9 @@ WFJProbeDB = {
 },
 ["loaded"] = {
 ["Blizzard_TimeManager"] = true,
-["WFJProbe"] = true,
+["WFIProbe"] = true,
 ["Blizzard_GroupFinder_VanillaStyle"] = true,
-["WoWForeverJapanese"] = true,
+["WoWForeverItalian"] = true,
 ["Blizzard_PlayerSpells"] = true,
 ["Blizzard_CombatLog"] = true,
 },

@@ -24,22 +24,22 @@ local TITLES = { [5] = { ja = "狼の毛皮", status = "." }, [9] = { ja = "失�
 local SURFACE = "gossip"
 
 describe("UI/QuestMap: quest-row titles and objective lines", function()
-  local WFJ, QM, SS, wrappers, log
+  local WFI, QM, SS, wrappers, log
 
   local function trivial(title) return WRAPPERS.TRIVIAL_QUEST_DISPLAY[1]:format(title) end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     log = { [5] = "Wolf Pelts" } -- quest 9 is offered, not in the log: the API has no title for it
     _G.C_QuestLog = { GetTitleForQuestID = function(id) return log[id] end }
     for key, pair in pairs(WRAPPERS) do _G[key] = pair[1] end
-    WFJ = H.loadChunks(FILES)
+    WFI = H.loadChunks(FILES)
     wrappers = {}
     for key, pair in pairs(WRAPPERS) do wrappers[key] = { ja = pair[2], status = "." } end
-    WFJ.Lookup = { get = function(kind, id) if kind == "ui" then return wrappers[id] end end }
-    H.uiSetup(WFJ, UI, { lookup = function(kind, id) if kind == "quest.title" then return TITLES[id] end end })
-    QM, SS = WFJ.QuestMap, WFJ.SurfaceState
+    WFI.Lookup = { get = function(kind, id) if kind == "ui" then return wrappers[id] end end }
+    H.uiSetup(WFI, UI, { lookup = function(kind, id) if kind == "quest.title" then return TITLES[id] end end })
+    QM, SS = WFI.QuestMap, WFI.SurfaceState
     QM.init()
   end)
 
@@ -80,10 +80,10 @@ describe("UI/QuestMap: quest-row titles and objective lines", function()
       assert.are.equal("|cff000000狼の毛皮 (低レベル)|r", fs:GetText())
       local rec = SS.get(SURFACE, "title.5")
       assert.are.equal("狼の毛皮", rec.fs:GetText()) -- the adapter reads the title without the Japanese words
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(trivial("Wolf Pelts"), fs:GetText())
       assert.are.equal("Wolf Pelts", rec.fs:GetText()) -- and without the English ones
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal("|cff000000狼の毛皮 (低レベル)|r", fs:GetText())
       -- shown again while still ours: the same record, nothing rewritten
       local writes = fs.calls.addonSetText

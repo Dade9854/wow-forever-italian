@@ -1,14 +1,14 @@
 # ADR-035: Game-message lines: the UI errors frame, system chat and NPC speech, each matched against its own key
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/UI/Errors.lua`,
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/UI/Errors.lua`,
   `UI/ChatSystem.lua` (§7–§9), `UI/Speech.lua` (§10), `Core/UIStrings.lua` (`isErrorKey`, `isChatKey`, `argKinds`,
   `keyOnly`), `Core/UIStringKeys.lua` (`CHAT_FAMILIES`, `ERROR_UNRESTRICTED`, the `ERROR_CLUB_ACTION_*`,
-  `CLUB_REMOVED_REASON_*`, system chat and `CHAT_*_GET` `ARGS`), `Main.lua`, the TOC; `pipeline/wfj/cmd/validate.py` (`key_arg_kinds`,
-  `ui_chat_families`), `pipeline/wfj/dev/ui_windows.py` (`FOREVER_WINDOWS["errors"]` / `["chatsystem"]` /
-  `["speech"]`, `DYNAMIC["errors"]` / `["chatsystem"]` / `["speech"]`), `pipeline/wfj/dev/ui_inventory.py`
+  `CLUB_REMOVED_REASON_*`, system chat and `CHAT_*_GET` `ARGS`), `Main.lua`, the TOC; `pipeline/wfi/cmd/validate.py` (`key_arg_kinds`,
+  `ui_chat_families`), `pipeline/wfi/dev/ui_windows.py` (`FOREVER_WINDOWS["errors"]` / `["chatsystem"]` /
+  `["speech"]`, `DYNAMIC["errors"]` / `["chatsystem"]` / `["speech"]`), `pipeline/wfi/dev/ui_inventory.py`
   (`errors_call_keys`, `chat_call_keys`),
-  `pipeline/wfj/io/vmangos.py` (`read_speech`), `pipeline/wfj/cmd/import_english.py`,
-  `pipeline/wfj/dev/translate_lint.py` (`speaker:`), `pipeline/forever_addon_dispositions.txt`, `ui_keys.txt`,
+  `pipeline/wfi/io/vmangos.py` (`read_speech`), `pipeline/wfi/cmd/import_english.py`,
+  `pipeline/wfi/dev/translate_lint.py` (`speaker:`), `pipeline/forever_addon_dispositions.txt`, `ui_keys.txt`,
   `ui_exclusions.txt`. The in-game checks are pending (the game-message checklist in
   [Testing strategy](../testing/strategy.md)).
 - **Date:** 2026-09-23

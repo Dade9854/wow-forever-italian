@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 from local_inputs import forever_build, predecessors
 
-from wfj.dev import client_addons, ui_inventory
+from wfi.dev import client_addons, ui_inventory
 
 ROOT = Path(__file__).resolve().parents[2]
 # `no-content`: the window has an entry point on camelot, but the Forever client's own tables carry
@@ -118,7 +118,7 @@ def test_title_dispositions_are_well_formed():
 def test_every_set_title_site_of_a_surface_addon_is_dispositioned():
     inputs = predecessors(ROOT) or ROOT / "predecessors"
     default = inputs / f"forever-ui-{forever_build(ROOT)}/interface/addons"
-    addons = Path(os.environ["WFJ_FOREVER_UI"]) if "WFJ_FOREVER_UI" in os.environ else default
+    addons = Path(os.environ["WFI_FOREVER_UI"]) if "WFI_FOREVER_UI" in os.environ else default
     if not addons.is_dir():
         pytest.skip("no Forever UI extract")
     surface_addons = {a for a, (kind, _, _) in _dispositions().items() if kind == "surface"}

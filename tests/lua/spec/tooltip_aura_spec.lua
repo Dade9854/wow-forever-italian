@@ -26,25 +26,25 @@ end
 
 local function setup()
   reset()
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
-  local WFJ = H.loadChunks(FILES)
-  WFJ.Compat.init(function(name) return _G[name] end)
-  WFJ.Settings.load(nil, 1, {})
-  WFJ.Render.init(WFJ.Translator.new({
-    enabled = function() return WFJ.State.enabled end,
-    areaEnabled = WFJ.State.areaEnabled,
-    modifierHeld = WFJ.Modifier.isDown,
+  local WFI = H.loadChunks(FILES)
+  WFI.Compat.init(function(name) return _G[name] end)
+  WFI.Settings.load(nil, 1, {})
+  WFI.Render.init(WFI.Translator.new({
+    enabled = function() return WFI.State.enabled end,
+    areaEnabled = WFI.State.areaEnabled,
+    modifierHeld = WFI.Modifier.isDown,
     lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
-    marker = function(n) return WFJ.Settings.get("marker." .. n) end,
-    align = WFJ.Align.check,
+    marker = function(n) return WFI.Settings.get("marker." .. n) end,
+    align = WFI.Align.check,
   }))
-  WFJ.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
+  WFI.Lookup = { get = function(kind, id) return DATA[kind] and DATA[kind][id] end }
   -- the UI dictionary, reduced to the one "remaining" line these tooltips carry
-  WFJ.UIIndex = { match = function(_, text)
+  WFI.UIIndex = { match = function(_, text)
     if text == "25 min remaining" then return "SPELL_TIME_REMAINING_MIN", {} end
   end }
-  return WFJ, _G.GameTooltip
+  return WFI, _G.GameTooltip
 end
 
 local function aura(key, spellId, lines)
@@ -70,31 +70,31 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
 
   it("one UnitAura post-call, which also sees every rebuild; a method hook only notes the call in the trace",
     function()
-      local WFJ, tt = setup()
-      WFJ.Tooltip.init()
-      local _, _, _, _, auras = WFJ.Tooltip.resolved()
+      local WFI, tt = setup()
+      WFI.Tooltip.init()
+      local _, _, _, _, auras = WFI.Tooltip.resolved()
       assert.are.equal(6, auras)
       assert.are.equal(1, #Stub.tooltipPostCalls[7])
-      WFJ.Tooltip.init()
+      WFI.Tooltip.init()
       assert.are.equal(1, #Stub.tooltipPostCalls[7])
       -- the hook writes nothing: with the trace off the call leaves no note, with it on one line names the call
       aura("player:1:HELPFUL", 774, LINES)
       tt:SetUnitAura("player", 1, "HELPFUL")
       assert.are.equal(AURA_SHOWN, text(2))
-      WFJ.Tooltip.trace = {}
+      WFI.Tooltip.trace = {}
       tt:SetUnitAura("player", 1, "HELPFUL")
       assert.are.equal(AURA_SHOWN, text(2))
       local called = 0
-      for _, line in ipairs(WFJ.Tooltip.trace) do
+      for _, line in ipairs(WFI.Tooltip.trace) do
         if line:find("SetUnitAura(player, 1, HELPFUL) called", 1, true) then called = called + 1 end
       end
       assert.are.equal(1, called)
-      WFJ.Tooltip.trace = nil
+      WFI.Tooltip.trace = nil
     end)
 
   it("a Forever rebuild rewrites the lines without calling a method, and the Japanese comes back", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     aura("player:1:HELPFUL", 774, LINES)
     tt:SetUnitAura("player", 1, "HELPFUL")
     assert.are.equal(AURA_SHOWN, text(2))
@@ -105,8 +105,8 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
 
   it("every method shows the aura line in Japanese, filled from the live line", function()
     for _, c in ipairs(CALLS) do
-      local WFJ, tt = setup()
-      WFJ.Tooltip.init()
+      local WFI, tt = setup()
+      WFI.Tooltip.init()
       aura(c[3], 774, LINES)
       tt[c[1]](tt, unpack(c[2]))
       assert.are.equal(AURA_SHOWN, text(2), c[1])
@@ -115,9 +115,9 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
   end)
 
   it("a gate failure, the modifier held and a stale entry behave as on spell tooltips", function()
-    local WFJ, tt = setup()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Tooltip.init()
     -- the live line has no second number: $N2 cannot fill, the gate refuses, English stays
     aura("player:1:HELPFUL", 774, { "Rejuvenation", "Heals 12 damage.", "" })
     tt:SetUnitAura("player", 1, "HELPFUL")
@@ -136,37 +136,37 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
 
   it("a buff no level-1 character sees (Campfire Nearby) and a spell description from the served-text round show"
     .. " their Japanese; Alt shows the English", function()
-    local WFJ, tt = setup()
+    local WFI, tt = setup()
     local campfire = "The pleasant smoke of a campfire drifts in the air from somewhere nearby."
     DATA["spell.aura"][1283391] = { ja = "どこか近くから、キャンプファイアの心地よい煙が漂ってきます。", status = "u" }
     DATA["spell.description"][45] = { ja = "周囲の敵をノックバックします。", status = "u" }
-    WFJ.Tooltip.init()
+    WFI.Tooltip.init()
     aura("player:4:HELPFUL", 1283391, { "Campfire Nearby", campfire, "" })
     tt:SetUnitAura("player", 4, "HELPFUL")
     assert.are.equal("どこか近くから、キャンプファイアの心地よい煙が漂ってきます。", text(2))
     assert.are.equal("Campfire Nearby", text(1)) -- the name stays English
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(campfire, text(2))
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     Stub.spellDescriptions[45] = "Knocks nearby enemies back."
     Stub.setSpellTooltip(tt, 45, { "Knockback", "Knocks nearby enemies back." })
     assert.are.equal("周囲の敵をノックバックします。", text(2))
   end)
 
   it("a spell with a description and no aura shows no Japanese on its aura tooltip", function()
-    local WFJ, tt = setup()
-    WFJ.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Tooltip.init()
     aura("target:1:HARMFUL", 8936, { "Regrowth", "Heals 5 damage every 2 sec.", "" })
     tt:SetUnitDebuff("target", 1)
     assert.are.equal("Heals 5 damage every 2 sec.", text(2))
   end)
 
   it("an empty or UI-dictionary line 2 is never the aura line", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     local seen = {}
-    WFJ.Collector.record = function(_, _, field) seen[#seen + 1] = field end
+    WFI.Collector.record = function(_, _, field) seen[#seen + 1] = field end
     aura("player:1:HELPFUL", 774, { "Rejuvenation", "25 min remaining" })
     tt:SetUnitAura("player", 1, "HELPFUL")
     assert.are.equal("残り25分", text(2)) -- a UI record, not the aura text
@@ -177,8 +177,8 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
   end)
 
   it("an unreadable aura leaves the tooltip untouched and raises nothing", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     aura("player:1:HELPFUL", nil, LINES) -- the getter answers nil
     assert.has_no.errors(function() tt:SetUnitAura("player", 1, "HELPFUL") end)
     assert.are.equal(AURA_EN, text(2))
@@ -207,10 +207,10 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
   end)
 
   it("QA: a line another addon appended is never the aura text on Forever", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     local seen = {}
-    WFJ.Collector.record = function(_, _, field) seen[#seen + 1] = field end
+    WFI.Collector.record = function(_, _, field) seen[#seen + 1] = field end
     -- an aura whose client-written tooltip is the name alone; an id addon appended "Spell ID: 774"
     Stub.auraData["player:1:HELPFUL"] = { data = { spellId = 774 }, lines = { "Rejuvenation" },
       extra = { "Spell ID: 774" } }
@@ -220,8 +220,8 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
   end)
 
   it("QA: filters beyond HELPFUL / HARMFUL pass through; the instance getter gets no filter", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     aura("player:1:HELPFUL", 774, LINES)
     tt:SetUnitAura("player", 1, "HELPFUL|PLAYER")
     assert.are.equal(AURA_SHOWN, text(2))
@@ -238,12 +238,12 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
     tt2:SetUnitBuffByAuraInstanceID("party1", 902, "HELPFUL")
     assert.are.equal(2, args.n)
     assert.are.equal(AURA_SHOWN, text(2))
-    assert.are.equal(0, WFJ.Tooltip.auraErrors)
+    assert.are.equal(0, WFI.Tooltip.auraErrors)
   end)
 
   it("QA: a secret line text leaves the tooltip alone, and any error in the handler is counted, not raised", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     aura("player:1:HELPFUL", 774, LINES)
     tt:SetUnitAura("player", 1, "HELPFUL")
     assert.are.equal(AURA_SHOWN, text(2))
@@ -257,29 +257,29 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
     tt:rebuild(LINES)
     assert.are.equal(AURA_SHOWN, text(2))
     -- an error inside the handler: counted, the tooltip left as the client wrote it
-    WFJ.UIIndex = { match = function() error("boom") end }
-    local before = WFJ.Tooltip.auraErrors
+    WFI.UIIndex = { match = function() error("boom") end }
+    local before = WFI.Tooltip.auraErrors
     assert.has_no.errors(function() tt:SetUnitAura("player", 1, "HELPFUL") end)
-    assert.are.equal(before + 1, WFJ.Tooltip.auraErrors)
+    assert.are.equal(before + 1, WFI.Tooltip.auraErrors)
   end)
 
   it("the other lines go through the structural path", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     aura("player:1:HELPFUL", 774, LINES)
     tt:SetUnitAura("player", 1, "HELPFUL")
     assert.are.equal("残り25分", text(3))
   end)
 
   it("the aura line's English is recorded as spell / aura", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     local seen = {}
-    WFJ.Collector.record = function(kind, id, field, raw) seen[#seen + 1] = { kind, id, field, raw } end
+    WFI.Collector.record = function(kind, id, field, raw) seen[#seen + 1] = { kind, id, field, raw } end
     aura("player:1:HELPFUL", 774, LINES)
     tt:SetUnitAura("player", 1, "HELPFUL")
     assert.are.same({ { "spell", 774, "aura", AURA_EN } }, seen)
-    assert.is_true(WFJ.Collector.KINDS.spell.aura)
+    assert.is_true(WFI.Collector.KINDS.spell.aura)
     -- a spell whose aura does not ship: line 2 is only a positional guess, so it is not recorded
     aura("player:2:HELPFUL", 8936, { "Regrowth", "Heals 5 damage every 2 sec.", "" })
     tt:SetUnitAura("player", 2, "HELPFUL")
@@ -287,11 +287,11 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
   end)
 
   it("an aura never runs the spell handler, a spell never runs the aura handler", function()
-    local WFJ, tt = setup()
-    WFJ.Tooltip.init()
+    local WFI, tt = setup()
+    WFI.Tooltip.init()
     local spells = 0
-    local onSpell = WFJ.Tooltip.onSpell
-    WFJ.Tooltip.onSpell = function(...) spells = spells + 1; return onSpell(...) end
+    local onSpell = WFI.Tooltip.onSpell
+    WFI.Tooltip.onSpell = function(...) spells = spells + 1; return onSpell(...) end
     aura("player:1:HELPFUL", 774, LINES)
     tt:SetUnitAura("player", 1, "HELPFUL")
     assert.are.equal(0, spells)
@@ -299,8 +299,8 @@ describe("UI/Tooltip: buff and debuff tooltips", function()
     Stub.setSpellTooltip(tt, 774, { "Rejuvenation", "Heals the target." })
     assert.are.equal("説明文。", text(2))
     local auras = 0
-    local onAura = WFJ.Tooltip.onAura
-    WFJ.Tooltip.onAura = function(...) auras = auras + 1; return onAura(...) end
+    local onAura = WFI.Tooltip.onAura
+    WFI.Tooltip.onAura = function(...) auras = auras + 1; return onAura(...) end
     Stub.setSpellTooltip(tt, 774, { "Rejuvenation", "Heals the target." })
     assert.are.equal(0, auras)
   end)

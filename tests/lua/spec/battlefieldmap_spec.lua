@@ -14,13 +14,13 @@ local UI = { BATTLEFIELD_MINIMAP = { "Zone Map", "ゾーンマップ" }, WORLD =
 local function en(key) return _G[key] end
 
 describe("the zone map on Forever", function()
-  local WFJ, tab
+  local WFI, tab
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     Maps.clear()
   end
 
@@ -35,15 +35,15 @@ describe("the zone map on Forever", function()
       load()
       if order[1] then
         tab = Maps.battlefieldMap(en)
-        assert.is_true(WFJ.BattlefieldMap.init())
+        assert.is_true(WFI.BattlefieldMap.init())
       else
-        assert.is_false(WFJ.BattlefieldMap.init())
+        assert.is_false(WFI.BattlefieldMap.init())
         tab = Maps.battlefieldMap(en)
-        assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+        assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
       end
       assert.are.equal("ゾーンマップ", tab:GetText())
       Stub.keys.alt = true
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       assert.are.equal("Zone Map", tab:GetText())
     end)
   end
@@ -52,7 +52,7 @@ describe("the zone map on Forever", function()
     load()
     tab = Maps.battlefieldMap(en)
     tab:SetText("World")
-    assert.is_true(WFJ.BattlefieldMap.init())
+    assert.is_true(WFI.BattlefieldMap.init())
     assert.are.equal("World", tab:GetText())
   end)
 
@@ -61,11 +61,11 @@ describe("the zone map on Forever", function()
       load()
       Stub.loadedAddons[ADDON] = true
       _G.BattlefieldMapTab = "tab"
-      assert.has_no.errors(function() WFJ.BattlefieldMap.init() end)
-      assert.is_false(WFJ.BattlefieldMap.setup())
+      assert.has_no.errors(function() WFI.BattlefieldMap.init() end)
+      assert.is_false(WFI.BattlefieldMap.setup())
       load()
       Stub.loadedAddons[ADDON] = true
-      WFJ.BattlefieldMap.init()
-      assert.is_false(WFJ.BattlefieldMap.setup()) -- no frame
+      WFI.BattlefieldMap.init()
+      assert.is_false(WFI.BattlefieldMap.setup()) -- no frame
     end)
 end)

@@ -1,4 +1,4 @@
-# WoW Forever Japanese: build entry points. See docs/operations/local-setup.md.
+# WoW Forever Italian: build entry points. See docs/operations/local-setup.md.
 SHELL := /bin/bash
 LUAROCKS_BIN ?= $(HOME)/.luarocks/bin
 LUA      ?= luajit
@@ -13,7 +13,7 @@ GIT_COMMON := $(shell git rev-parse --path-format=absolute --git-common-dir 2>/d
 REPO_ROOT := $(if $(GIT_COMMON),$(abspath $(dir $(GIT_COMMON))),$(CURDIR))
 VENV_PY  := $(REPO_ROOT)/.venv/bin/python
 PY       ?= $(if $(wildcard $(VENV_PY)),$(VENV_PY),python3)
-ADDON    := addon/WoWForeverJapanese
+ADDON    := addon/WoWForeverItalian
 
 .PHONY: voice-levels voice-sync voice voice-run voice-status voice-stop voice-speakers voice-generate voice-pack voice-release letter-pages coverage-py coverage-lua lint-public report-intake report-apply collector-intake coverage forever-table-counts ui-inventory tooltip-line-kinds served-columns level1-spells import-draft wago-fetch tables-extract wdb-copy wdb-preflight client-preflight import-shared-english import-client import-tables import-served rebuild-check help test test-py test-lua lint lint-py lint-lua lint-core-gate lint-no-english-in-addon lint-no-private-paths luac vectors toc-check import import-english import-collector check stats generate data validate package release forever-addons forever-titles
 
@@ -63,18 +63,18 @@ lint-no-english-in-addon: ## ADR-002: nothing under addon/ may reference data/en
 	@if grep -rEn 'data/english' $(ADDON)/ ; then echo "lint-no-english-in-addon: addon references data/english"; exit 1; else echo "lint-no-english-in-addon: ok"; fi
 
 vectors: ## regenerate vectors/{hash,align,report}_vectors.{jsonl,lua} (the Python ↔ Lua contracts)
-	cd pipeline && $(PY) -m wfj.dev.gen_vectors ../vectors
-	cd pipeline && $(PY) -m wfj.dev.gen_align_vectors ../vectors
-	cd pipeline && $(PY) -m wfj.dev.gen_report_vectors ../vectors
+	cd pipeline && $(PY) -m wfi.dev.gen_vectors ../vectors
+	cd pipeline && $(PY) -m wfi.dev.gen_align_vectors ../vectors
+	cd pipeline && $(PY) -m wfi.dev.gen_report_vectors ../vectors
 
 lint-no-private-paths: ## no tracked file is a symlink or sits under a path the checkout keeps private
-	cd pipeline && $(PY) -m wfj public-check paths
+	cd pipeline && $(PY) -m wfi public-check paths
 
 lint-public: ## no path on the author's machine, nothing the private rules name; comments explain, never record history; links resolve
-	cd pipeline && $(PY) -m wfj public-check all
+	cd pipeline && $(PY) -m wfi public-check all
 
 toc-check: ## TOC ## Interface matches pipeline/clients.toml
-	cd pipeline && $(PY) -m wfj toc-check ../$(ADDON)/WoWForeverJapanese.toc clients.toml
+	cd pipeline && $(PY) -m wfi toc-check ../$(ADDON)/WoWForeverItalian.toc clients.toml
 
 # Inputs for the import (see docs/operations/local-setup.md). Override on the command line.
 # Inputs live under <repo>/predecessors/ (gitignored); paths are absolute so the `cd pipeline` in the recipes is harmless.
@@ -199,7 +199,7 @@ PRODUCT      ?= $($(CLIENT)_PRODUCT)
 import: ## data/ from the pinned inputs (one rebuild pass: every client preflighted; predecessor repos with the wiki tag relabelled + the lineage sources; then pfQuest, VMaNGOS incl. books; then per client in CLIENTS order the quest cache, client tables incl. tooltip text and UI strings; last, drop the English for ids Forever does not serve)
 	@$(ONE_CLIENT_GUARD) && $(QUEST_PIN_GUARD)
 	@$(MAKE) -s wdb-preflight
-	cd pipeline && $(PY) -m wfj import predecessor --quest-repo $(PRED_QUEST) --tooltip-repo $(PRED_TOOLTIP) --date $(IMPORT_DATE) --relabel-translator $(RELABEL_TRANSLATOR) \
+	cd pipeline && $(PY) -m wfi import predecessor --quest-repo $(PRED_QUEST) --tooltip-repo $(PRED_TOOLTIP) --date $(IMPORT_DATE) --relabel-translator $(RELABEL_TRANSLATOR) \
 		--questjapanizer $(QJP) --qjp-version $(QJP_VERSION) --craftjapanizer-quest $(CJQ) --cjq-version $(CJQ_VERSION)
 	@$(MAKE) -s import-shared-english
 	@for c in $(CLIENTS); do $(MAKE) -s import-client CLIENT=$$c || exit 1; done
@@ -219,27 +219,27 @@ import-english: ## refresh only data/english/ (keeps data/ lines, rulings and pr
 # data/; `check` makes it no_english_id until a later harvest lists the id again.
 SERVED_DIR = $(call client_dir,forever)
 import-served: ## drop the English for ids the Forever tables do not list (ADR-033; run last by import / import-english)
-	cd pipeline && $(PY) -m wfj import english served "$(SERVED_DIR)/QuestV2.csv" "$(call quest_dir,forever)/questcache.wdb" --cache-build $(call quest_build,forever) "$(SERVED_DIR)/ItemSparse.csv" "$(SERVED_DIR)/SpellName.csv" --keys "$(UI_KEYS)" $(foreach c,$(filter-out forever,$(CLIENTS)),--map-cache "$(call client_dir,$(c))/questcache.wdb")
+	cd pipeline && $(PY) -m wfi import english served "$(SERVED_DIR)/QuestV2.csv" "$(call quest_dir,forever)/questcache.wdb" --cache-build $(call quest_build,forever) "$(SERVED_DIR)/ItemSparse.csv" "$(SERVED_DIR)/SpellName.csv" --keys "$(UI_KEYS)" $(foreach c,$(filter-out forever,$(CLIENTS)),--map-cache "$(call client_dir,$(c))/questcache.wdb")
 
 # The English no client serves: pfQuest, then VMaNGOS. Before every client's quest cache, which outranks pfQuest.
 import-shared-english:
-	cd pipeline && $(PY) -m wfj import english pfquest $(PFQUEST) --commit $(PFQUEST_SHA)
-	cd pipeline && $(PY) -m wfj import english vmangos $(VMANGOS_DB) --commit $(VMANGOS_SHA)
+	cd pipeline && $(PY) -m wfi import english pfquest $(PFQUEST) --commit $(PFQUEST_SHA)
+	cd pipeline && $(PY) -m wfi import english vmangos $(VMANGOS_DB) --commit $(VMANGOS_SHA)
 	@test "$$(git -C "$(FOREVER_VO)" rev-parse --short=7 HEAD)" = "$(FOREVER_VO_SHA)" || { echo "import: $(FOREVER_VO) is not at FOREVER_VO_SHA $(FOREVER_VO_SHA)"; exit 1; }
-	cd pipeline && $(PY) -m wfj import english forever-vo $(FOREVER_VO) --commit $(FOREVER_VO_SHA) --skip forever_vo_skipped.txt
+	cd pipeline && $(PY) -m wfi import english forever-vo $(FOREVER_VO) --commit $(FOREVER_VO_SHA) --skip forever_vo_skipped.txt
 
 # One client's English (CLIENT=<client>): its quest cache, then its tables (names, tooltip text, UI strings).
 # While Forever's quest cache is pinned behind its tables (ADR-068) only the table half may run, `import-tables`.
 import-client:
 	@$(if $(filter forever,$(CLIENT)),$(QUEST_PIN_GUARD),true)
 	@echo "import: $(CLIENT) $(WAGO_BUILD) ($(TABLES_SRC)) from $(CLIENT_DIR)"
-	cd pipeline && $(PY) -m wfj import english wdb "$(WDB_QUEST)" --build $(WDB_BUILD) --questv2 "$(WAGO_QUESTV2)" --missing "$(WDB_MISSING)" --merge $(MERGE)
+	cd pipeline && $(PY) -m wfi import english wdb "$(WDB_QUEST)" --build $(WDB_BUILD) --questv2 "$(WAGO_QUESTV2)" --missing "$(WDB_MISSING)" --merge $(MERGE)
 	@$(MAKE) -s import-tables CLIENT=$(CLIENT)
 
 import-tables: ## one client's table English (CLIENT=<client>): names, tooltip text, UI strings; the import that runs while forever_QUEST_BUILD is set
-	cd pipeline && $(PY) -m wfj import english wago-ids "$(WAGO_ITEM)" "$(WAGO_SPELL)" --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE)
-	cd pipeline && $(PY) -m wfj import english client-text "$(WAGO_ITEM)" "$(CLIENT_SPELL)" "$(CLIENT_ITEMEFFECT)" $(CLIENT_TEXT_LINK) --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE)
-	cd pipeline && $(PY) -m wfj import english wago-ui "$(WAGO_GLOBALSTRINGS)" "$(WAGO_ITEMSUBCLASS)" --enchantments "$(WAGO_ENCHANTMENTS)" --subtexts "$(CLIENT_SPELL)" $(FAMILY_ARGS) --keys $(UI_KEYS) --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE)
+	cd pipeline && $(PY) -m wfi import english wago-ids "$(WAGO_ITEM)" "$(WAGO_SPELL)" --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE)
+	cd pipeline && $(PY) -m wfi import english client-text "$(WAGO_ITEM)" "$(CLIENT_SPELL)" "$(CLIENT_ITEMEFFECT)" $(CLIENT_TEXT_LINK) --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE)
+	cd pipeline && $(PY) -m wfi import english wago-ui "$(WAGO_GLOBALSTRINGS)" "$(WAGO_ITEMSUBCLASS)" --enchantments "$(WAGO_ENCHANTMENTS)" --subtexts "$(CLIENT_SPELL)" $(FAMILY_ARGS) --keys $(UI_KEYS) --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE)
 
 # Before any import step writes, for every client in CLIENTS: the quest cache and QuestV2 exist, and the wdb import
 # passes every check (build, layout) as a dry run. (Its shrink guard only fires for one build under
@@ -254,11 +254,11 @@ client-preflight:
 	@test -f "$(WDB_QUEST)" || { echo "import: $(CLIENT): no quest cache at $(WDB_QUEST) (make wdb-copy CLIENT=$(CLIENT) WOW_DIR=…)"; exit 1; }
 	@test -f "$(WAGO_QUESTV2)" || { echo "import: $(CLIENT): no QuestV2 at $(WAGO_QUESTV2) (make tables-extract or make wago-fetch, CLIENT=$(CLIENT))"; exit 1; }
 	@test -f "$(CLIENT_SPELL)" -a -f "$(CLIENT_ITEMEFFECT)" || { echo "import: $(CLIENT): no Spell / ItemEffect CSV in $(CLIENT_DIR) (make tables-extract or make wago-fetch, CLIENT=$(CLIENT))"; exit 1; }
-	@cd pipeline && $(PY) -m wfj import english wdb "$(WDB_QUEST)" --build $(WDB_BUILD) --questv2 "$(WAGO_QUESTV2)" --merge $(MERGE) --dry-run > /dev/null
-	@cd pipeline && $(PY) -m wfj.dev.tables_stamp check --src $(TABLES_SRC) --build $(WAGO_BUILD) "$(WAGO_QUESTV2)" "$(WAGO_ITEM)" "$(WAGO_SPELL)" "$(CLIENT_SPELL)" "$(CLIENT_ITEMEFFECT)" $(if $(wildcard $(CLIENT_ITEMXITEMEFFECT)),"$(CLIENT_ITEMXITEMEFFECT)") "$(WAGO_GLOBALSTRINGS)" "$(WAGO_ITEMSUBCLASS)" "$(WAGO_ENCHANTMENTS)" $(FAMILY_CSVS)
+	@cd pipeline && $(PY) -m wfi import english wdb "$(WDB_QUEST)" --build $(WDB_BUILD) --questv2 "$(WAGO_QUESTV2)" --merge $(MERGE) --dry-run > /dev/null
+	@cd pipeline && $(PY) -m wfi.dev.tables_stamp check --src $(TABLES_SRC) --build $(WAGO_BUILD) "$(WAGO_QUESTV2)" "$(WAGO_ITEM)" "$(WAGO_SPELL)" "$(CLIENT_SPELL)" "$(CLIENT_ITEMEFFECT)" $(if $(wildcard $(CLIENT_ITEMXITEMEFFECT)),"$(CLIENT_ITEMXITEMEFFECT)") "$(WAGO_GLOBALSTRINGS)" "$(WAGO_ITEMSUBCLASS)" "$(WAGO_ENCHANTMENTS)" $(FAMILY_CSVS)
 	@# The item-effect join is read in full before any import step writes, so a Forever build
 	@# without its ItemXItemEffect.csv stops here instead of half-way through the import
-	@cd pipeline && $(PY) -m wfj import english client-text "$(WAGO_ITEM)" "$(CLIENT_SPELL)" "$(CLIENT_ITEMEFFECT)" $(CLIENT_TEXT_LINK) --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE) --dry-run > /dev/null
+	@cd pipeline && $(PY) -m wfi import english client-text "$(WAGO_ITEM)" "$(CLIENT_SPELL)" "$(CLIENT_ITEMEFFECT)" $(CLIENT_TEXT_LINK) --build $(WAGO_BUILD) --src $(TABLES_SRC) --merge $(MERGE) --dry-run > /dev/null
 	@# wago-ui reads the spell subtexts (NameSubtext_lang) last; a Spell.csv extracted by an older tables-extract
 	@# lacks the column and must stop the import here, before any step writes
 	@head -1 "$(CLIENT_SPELL)" | tr -d '\r' | tr ',' '\n' | grep -qx NameSubtext_lang || { echo "import: $(CLIENT): $(CLIENT_SPELL) has no NameSubtext_lang column (re-run make tables-extract)"; exit 1; }
@@ -272,11 +272,11 @@ wago-fetch: ## download the wago.tools CSVs the imports and the scan need, at th
 		curl -fsSL -o "$$tmp" "https://wago.tools/db2/$$t/csv?build=$(WAGO_BUILD)&locale=enUS" || { rm -f "$(CLIENT_DIR)"/*.csv.part; echo "wago-fetch: $$t failed at $(WAGO_BUILD); no CSV replaced"; exit 1; }; \
 		if [ ! -s "$$tmp" ] || head -c 200 "$$tmp" | grep -qi '<html\|<!doctype'; then rm -f "$(CLIENT_DIR)"/*.csv.part; echo "wago-fetch: $$t at $(WAGO_BUILD) is empty or not a CSV (build not on wago.tools?); no CSV replaced"; exit 1; fi; \
 	done
-	@cd pipeline && $(PY) -m wfj.dev.tables_stamp clear --dir "$(CLIENT_DIR)" $(WAGO_TABLES)
+	@cd pipeline && $(PY) -m wfi.dev.tables_stamp clear --dir "$(CLIENT_DIR)" $(WAGO_TABLES)
 	@for t in $(WAGO_TABLES); do \
 		mv "$(CLIENT_DIR)/$$t.csv.part" "$(CLIENT_DIR)/$$t.csv"; echo "wago-fetch: $$t.csv ($$(wc -l < "$(CLIENT_DIR)/$$t.csv" | tr -d " ") lines)"; \
 	done
-	@cd pipeline && $(PY) -m wfj.dev.tables_stamp write --dir "$(CLIENT_DIR)" --src wago --build $(WAGO_BUILD) $(WAGO_TABLES)
+	@cd pipeline && $(PY) -m wfi.dev.tables_stamp write --dir "$(CLIENT_DIR)" --src wago --build $(WAGO_BUILD) $(WAGO_TABLES)
 
 tables-extract: ## read the client tables from the installed game into the client's folder (read-only, no network; all or nothing): WOW_DIR=<client folder> [CLIENT=forever] [HOTFIXES=]
 	@test -n "$(WOW_DIR)" || { echo "usage: make tables-extract WOW_DIR=<client folder, e.g. .../World of Warcraft/_forever_> [CLIENT=forever]"; exit 2; }
@@ -284,19 +284,19 @@ tables-extract: ## read the client tables from the installed game into the clien
 	@$(if $(and $(OWN_DIR),$(filter-out db2,$($(CLIENT)_SRC))),{ echo "tables-extract: CLIENT=$(CLIENT) is pinned to $($(CLIENT)_SRC) tables and not db2; its folder is not replaced (make wago-fetch CLIENT=$(CLIENT); or CLIENT_DIR=<elsewhere> for a cross-check)"; exit 2; },true)
 	@mkdir -p "$(CLIENT_DIR)"
 	W="$$(cd "$(WOW_DIR)/.." && pwd)" && H="$(HOTFIXES)" && case "$$H" in ""|/*) ;; *) H="$$PWD/$$H";; esac && \
-		cd pipeline && $(PY) -m wfj.dev.client_tables --wow "$$W" --product "$(PRODUCT)" --out "$(CLIENT_DIR)" --expect-build $(WAGO_BUILD) $${H:+--hotfixes "$$H"}
+		cd pipeline && $(PY) -m wfi.dev.client_tables --wow "$$W" --product "$(PRODUCT)" --out "$(CLIENT_DIR)" --expect-build $(WAGO_BUILD) $${H:+--hotfixes "$$H"}
 
 forever-table-counts: ## row counts of the no-content windows' client tables and TraitSubTree, from the installed client (read-only; re-run per build): WOW_DIR=<client folder> [HOTFIXES=]
 	@test -n "$(WOW_DIR)" || { echo "usage: make forever-table-counts WOW_DIR=<client folder, e.g. .../World of Warcraft/_forever_>"; exit 2; }
 	@test -d "$(WOW_DIR)" || { echo "forever-table-counts: no folder $(WOW_DIR)"; exit 1; }
 	W="$$(cd "$(WOW_DIR)/.." && pwd)" && H="$(HOTFIXES)" && case "$$H" in ""|/*) ;; *) H="$$PWD/$$H";; esac && \
-		cd pipeline && $(PY) -m wfj.dev.table_counts --wow "$$W" --product "$(forever_PRODUCT)" $${H:+--hotfixes "$$H"}
+		cd pipeline && $(PY) -m wfi.dev.table_counts --wow "$$W" --product "$(forever_PRODUCT)" $${H:+--hotfixes "$$H"}
 
 wdb-copy: ## copy the client's quest cache into WDB_QUEST, its client folder (read-only on the game folder): WOW_DIR=<client folder> [CLIENT=forever]
 	@test -n "$(WOW_DIR)" || { echo "usage: make wdb-copy WOW_DIR=<client folder holding Cache/, e.g. .../World of Warcraft/_forever_> [CLIENT=forever]"; exit 2; }
 	@test -f "$(WOW_DIR)/Cache/WDB/enUS/questcache.wdb" || { echo "wdb-copy: no Cache/WDB/enUS/questcache.wdb under $(WOW_DIR) (did the client Exit Game?)"; exit 1; }
 	@# The folder is pinned to one build; a cache of another build (the client patched) is never copied over it
-	@W="$$(cd "$(WOW_DIR)" && pwd)/Cache/WDB/enUS/questcache.wdb" && cd pipeline && $(PY) -c 'import sys; from pathlib import Path; from wfj.io.wdb import read_ids; b = read_ids(Path(sys.argv[1]))[0]; sys.exit(None if str(b) == sys.argv[2].rsplit(".", 1)[-1] else "wdb-copy: the cache is build %s, CLIENT=%s is pinned to %s; nothing copied (a new build gets its own pin and folder: with forever_QUEST_BUILD set, delete that line first)" % (b, sys.argv[3], sys.argv[2]))' "$$W" $(WDB_BUILD) $(CLIENT)
+	@W="$$(cd "$(WOW_DIR)" && pwd)/Cache/WDB/enUS/questcache.wdb" && cd pipeline && $(PY) -c 'import sys; from pathlib import Path; from wfi.io.wdb import read_ids; b = read_ids(Path(sys.argv[1]))[0]; sys.exit(None if str(b) == sys.argv[2].rsplit(".", 1)[-1] else "wdb-copy: the cache is build %s, CLIENT=%s is pinned to %s; nothing copied (a new build gets its own pin and folder: with forever_QUEST_BUILD set, delete that line first)" % (b, sys.argv[3], sys.argv[2]))' "$$W" $(WDB_BUILD) $(CLIENT)
 	@mkdir -p "$$(dirname "$(WDB_QUEST)")"
 	@if [ -f "$(WDB_QUEST)" ]; then cp "$(WDB_QUEST)" "$(WDB_QUEST).prev"; echo "wdb-copy: previous copy kept as $(WDB_QUEST).prev"; fi
 	cp "$(WOW_DIR)/Cache/WDB/enUS/questcache.wdb" "$(WDB_QUEST)"
@@ -305,7 +305,7 @@ level1-spells: ## regenerate pipeline/level1_spells.txt (the spells a fresh leve
 	@test -n "$(WOW_DIR)" || { echo "usage: make level1-spells WOW_DIR=<client folder, e.g. .../World of Warcraft/_forever_> [PRODUCT=wowf]"; exit 2; }
 	@test -d "$(WOW_DIR)" || { echo "level1-spells: no folder $(WOW_DIR)"; exit 1; }
 	@W="$$(cd "$(WOW_DIR)/.." && pwd)" && cd pipeline && \
-		$(PY) -m wfj.dev.level1_spells --wow "$$W" --product "$(PRODUCT)" > level1_spells.txt.part && \
+		$(PY) -m wfi.dev.level1_spells --wow "$$W" --product "$(PRODUCT)" > level1_spells.txt.part && \
 		mv level1_spells.txt.part level1_spells.txt
 	@head -1 pipeline/level1_spells.txt
 
@@ -323,107 +323,107 @@ served-columns: ## regenerate pipeline/served_columns.txt from the installed cli
 	@W="$$(cd "$(WOW_DIR)/.." && pwd)" && H="$(HOTFIXES)" && case "$$H" in ""|/*) ;; *) H="$$PWD/$$H";; esac && \
 		{ test -z "$$H" || test -f "$$H" || { echo "served-columns: no cache at $$H, reading the archive alone" >&2; H=""; }; } && \
 		L="$(LISTFILE)" && C="$$(cd "$(WOW_DIR)" && pwd)" && cd pipeline && \
-		$(PY) -m wfj.dev.served_columns --wow "$$W" --product "$(forever_PRODUCT)" --listfile "$$L" \
+		$(PY) -m wfi.dev.served_columns --wow "$$W" --product "$(forever_PRODUCT)" --listfile "$$L" \
 			$${H:+--hotfixes "$$H"} --wdb "$$C/Cache/WDB/enUS" --previous served_columns.txt > served_columns.txt.part \
 		|| { rm -f served_columns.txt.part; exit 1; } && mv served_columns.txt.part served_columns.txt
 	@sed -n 3,5p pipeline/served_columns.txt
 
-# The Forever (camelot) inventory, the only one (Forever is the only target). FOREVER_UI is a UI extract of the Forever client (`python -m wfj.dev.client_ui
+# The Forever (camelot) inventory, the only one (Forever is the only target). FOREVER_UI is a UI extract of the Forever client (`python -m wfi.dev.client_ui
 # --product wowf --out <dir>`, lowercased paths are fine) and FOREVER_GLOBALSTRINGS its GlobalStrings table
 # (`make tables-extract` against the Forever install); both default under INPUTS.
 FOREVER_UI            ?= $(INPUTS)/forever-ui-$(forever_BUILD)/interface/addons
 FOREVER_GLOBALSTRINGS ?= $(call client_dir,forever)/GlobalStrings.csv
 
 letter-pages: ## regenerate pipeline/letter_pages.txt (the book pages a letter shows) from the item table + VMaNGOS (commit the result; read-only)
-	cd pipeline && $(PY) -m wfj.dev.letter_pages "$(INPUTS)/ItemSparse.csv" "$(INPUTS)/vmangos/mangos.sqlite" > letter_pages.txt.tmp && mv letter_pages.txt.tmp letter_pages.txt
+	cd pipeline && $(PY) -m wfi.dev.letter_pages "$(INPUTS)/ItemSparse.csv" "$(INPUTS)/vmangos/mangos.sqlite" > letter_pages.txt.tmp && mv letter_pages.txt.tmp letter_pages.txt
 
 ui-inventory: ## regenerate pipeline/ui_inventory.txt from a Forever UI extract + its GlobalStrings (commit the result): [FOREVER_UI=<Interface/AddOns>] [FOREVER_GLOBALSTRINGS=<csv>]
 	@test -d "$(FOREVER_UI)" || { echo "ui-inventory: no UI extract at $(FOREVER_UI) (FOREVER_UI=<extract>/interface/addons)"; exit 1; }
 	@test -f "$(FOREVER_GLOBALSTRINGS)" || { echo "ui-inventory: no GlobalStrings at $(FOREVER_GLOBALSTRINGS) (FOREVER_GLOBALSTRINGS=<csv>)"; exit 1; }
-	cd pipeline && $(PY) -m wfj.dev.ui_inventory "$(FOREVER_UI)" "$(FOREVER_GLOBALSTRINGS)" > ui_inventory.txt.tmp && mv ui_inventory.txt.tmp ui_inventory.txt
-	cd pipeline && $(PY) -m wfj.dev.ui_loadset "$(FOREVER_UI)" "$(FOREVER_GLOBALSTRINGS)" > ui_loadset.txt.tmp && mv ui_loadset.txt.tmp ui_loadset.txt
+	cd pipeline && $(PY) -m wfi.dev.ui_inventory "$(FOREVER_UI)" "$(FOREVER_GLOBALSTRINGS)" > ui_inventory.txt.tmp && mv ui_inventory.txt.tmp ui_inventory.txt
+	cd pipeline && $(PY) -m wfi.dev.ui_loadset "$(FOREVER_UI)" "$(FOREVER_GLOBALSTRINGS)" > ui_loadset.txt.tmp && mv ui_loadset.txt.tmp ui_loadset.txt
 
 tooltip-line-kinds: ## regenerate pipeline/tooltip_line_kinds_inventory.txt and tooltip_data_types_inventory.txt from a Forever UI extract (commit the result): [FOREVER_UI=<Interface/AddOns>]
 	@test -d "$(FOREVER_UI)" || { echo "tooltip-line-kinds: no UI extract at $(FOREVER_UI) (FOREVER_UI=<extract>/interface/addons)"; exit 1; }
-	cd pipeline && $(PY) -m wfj.dev.tooltip_line_kinds "$(FOREVER_UI)" > tooltip_line_kinds_inventory.txt.tmp && mv tooltip_line_kinds_inventory.txt.tmp tooltip_line_kinds_inventory.txt
-	cd pipeline && $(PY) -m wfj.dev.tooltip_line_kinds --types "$(FOREVER_UI)" > tooltip_data_types_inventory.txt.tmp && mv tooltip_data_types_inventory.txt.tmp tooltip_data_types_inventory.txt
+	cd pipeline && $(PY) -m wfi.dev.tooltip_line_kinds "$(FOREVER_UI)" > tooltip_line_kinds_inventory.txt.tmp && mv tooltip_line_kinds_inventory.txt.tmp tooltip_line_kinds_inventory.txt
+	cd pipeline && $(PY) -m wfi.dev.tooltip_line_kinds --types "$(FOREVER_UI)" > tooltip_data_types_inventory.txt.tmp && mv tooltip_data_types_inventory.txt.tmp tooltip_data_types_inventory.txt
 
 # Every Blizzard addon the Forever (camelot) client loads, resolved from the TOCs in the same FOREVER_UI extract
 # (its client_ui path list must include the addons' .toc files). pipeline/forever_addon_dispositions.txt gives each
 # in-game addon a disposition; tests/python/test_forever_windows.py holds the two together.
 forever-addons: ## regenerate pipeline/forever_addons.txt from the Forever UI extract's TOCs (commit the result): [FOREVER_UI=<Interface/AddOns>]
 	@test -d "$(FOREVER_UI)" || { echo "forever-addons: no UI extract at $(FOREVER_UI) (FOREVER_UI=<extract>/interface/addons)"; exit 1; }
-	cd pipeline && $(PY) -m wfj.dev.client_addons "$(FOREVER_UI)" > forever_addons.txt.tmp && mv forever_addons.txt.tmp forever_addons.txt
+	cd pipeline && $(PY) -m wfi.dev.client_addons "$(FOREVER_UI)" > forever_addons.txt.tmp && mv forever_addons.txt.tmp forever_addons.txt
 
 family-rows: ## regenerate pipeline/family_rows.txt (client-table rows no ui_keys.txt key ships, with reasons) from the pinned Forever tables (commit the result)
 	@test -f "$(call client_dir,forever)/tables-source.txt" || { echo "family-rows: no tables at $(call client_dir,forever) (make tables-extract)"; exit 1; }
-	cd pipeline && $(PY) -m wfj.dev.family_rows "$(call client_dir,forever)" ui_keys.txt family_rows.txt > family_rows.txt.tmp && mv family_rows.txt.tmp family_rows.txt
+	cd pipeline && $(PY) -m wfi.dev.family_rows "$(call client_dir,forever)" ui_keys.txt family_rows.txt > family_rows.txt.tmp && mv family_rows.txt.tmp family_rows.txt
 	@! grep -n "^[^#].*  ?  " pipeline/family_rows.txt || { echo "family-rows: the rows above are new: list each in ui_keys.txt (then rerun) or give it a reason"; exit 1; }
 
 forever-titles: ## list every SetTitle( call site in the camelot load sets (the input of pipeline/forever_titles.txt): [FOREVER_UI=<Interface/AddOns>]
 	@test -d "$(FOREVER_UI)" || { echo "forever-titles: no UI extract at $(FOREVER_UI) (FOREVER_UI=<extract>/interface/addons)"; exit 1; }
-	@cd pipeline && $(PY) -m wfj.dev.client_addons --titles "$(FOREVER_UI)"
+	@cd pipeline && $(PY) -m wfi.dev.client_addons --titles "$(FOREVER_UI)"
 
-# A player's SavedVariables file (WoWForeverJapanese.lua), attached to a collector-send issue when the send was too long
+# A player's SavedVariables file (WoWForeverItalian.lua), attached to a collector-send issue when the send was too long
 # to paste (collector-intake reads such an issue by itself; this is for a file at hand).
 DUMP ?=
 
 import-collector: ## add one collector dump to data/english/ (replaces stand-in lines, keeps the client's own files): DUMP=<file>
-	@test -n "$(DUMP)" || { echo "usage: make import-collector DUMP=<path to WoWForeverJapanese.lua>"; exit 2; }
+	@test -n "$(DUMP)" || { echo "usage: make import-collector DUMP=<path to WoWForeverItalian.lua>"; exit 2; }
 	@D="$(DUMP)"; case "$$D" in /*) ;; *) D="$$PWD/$$D";; esac; \
-		cd pipeline && $(PY) -m wfj import english collector "$$D"
+		cd pipeline && $(PY) -m wfi import english collector "$$D"
 
 # A machine draft (ADR-014): DRAFT=<file.jsonl> TYPE=<type> NAME=<draft name> MODEL=<model id> [CRITIC=<id>] DATE=<YYYY-MM-DD>
 # [REVERIFY=1] (ui, quest, objective, item, spell): every named line records the current English, so a stale line is judged fresh.
 import-draft: ## merge machine-drafted text into data/ as `machine` variants (never edits hand-written text), then check and remake the voice of changed lines
 	@test -n "$(DRAFT)" -a -n "$(TYPE)" -a -n "$(NAME)" -a -n "$(MODEL)" -a -n "$(DATE)" || { echo "usage: make import-draft DRAFT=<file> TYPE=<type> NAME=<name> MODEL=<id> [CRITIC=<id>] DATE=<YYYY-MM-DD> [REVERIFY=1]"; exit 2; }
-	cd pipeline && $(PY) -m wfj import draft $(TYPE) $(abspath $(DRAFT)) --model $(MODEL) $(if $(CRITIC),--critic $(CRITIC)) --date $(DATE) --name $(NAME) $(if $(REVERIFY),--reverify)
+	cd pipeline && $(PY) -m wfi import draft $(TYPE) $(abspath $(DRAFT)) --model $(MODEL) $(if $(CRITIC),--critic $(CRITIC)) --date $(DATE) --name $(NAME) $(if $(REVERIFY),--reverify)
 	$(MAKE) -s check voice-generate
 
 check: ## assign statuses to every data/ line (pure rules); --report prints the yield
-	cd pipeline && $(PY) -m wfj check --report
+	cd pipeline && $(PY) -m wfi check --report
 
 stats: ## coverage report over data/ (no writes)
-	cd pipeline && $(PY) -m wfj stats
+	cd pipeline && $(PY) -m wfi stats
 
 coverage: ## how much of the game ships in Japanese → docs/operations/coverage.md, plus the counts in README.md and docs/curseforge.md (run before every data pull request)
-	cd pipeline && $(PY) -m wfj.dev.coverage --out ../docs/operations/coverage.md --build $(forever_BUILD)
+	cd pipeline && $(PY) -m wfi.dev.coverage --out ../docs/operations/coverage.md --build $(forever_BUILD)
 
 collector-intake: ## a player's collector send (GitHub issue ISSUE=N, or a saved body BODY=<file> ISSUE=N) → data/english/
 	@test -n "$(ISSUE)" || { echo "usage: make collector-intake ISSUE=<n> [BODY=<saved issue body>]"; exit 2; }
-	cd pipeline && $(PY) -m wfj collector intake $(if $(BODY),--file $(abspath $(BODY)) --number $(ISSUE),--issue $(ISSUE))
+	cd pipeline && $(PY) -m wfi collector intake $(if $(BODY),--file $(abspath $(BODY)) --number $(ISSUE),--issue $(ISSUE))
 
 report-intake: ## a player's fix report (GitHub issue ISSUE=N, or a saved body REPORT=<file> ISSUE=N) → batches/reports/issue-N/triage.jsonl
 	@test -n "$(ISSUE)" || { echo "usage: make report-intake ISSUE=<n> [REPORT=<saved issue body>] [CREDIT=<name>] [FORCE=1]"; exit 2; }
-	cd pipeline && $(PY) -m wfj report intake $(if $(REPORT),--file $(abspath $(REPORT)) --number $(ISSUE),--issue $(ISSUE)) $(if $(CREDIT),--credit "$(CREDIT)") $(if $(FORCE),--force)
+	cd pipeline && $(PY) -m wfi report intake $(if $(REPORT),--file $(abspath $(REPORT)) --number $(ISSUE),--issue $(ISSUE)) $(if $(CREDIT),--credit "$(CREDIT)") $(if $(FORCE),--force)
 
 report-apply: ## batches/reports/issue-N/decisions.jsonl → data/ + readings + ATTRIBUTION.md + reply.md, then check / generate / voice / validate / coverage
 	@test -n "$(ISSUE)" -a -n "$(MODEL)" || { echo "usage: make report-apply ISSUE=<n> MODEL=<id> [DATE=YYYY-MM-DD]"; exit 2; }
-	cd pipeline && $(PY) -m wfj report apply --issue $(ISSUE) --model $(MODEL) $(if $(DATE),--date $(DATE))
+	cd pipeline && $(PY) -m wfi report apply --issue $(ISSUE) --model $(MODEL) $(if $(DATE),--date $(DATE))
 	$(MAKE) -s check generate voice-generate validate coverage
 
 # Voice over (ADR-061; runbook docs/operations/voice.md). Generation needs the local AivisSpeech Engine unpacked in
 # build/aivis/ (started and stopped by voice generate) and `lame`; the audio and the pack are build output under build/, never committed.
 voice-speakers: voice-levels ## data/voice/ speakers + voices for the voice scope, from the pinned VMaNGOS database and the collector's NPC ids
-	cd pipeline && $(PY) -m wfj voice speakers --vmangos $(VMANGOS_DB) --commit $(VMANGOS_SHA) \
+	cd pipeline && $(PY) -m wfi voice speakers --vmangos $(VMANGOS_DB) --commit $(VMANGOS_SHA) \
 		--wdb "$(call quest_dir,forever)/questcache.wdb" --forever-vo "$(FOREVER_VO)" --forever-vo-commit $(FOREVER_VO_SHA)
 
 voice-generate: ## the missing and changed voice files from the shipped Japanese, through the local engine, then voice-sync
-	cd pipeline && $(PY) -m wfj voice generate --scope all --players all --store "$(VOICE_STORE)" && $(PY) -m wfj voice store-sync --if-changed --store "$(VOICE_STORE)"
+	cd pipeline && $(PY) -m wfi voice generate --scope all --players all --store "$(VOICE_STORE)" && $(PY) -m wfi voice store-sync --if-changed --store "$(VOICE_STORE)"
 
-# The audio store: a checkout of the voice audio repository (zyaga/wow-forever-japanese-voice), inside the main checkout.
+# The audio store: a checkout of the voice audio repository (zyaga/wow-forever-italian-voice), inside the main checkout.
 VOICE_STORE ?= $(REPO_ROOT)/build/voice
 # Each quest's level, for the packs' level bands (pipeline/voice-packs.toml): Forever's pinned quest cache, then VMaNGOS.
 VOICE_LEVELS = --wdb "$(call quest_dir,forever)/questcache.wdb" --vmangos "$(VMANGOS_DB)"
 
 voice-levels: ## pipeline/voice_quest_levels.txt: each quest's level for the voice packs (rerun after a re-pull, with voice-speakers)
-	cd pipeline && $(PY) -m wfj voice levels $(VOICE_LEVELS)
+	cd pipeline && $(PY) -m wfi voice levels $(VOICE_LEVELS)
 
 voice-sync: ## commit and push the audio store's new files, and pin that audio commit in pipeline/voice-audio-commit.txt
-	cd pipeline && $(PY) -m wfj voice store-sync --store "$(VOICE_STORE)"
+	cd pipeline && $(PY) -m wfi voice store-sync --store "$(VOICE_STORE)"
 
 voice-pack: ## build/voice-pack/: the Voice entry and every voice pack from the audio record, with each pack's size and room under the cap
-	cd pipeline && $(PY) -m wfj voice pack --store "$(VOICE_STORE)"
+	cd pipeline && $(PY) -m wfi voice pack --store "$(VOICE_STORE)"
 
 voice: voice-speakers voice-generate voice-pack ## speakers → generate → pack
 
@@ -435,30 +435,30 @@ voice: voice-speakers voice-generate voice-pack ## speakers → generate → pac
 VOICE_RELEASE_FLAGS = $(if $(CF_ONLY),--curseforge-only) $(if $(ONLY),--only "$(ONLY)") $(if $(ENTRY_WITHOUT_PACKS),--entry-without-packs)
 voice-release: ## the voice packs whose audio changed to CurseForge and every zip to one GitHub release (DRY=1: nothing leaves the machine)
 	@if [ -n "$(DRY)" ]; then \
-		cd pipeline && $(PY) -m wfj voice release --dry-run $(VOICE_RELEASE_FLAGS) --store "$(VOICE_STORE)"; \
+		cd pipeline && $(PY) -m wfi voice release --dry-run $(VOICE_RELEASE_FLAGS) --store "$(VOICE_STORE)"; \
 	else \
 		key="$${CF_API_KEY:-$$($(or $(VOICE_TOKEN_CMD),true))}"; \
 		if [ -z "$$key" ]; then echo "voice-release: no upload token (CF_API_KEY or VOICE_TOKEN_CMD; docs/operations/voice.md)"; exit 1; fi; \
-		cd pipeline && CF_API_KEY="$$key" $(PY) -m wfj voice release $(VOICE_RELEASE_FLAGS) --store "$(VOICE_STORE)"; \
+		cd pipeline && CF_API_KEY="$$key" $(PY) -m wfi voice release $(VOICE_RELEASE_FLAGS) --store "$(VOICE_STORE)"; \
 	fi
 
 voice-run: ## the whole game's voice, in the background, the Mac kept awake; resumes where it stopped (make voice-status, make voice-stop)
 	@mkdir -p "$(VOICE_STORE)"
-	@if pgrep -f "wfj voice generate" >/dev/null; then echo "voice-run: a run is already going (make voice-status)"; exit 1; fi
-	cd pipeline && nohup caffeinate -i sh -c '$(PY) -m wfj voice generate --scope all --players all --store "$(VOICE_STORE)" && $(PY) -m wfj voice store-sync --if-changed --store "$(VOICE_STORE)"' > "$(VOICE_STORE)/run.log" 2>&1 &
+	@if pgrep -f "wfi voice generate" >/dev/null; then echo "voice-run: a run is already going (make voice-status)"; exit 1; fi
+	cd pipeline && nohup caffeinate -i sh -c '$(PY) -m wfi voice generate --scope all --players all --store "$(VOICE_STORE)" && $(PY) -m wfi voice store-sync --if-changed --store "$(VOICE_STORE)"' > "$(VOICE_STORE)/run.log" 2>&1 &
 	@echo "voice-run: started; make voice-status shows progress, make voice-stop stops it"
 
 voice-status: ## how far the background voice run is, and the time left
-	@cd pipeline && $(PY) -m wfj voice status --store "$(VOICE_STORE)"
+	@cd pipeline && $(PY) -m wfi voice status --store "$(VOICE_STORE)"
 
 voice-stop: ## stop the background voice run (make voice-run resumes it)
-	@pkill -f "wfj voice generate" && echo "voice-stop: stopped; make voice-run resumes" || echo "voice-stop: no run going"
+	@pkill -f "wfi voice generate" && echo "voice-stop: stopped; make voice-run resumes" || echo "voice-stop: no run going"
 
 generate: ## data/ → addon Data/*.lua + the TOC's generated block (deterministic; validate diffs it)
-	cd pipeline && $(PY) -m wfj generate
+	cd pipeline && $(PY) -m wfi generate
 
 data: import check generate ## import → check → generate. Rebuilds imported text from the pinned inputs; corrections, rulings (ADR-012) and prior english hashes are carried, so a changed English is `stale`
-	cd pipeline && $(PY) -m wfj generate
+	cd pipeline && $(PY) -m wfi generate
 
 # The rebuild proof. From an empty data/english, `make data` over every client's pinned inputs must give back
 # the committed data/ and the addon's generated files. Refuses a dirty data/ or addon (nothing is deleted then);
@@ -469,7 +469,7 @@ rebuild-check: ## empty data/english (collector lines kept), run `make data` fro
 	@$(MAKE) -s wdb-preflight
 	@for f in "$(PRED_QUEST)" "$(PRED_TOOLTIP)" "$(QJP)" "$(CJQ)" "$(PFQUEST)" "$(VMANGOS_DB)" "$(FOREVER_VO)" "$(UI_KEYS)"; do test -e "$$f" || { echo "rebuild-check: shared input missing: $$f; nothing deleted"; exit 1; }; done
 	@# the collector's lines (English a client recorded in game) are no pinned input's: kept, ADR-053
-	cd pipeline && $(PY) -m wfj.dev.reset_english ../data/english
+	cd pipeline && $(PY) -m wfi.dev.reset_english ../data/english
 	@# one job, stop at the first error: `data` is import → check → generate over the files just deleted
 	@$(MAKE) -s -j1 -S data || { echo "rebuild-check: the rebuild failed part-way; restore the tree with: git checkout -- data $(ADDON) && git clean -fd -- data $(ADDON)"; exit 1; }
 	@if [ -n "$$(git status --porcelain -- data $(ADDON))" ]; then git status --short -- data $(ADDON) | head -40; git diff --stat -- data $(ADDON) | tail -1; echo "rebuild-check: the rebuild differs from HEAD"; exit 1; fi
@@ -477,7 +477,7 @@ rebuild-check: ## empty data/english (collector lines kept), run `make data` fro
 
 # VALIDATE_FLAGS="--base origin/main" adds the human-never-overwritten check against that ref (CI does on PRs).
 validate: ## the CI gate: schema, provenance rule, key collisions, referential integrity, regenerate-and-diff, then luac
-	cd pipeline && $(PY) -m wfj validate $(VALIDATE_FLAGS)
+	cd pipeline && $(PY) -m wfi validate $(VALIDATE_FLAGS)
 	$(MAKE) -s luac
 
 # The BigWigsMods packager, pinned to the commit the Release workflow uses (v2.6.1). It needs bash 4 or newer.
@@ -493,15 +493,15 @@ GIT_ID := -c user.name=package -c user.email=package@localhost
 
 package: $(PACKAGER) ## rehearse the next release locally: build + check its zip from the committed tree (nothing is pushed or uploaded)
 	@$(PACKAGER_BASH) -c '[ "$${BASH_VERSINFO[0]}" -ge 4 ]' || { echo "package: the packager needs bash 4+ (macOS: brew install bash)"; exit 1; }
-	rm -rf build/package-src build/WoWForeverJapanese-*.zip
+	rm -rf build/package-src build/WoWForeverItalian-*.zip
 	git clone --quiet --no-local . build/package-src
 	git -C build/package-src checkout --quiet $$(git rev-parse HEAD)
-	cd build/package-src && export PYTHONPATH="$$PWD/pipeline" && version=$$($(PY) -m wfj release next-version | sed -n 's/^version=//p') && [ -n "$$version" ] \
-	  && $(PY) -m wfj release changelog --version "$$version" --date "$$(date -u +%F)" --notes .release-notes.md \
+	cd build/package-src && export PYTHONPATH="$$PWD/pipeline" && version=$$($(PY) -m wfi release next-version | sed -n 's/^version=//p') && [ -n "$$version" ] \
+	  && $(PY) -m wfi release changelog --version "$$version" --date "$$(date -u +%F)" --notes .release-notes.md \
 	  && git $(GIT_ID) commit --quiet -m "Release $$version" -- CHANGELOG.md \
 	  && git $(GIT_ID) tag -a "v$$version" -m "Release $$version" \
 	  && { $(PACKAGER_BASH) $(abspath $(PACKAGER)) -d > ../package.log 2>&1 || { echo "package: the packager failed, see build/package.log"; exit 1; }; } \
-	  && $(PY) -m wfj package-check .release/*.zip --version "$$version" \
+	  && $(PY) -m wfi package-check .release/*.zip --version "$$version" \
 	  && cp .release/*.zip .. && echo "package: build/$$(basename .release/*.zip) (packager log: build/package.log)"
 
 # VERSION is taken from the command line only (`make release VERSION=1.0.0`), never from the environment.

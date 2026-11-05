@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from wfj.dev import client_ui
+from wfi.dev import client_ui
 
 
 class _Archive:

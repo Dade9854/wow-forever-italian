@@ -28,10 +28,10 @@ local function install()
 end
 
 describe("the stack split box on Forever", function()
-  local WFJ
+  local WFI
   before_each(function()
-    WFJ = X.load("UI/StackSplit.lua", UI, { before = install })
-    assert.is_true(WFJ.StackSplit.init())
+    WFI = X.load("UI/StackSplit.lua", UI, { before = install })
+    assert.is_true(WFI.StackSplit.init())
   end)
   after_each(function() X.teardown(NAMES) end)
 
@@ -43,7 +43,7 @@ describe("the stack split box on Forever", function()
     assert.are.equal("OK", f.OkayButton:GetText())
     assert.are.equal("キャンセル", f.CancelButton:GetText())
     assert.are.equal("7", f.StackSplitText:GetText())
-    assert.is_true(X.unrecorded(WFJ, f.StackSplitText))
+    assert.is_true(X.unrecorded(WFI, f.StackSplitText))
   end)
 
   it("a merchant multi-stack purchase translates both lines after each writer, singular and plural", function()
@@ -55,13 +55,13 @@ describe("the stack split box on Forever", function()
     f.split = 60
     f:UpdateStackText()
     assert.are.equal("3スタック", f.StackSplitText:GetText())
-    X.alt(WFJ, true)
+    X.alt(WFI, true)
     assert.are.equal("3 Stacks", f.StackSplitText:GetText())
-    X.alt(WFJ, false)
+    X.alt(WFI, false)
   end)
 
   it("hooks once; wrong types and a missing frame leave English and raise nothing", function()
-    assert.is_false(WFJ.StackSplit.init())
+    assert.is_false(WFI.StackSplit.init())
     assert.are.equal(1, #Stub.hooks["StackSplitFrame:UpdateStackText"])
     X.teardown(NAMES)
     local wrong = X.load("UI/StackSplit.lua", UI, { before = function()

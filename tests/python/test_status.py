@@ -1,7 +1,7 @@
 import pytest
 
-from wfj.core.align import load_allowlist
-from wfj.core.status import Scope, decide
+from wfi.core.align import load_allowlist
+from wfi.core.status import Scope, decide
 
 AL = load_allowlist("Health  # stat\n")
 P = {"class": "human", "translator": "a", "source": "cqjt@1234567", "imported": "2026-09-13"}
@@ -146,7 +146,7 @@ def test_conflict_ruling_by_rules_and_by_person():
 
 def test_a_named_colour_code_is_markup_not_words():
     # the gossip option's quest prepend has no word of its own; its Japanese carries none either
-    from wfj.core import status
+    from wfi.core import status
 
     assert status._no_words("|cnPURE_BLUE_COLOR:%s|r %s")
     assert not status._no_words("|cnNORMAL_FONT_COLOR:Copy Layout|r")
@@ -155,8 +155,8 @@ def test_a_named_colour_code_is_markup_not_words():
 
 def test_dots_only_english_may_stay_dots_only(tmp_path):
     # check agrees with the draft lint: a quest line whose English is "..." may be "……"
-    from wfj.cmd.check import build_scopes
-    from wfj.io.jsonl_store import Store
+    from wfi.cmd.check import build_scopes
+    from wfi.io.jsonl_store import Store
 
     en = Store(tmp_path, english=True)
     en.save("quest", [{"id": 2, "field": "progress", "en": "...", "hash": "000c2356b6a1e74a", "src": "vmangos@1"},

@@ -6,9 +6,9 @@ describe("Core/Placeholders.expand", function()
     raceFile = "NightElf", sex = 2 }
 
   before_each(function()
-    local WFJ = {}
-    H.loadPure("Core/Placeholders.lua", "WoWForeverJapanese", WFJ) -- pure: any global access raises
-    P = WFJ.Placeholders
+    local WFI = {}
+    H.loadPure("Core/Placeholders.lua", "WoWForeverItalian", WFI) -- pure: any global access raises
+    P = WFI.Placeholders
   end)
 
   it("{name} becomes the player's name, every occurrence; missing or empty stays literal", function()

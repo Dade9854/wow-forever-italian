@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from wfj.core.model import entry, provenance
-from wfj.io.jsonl_store import Store, shard_name
+from wfi.core.model import entry, provenance
+from wfi.io.jsonl_store import Store, shard_name
 
 PROV = provenance("human", "cqjt@3446c82", "2026-09-13", translator="Tammy")
 
@@ -55,7 +55,7 @@ def test_stale_shards_removed(tmp_path: Path):
 
 
 def test_english_store_lives_under_english(tmp_path: Path):
-    from wfj.core.model import english_line
+    from wfi.core.model import english_line
 
     Store(tmp_path, english=True).save("item", [english_line(117, "name", "Tough Jerky", "0" * 16, "wago@1")])
     assert (tmp_path / "english" / "item" / "item-0000.jsonl").exists()

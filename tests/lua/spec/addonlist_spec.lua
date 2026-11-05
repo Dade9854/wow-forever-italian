@@ -71,11 +71,11 @@ local function installAddonList()
 end
 
 describe("the AddOn List on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -88,24 +88,24 @@ describe("the AddOn List on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
     -- Core/UIStrings: FormatProfilerPercent output ("12%", "0.5%", addonlist.lua:692–702) is a `percent` argument; the
     -- `text` kind AVERAGE / PEAK carry today refuses a period, so "0.5%" stays English
     for _, key in ipairs({ "CURRENT", "AVERAGE", "PEAK", "ENCOUNTER" }) do
-      WFJ.UIStrings.ARGS["ADDON_LIST_PERFORMANCE_" .. key .. "_CPU"] = { [1] = "percent" }
+      WFI.UIStrings.ARGS["ADDON_LIST_PERFORMANCE_" .. key .. "_CPU"] = { [1] = "percent" }
     end
-    H.uiSetup(WFJ, UI)
+    H.uiSetup(WFI, UI)
     A.cpu, A.changed, A.selection = "3%", false, "All"
   end
 
   before_each(function()
     load()
     installAddonList()
-    WFJ.Labels.forbidNames(WFJ.AddonList.NEVER_TOUCH)
-    assert.is_true(WFJ.AddonList.init())
+    WFI.Labels.forbidNames(WFI.AddonList.NEVER_TOUCH)
+    assert.is_true(WFI.AddonList.init())
   end)
 
   after_each(function()
@@ -132,7 +132,7 @@ describe("the AddOn List on Forever", function()
     assert.are.equal("アドオン使用状況", list.Performance.Header:GetText())
     assert.are.equal("古いアドオンを読み込む", (list.ForceLoad:GetRegions()):GetText())
     assert.are.equal("All", list.SearchBox:GetText())
-    assert.are.equal(0, WFJ.Labels.show("addonlist", "x", list.SearchBox))
+    assert.are.equal(0, WFI.Labels.show("addonlist", "x", list.SearchBox))
   end)
 
   it("the Okay button follows AddonList_Update; the CPU lines follow UpdatePerformance every frame", function()
@@ -203,14 +203,14 @@ describe("the AddOn List on Forever", function()
     load() -- a player called All: both entries read "All", so the text is left as written
     _G.UnitName = function() return "All" end
     dropdown = installAddonList().Dropdown
-    assert.is_true(WFJ.AddonList.init())
+    assert.is_true(WFI.AddonList.init())
     dropdown:UpdateText()
     assert.are.equal("All", dropdown.Text:GetText())
     assert.is_true(unrecorded(dropdown.Text))
   end)
 
   it("hooks install once", function()
-    assert.is_false(WFJ.AddonList.init())
+    assert.is_false(WFI.AddonList.init())
     assert.are.equal(1, #Stub.hooks["AddonList_InitAddon"])
     assert.are.equal(1, #Stub.hooks["AddonList:UpdatePerformance"])
   end)
@@ -221,10 +221,10 @@ describe("the AddOn List on Forever", function()
     list.TitleContainer, list.Performance, list.Dropdown, list.ForceLoad = 5, "perf", true, "force"
     list.OkayButton = 3
     _G.AddonList_Update = "nope"
-    assert.has_no.errors(function() assert.is_true(WFJ.AddonList.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.AddonList.init()) end)
     assert.has_no.errors(function()
-      WFJ.AddonList.onRow(nil); WFJ.AddonList.onRow({ Status = 1, Reload = "x", Enabled = 2 })
-      WFJ.AddonList.onPerformance(); WFJ.AddonList.onDropdown(); WFJ.AddonList.onShow()
+      WFI.AddonList.onRow(nil); WFI.AddonList.onRow({ Status = 1, Reload = "x", Enabled = 2 })
+      WFI.AddonList.onPerformance(); WFI.AddonList.onDropdown(); WFI.AddonList.onShow()
     end)
     assert.are.equal("すべて有効", list.EnableAllButton:GetText()) -- the rest still works
   end)
@@ -232,6 +232,6 @@ describe("the AddOn List on Forever", function()
   it("no AddonList → init is false and nothing is touched", function()
     load()
     _G.AddonList = nil
-    assert.has_no.errors(function() assert.is_false(WFJ.AddonList.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.AddonList.init()) end)
   end)
 end)

@@ -77,21 +77,21 @@ local GLOBALS = { "CompactRaidFrameManager", "CompactRaidFrameManagerLeavePartyB
   "CompactRaidFrameManagerLeaveInstanceGroupButton", "CompactRaidFrameManager_UpdateLabel" }
 
 describe("the group manager panel on Forever", function()
-  local WFJ
+  local WFI
 
   local function setup(install)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     S.inRaid, S.walkIn = true, false
     if install then install() end
-    WFJ.Labels.forbidNames(WFJ.RaidManager.NEVER_TOUCH)
+    WFI.Labels.forbidNames(WFI.RaidManager.NEVER_TOUCH)
   end
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   after_each(function()
@@ -102,7 +102,7 @@ describe("the group manager panel on Forever", function()
 
   it("static labels, the header and the dropdown selections render Japanese; counts stay as written", function()
     setup(installManager)
-    assert.is_true(WFJ.RaidManager.init())
+    assert.is_true(WFI.RaidManager.init())
     local display = _G.CompactRaidFrameManager.displayFrame
     assert.are.equal("レイド", display.label:GetText())
     assert.are.equal("ユニット", display.raidMarkers.raidMarkerUnitTab:GetText())
@@ -120,7 +120,7 @@ describe("the group manager panel on Forever", function()
 
   it("UpdateLabel and a dropdown selection are followed", function()
     setup(installManager)
-    WFJ.RaidManager.init()
+    WFI.RaidManager.init()
     local display = _G.CompactRaidFrameManager.displayFrame
     S.inRaid = false
     _G.CompactRaidFrameManager_UpdateLabel()
@@ -132,7 +132,7 @@ describe("the group manager panel on Forever", function()
 
   it("the leave-instance button is re-rendered after each OnUpdate write", function()
     setup(installManager)
-    WFJ.RaidManager.init()
+    WFI.RaidManager.init()
     local leave = _G.CompactRaidFrameManagerLeaveInstanceGroupButton
     leave.scripts.OnUpdate(leave)
     assert.are.equal("インスタンスグループを抜ける", leave:GetText())
@@ -143,7 +143,7 @@ describe("the group manager panel on Forever", function()
 
   it("toolbar tooltips render Japanese; a name on an unregistered owner does not", function()
     setup(installManager)
-    WFJ.RaidManager.init()
+    WFI.RaidManager.init()
     local display = _G.CompactRaidFrameManager.displayFrame
     display.readyCheckButton:enter()
     assert.are.equal("レディチェック", _G.GameTooltipTextLeft1:GetText())
@@ -162,20 +162,20 @@ describe("the group manager panel on Forever", function()
       _G.CompactRaidFrameManagerLeaveInstanceGroupButton = 3
       _G.CompactRaidFrameManager_UpdateLabel = "nope"
     end)
-    assert.has_no.errors(function() assert.is_true(WFJ.RaidManager.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.RaidManager.init()) end)
     assert.are.equal("ユニット", _G.CompactRaidFrameManager.displayFrame.raidMarkers.raidMarkerUnitTab:GetText())
   end)
 
   it("hooks install once; without the panel init returns false", function()
     setup(installManager)
-    assert.is_true(WFJ.RaidManager.init())
-    assert.is_false(WFJ.RaidManager.init())
+    assert.is_true(WFI.RaidManager.init())
+    assert.is_false(WFI.RaidManager.init())
     assert.are.equal(1, #Stub.hooks["CompactRaidFrameManager_UpdateLabel"])
     for _, name in ipairs(GLOBALS) do _G[name] = nil end
     setup(nil)
-    assert.has_no.errors(function() assert.is_false(WFJ.RaidManager.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.RaidManager.init()) end)
     -- a manager whose frame exists but has no marker tabs
     setup(function() CreateFrame("Frame", "CompactRaidFrameManager").displayFrame = CreateFrame("Frame") end)
-    assert.is_false(WFJ.RaidManager.init())
+    assert.is_false(WFI.RaidManager.init())
   end)
 end)

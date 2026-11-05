@@ -110,9 +110,9 @@ local function loadProfessions(known)
 end
 
 describe("the professions window on the Forever client", function()
-  local WFJ, SS
+  local WFI, SS
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function title() return _G.ProfessionsFrame.TitleContainer.TitleText end
   local function content() return _G.ProfessionsFrame.BookPage.ProfessionsContentFrame end
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
@@ -122,21 +122,21 @@ describe("the professions window on the Forever client", function()
   end
 
   local function setup(loadedFirst, known, shape)
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     if loadedFirst then
       local frame = loadProfessions(known)
       if shape then shape(frame) end
-      assert.is_true(WFJ.Professions.init())
+      assert.is_true(WFI.Professions.init())
     else
-      assert.is_false(WFJ.Professions.init()) -- waits for both addons
+      assert.is_false(WFI.Professions.init()) -- waits for both addons
       local frame = loadProfessions(known)
       if shape then shape(frame) end
-      WFJ.LoadOnDemand.loaded(BOOK_ADDON) -- camelot builds no standalone book: nothing to set up
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(FRAME_ADDON))
+      WFI.LoadOnDemand.loaded(BOOK_ADDON) -- camelot builds no standalone book: nothing to set up
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(FRAME_ADDON))
     end
   end
 
@@ -153,7 +153,7 @@ describe("the professions window on the Forever client", function()
       it("the window title renders after SetTitleFormatted, keeps it on a second write, and follows Alt", function()
         open()
         assert.are.equal("専門技術", title():GetText())
-        assert.are.equal(WFJ.Font.PATH, (title():GetFont()))
+        assert.are.equal(WFI.Font.PATH, (title():GetFont()))
         _G.ProfessionsFrame:SelectBookPage() -- a second write
         assert.are.equal("専門技術", title():GetText())
         _G.ProfessionsFrame:SetTitle(_G.TRADE_SKILLS) -- the SetTitle form
@@ -194,8 +194,8 @@ describe("the professions window on the Forever client", function()
         -- names: a learned profession, and the secondary slots' headers (PROFESSIONS_COOKING is a profession name)
         assert.are.equal("Mining", c.PrimaryProfession1.ProfessionName:GetText())
         assert.are.equal(0, c.PrimaryProfession1.ProfessionName.calls.SetText)
-        assert.is_true(WFJ.Labels.forbidden(c.PrimaryProfession1.ProfessionName))
-        assert.is_true(WFJ.Labels.forbidden(c.SecondaryProfession1.specialization))
+        assert.is_true(WFI.Labels.forbidden(c.PrimaryProfession1.ProfessionName))
+        assert.is_true(WFI.Labels.forbidden(c.SecondaryProfession1.specialization))
         assert.are.equal("Cooking", c.SecondaryProfession1.missingHeader:GetText())
         assert.are.equal("Cooking", c.SecondaryProfession1.ProfessionName:GetText())
         assert.are.equal("Fishing", c.SecondaryProfession2.missingHeader:GetText())
@@ -229,11 +229,11 @@ describe("the professions window on the Forever client", function()
         local cooking = _G.ProfessionsFrame.Professions1Tab
         cooking.scripts.OnEnter(cooking)
         assert.are.equal("Cooking", left(1))
-        assert.is_false(WFJ.HelpTooltip.registered(cooking))
+        assert.is_false(WFI.HelpTooltip.registered(cooking))
       end)
 
       it("hooks install once", function()
-        assert.is_false(WFJ.Professions.setupFrame())
+        assert.is_false(WFI.Professions.setupFrame())
         assert.are.equal(1, #Stub.hooks["ProfessionsFrame:SetTitleFormatted"])
         open()
         open()
@@ -244,18 +244,18 @@ describe("the professions window on the Forever client", function()
 
   it("a client that builds the standalone book (Blizzard_ProfessionsBook.xml): its SetTitle(TRADE_SKILLS) title and"
     .. " its slots render, in the on-demand order", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
-    assert.is_false(WFJ.Professions.init())
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
+    assert.is_false(WFI.Professions.init())
     Stub.loadedAddons[BOOK_ADDON] = true
     local book = CreateFrame("Frame", "ProfessionsBookFrame")
     titled(book)
     bookContent(book)
     book:SetTitle(_G.TRADE_SKILLS) -- ProfessionsBookFrameStandaloneMixin:OnLoad
-    assert.are.equal(1, WFJ.LoadOnDemand.loaded(BOOK_ADDON))
+    assert.are.equal(1, WFI.LoadOnDemand.loaded(BOOK_ADDON))
     assert.are.equal("専門技術", book.TitleContainer.TitleText:GetText())
     book:SetTitle(_G.TRADE_SKILLS)
     assert.are.equal("専門技術", book.TitleContainer.TitleText:GetText())
@@ -278,7 +278,7 @@ describe("the professions window on the Forever client", function()
       open()
       _G.ProfessionsFrame:Hide()
     end)
-    assert.are.equal(0, WFJ.Professions.showFrameTitle())
+    assert.are.equal(0, WFI.Professions.showFrameTitle())
     local c = _G.ProfessionsFrame.BookPage.ProfessionsContentFrame
     _G.ProfessionsFrame:SelectBookPage()
     assert.are.equal("トレーナーを訪ねてFishingを習得しましょう。", c.SecondaryProfession2.missingText:GetText())
@@ -292,18 +292,18 @@ describe("the professions window on the Forever client", function()
     assert.is_nil(Stub.hooks["ProfessionsFrame:SetTitleFormatted"])
     _G.ProfessionsFrame = "moved"
     Stub.loadedAddons[FRAME_ADDON] = true
-    assert.has_no.errors(function() assert.is_false(WFJ.Professions.setupFrame()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Professions.setupFrame()) end)
   end)
 
   it("without the frame init returns false and touches nothing", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_false(WFJ.Professions.init())
-    assert.is_false(WFJ.Professions.setupFrame())
-    assert.is_false(WFJ.Professions.setupBook())
-    assert.are.equal(0, WFJ.SurfaceState.count("professions"))
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_false(WFI.Professions.init())
+    assert.is_false(WFI.Professions.setupFrame())
+    assert.is_false(WFI.Professions.setupBook())
+    assert.are.equal(0, WFI.SurfaceState.count("professions"))
     assert.is_nil(Stub.hooks["ProfessionsFrame:SetTitleFormatted"])
   end)
 end)

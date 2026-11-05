@@ -134,20 +134,20 @@ for i = 1, 4 do
 end
 
 describe("the calendar's composites on Forever", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     loadCalendar()
-    assert.is_true(WFJ.Calendar.init())
+    assert.is_true(WFI.Calendar.init())
   end)
 
   after_each(function()
@@ -229,7 +229,7 @@ end)
 -- CALENDAR_HOLIDAYFRAME_BEGINSENDS's first argument is a `holidayDescription` (ADR-042): a HolidayDescription
 -- row's Japanese inside the filled template when the description is one (without the row it stays as written, above).
 describe("the calendar's holiday description", function()
-  local WFJ
+  local WFI
 
   local ROWS = {}
   for k, v in pairs(UI) do ROWS[k] = v end
@@ -237,12 +237,12 @@ describe("the calendar's holiday description", function()
   local TEXT = "The Faire is in town. Come!|n|nBegins: 9/25 8:00 AM|nEnds: 10/2 11:59 PM"
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
     loadCalendar()
-    assert.is_true(WFJ.Calendar.init())
+    assert.is_true(WFI.Calendar.init())
   end)
 
   after_each(function()
@@ -255,16 +255,16 @@ describe("the calendar's holiday description", function()
     local sf = _G.CalendarViewHolidayFrame.ScrollingFont
     _G.CalendarViewHolidayFrame_Update()
     assert.are.equal("移動遊園地がやって来た。おいで！|n|n開始: 9/25 8:00 AM|n終了: 10/2 11:59 PM", sf.fs:GetText())
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(TEXT, sf.fs:GetText())
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal("移動遊園地がやって来た。おいで！|n|n開始: 9/25 8:00 AM|n終了: 10/2 11:59 PM", sf.fs:GetText())
   end)
 
   it("a description no row has is kept as written inside the Japanese template", function()
     local sf = _G.CalendarViewHolidayFrame.ScrollingFont
     sf:SetText("Children's Week is here.|n|nBegins: 9/25 8:00 AM|nEnds: 10/2 11:59 PM")
-    WFJ.Calendar.onHoliday()
+    WFI.Calendar.onHoliday()
     assert.are.equal("Children's Week is here.|n|n開始: 9/25 8:00 AM|n終了: 10/2 11:59 PM", sf.fs:GetText())
   end)
 end)
@@ -273,7 +273,7 @@ end)
 -- difficulty in brackets after the dungeon's name; the difficulty is a Difficulty row's English (GetDifficultyInfo,
 -- lua:777). It becomes the row's Japanese wherever such a title shows; the name and colour stay as written.
 describe("the calendar's difficulty names", function()
-  local WFJ
+  local WFI
 
   local ROWS = {}
   for k, v in pairs(UI) do ROWS[k] = v end
@@ -295,14 +295,14 @@ describe("the calendar's difficulty names", function()
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
     loadCalendar()
     for k, v in pairs(CLIENT) do _G[k] = v end
     _G.GetDungeonNameWithDifficulty = nil -- local in Blizzard's file: the module builds the title itself
@@ -349,7 +349,7 @@ describe("the calendar's difficulty names", function()
     create.DifficultyOptionDropdown = CreateFrame("DropdownButton")
     create.DifficultyOptionDropdown.Text = fs("")
     function create.DifficultyOptionDropdown.UpdateText(self) self.Text:SetText(create.difficulty) end
-    assert.is_true(WFJ.Calendar.init())
+    assert.is_true(WFI.Calendar.init())
   end)
 
   after_each(function()

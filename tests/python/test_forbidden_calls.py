@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-ADDON = Path("addon/WoWForeverJapanese")
+ADDON = Path("addon/WoWForeverItalian")
 # ADR-018: the settings UI modules create and script only their own frames (the pages' widgets, the key
 # capture button, the override-binding owner, the AddOn List button), never a Blizzard frame's scripts.
 FRAME_OWNERS = {"Main.lua", "UI/Options.lua", "UI/OptionsWidgets.lua", "UI/KeyCapture.lua", "UI/RevealBinding.lua",
@@ -19,7 +19,7 @@ FRAME_OWNERS = {"Main.lua", "UI/Options.lua", "UI/OptionsWidgets.lua", "UI/KeyCa
                 # cinematic watcher)
                 "UI/FixWindow.lua", "UI/CollectorSendWindow.lua", "UI/ReportWindow.lua", "UI/MinimapButton.lua",
                 "UI/IntroWindow.lua",
-                # the tooltip trace window (/wfj debug tooltip)
+                # the tooltip trace window (/wfi debug tooltip)
                 "UI/Slash.lua",
                 # the text watch and the taint watch script only their own frame (an OnUpdate, an all-events ring)
                 "UI/TextWatch.lua", "UI/TaintWatch.lua",

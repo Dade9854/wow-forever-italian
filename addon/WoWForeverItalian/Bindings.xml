@@ -1,0 +1,6 @@
+<Bindings>
+  <Binding name="WFI_TOGGLE" header="WFI">WFI_ToggleTranslation()</Binding>
+  <Binding name="WFI_REVEAL" runOnUp="true" hidden="true">WFI_RevealKey(keystate)</Binding>
+  <Binding name="WFI_VOICE_PAUSE">WFI_VoicePause()</Binding>
+  <Binding name="WFI_VOICE_REPLAY">WFI_VoiceReplay()</Binding>
+</Bindings>

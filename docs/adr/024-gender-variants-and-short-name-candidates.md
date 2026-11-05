@@ -1,6 +1,6 @@
 # ADR-024: Gender variants and short-name candidates: a female key per gendered English, tried after the male one; short player names tried after the literal key
 
-- **Status:** Proposed; accepted once in-game checklist 18 passes. Implemented in `pipeline/wfj/core/normalize.py` (`female_variant`), `cmd/generate.py` (`female_index`, the alias report), `emit/lua_writer.py` (`rows` `h1f×5`, `gender_aliases`), `emit/schema.py` (`SLOTS.quest.female`); `Core/Const.lua` (`female`), `Core/Lookup.lua` (`h1f`), `Core/Translator.lua` (live rule), `Core/Collector.lua` (short-name candidates, `fingerprints` second return, quest known check).
+- **Status:** Proposed; accepted once in-game checklist 18 passes. Implemented in `pipeline/wfi/core/normalize.py` (`female_variant`), `cmd/generate.py` (`female_index`, the alias report), `emit/lua_writer.py` (`rows` `h1f×5`, `gender_aliases`), `emit/schema.py` (`SLOTS.quest.female`); `Core/Const.lua` (`female`), `Core/Lookup.lua` (`h1f`), `Core/Translator.lua` (live rule), `Core/Collector.lua` (short-name candidates, `fingerprints` second return, quest known check).
 - **Date:** 2026-09-16
 
 ## Context
@@ -27,12 +27,12 @@ Measured on the data at the time: English carrying `$G` is on 188 quest lines (1
 ## Consequences
 - Female characters see the same Japanese as male characters on gendered quest, gossip and book lines, and gendered quest fields lose their false stale marker. Characters with very short names match `$N` lines.
 - The generated data changes only by the `h1f` suffix on gendered quest rows and the added alias rows; `data/` JSON is unchanged.
-- `Data/Meta.lua` counts translated lines, not alias keys. `/wfj debug` "entries" counts keys, aliases included, so the two can differ.
+- `Data/Meta.lua` counts translated lines, not alias keys. `/wfi debug` "entries" counts keys, aliases included, so the two can differ.
 - **Accepted residual:** a short name that is also an ordinary word ("An"). The literal key is tried first. A wrong line can show only when the literal line is unshipped and another line's `$N` form equals the live text at every occurrence of the word.
 - **Coverage gap, fails closed:** the short-name candidate replaces every occurrence. A text that uses the name both as the name and as an ordinary word ("An old tome… Greetings, An.") matches no candidate and stays English; a quest field in that case lets the status decide (`inconclusive`).
 - The collector's *recording* path still refuses short names (`short_name`). Only its quest known check changed.
 - Human quest lines written in one gender's wording already showed to female characters, with a marker. Only the marker is removed; the wording is unchanged.
-- **[unverified, checklist 18]:** whether the client trims the spaces inside a spaced branch such as `$g brother : sister;` (VMaNGOS gossip writes some branches this way). In the data, female branches have leading spaces only (collapsed away by whitespace normalization either way), while male branches have trailing spaces (quest 59, gossip 89 lines), so trimming would affect the male key. `/wfj debug gossip` keys for a male character settle it.
+- **[unverified, checklist 18]:** whether the client trims the spaces inside a spaced branch such as `$g brother : sister;` (VMaNGOS gossip writes some branches this way). In the data, female branches have leading spaces only (collapsed away by whitespace normalization either way), while male branches have trailing spaces (quest 59, gossip 89 lines), so trimming would affect the male key. `/wfi debug gossip` keys for a male character settle it.
 - **Rollback:** revert the PR and re-release. No SavedVariables change. `make generate` on the reverted code brings back the 11-slot quest rows and single-key keyed rows.
 
 ## Alternatives considered

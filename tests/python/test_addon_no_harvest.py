@@ -2,7 +2,7 @@
 cache or runs the quest scan."""
 
 # (`C_Timer.NewTicker` is not a needle: the addon uses it for its font retry.)
-NEEDLES = ("questcache", "Cache/WDB", "GetQuestInfo", "WFJQ=")
+NEEDLES = ("questcache", "Cache/WDB", "GetQuestInfo", "WFIQ=")
 
 
 def test_addon_never_touches_the_harvest(root):

@@ -72,19 +72,19 @@ local GLOBALS = { "TutorialFrame", "TutorialFrameTitle", "TutorialFrameText", "T
   "TutorialFramePrevButton", "TutorialFrameNextButton", "TutorialFrame_Update", "TutorialFrameTextScrollFrame",
   "TutorialFrameTextScrollChildFrame" }
 
-local function records(WFJ)
+local function records(WFI)
   local n = 0
-  for _ in pairs(WFJ.SurfaceState.records("tutorial")) do n = n + 1 end
+  for _ in pairs(WFI.SurfaceState.records("tutorial")) do n = n + 1 end
   return n
 end
 
 describe("UI/Tutorial: the tutorial popup on Forever", function()
-  local WFJ, frame
+  local WFI, frame
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     for k, v in pairs(UNTRANSLATED) do _G[k] = v end
     frame = build()
   end)
@@ -96,16 +96,16 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
   end)
 
   it("a live tutorial with shipped rows shows its title and body in Japanese, in the bundled font", function()
-    assert.is_true(WFJ.Tutorial.init())
+    assert.is_true(WFI.Tutorial.init())
     _G.TutorialFrame_Update(17)
     assert.are.equal("ささやきへの返信", _G.TutorialFrameTitle:GetText())
     assert.are.equal(UI.TUTORIAL17[2], _G.TutorialFrameText:GetText())
-    assert.are.equal(WFJ.Font.PATH, (_G.TutorialFrameTitle:GetFont()))
-    assert.are.equal(WFJ.Font.PATH, (_G.TutorialFrameText:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (_G.TutorialFrameTitle:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (_G.TutorialFrameText:GetFont()))
   end)
 
   it("a tutorial with no row keeps the client's text and font: no write", function()
-    WFJ.Tutorial.init()
+    WFI.Tutorial.init()
     _G.TUTORIAL_TITLE28 = "Swimming (no row)" -- English neither line has a row for
     _G.TutorialFrame_Update(28)
     assert.are.equal("Swimming (no row)", _G.TutorialFrameTitle:GetText())
@@ -116,43 +116,43 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
 
   it("the Close button and the Prev / Next labels are Japanese; hiding the popup releases the surface",
     function()
-      WFJ.Tutorial.init()
+      WFI.Tutorial.init()
       _G.TutorialFrame_Update(17)
       assert.are.equal("閉じる", _G.TutorialFrameOkayButton:GetText())
       assert.are.equal("前へ", (select(1, _G.TutorialFramePrevButton:GetRegions())):GetText())
       assert.are.equal("次へ", (select(1, _G.TutorialFrameNextButton:GetRegions())):GetText())
-      assert.is_true(records(WFJ) > 0)
+      assert.is_true(records(WFI) > 0)
       frame:Hide()
-      assert.are.equal(0, records(WFJ))
+      assert.are.equal(0, records(WFI))
       assert.are.equal("Close", _G.TutorialFrameOkayButton:GetText())
       assert.are.equal("Prev", (select(1, _G.TutorialFramePrevButton:GetRegions())):GetText())
     end)
 
   it("Alt, the interface area and the master switch each restore the client's text and font", function()
-    WFJ.Tutorial.init()
+    WFI.Tutorial.init()
     _G.TutorialFrame_Update(17)
     local function english()
       assert.are.equal("Replying to Whispers", _G.TutorialFrameTitle:GetText())
       assert.are.equal(UI.TUTORIAL17[1], _G.TutorialFrameText:GetText())
       assert.are.equal("Close", _G.TutorialFrameOkayButton:GetText())
-      assert.are_not.equal(WFJ.Font.PATH, (_G.TutorialFrameText:GetFont()))
+      assert.are_not.equal(WFI.Font.PATH, (_G.TutorialFrameText:GetFont()))
     end
     local function japanese()
       assert.are.equal("ささやきへの返信", _G.TutorialFrameTitle:GetText())
       assert.are.equal(UI.TUTORIAL17[2], _G.TutorialFrameText:GetText())
       assert.are.equal("閉じる", _G.TutorialFrameOkayButton:GetText())
-      assert.are.equal(WFJ.Font.PATH, (_G.TutorialFrameText:GetFont()))
+      assert.are.equal(WFI.Font.PATH, (_G.TutorialFrameText:GetFont()))
     end
-    Stub.keys.alt = true; WFJ.Modifier.refresh(); english()
-    Stub.keys.alt = false; WFJ.Modifier.refresh(); japanese()
-    WFJ.State.setArea("ui", false); english()
-    WFJ.State.setArea("ui", true); japanese()
-    WFJ.State.setEnabled(false); english()
-    WFJ.State.setEnabled(true); japanese()
+    Stub.keys.alt = true; WFI.Modifier.refresh(); english()
+    Stub.keys.alt = false; WFI.Modifier.refresh(); japanese()
+    WFI.State.setArea("ui", false); english()
+    WFI.State.setArea("ui", true); japanese()
+    WFI.State.setEnabled(false); english()
+    WFI.State.setEnabled(true); japanese()
   end)
 
   it("in game: with the popup holding the keyboard no modifier event arrives; its OnUpdate re-polls Alt", function()
-    WFJ.Tutorial.init()
+    WFI.Tutorial.init()
     _G.TutorialFrame_Update(17)
     assert.is_function(frame.scripts.OnUpdate)
     Stub.keys.alt = true -- no Modifier.refresh(): MODIFIER_STATE_CHANGED never came
@@ -165,13 +165,13 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
   end)
 
   it("a second tutorial while shown leaves no record from the first", function()
-    WFJ.Tutorial.init()
+    WFI.Tutorial.init()
     _G.TutorialFrame_Update(17)
     _G.TutorialFrame_Update(28) -- Next: a tutorial whose body has no row
     assert.are.equal("水泳", _G.TutorialFrameTitle:GetText())
     assert.are.equal("Swimming is much like walking.", _G.TutorialFrameText:GetText())
-    assert.are_not.equal(WFJ.Font.PATH, (_G.TutorialFrameText:GetFont())) -- the first tutorial's font is undone
-    for key, rec in pairs(WFJ.SurfaceState.records("tutorial")) do
+    assert.are_not.equal(WFI.Font.PATH, (_G.TutorialFrameText:GetFont())) -- the first tutorial's font is undone
+    for key, rec in pairs(WFI.SurfaceState.records("tutorial")) do
       assert.are_not.equal(_G.TutorialFrameText, rec.fs, key) -- no body record: 28's body is English
       if key == "title" then assert.are.equal("水泳", rec.applied) end -- the title record is 28's own
     end
@@ -185,15 +185,15 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
 
   it("the scroll child takes the Japanese body's height, so a long body scrolls; the client's 1 comes back",
     function()
-      WFJ.Tutorial.init()
+      WFI.Tutorial.init()
       local child = _G.TutorialFrameTextScrollChildFrame
       _G.TutorialFrame_Update(46)
       assert.are.equal(UI.TUTORIAL46[2], _G.TutorialFrameText:GetText())
       assert.are.equal(_G.TutorialFrameText:GetHeight(), child:GetHeight())
       assert.is_true(child:GetHeight() > 1)
-      Stub.keys.alt = true; WFJ.Modifier.refresh() -- the English: the child follows it
+      Stub.keys.alt = true; WFI.Modifier.refresh() -- the English: the child follows it
       assert.are.equal(_G.TutorialFrameText:GetHeight(), child:GetHeight())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       _G.TUTORIAL28 = "Swimming is much like walking."
       _G.TutorialFrame_Update(28) -- a body with no row: the client's own scroll child
       assert.are.equal(1, child:GetHeight())
@@ -203,12 +203,12 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
     end)
 
   it("an owned title answers only the popup: an unrestricted match of \"Swimming\" finds nothing", function()
-    assert.is_nil((WFJ.UIIndex:match("Swimming")))
-    assert.are.equal("TUTORIAL_TITLE28", (WFJ.UIIndex:matchOnly("Swimming", { "TUTORIAL_TITLE28" })))
+    assert.is_nil((WFI.UIIndex:match("Swimming")))
+    assert.are.equal("TUTORIAL_TITLE28", (WFI.UIIndex:matchOnly("Swimming", { "TUTORIAL_TITLE28" })))
   end)
 
   it("a body that is some other dictionary word is left alone (only the tutorial keys)", function()
-    WFJ.Tutorial.init()
+    WFI.Tutorial.init()
     _G.TUTORIAL17 = UI.RAID[1]
     _G.TutorialFrame_Update(17)
     assert.are.equal("Raid", _G.TutorialFrameText:GetText())
@@ -230,8 +230,8 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
     end)
 
   it("init hooks once", function()
-    assert.is_true(WFJ.Tutorial.init())
-    assert.is_false(WFJ.Tutorial.init())
+    assert.is_true(WFI.Tutorial.init())
+    assert.is_false(WFI.Tutorial.init())
     assert.are.equal(1, #Stub.hooks.TutorialFrame_Update)
   end)
 end)

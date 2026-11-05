@@ -8,7 +8,7 @@ independently verified; recall is a within-sample figure, not an estimate of tru
 
 import json
 
-from wfj.io.jsonl_store import Store
+from wfi.io.jsonl_store import Store
 
 PRECISION_FLOOR = 0.95
 

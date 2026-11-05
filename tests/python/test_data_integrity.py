@@ -6,8 +6,8 @@ import re
 
 import pytest
 
-from wfj.core import decisions, paragraphs, readings
-from wfj.io.jsonl_store import Store
+from wfi.core import decisions, paragraphs, readings
+from wfi.io.jsonl_store import Store
 
 
 def _quest_lines(root):
@@ -129,7 +129,7 @@ def test_every_trusted_description_is_complete(root):
 
 
 def test_generated_shard_carries_paragraph_breaks(root):
-    shard = (root / "addon/WoWForeverJapanese/Data/Quest/Quest_0000.lua").read_text(encoding="utf-8")
+    shard = (root / "addon/WoWForeverItalian/Data/Quest/Quest_0000.lua").read_text(encoding="utf-8")
     row = next(line for line in shard.splitlines() if line.strip().startswith("[26] ="))
     assert "\\n\\n" in row  # Lua-escaped newlines inside the description slot
 
@@ -147,7 +147,7 @@ def test_quest_456_ships_its_corrected_complete_translation(root):
     assert l456["status"] == "trusted" and prov["class"] == "correction"
     assert prov["translator"] == "Az" and prov["corrects"] == "qjp@0.5.8" and prov["source"].startswith("correction@")
     assert paragraphs.count(l456["ja"]) == 3 and "Thistle Boar" in l456["ja"] and "Thistle bore" not in l456["ja"]
-    shard = (root / "addon/WoWForeverJapanese/Data/Quest/Quest_0000.lua").read_text(encoding="utf-8")
+    shard = (root / "addon/WoWForeverItalian/Data/Quest/Quest_0000.lua").read_text(encoding="utf-8")
     row = next(line for line in shard.splitlines() if line.strip().startswith("[456] ="))
     assert "Thistle Boar" in row
 
@@ -215,7 +215,7 @@ def test_progress_and_completion_ship_with_their_own_vmangos_hash(root):
                 ln["id"], ln["field"], en["src"])
     by = _by(_quest_lines(root))
     h = by[(33, "completion")]["english"]["hash"]
-    shard = (root / "addon/WoWForeverJapanese/Data/Quest/Quest_0000.lua").read_text(encoding="utf-8")
+    shard = (root / "addon/WoWForeverItalian/Data/Quest/Quest_0000.lua").read_text(encoding="utf-8")
     row = next(line for line in shard.splitlines() if line.startswith("  [33] = {"))
     assert row.rstrip(",").rsplit(", ", 2)[-2] == f"0x{h[:8]}"  # slot 10: completion h1
 
@@ -261,8 +261,8 @@ def test_gendered_quest_fields_ship_h1f_and_keyed_aliases_as_measured(root, plan
     156 fields across them; quest 8234's completion is one of them. 189 shipped gossip lines (NPC speech
     included) and 10 book pages get a gender alias; none is dropped or ambiguous. A data PR that moves these
     counts updates them knowingly."""
-    from wfj.cmd import generate
-    from wfj.emit import lua_writer
+    from wfi.cmd import generate
+    from wfi.emit import lua_writer
 
     data = root / "data"
     planned, report = plan_report
@@ -303,7 +303,7 @@ def test_every_rejected_hand_written_line_with_english_is_accounted_for(root):
     redrafted. Whatever is left stays English by an existing rule (the tooltip audit's rulings); since the
     Riding skills were redrafted nothing is left. Tiger's Fury ("Requires Cat Form" in white or red) ships
     as branch variants."""
-    from wfj.core import decisions
+    from wfi.core import decisions
 
     left = []
     for type_ in ("quest", "item", "spell", "gossip", "book", "ui", "objective", "unit"):
@@ -352,7 +352,7 @@ def test_meanings_complete(root, type_):
 # A word's meaning never carries its line's whole English line (core/meanings.py): the addon ships no English
 # line of the game's text.
 def test_no_meaning_copies_a_whole_english_line(root):
-    from wfj.core import meanings as scan
+    from wfi.core import meanings as scan
 
     hits = []
     for type_ in sorted(readings.TYPES):
@@ -372,8 +372,8 @@ def test_no_shipped_tooltip_asks_for_more_slots_than_its_english_prints(root, ty
     """A `$N<k>` or `$D<k>` past what the template prints can never be filled, so the line falls back to English
     for every player (two placeholders around one range the client prints as `14 to 16`, say). Shipped tooltip
     rows stay within `align.value_slots` / `align.duration_slots` of their current English."""
-    from wfj.core import align
-    from wfj.core.report import SHIPPED
+    from wfi.core import align
+    from wfi.core.report import SHIPPED
 
     english = {(ln["id"], ln["field"]): ln["en"] for ln in Store(root / "data", english=True).load(type_)}
     over = []

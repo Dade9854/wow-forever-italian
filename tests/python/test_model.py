@@ -1,4 +1,4 @@
-from wfj.core.model import FIELDS, english_line, entry, provenance, validate_line
+from wfi.core.model import FIELDS, english_line, entry, provenance, validate_line
 
 PROV = provenance("human", "cqjt@3446c82", "2026-09-13", translator="Tammy", origins=["cqjt@3446c82#1"])
 

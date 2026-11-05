@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 from local_inputs import forever_build
 
-from wfj.dev import served_dispositions as sd
-from wfj.dev.served_columns import inventory_build, read_inventory
+from wfi.dev import served_dispositions as sd
+from wfi.dev.served_columns import inventory_build, read_inventory
 
 
 def _write(tmp_path: Path, text: str) -> Path:

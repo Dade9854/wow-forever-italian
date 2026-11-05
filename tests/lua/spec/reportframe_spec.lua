@@ -47,13 +47,13 @@ local function install(o)
 end
 
 describe("the report window on Forever", function()
-  local WFJ
-  before_each(function() WFJ = S.load(FILES, UI, NEEDS) end)
+  local WFI
+  before_each(function() WFI = S.load(FILES, UI, NEEDS) end)
   after_each(function() S.teardown({ "ReportFrame" }) end)
 
   it("static labels and the reason dropdown's text are Japanese; Alt shows English", function()
     install()
-    assert.is_true(WFJ.ReportFrame.init())
+    assert.is_true(WFI.ReportFrame.init())
     local frame = _G.ReportFrame
     assert.are.equal("WoWカスタマーサポート", frame.TitleText:GetText())
     assert.are.equal("ご報告ありがとうございます!", frame.ThankYouText:GetText())
@@ -63,14 +63,14 @@ describe("the report window on Forever", function()
     assert.are.equal("選択してください", frame.ReportingMajorCategoryDropdown.Text:GetText())
     frame.ReportingMajorCategoryDropdown:SetSelectionText("Cheating")
     assert.are.equal("不正行為", frame.ReportingMajorCategoryDropdown.Text:GetText())
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal("Cheating", frame.ReportingMajorCategoryDropdown.Text:GetText())
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
   end)
 
   it("a report names the player as written; the pooled minor categories translate on reuse", function()
     install()
-    WFJ.ReportFrame.init()
+    WFI.ReportFrame.init()
     local frame = _G.ReportFrame
     frame:InitiateReportInternal(nil, "Close")
     assert.are.equal("Closeを報告", frame.ReportString:GetText())
@@ -91,19 +91,19 @@ describe("the report window on Forever", function()
     local frame = _G.ReportFrame
     frame.MinorCategoryButtonPool, frame.ReportButton, frame.InitiateReportInternal = "?", 4, true
     frame.ReportingMajorCategoryDropdown.Text = "?"
-    assert.has_no.errors(function() assert.is_true(WFJ.ReportFrame.init()) end)
-    assert.has_no.errors(function() WFJ.ReportFrame.onMajorType() end)
+    assert.has_no.errors(function() assert.is_true(WFI.ReportFrame.init()) end)
+    assert.has_no.errors(function() WFI.ReportFrame.onMajorType() end)
     assert.are.equal("理由を選択", frame.ReportingMajorCategoryDropdown.Label:GetText())
   end)
 
   it("hooks install once; without the Menu-style report window init returns false and touches nothing", function()
-    assert.is_false(WFJ.ReportFrame.init())
+    assert.is_false(WFI.ReportFrame.init())
     install({ noUpdateText = true })
-    assert.is_false(WFJ.ReportFrame.init())
+    assert.is_false(WFI.ReportFrame.init())
     assert.are.equal("Report", _G.ReportFrame.ReportButton:GetText())
     install()
-    assert.is_true(WFJ.ReportFrame.init())
-    assert.is_false(WFJ.ReportFrame.init())
+    assert.is_true(WFI.ReportFrame.init())
+    assert.is_false(WFI.ReportFrame.init())
     assert.are.equal(1, #Stub.hooks["ReportFrame:MajorTypeSelected"])
   end)
 end)

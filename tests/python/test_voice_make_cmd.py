@@ -1,4 +1,4 @@
-"""`wfj voice cast|plan|generate|status|record-hashes` as commands, the character's spoken error lines and
+"""`wfi voice cast|plan|generate|status|record-hashes` as commands, the character's spoken error lines and
 the pack tables' variants and aliases, against a fake engine and encoder."""
 
 from __future__ import annotations
@@ -11,11 +11,11 @@ from types import SimpleNamespace
 import pytest
 from test_voice import CFG, SRC, _fake_encode, _store, _wav
 
-from wfj.cmd import voice_make
-from wfj.core import voice
-from wfj.core.hashing import key as hash_key
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd import voice_make
+from wfi.core import voice
+from wfi.core.hashing import key as hash_key
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 TOML = """engine = "http://fake"
 speed_scale = 0.9
@@ -318,7 +318,7 @@ def test_the_store_in_a_git_checkout_is_the_main_checkouts(tmp_path, monkeypatch
 
 
 def test_validate_flags_a_cast_out_of_step_with_the_config(world, capsys):
-    from wfj.cmd.validate import rule_voice
+    from wfi.cmd.validate import rule_voice
 
     assert rule_voice(world.data, world.cfg) == [
         "voice voices: 3 creature(s) not cast as voice.toml casts them now (e.g. [1992, 2079, 3000]); "
@@ -337,7 +337,7 @@ def test_validate_flags_a_cast_out_of_step_with_the_config(world, capsys):
 
 
 def test_validate_reports_a_broken_config(world):
-    from wfj.cmd.validate import rule_voice
+    from wfi.cmd.validate import rule_voice
 
     world.cfg.write_text('narrator = "zz"\nbook_narrator = "zz"\n', encoding="utf-8")
     assert rule_voice(world.data, world.cfg) == [
@@ -348,7 +348,7 @@ def test_validate_reports_a_broken_config(world):
 
 
 def test_the_coverage_page_counts_voiced_files_and_silent_lines_by_reason(world):
-    from wfj.dev import coverage
+    from wfi.dev import coverage
 
     assert coverage.voice_coverage(world.data) == {}  # no voice.toml beside data/: no section
     (world.tmp / "pipeline").mkdir()

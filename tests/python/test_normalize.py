@@ -1,4 +1,4 @@
-from wfj.core.normalize import Player, normalize_v1, replace_word
+from wfi.core.normalize import Player, normalize_v1, replace_word
 
 
 def test_markup_link_keeps_label():

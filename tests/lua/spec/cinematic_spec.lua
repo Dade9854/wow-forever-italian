@@ -27,7 +27,7 @@ R.suite(getfenv(1), {
   title = "the cinematic close dialogs on Forever", module = "Cinematic", file = "UI/Cinematic.lua",
   root = "MovieFrame", globals = GLOBALS, ui = UI, build = build,
   cases = {
-    { "both dialogs are Japanese when shown; Alt shows English", function(frame, WFJ)
+    { "both dialogs are Japanese when shown; Alt shows English", function(frame, WFI)
       frame.CloseDialog:Show()
       assert.are.equal("このムービーをキャンセルしますか？", frame.CloseDialog.Title:GetText())
       assert.are.equal("はい", frame.CloseDialog.Buttons.ConfirmButton:GetText())
@@ -35,16 +35,16 @@ R.suite(getfenv(1), {
       _G.CinematicFrameCloseDialog:Show()
       assert.are.equal("このムービーをキャンセルしますか？", _G.CinematicFrameCloseDialogText:GetText())
       assert.are.equal("はい", _G.CinematicFrameCloseDialogConfirmButton:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("No", _G.CinematicFrameCloseDialogResumeButton:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame.CloseDialog.Summary.text = "Yes" -- the cinematic's summary, whatever it says
     frame.CloseDialog:Show()
     assert.are.equal("Yes", frame.CloseDialog.Summary:GetText())
-    assert.is_true(R.unrecorded(WFJ, frame.CloseDialog.Summary))
+    assert.is_true(R.unrecorded(WFI, frame.CloseDialog.Summary))
   end,
   wrong = function(frame)
     frame.CloseDialog.Buttons = 9

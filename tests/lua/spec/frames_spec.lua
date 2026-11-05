@@ -21,9 +21,9 @@ describe("Frames: bounded region and child lists", function()
   local Frames
 
   before_each(function()
-    local WFJ = {}
-    H.loadPure("UI/Frames.lua", "WoWForeverJapanese", WFJ)
-    Frames = WFJ.Frames
+    local WFI = {}
+    H.loadPure("UI/Frames.lua", "WoWForeverItalian", WFI)
+    Frames = WFI.Frames
   end)
 
   local KINDS = { { "regions", "GetRegions", "GetNumRegions" }, { "children", "GetChildren", "GetNumChildren" } }

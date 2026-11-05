@@ -56,29 +56,29 @@ local function installHelpTip()
 end
 
 describe("UI/HelpTips: HelpTip callouts", function()
-  local WFJ, tip
+  local WFI, tip
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     tip = installHelpTip()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end)
 
   after_each(function() H.uiTeardown(); _G.HelpTip, _G.HelpTipTemplateMixin = nil, nil end)
 
   it("rewrites the callout inside ApplyText, so the box is measured with the Japanese; info.text is untouched",
     function()
-      assert.is_true(WFJ.HelpTips.init())
+      assert.is_true(WFI.HelpTips.init())
       local en = UI.TALENT_MICRO_BUTTON_UNSPENT_TALENTS[1]
       local f = tip:Show(nil, { text = en })
       assert.are.equal("未使用のタレントポイントがあります。", f.Text:GetText())
       assert.are.equal(f.Text:GetHeight() + 20, f.boxHeight)
       assert.are.equal(en, f.info.text)
       assert.is_true(tip:IsShowing(nil, en)) -- Blizzard's identity checks still see the English
-      Stub.keys.alt = true; WFJ.Modifier.refresh()
+      Stub.keys.alt = true; WFI.Modifier.refresh()
       assert.are.equal(en, f.Text:GetText())
-      Stub.keys.alt = false; WFJ.Modifier.refresh()
+      Stub.keys.alt = false; WFI.Modifier.refresh()
       f:Layout() -- a UI_SCALE_CHANGED relayout re-applies info.text, and the hook again
       assert.are.equal("未使用のタレントポイントがあります。", f.Text:GetText())
     end)
@@ -87,7 +87,7 @@ describe("UI/HelpTips: HelpTip callouts", function()
     local active = tip:Show(nil, { text = UI.WORLD_MAP_TUTORIAL2[1] })
     local spare = tip:Show(nil, { text = "Other" })
     tip.framePool:Release(spare)
-    assert.is_true(WFJ.HelpTips.init())
+    assert.is_true(WFI.HelpTips.init())
     assert.are.equal("クエストをクリックすると詳細が表示されます。", active.Text:GetText()) -- shown now
     local again = tip:Show(nil, { text = UI.TALENT_MICRO_BUTTON_UNSPENT_TALENTS[1] }) -- the inactive frame reused
     assert.are.equal(spare, again)
@@ -97,11 +97,11 @@ describe("UI/HelpTips: HelpTip callouts", function()
     again.Text.SetText = function(fs, t) calls = calls + 1; return set(fs, t) end
     again:Layout()
     assert.are.equal(2, calls) -- the client's write, then ours: hooked once, not twice
-    assert.is_true(WFJ.HelpTips.init()) -- a second init hooks nothing more
+    assert.is_true(WFI.HelpTips.init()) -- a second init hooks nothing more
   end)
 
   it("a callout that is no callout key stays the client's English", function()
-    WFJ.HelpTips.init()
+    WFI.HelpTips.init()
     local f = tip:Show(nil, { text = UI.RAID[1] })
     assert.are.equal("Raid", f.Text:GetText())
   end)
@@ -161,7 +161,7 @@ describe("UI/HelpTips: HelpTip callouts", function()
   end)
 
   it("the super-tracking tutorial callout is Japanese", function()
-    WFJ.HelpTips.init()
+    WFI.HelpTips.init()
     local f = tip:Show(nil, { text = UI.TUTORIAL_SUPERTRACK_STEP_1[1] })
     assert.are.equal("アイコンをクリックしてクエストに注目します", f.Text:GetText())
     assert.are.equal(UI.TUTORIAL_SUPERTRACK_STEP_1[1], f.info.text)
@@ -184,7 +184,7 @@ describe("UI/HelpTips: the other windows' callouts and plate tiles", function()
   }
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     tip = installHelpTip()
   end)
 
@@ -317,7 +317,7 @@ describe("UI/HelpTips: the tutorial pointer arrows", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     installHelpTip()
     pointers = installPointers()
     W = H.loadChunks(FILES)

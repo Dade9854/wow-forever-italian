@@ -7,12 +7,12 @@ local function pureNS(lookup)
   local ns = {}
   H.loadChunks({ "Core/Const.lua", "Core/Normalize.lua", "Core/Hash.lua" }, ns)
   ns.Lookup = { get = lookup }
-  H.loadPure("Core/RecentLines.lua", "WoWForeverJapanese", ns)
+  H.loadPure("Core/RecentLines.lua", "WoWForeverItalian", ns)
   return ns
 end
 
 describe("Core/RecentLines", function()
-  local WFJ, R
+  local WFI, R
   local rows = {
     ["quest.description"] = { [7] = { ja = "旅の者よ。", status = "." } },
     ["quest.title"] = { [7] = { ja = "旅立ち", status = "." } },
@@ -23,8 +23,8 @@ describe("Core/RecentLines", function()
     objective = { [5] = { ja = "目標の文", status = "." } },
   }
   before_each(function()
-    WFJ = pureNS(function(kind, id) return rows[kind] and rows[kind][id] or nil end)
-    R = WFJ.RecentLines
+    WFI = pureNS(function(kind, id) return rows[kind] and rows[kind][id] or nil end)
+    R = WFI.RecentLines
   end)
 
   it("reads a Lookup kind as the store's type and field", function()
@@ -44,7 +44,7 @@ describe("Core/RecentLines", function()
   it("records the address, the hash of the stored Japanese, the surface and the Japanese, never English",
     function()
     local rec = R.note("quest.description", 7, "questframe")
-    assert.are.same({ type = "quest", id = 7, field = "description", ja_hash = WFJ.Hash.key("旅の者よ。"),
+    assert.are.same({ type = "quest", id = 7, field = "description", ja_hash = WFI.Hash.key("旅の者よ。"),
       ja = "旅の者よ。", surface = "questframe", group = "story", burst = 1, seq = 1 }, rec)
     assert.are.equal("book", R.note("book", "00aa11bb22cc33dd", {}).type) -- a table surface is not a name
     assert.is_nil(R.list()[1].surface)
@@ -112,77 +112,77 @@ describe("Core/RecentLines", function()
 end)
 
 describe("UI/Render feeds Core/RecentLines only on a primary apply", function()
-  local WFJ, fs
+  local WFI, fs
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     local files = {}
     for i, f in ipairs(H.UI_FILES) do files[i] = f end
     files[#files + 1] = "Core/RecentLines.lua"
-    WFJ = H.loadChunks(files)
-    local rows = H.uiSetup(WFJ, { OKAY = { "Okay", "了解" }, CANCEL = { "Cancel", "キャンセル" } })
-    WFJ.Lookup = { get = function(kind, id)
+    WFI = H.loadChunks(files)
+    local rows = H.uiSetup(WFI, { OKAY = { "Okay", "了解" }, CANCEL = { "Cancel", "キャンセル" } })
+    WFI.Lookup = { get = function(kind, id)
       if kind ~= "ui" or not rows[id] then return nil end
       return { ja = rows[id][1], status = rows[id][3] }
     end }
-    WFJ.Settings.load(nil, 1, {})
+    WFI.Settings.load(nil, 1, {})
     fs = Stub.fontString("Okay")
   end)
   after_each(function() H.uiTeardown() end)
 
   it("releasing the reveal key re-records nothing and reorders nothing", function()
-    WFJ.Render.show("testsurface", "k1", fs, "Okay", "ui", "ui", "OKAY")
-    WFJ.Render.show("testsurface", "k2", Stub.fontString("Cancel"), "Cancel", "ui", "ui", "CANCEL")
+    WFI.Render.show("testsurface", "k1", fs, "Okay", "ui", "ui", "OKAY")
+    WFI.Render.show("testsurface", "k2", Stub.fontString("Cancel"), "Cancel", "ui", "ui", "CANCEL")
     local before = {}
-    for i, r in ipairs(WFJ.RecentLines.list()) do before[i] = r.id .. "#" .. r.seq end
+    for i, r in ipairs(WFI.RecentLines.list()) do before[i] = r.id .. "#" .. r.seq end
     assert.are.equal(2, #before)
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
-    Stub.keys.alt = false; WFJ.Modifier.refresh() -- every applied record is written again
+    Stub.keys.alt = true; WFI.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh() -- every applied record is written again
     local after = {}
-    for i, r in ipairs(WFJ.RecentLines.list()) do after[i] = r.id .. "#" .. r.seq end
+    for i, r in ipairs(WFI.RecentLines.list()) do after[i] = r.id .. "#" .. r.seq end
     assert.are.same(before, after) -- (a line shown again by the client moves to the front: the newest-first test above)
   end)
 
   it("an applied line is recorded with its surface; English shown (Alt, master off, no translation) is not",
     function()
-    WFJ.Render.show("testsurface", "k1", fs, "Okay", "ui", "ui", "OKAY")
+    WFI.Render.show("testsurface", "k1", fs, "Okay", "ui", "ui", "OKAY")
     assert.are.equal("了解", fs:GetText())
-    local l = WFJ.RecentLines.list()
+    local l = WFI.RecentLines.list()
     assert.are.equal(1, #l)
-    assert.are.same({ type = "ui", id = "OKAY", field = "text", ja_hash = WFJ.Hash.key("了解"), ja = "了解",
+    assert.are.same({ type = "ui", id = "OKAY", field = "text", ja_hash = WFI.Hash.key("了解"), ja = "了解",
       surface = "testsurface", shown = "了解", group = "windows", burst = 1, seq = 1 }, l[1])
-    WFJ.RecentLines.clear()
-    Stub.keys.alt = true; WFJ.Modifier.refresh() -- holding the reveal key: English
-    WFJ.Render.show("testsurface", "k2", Stub.fontString("Cancel"), "Cancel", "ui", "ui", "CANCEL")
-    assert.are.equal(0, #WFJ.RecentLines.list())
+    WFI.RecentLines.clear()
+    Stub.keys.alt = true; WFI.Modifier.refresh() -- holding the reveal key: English
+    WFI.Render.show("testsurface", "k2", Stub.fontString("Cancel"), "Cancel", "ui", "ui", "CANCEL")
+    assert.are.equal(0, #WFI.RecentLines.list())
     -- letting go writes the Japanese again: only the line never recorded before (k2) is added; k1 was recorded when
     -- it was first shown, and a refresh never re-records or reorders
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
-    assert.are.equal(1, #WFJ.RecentLines.list())
-    assert.are.equal("CANCEL", WFJ.RecentLines.list()[1].id)
-    WFJ.RecentLines.clear()
-    WFJ.State.setEnabled(false)
-    WFJ.Render.show("testsurface", "k3", Stub.fontString("Cancel"), "Cancel", "ui", "ui", "CANCEL")
-    assert.are.equal(0, #WFJ.RecentLines.list())
-    WFJ.State.setEnabled(true) -- back on: the lines are written again; only k3, never recorded, is added
-    assert.are.equal(1, #WFJ.RecentLines.list())
-    assert.are.equal("CANCEL", WFJ.RecentLines.list()[1].id)
-    WFJ.RecentLines.clear()
-    WFJ.Render.show("testsurface", "k4", Stub.fontString("Nope"), "Nope", "ui", "ui", "NOPE")
-    assert.are.equal(0, #WFJ.RecentLines.list())
+    Stub.keys.alt = false; WFI.Modifier.refresh()
+    assert.are.equal(1, #WFI.RecentLines.list())
+    assert.are.equal("CANCEL", WFI.RecentLines.list()[1].id)
+    WFI.RecentLines.clear()
+    WFI.State.setEnabled(false)
+    WFI.Render.show("testsurface", "k3", Stub.fontString("Cancel"), "Cancel", "ui", "ui", "CANCEL")
+    assert.are.equal(0, #WFI.RecentLines.list())
+    WFI.State.setEnabled(true) -- back on: the lines are written again; only k3, never recorded, is added
+    assert.are.equal(1, #WFI.RecentLines.list())
+    assert.are.equal("CANCEL", WFI.RecentLines.list()[1].id)
+    WFI.RecentLines.clear()
+    WFI.Render.show("testsurface", "k4", Stub.fontString("Nope"), "Nope", "ui", "ui", "NOPE")
+    assert.are.equal(0, #WFI.RecentLines.list())
   end)
 
   it("a companion record (ctx.follow) is not a line of its own", function()
-    WFJ.Render.show("tip", "desc", fs, "Okay", "ui", "ui", "OKAY")
-    WFJ.Render.show("tip", "desc.2", Stub.fontString("more"), "more", "ui", "ui", "OKAY", { follow = "desc" })
-    assert.are.equal(1, #WFJ.RecentLines.list())
+    WFI.Render.show("tip", "desc", fs, "Okay", "ui", "ui", "OKAY")
+    WFI.Render.show("tip", "desc.2", Stub.fontString("more"), "more", "ui", "ui", "OKAY", { follow = "desc" })
+    assert.are.equal(1, #WFI.RecentLines.list())
   end)
 
   it("a RecentLines failure is counted and never stops the write", function()
-    WFJ.RecentLines.note = function() error("boom") end
-    WFJ.Render.show("testsurface", "k1", fs, "Okay", "ui", "ui", "OKAY")
+    WFI.RecentLines.note = function() error("boom") end
+    WFI.Render.show("testsurface", "k1", fs, "Okay", "ui", "ui", "OKAY")
     assert.are.equal("了解", fs:GetText())
-    assert.are.equal(1, WFJ.Render.recentErrors)
+    assert.are.equal(1, WFI.Render.recentErrors)
   end)
 end)
 
@@ -220,7 +220,7 @@ describe("every Render.show caller records a store line or nothing", function()
     H.coreStub()
     local ns = {}
     H.loadChunks({ "Core/Const.lua" }, ns)
-    H.loadPure("Core/RecentLines.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/RecentLines.lua", "WoWForeverItalian", ns)
     for rel, kinds in pairs(CALLERS) do
       for _, kind in ipairs(kinds) do
         local type_, field = ns.RecentLines.address(kind)

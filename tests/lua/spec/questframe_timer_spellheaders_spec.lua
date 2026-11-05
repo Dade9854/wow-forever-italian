@@ -42,15 +42,15 @@ local function headerPool()
 end
 
 describe("UI/QuestFrame's timer and spell-group headers", function()
-  local WFJ
+  local WFI
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI()
     _G.QuestInfoRewardsFrame.spellHeaderPool = headerPool()
     _G.MapQuestInfoRewardsFrame.spellHeaderPool = headerPool()
@@ -60,9 +60,9 @@ describe("UI/QuestFrame's timer and spell-group headers", function()
     _G.QuestInfoTimerFrame:SetScript("OnUpdate", function(self) -- QuestInfoTimerFrame_OnUpdate (:5–10), XML-bound
       _G.QuestInfoTimerText:SetText(_G.TIME_REMAINING .. " " .. self.left)
     end)
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.is_true(WFJ.QuestFrame.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.is_true(WFI.QuestFrame.init())
   end)
 
   after_each(function()
@@ -95,7 +95,7 @@ describe("UI/QuestFrame's timer and spell-group headers", function()
       a.text, b.text = _G.REWARD_ABILITY, _G.REWARD_AURA
       local m = mapPool:Acquire()
       m.text = "Complete" -- not a header key
-      WFJ.QuestFrame.onDisplay(_G.QUEST_TEMPLATE_LOG, nil)
+      WFI.QuestFrame.onDisplay(_G.QUEST_TEMPLATE_LOG, nil)
       assert.are.equal("以下を習得します:", a:GetText())
       assert.are.equal("以下の効果を受けます:", b:GetText())
       assert.are.equal("Complete", m:GetText())
@@ -105,8 +105,8 @@ describe("UI/QuestFrame's timer and spell-group headers", function()
       pool:ReleaseAll()
       local again = pool:Acquire() -- the same FontString, a new header
       again.text = _G.REWARD_AURA
-      WFJ.QuestFrame.onDisplay(_G.QUEST_TEMPLATE_LOG, nil)
+      WFI.QuestFrame.onDisplay(_G.QUEST_TEMPLATE_LOG, nil)
       assert.are.equal("以下の効果を受けます:", again:GetText())
-      assert.are.equal(1, WFJ.SurfaceState.count(WFJ.QuestFrame.SPELL_HEADERS))
+      assert.are.equal(1, WFI.SurfaceState.count(WFI.QuestFrame.SPELL_HEADERS))
     end)
 end)

@@ -33,7 +33,7 @@ C.suite(getfenv(1), {
   file = "UI/SubscriptionInterstitial.lua", addon = "Blizzard_SubscriptionInterstitialUI",
   root = "SubscriptionInterstitialFrame", ui = UI, build = build, globals = { "SubscriptionInterstitialFrame" },
   cases = {
-    { "every line, the buttons and the pooled bullet points are Japanese; Alt shows English", function(frame, WFJ)
+    { "every line, the buttons and the pooled bullet points are Japanese; Alt shows English", function(frame, WFI)
       frame:Show()
       assert.are.equal("続けて", frame.SubscribeButton.FirstLine:GetText())
       assert.are.equal("サブスクリプションに登録", frame.SubscribeButton.ButtonText:GetText())
@@ -44,17 +44,17 @@ C.suite(getfenv(1), {
         texts[#texts + 1] = bullet.Text:GetText()
       end
       assert.are.same({ "レベル70までプレイ", "すべてのクラスを解放" }, texts)
-      C.alt(WFJ, true)
+      C.alt(WFI, true)
       assert.are.equal("CONTINUE", frame.SubscribeButton.FirstLine:GetText())
-      C.alt(WFJ, false)
+      C.alt(WFI, false)
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     -- a word that is not the widget's own key stays as the client wrote it
     frame.SubscribeButton.FirstLine.text = en("CLOSE")
     frame:Show()
     assert.are.equal("Close", frame.SubscribeButton.FirstLine:GetText())
-    assert.is_true(C.unrecorded(WFJ, frame.SubscribeButton.FirstLine))
+    assert.is_true(C.unrecorded(WFI, frame.SubscribeButton.FirstLine))
   end,
   wrong = function(frame)
     frame.UpgradeButton.bulletPointPool = "pool"

@@ -1,16 +1,16 @@
-"""`wfj import english collector`: the round-trip fixture, the merge rules, and the curated
+"""`wfi import english collector`: the round-trip fixture, the merge rules, and the curated
 importers keeping collector lines."""
 
 from pathlib import Path
 
 from test_collector_dump import dump, entry, gossip
 
-from wfj.cmd.import_ import run
-from wfj.core.hashing import key
-from wfj.core.model import english_line, validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.core.paragraphs import count_english
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.core.hashing import key
+from wfi.core.model import english_line, validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.core.paragraphs import count_english
+from wfi.io.jsonl_store import Store
 
 
 def _data_dir(tmp_path: Path, monkeypatch) -> Path:
@@ -24,7 +24,7 @@ def _snapshot(data: Path) -> dict[str, bytes]:
     return {str(p.relative_to(data)): p.read_bytes() for p in sorted((data / "english").rglob("*.jsonl"))}
 
 
-def _write(tmp_path: Path, text: str, name: str = "WoWForeverJapanese.lua") -> str:
+def _write(tmp_path: Path, text: str, name: str = "WoWForeverItalian.lua") -> str:
     p = tmp_path / name
     p.write_text(text, encoding="utf-8")
     return str(p)
@@ -32,7 +32,7 @@ def _write(tmp_path: Path, text: str, name: str = "WoWForeverJapanese.lua") -> s
 
 def test_fixture_round_trip(root, tmp_path: Path, monkeypatch, capsys):
     data = _data_dir(tmp_path, monkeypatch)
-    fx = root / "tests/fixtures/collector/WoWForeverJapanese.lua"
+    fx = root / "tests/fixtures/collector/WoWForeverItalian.lua"
     assert run(["english", "collector", str(fx)]) == 0
     english = Store(data, english=True)
     lines = {(t, ln["id"], ln["field"]): ln for t in ("quest", "item", "spell", "unit") for ln in english.load(t)}
@@ -122,7 +122,7 @@ def test_the_client_own_files_are_kept_and_literal_class_words_restored(tmp_path
 
 
 def test_restore_literals_puts_back_only_the_recording_player_own_word():
-    from wfj.cmd.import_english import _restore_literals
+    from wfi.cmd.import_english import _restore_literals
 
     druid = ("Druid", "Night Elf")
     assert _restore_literals("A wise $C sent you.", "A wise druid sent you.", druid) == "A wise druid sent you."
@@ -205,7 +205,7 @@ def test_wago_keeps_collector_descriptions(root, tmp_path: Path, monkeypatch):
 
 
 def test_curated_importers_refuse_to_wipe_their_lines_with_nothing(tmp_path: Path, monkeypatch):
-    from wfj.cmd.import_english import merge_source
+    from wfi.cmd.import_english import merge_source
 
     old = [english_line(2, "title", "T", key("T"), "pfquest@7786596")]
     try:
@@ -222,7 +222,7 @@ def test_check_consults_collector_quest_english_only(root, tmp_path: Path, monke
     since what the Forever client shows is the English: its hashes and new quests enter the scopes."""
     import shutil
 
-    from wfj.cmd import check, validate
+    from wfi.cmd import check, validate
 
     data = _data_dir(tmp_path, monkeypatch)
     src = root / "data"
@@ -259,10 +259,10 @@ def test_check_consults_collector_quest_english_only(root, tmp_path: Path, monke
 
 
 def test_truncated_dump_is_refused_with_one_line(tmp_path: Path, monkeypatch, capsys):
-    """A truncated SavedVariables file → `wfj import:` error, exit 1, nothing written."""
+    """A truncated SavedVariables file → `wfi import:` error, exit 1, nothing written."""
     data = _data_dir(tmp_path, monkeypatch)
-    assert run(["english", "collector", _write(tmp_path, 'WFJ_Collector = {["version"] = ')]) == 1
-    assert "wfj import: line 1: unexpected end of input" in capsys.readouterr().err
+    assert run(["english", "collector", _write(tmp_path, 'WFI_Collector = {["version"] = ')]) == 1
+    assert "wfi import: line 1: unexpected end of input" in capsys.readouterr().err
     assert _snapshot(data) == {}
 
 
@@ -307,7 +307,7 @@ def test_npcs_are_allowed_only_on_gossip_english():
 
 
 def test_an_older_client_never_replaces_what_forever_recorded():
-    from wfj.cmd.import_english import _without_recorded
+    from wfi.cmd.import_english import _without_recorded
 
     rec = english_line(5, "description", "Forever's words.", key(normalize_v1("Forever's words.")), "collector@1.60.1.70170")
     era = english_line(5, "description", "Era words.", key(normalize_v1("Era words.")), "wdb@1.15.9.69722")

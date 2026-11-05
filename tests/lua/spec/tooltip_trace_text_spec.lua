@@ -21,27 +21,27 @@ local function isUtf8(s)
 end
 
 describe("UI/Tooltip trace text", function()
-  local WFJ
+  local WFI
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     local files = {}
     for i, f in ipairs(H.UI_FILES) do files[i] = f end
     files[#files + 1] = "UI/TimeLine.lua"
     files[#files + 1] = "UI/Tooltip.lua"
-    WFJ = H.loadChunks(files)
-    H.uiSetup(WFJ, {})
+    WFI = H.loadChunks(files)
+    H.uiSetup(WFI, {})
   end)
   after_each(function() H.uiTeardown() end)
 
   it("a long Japanese value is cut before a character, never inside one", function()
     local ja = string.rep("回復", 30) -- 60 characters, 180 bytes
     for shift = 0, 3 do
-      local cut = WFJ.Tooltip.plain(string.rep("a", shift) .. ja)
+      local cut = WFI.Tooltip.plain(string.rep("a", shift) .. ja)
       assert.is_true(isUtf8(cut), "shift " .. shift)
       assert.is_truthy(cut:find("%.%.%.$"))
       assert.is_true(#cut <= 73)
     end
-    assert.are.equal("short", WFJ.Tooltip.plain("short"))
+    assert.are.equal("short", WFI.Tooltip.plain("short"))
   end)
 end)

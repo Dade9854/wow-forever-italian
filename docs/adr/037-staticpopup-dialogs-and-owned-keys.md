@@ -1,9 +1,9 @@
 # ADR-037: StaticPopup dialogs and keys that own their Japanese
 
-- **Status:** Accepted. Implemented in `addon/WoWForeverJapanese/UI/Popups.lua`,
+- **Status:** Accepted. Implemented in `addon/WoWForeverItalian/UI/Popups.lua`,
   `Core/UIStringKeys.lua` (`OWN`), `Core/UIStrings.lua` (`Index:keyOf`, `Index:formatArgs`, the `owned` count), `Main.lua` (`Popups` in the
-  `forever` list), `UI/Slash.lua` (`/wfj debug ui` prints `owned`), `pipeline/wfj/cmd/validate.py` (`ui_own`, rule 7),
-  `pipeline/wfj/dev/ui_inventory.py` (`popup_keys`), `pipeline/wfj/dev/ui_windows.py` (`FOREVER_WINDOWS["popups"]`),
+  `forever` list), `UI/Slash.lua` (`/wfi debug ui` prints `owned`), `pipeline/wfi/cmd/validate.py` (`ui_own`, rule 7),
+  `pipeline/wfi/dev/ui_inventory.py` (`popup_keys`), `pipeline/wfi/dev/ui_windows.py` (`FOREVER_WINDOWS["popups"]`),
   `pipeline/forever_addon_dispositions.txt`, `tests/python/test_popups_static.py`. Supersedes
   [ADR-015](015-ui-text-surfaces.md) §5. The in-game checks are in the level-1 checklist
   ([testing strategy](../testing/strategy.md)).
@@ -56,7 +56,7 @@ It also had to be confirmed that the secure-environment windows stay English.
      `COMBATLOG_FILTER_STRING_FRIENDLY_UNITS` ("Friends" in the combat log's unit filters) ships 味方 where the friends
      list says フレンド; the chat settings' unit rows ask for the unit filter keys by name. The recipe form's
      `PROFESSIONS_REAGENT_CONTAINER_LABEL` ("Reagents:") ships 素材: where a spell tooltip's reagents are 触媒.
-   - `/wfj debug ui` prints the `owned` count.
+   - `/wfi debug ui` prints the `owned` count.
 
 2. **The dialogs are a surface, `popups` (`UI/Popups.lua`).** Three post-hooks on globals:
    - **`StaticPopup_Show`.** `hooksecurefunc` hands the hook the call's arguments, not the dialog, so the dialog is the

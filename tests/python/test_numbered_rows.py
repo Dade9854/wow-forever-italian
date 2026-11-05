@@ -4,9 +4,9 @@ back in order; `generate` ships the skeleton's hash and the Japanese with each t
 
 import pytest
 
-from wfj.core import numbered
-from wfj.core.hashing import key as hash_key
-from wfj.core.normalize import normalize_for
+from wfi.core import numbered
+from wfi.core.hashing import key as hash_key
+from wfi.core.normalize import normalize_for
 
 
 def test_only_the_widget_family_is_numbered():
@@ -60,7 +60,7 @@ def test_a_token_the_english_lacks_is_refused():
 def test_generate_ships_the_skeleton_hash_and_the_slotted_japanese(root, tmp_path, monkeypatch):
     import json
 
-    from wfj.cmd import generate
+    from wfi.cmd import generate
 
     data = tmp_path / "data"
     (data / "english" / "ui").mkdir(parents=True)
@@ -75,7 +75,7 @@ def test_generate_ships_the_skeleton_hash_and_the_slotted_japanese(root, tmp_pat
         "provenance": {"class": "machine", "model": "m", "source": "draft-ui-families@2026-09-26",
                        "imported": "2026-09-26"},
         "english": {"hash": h, "src": "db2@1.60.1.70009"}, "reasons": [], "conflicts": []}) + "\n")
-    from wfj.io.jsonl_store import Store
+    from wfi.io.jsonl_store import Store
 
     out = generate.plan(Store(data), [])
     shard = out["Data/UI/UI_W.lua"]
@@ -91,7 +91,7 @@ def test_generate_ships_the_skeleton_hash_and_the_slotted_japanese(root, tmp_pat
          "src": "db2@1.60.1.70009"}) + "\n")
     out = generate.plan(Store(data), [])
     assert "制圧した塔" not in "".join(v for k, v in out.items() if k.startswith("Data/UI/"))
-    from wfj.cmd import validate
+    from wfi.cmd import validate
 
     problems = validate.rule_ui(Store(data), Store(data, english=True))
     assert any("WidgetText:4401" in p and "does not fit" in p for p in problems), problems
@@ -101,7 +101,7 @@ def test_no_numbered_english_holds_markup(root):
     """The addon strips colour / texture markup before it replaces the line's digits, while
     `generate` replaces the English's digits first: a colour code's hex digits would split the two skeletons. No
     shipped WidgetText English holds markup; if one ever does, normalize before `numbered.skeleton` in generate."""
-    from wfj.io.jsonl_store import Store
+    from wfi.io.jsonl_store import Store
 
     for ln in Store(root / "data", english=True).load("ui"):
         if numbered.is_numbered(ln["id"]):

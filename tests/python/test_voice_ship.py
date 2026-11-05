@@ -1,4 +1,4 @@
-"""`wfj voice pack|release`: the entry and the packs named for what they hold, the 420 MB cap, versions and
+"""`wfi voice pack|release`: the entry and the packs named for what they hold, the 420 MB cap, versions and
 change detection, the zip check and the CurseForge upload payload (ADR-062; pipeline/voice-packs.toml)."""
 
 from __future__ import annotations
@@ -14,10 +14,10 @@ from pathlib import Path
 import pytest
 from test_voice import CFG, _gen, _store, engine  # noqa: F401 (engine is a fixture)
 
-from wfj.cmd import voice_ship as vs
-from wfj.core import voice_packs as vp
-from wfj.emit import voice_pack
-from wfj.io import curseforge
+from wfi.cmd import voice_ship as vs
+from wfi.core import voice_packs as vp
+from wfi.emit import voice_pack
+from wfi.io import curseforge
 
 ROOT = Path(__file__).resolve().parents[2]
 TABLE = ROOT / "pipeline" / "voice-packs.toml"
@@ -29,13 +29,13 @@ def _raw(**over):
         "cap_mb": 420,
         "warn_mb": 315,
         "addon_slug": "main",
-        "entry": {"folder": "WoWForeverJapanese_Voice", "title": "E", "slug": "e", "project_id": 1, "holds": "x"},
+        "entry": {"folder": "WoWForeverItalian_Voice", "title": "E", "slug": "e", "project_id": 1, "holds": "x"},
         "pack": [
-            {"folder": "WoWForeverJapanese_VoiceA", "title": "A", "slug": "a", "project_id": 2, "holds": "x",
+            {"folder": "WoWForeverItalian_VoiceA", "title": "A", "slug": "a", "project_id": 2, "holds": "x",
              "levels": [1, 10]},
-            {"folder": "WoWForeverJapanese_VoiceB", "title": "B", "slug": "b", "project_id": 0, "holds": "x",
+            {"folder": "WoWForeverItalian_VoiceB", "title": "B", "slug": "b", "project_id": 0, "holds": "x",
              "levels": [11, 20]},
-            {"folder": "WoWForeverJapanese_VoiceOther", "title": "O", "slug": "o", "project_id": 3, "holds": "x"},
+            {"folder": "WoWForeverItalian_VoiceOther", "title": "O", "slug": "o", "project_id": 3, "holds": "x"},
         ],
     }
     raw.update(over)
@@ -47,13 +47,13 @@ def _raw(**over):
 
 def test_the_committed_table_is_the_entry_and_seven_packs():
     t = vp.load(TABLE)
-    assert t.entry.folder == voice_pack.FOLDER == "WoWForeverJapanese_Voice"
+    assert t.entry.folder == voice_pack.FOLDER == "WoWForeverItalian_Voice"
     assert [p.levels for p in t.packs] == [(1, 10), (11, 20), (21, 30), (31, 40), (41, 50), (51, 60), None]
     assert [p.folder.removeprefix(vp.PREFIX) for p in t.packs] == [
         "Levels1to10", "Levels11to20", "Levels21to30", "Levels31to40", "Levels41to50", "Levels51to60", "Other"]
     assert all("part" not in p.title.lower() for p in (t.entry, *t.packs))  # named for what they hold
     assert (t.cap_mb, t.warn_mb) == (420, 315)
-    assert t.addon_slug == "wow-forever-japanese"  # the entry requires the main addon
+    assert t.addon_slug == "wow-forever-italian"  # the entry requires the main addon
 
 
 @pytest.mark.parametrize(
@@ -63,7 +63,7 @@ def test_the_committed_table_is_the_entry_and_seven_packs():
         (lambda r: r["pack"][1].update(levels=[10, 20]), "must start at 11"),
         (lambda r: r["pack"].pop(), "every pack but the last has a band"),
         (lambda r: r["pack"][2].update(slug="a"), "the same slug twice: a"),
-        (lambda r: r["pack"][0].update(folder="VoiceA"), "must start with WoWForeverJapanese_Voice"),
+        (lambda r: r["pack"][0].update(folder="VoiceA"), "must start with WoWForeverItalian_Voice"),
         (lambda r: r.update(warn_mb=420), "warn_mb under cap_mb"),
         (lambda r: r["entry"].update(levels=[1, 2]), "takes no levels"),
         (lambda r: r["pack"][0].update(project_id=-1), "project_id"),
@@ -144,11 +144,11 @@ def test_the_content_hash_ignores_order_and_follows_the_content():
 def test_versions_and_the_names_of_released_assets():
     v = vp.version(DAY, "0123456789abcdef")
     assert v == "2026.10.07-01234567"
-    assert vp.asset_name("WoWForeverJapanese_VoiceA", v) == "WoWForeverJapanese_VoiceA-2026.10.07-01234567.zip"
-    names = ["WoWForeverJapanese_VoiceA-2026.10.07-01234567.zip", "WoWForeverJapanese_Voice-2026.10.01-89abcdef.zip",
-             "WoWForeverJapanese_Voice-all-2026.10.07.zip", "notes.txt"]
-    assert vp.released(names) == {"WoWForeverJapanese_VoiceA": "2026.10.07-01234567",
-                                  "WoWForeverJapanese_Voice": "2026.10.01-89abcdef"}
+    assert vp.asset_name("WoWForeverItalian_VoiceA", v) == "WoWForeverItalian_VoiceA-2026.10.07-01234567.zip"
+    names = ["WoWForeverItalian_VoiceA-2026.10.07-01234567.zip", "WoWForeverItalian_Voice-2026.10.01-89abcdef.zip",
+             "WoWForeverItalian_Voice-all-2026.10.07.zip", "notes.txt"]
+    assert vp.released(names) == {"WoWForeverItalian_VoiceA": "2026.10.07-01234567",
+                                  "WoWForeverItalian_Voice": "2026.10.01-89abcdef"}
     assert not vp.changed("01234567ffff", "2026.10.07-01234567")
     assert vp.changed("01234568ffff", "2026.10.07-01234567")
     assert vp.changed("01234567ffff", None)
@@ -171,9 +171,9 @@ def _table_file(tmp_path, **over):
 
 def _project(tmp_path, engine):  # noqa: F811
     data = _store(tmp_path)
-    toc = tmp_path / "addon" / "WoWForeverJapanese"
+    toc = tmp_path / "addon" / "WoWForeverItalian"
     toc.mkdir(parents=True)
-    (toc / "WoWForeverJapanese.toc").write_text("## Interface: 16001\n## Title: x\n")
+    (toc / "WoWForeverItalian.toc").write_text("## Interface: 16001\n## Title: x\n")
     store = tmp_path / "voice"
     _gen(data, store, engine)
     cfg = tmp_path / "voice.toml"
@@ -204,31 +204,31 @@ def test_pack_writes_the_entry_and_every_pack(tmp_path, engine, monkeypatch):  #
     assert vs.run_pack(_args(tmp_path, store, cfg, table)) == 0
     out = tmp_path / "out"
     assert sorted(p.name for p in out.iterdir()) == [
-        "WoWForeverJapanese_Voice", "WoWForeverJapanese_VoiceA", "WoWForeverJapanese_VoiceB",
-        "WoWForeverJapanese_VoiceOther"]
+        "WoWForeverItalian_Voice", "WoWForeverItalian_VoiceA", "WoWForeverItalian_VoiceB",
+        "WoWForeverItalian_VoiceOther"]
     # the entry: a TOC and a README, no audio, no Register.lua; its TOC carries its project id
-    entry = out / "WoWForeverJapanese_Voice"
-    assert sorted(p.name for p in entry.iterdir()) == ["README.txt", "WoWForeverJapanese_Voice.toc"]
-    toc = (entry / "WoWForeverJapanese_Voice.toc").read_text()
-    assert "## Dependencies: WoWForeverJapanese\n" in toc and "## X-Curse-Project-ID: 1\n" in toc
+    entry = out / "WoWForeverItalian_Voice"
+    assert sorted(p.name for p in entry.iterdir()) == ["README.txt", "WoWForeverItalian_Voice.toc"]
+    toc = (entry / "WoWForeverItalian_Voice.toc").read_text()
+    assert "## Dependencies: WoWForeverItalian\n" in toc and "## X-Curse-Project-ID: 1\n" in toc
     assert "Register.lua" not in toc
-    main_icon = next(ln for ln in (ROOT / "addon" / "WoWForeverJapanese" / "WoWForeverJapanese.toc").read_text(
+    main_icon = next(ln for ln in (ROOT / "addon" / "WoWForeverItalian" / "WoWForeverItalian.toc").read_text(
         encoding="utf-8").splitlines() if ln.startswith("## IconTexture:"))
     assert main_icon + "\n" in toc  # the same 字 icon as the main addon in the AddOn List
     # quest 456 is level 5, and the narrator's gossip goes to the first band
-    a = out / "WoWForeverJapanese_VoiceA"
+    a = out / "WoWForeverItalian_VoiceA"
     assert sorted(p.name for p in (a / "Sound").iterdir()) == [
         "456-completion.mp3", "456-description.mp3", "g-0123456789abcdef.mp3"]
     reg = (a / "Register.lua").read_text()
-    assert 'folder = "WoWForeverJapanese_VoiceA"' in reg
-    atoc = (a / "WoWForeverJapanese_VoiceA.toc").read_text()
+    assert 'folder = "WoWForeverItalian_VoiceA"' in reg
+    atoc = (a / "WoWForeverItalian_VoiceA.toc").read_text()
     assert "## Title: A\n" in atoc and "## X-Curse-Project-ID: 2\n" in atoc
     assert main_icon + "\n" in atoc
     notes = next(ln for ln in atoc.splitlines() if ln.startswith("## Notes:"))
     assert notes.isascii() and "README.txt" in notes  # the AddOn List tooltip shows no Japanese glyphs
     assert "## Version: 2026." in atoc or "## Version: 20" in atoc
-    assert "X-Curse-Project-ID" not in (out / "WoWForeverJapanese_VoiceB" / "WoWForeverJapanese_VoiceB.toc").read_text()
-    assert not list((out / "WoWForeverJapanese_VoiceB" / "Sound").iterdir())
+    assert "X-Curse-Project-ID" not in (out / "WoWForeverItalian_VoiceB" / "WoWForeverItalian_VoiceB.toc").read_text()
+    assert not list((out / "WoWForeverItalian_VoiceB" / "Sound").iterdir())
     luac = shutil.which("luac") or shutil.which("luac5.1")
     if luac:
         subprocess.run([luac, "-p", str(a / "Register.lua")], check=True)
@@ -242,7 +242,7 @@ def test_a_pack_over_the_cap_is_refused_and_nothing_is_written(tmp_path, engine,
     table = _table_file(tmp_path, cap_mb=20, warn_mb=10)
     assert vs.run_pack(_args(tmp_path, store, cfg, table)) == 1
     err = capsys.readouterr()
-    assert "WoWForeverJapanese_VoiceA over the 20 MB cap; nothing written" in err.err
+    assert "WoWForeverItalian_VoiceA over the 20 MB cap; nothing written" in err.err
     assert not (tmp_path / "out").exists()
     # under the cap but past the warning line: built, and the table says so
     table = _table_file(tmp_path, cap_mb=200, warn_mb=10)
@@ -251,17 +251,17 @@ def test_a_pack_over_the_cap_is_refused_and_nothing_is_written(tmp_path, engine,
 
 
 def test_the_zip_check(tmp_path):
-    src = tmp_path / "out" / "WoWForeverJapanese_VoiceA"
+    src = tmp_path / "out" / "WoWForeverItalian_VoiceA"
     (src / "Sound").mkdir(parents=True)
-    for f in ("WoWForeverJapanese_VoiceA.toc", "Register.lua", "README.txt", "Sound/a.mp3", "Sound/stray.mp3"):
+    for f in ("WoWForeverItalian_VoiceA.toc", "Register.lua", "README.txt", "Sound/a.mp3", "Sound/stray.mp3"):
         (src / f).write_bytes(b"x")
     z = tmp_path / "a.zip"
-    vs.zip_folders(tmp_path / "out", ["WoWForeverJapanese_VoiceA"], z)
-    problems = vs.check_zip(z, "WoWForeverJapanese_VoiceA", ["a.mp3", "b.mp3"])
-    assert problems == ["a.zip: holds WoWForeverJapanese_VoiceA/Sound/stray.mp3, which is not in the record",
-                        "a.zip: lacks WoWForeverJapanese_VoiceA/Sound/b.mp3"]
+    vs.zip_folders(tmp_path / "out", ["WoWForeverItalian_VoiceA"], z)
+    problems = vs.check_zip(z, "WoWForeverItalian_VoiceA", ["a.mp3", "b.mp3"])
+    assert problems == ["a.zip: holds WoWForeverItalian_VoiceA/Sound/stray.mp3, which is not in the record",
+                        "a.zip: lacks WoWForeverItalian_VoiceA/Sound/b.mp3"]
     with zipfile.ZipFile(z) as zf:  # MP3s stored as they are
-        assert zf.getinfo("WoWForeverJapanese_VoiceA/Sound/a.mp3").compress_type == zipfile.ZIP_STORED
+        assert zf.getinfo("WoWForeverItalian_VoiceA/Sound/a.mp3").compress_type == zipfile.ZIP_STORED
 
 
 # ---- the release -----------------------------------------------------------------------------------------
@@ -271,28 +271,28 @@ def test_the_release_plan_keeps_unchanged_versions_and_names_only_packs_with_a_p
     t = vp.parse(_raw())
     packs = [vs.Pack(p, digest=f"{n:08x}" + "0" * 56) for n, p in enumerate(t.packs)]
     first = vs.plan_release(t, packs, "16001", {}, DAY)
-    assert [p.folder for p in first.upload] == ["WoWForeverJapanese_VoiceA", "WoWForeverJapanese_VoiceOther",
-                                                "WoWForeverJapanese_Voice"]  # packs first, the entry last
-    assert [p.folder for p in first.no_project] == ["WoWForeverJapanese_VoiceB"]
+    assert [p.folder for p in first.upload] == ["WoWForeverItalian_VoiceA", "WoWForeverItalian_VoiceOther",
+                                                "WoWForeverItalian_Voice"]  # packs first, the entry last
+    assert [p.folder for p in first.no_project] == ["WoWForeverItalian_VoiceB"]
     later = vs.plan_release(t, packs, "16001", first.versions, DAY + datetime.timedelta(days=3))
     assert later.upload == [] and later.no_project == [] and later.versions == first.versions
     packs[0].digest = "f" * 64
     third = vs.plan_release(t, packs, "16001", first.versions, DAY + datetime.timedelta(days=3))
-    assert [p.folder for p in third.upload] == ["WoWForeverJapanese_VoiceA"]
-    assert third.versions["WoWForeverJapanese_VoiceA"] == "2026.10.10-ffffffff"
-    assert third.versions["WoWForeverJapanese_VoiceOther"] == first.versions["WoWForeverJapanese_VoiceOther"]
+    assert [p.folder for p in third.upload] == ["WoWForeverItalian_VoiceA"]
+    assert third.versions["WoWForeverItalian_VoiceA"] == "2026.10.10-ffffffff"
+    assert third.versions["WoWForeverItalian_VoiceOther"] == first.versions["WoWForeverItalian_VoiceOther"]
     # B gets its project: the entry's set of packs changed, so a new entry file goes up naming it
     with_b = _raw()
     with_b["pack"][1]["project_id"] = 9
     t2 = vp.parse(with_b)
     packs2 = [vs.Pack(p, digest=pk.digest) for p, pk in zip(t2.packs, packs, strict=True)]
     fourth = vs.plan_release(t2, packs2, "16001", third.versions, DAY)
-    assert "WoWForeverJapanese_Voice" in [p.folder for p in fourth.upload]
+    assert "WoWForeverItalian_Voice" in [p.folder for p in fourth.upload]
     assert [p.slug for p in vs.required(t2).packs] == ["a", "b", "o"]
     assert [p.slug for p in vs.required(t).packs] == ["a", "o"]
     # the entry requires the main addon first, so the CurseForge app never installs voice without it
     assert vs.entry_requires(t) == ["main", "a", "o"]
-    assert vs.entry_requires(vp.load(TABLE))[0] == "wow-forever-japanese"
+    assert vs.entry_requires(vp.load(TABLE))[0] == "wow-forever-italian"
 
 
 def _gh(calls, releases, assets):
@@ -320,8 +320,8 @@ def test_release_type_tags_and_the_last_voice_release():
     assert vs.new_tag(datetime.date(2026, 10, 6), rows) == "voice-v2026.10.06-2"
     assert vs.new_tag(DAY, rows) == "voice-v2026.10.07"
     calls = []
-    tag, prev = vs.last_voice(rows, _gh(calls, [], ["WoWForeverJapanese_VoiceA-2026.10.06-01234567.zip"]))
-    assert tag == "voice-v2026.10.06" and prev == {"WoWForeverJapanese_VoiceA": "2026.10.06-01234567"}
+    tag, prev = vs.last_voice(rows, _gh(calls, [], ["WoWForeverItalian_VoiceA-2026.10.06-01234567.zip"]))
+    assert tag == "voice-v2026.10.06" and prev == {"WoWForeverItalian_VoiceA": "2026.10.06-01234567"}
     assert calls == [["release", "view", "voice-v2026.10.06", "--json", "assets"]]
 
 
@@ -334,16 +334,16 @@ def test_a_dry_run_builds_checks_and_uploads_nothing(tmp_path, engine, monkeypat
     gh = _gh(calls, [{"tagName": "v0.1.0-alpha.8", "createdAt": "2026-10-05T00:00:00Z"}], [])
     assert vs.run_release(_args(tmp_path, store, cfg, _table_file(tmp_path)), run=gh) == 0
     out = capsys.readouterr().out
-    assert "upload WoWForeverJapanese_VoiceA-" in out and "to CurseForge project 2 (a)" in out
-    assert "WoWForeverJapanese_VoiceB changed but has no CurseForge project yet" in out
+    assert "upload WoWForeverItalian_VoiceA-" in out and "to CurseForge project 2 (a)" in out
+    assert "WoWForeverItalian_VoiceB changed but has no CurseForge project yet" in out
     assert "dry run; nothing uploaded" in out
     assert not any(c[:2] == ["release", "create"] for c in calls)
     dist = sorted(p.name for p in (tmp_path / "voice-release").iterdir())
-    assert len(dist) == 5 and any(n.startswith("WoWForeverJapanese_Voice-all-") for n in dist)
+    assert len(dist) == 5 and any(n.startswith("WoWForeverItalian_Voice-all-") for n in dist)
     with zipfile.ZipFile(next((tmp_path / "voice-release").glob("*-all-*.zip"))) as z:
         tops = {n.split("/", 1)[0] for n in z.namelist()}
-    assert tops == {"WoWForeverJapanese_Voice", "WoWForeverJapanese_VoiceA", "WoWForeverJapanese_VoiceB",
-                    "WoWForeverJapanese_VoiceOther"}
+    assert tops == {"WoWForeverItalian_Voice", "WoWForeverItalian_VoiceA", "WoWForeverItalian_VoiceB",
+                    "WoWForeverItalian_VoiceOther"}
 
 
 def test_a_real_release_without_a_token_stops_before_uploading(tmp_path, engine, monkeypatch, capsys):  # noqa: F811
@@ -411,7 +411,7 @@ def test_every_voice_model_is_credited():
 
 def test_the_about_page_links_the_voice_entry_of_the_table():
     slug = vp.load(TABLE).entry.slug
-    options = (ROOT / "addon" / "WoWForeverJapanese" / "UI" / "Options.lua").read_text(encoding="utf-8")
+    options = (ROOT / "addon" / "WoWForeverItalian" / "UI" / "Options.lua").read_text(encoding="utf-8")
     assert f'Options.VOICE_URL = "https://www.curseforge.com/wow/addons/{slug}"' in options
 
 
@@ -446,15 +446,15 @@ def test_the_entry_alone_requiring_only_the_main_addon(tmp_path, engine, monkeyp
     monkeypatch.setattr(vs.curseforge, "upload", lambda pid, path, meta, token: uploads.append((pid, meta)) or 9)
     gh = _gh([], [{"tagName": "v0.1.0-alpha.8", "createdAt": "2026-10-05T00:00:00Z"}], [])
     args = _args(tmp_path, store, cfg, _table_file(tmp_path), dry_run=False, curseforge_only=True,
-                 only="WoWForeverJapanese_Voice", entry_without_packs=True)
+                 only="WoWForeverItalian_Voice", entry_without_packs=True)
     assert vs.run_release(args, run=gh) == 0
     assert [pid for pid, _ in uploads] == [1]  # the entry's project only
     assert uploads[0][1]["relations"]["projects"] == [{"slug": "main", "type": "requiredDependency"}]
-    bad = _args(tmp_path, store, cfg, _table_file(tmp_path), only="WoWForeverJapanese_VoiceZ", curseforge_only=True)
+    bad = _args(tmp_path, store, cfg, _table_file(tmp_path), only="WoWForeverItalian_VoiceZ", curseforge_only=True)
     with pytest.raises(ValueError, match="no such folder"):
         vs.run_release(bad, run=gh)
     # without --curseforge-only the GitHub release would record packs that were never uploaded
-    partial = _args(tmp_path, store, cfg, _table_file(tmp_path), only="WoWForeverJapanese_Voice")
+    partial = _args(tmp_path, store, cfg, _table_file(tmp_path), only="WoWForeverItalian_Voice")
     with pytest.raises(ValueError, match="use it with --curseforge-only"):
         vs.run_release(partial, run=gh)
 
@@ -463,7 +463,7 @@ def test_the_entry_alone_requiring_only_the_main_addon(tmp_path, engine, monkeyp
 
 
 def test_the_level_table_round_trips_and_refuses_junk(tmp_path):
-    from wfj.cmd import voice_store
+    from wfi.cmd import voice_store
 
     p = tmp_path / "levels.txt"
     p.write_text(voice_store.levels_text({20: 12, 3: 5}), encoding="utf-8")
@@ -479,7 +479,7 @@ def _git(cwd, *args):
 
 
 def test_store_sync_commits_pushes_and_pins(tmp_path):
-    from wfj.cmd import voice_store
+    from wfi.cmd import voice_store
 
     remote, store, pin = tmp_path / "remote.git", tmp_path / "store", tmp_path / "pin.txt"
     _git(tmp_path, "init", "-q", "--bare", str(remote))
@@ -511,7 +511,7 @@ def test_store_sync_commits_pushes_and_pins(tmp_path):
 
 
 def test_the_pin_is_one_full_commit(tmp_path):
-    from wfj.cmd import voice_store
+    from wfi.cmd import voice_store
 
     p = tmp_path / "pin.txt"
     p.write_text("# note\n" + "a" * 40 + "\n")
@@ -528,15 +528,15 @@ def test_the_addon_names_the_voice_entry_as_optional_only():
     slug = vp.load(TABLE).entry.slug
     assert f"optional-dependencies:\n  - {slug}\n" in pkgmeta
     assert "required-dependencies" not in pkgmeta
-    toc = (ROOT / "addon" / "WoWForeverJapanese" / "WoWForeverJapanese.toc").read_text(encoding="utf-8")
+    toc = (ROOT / "addon" / "WoWForeverItalian" / "WoWForeverItalian.toc").read_text(encoding="utf-8")
     assert "## Dependencies" not in toc and "## RequiredDeps" not in toc and "## OptionalDeps" not in toc
 
 
 def test_curseforge_names_the_relation_it_refuses():
     body = ('{"errorCode":1018,"errorMessage":"Invalid slug in project relations: '
-            '\\u0027wow-forever-japanese-voice-levels-1-10\\u0027 does not exist, is not accessible, or belongs to'
+            '\\u0027wow-forever-italian-voice-levels-1-10\\u0027 does not exist, is not accessible, or belongs to'
             ' an unrelated root category."}')  # a real answer from the upload API
-    assert curseforge.refused_relation(body) == "wow-forever-japanese-voice-levels-1-10"
+    assert curseforge.refused_relation(body) == "wow-forever-italian-voice-levels-1-10"
     assert curseforge.refused_relation('{"errorCode":1000,"errorMessage":"x"}') is None
     assert curseforge.refused_relation("<html>413</html>") is None
 
@@ -565,9 +565,9 @@ def test_the_entry_goes_up_without_packs_still_in_review(tmp_path, engine, monke
     assert "does not accept o as a dependency yet" in capsys.readouterr().out
     # the GitHub release names the entry by what it really requires, so the next release tries the full list
     recorded = [Path(x).name for c in calls if c[:2] == ["release", "upload"] for x in c[3:]]
-    entry = next(n for n in recorded if n.startswith("WoWForeverJapanese_Voice-2"))
+    entry = next(n for n in recorded if n.startswith("WoWForeverItalian_Voice-2"))
     full = vp.version(datetime.date.today(), vp.entry_hash(vs.required(vp.parse(_raw())), "16001"))
-    assert entry != vp.asset_name("WoWForeverJapanese_Voice", full)
+    assert entry != vp.asset_name("WoWForeverItalian_Voice", full)
 
 
 def test_a_refused_main_addon_or_another_error_still_stops_the_release(tmp_path):
@@ -578,7 +578,7 @@ def test_a_refused_main_addon_or_another_error_still_stops_the_release(tmp_path)
 
     pr = vp.parse(_raw()).entry
     for slug in ("main", None):
-        import wfj.io.curseforge as cf
+        import wfi.io.curseforge as cf
         old = cf.upload
         cf.upload = refuse(slug)
         try:
@@ -647,13 +647,13 @@ def test_a_release_that_fails_partway_resumes_and_uploads_nothing_twice(tmp_path
     with pytest.raises(curseforge.CurseForgeError):
         vs.run_release(args, run=gh)  # pack A went up, Other failed: a draft records A
     draft = next(t for t, r in gh.rel.items() if r["draft"])
-    assert uploads == [2] and any(n.startswith("WoWForeverJapanese_VoiceA-") for n in gh.rel[draft]["assets"])
+    assert uploads == [2] and any(n.startswith("WoWForeverItalian_VoiceA-") for n in gh.rel[draft]["assets"])
     fail["at"] = None
     assert vs.run_release(args, run=gh) == 0  # the re-run resumes the draft and skips A
     assert uploads == [2, 3, 1]
     assert not gh.rel[draft]["draft"] and sum(1 for t in gh.rel if t.startswith("voice-v")) == 1
     names = gh.rel[draft]["assets"]
-    assert len([n for n in names if n.startswith("WoWForeverJapanese_VoiceA-")]) == 1
+    assert len([n for n in names if n.startswith("WoWForeverItalian_VoiceA-")]) == 1
     assert vp.released_inputs(names) == "f" * 16 and any("-all-" in n for n in names)
     uploads.clear()
     assert vs.run_release(args, run=gh) == 0  # nothing changed since: nothing goes up
@@ -718,7 +718,7 @@ def test_the_inputs_fingerprint_follows_the_committed_tree(tmp_path):
 
 
 def test_store_sync_refuses_a_store_off_its_branch(tmp_path):
-    from wfj.cmd import voice_store
+    from wfi.cmd import voice_store
 
     remote, store, pin = tmp_path / "remote.git", tmp_path / "store", tmp_path / "pin.txt"
     _git(tmp_path, "init", "-q", "--bare", str(remote))
@@ -815,7 +815,7 @@ def test_a_code_only_change_records_the_new_inputs_and_uploads_nothing(tmp_path,
 
 
 def test_the_inputs_fingerprint_covers_the_pipeline_code_and_the_data_it_reads(tmp_path):
-    for path in ("pipeline/wfj/cmd/generate.py", "pipeline/wfj/emit/lua_writer.py", "pipeline/wfj/core/hashing.py",
+    for path in ("pipeline/wfi/cmd/generate.py", "pipeline/wfi/emit/lua_writer.py", "pipeline/wfi/core/hashing.py",
                  "data/ui/ui-00.jsonl", "data/english/book/book-00.jsonl"):
         repo = tmp_path / path.replace("/", "_")
         _git(tmp_path, "init", "-q", "-b", "main", str(repo))

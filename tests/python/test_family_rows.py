@@ -1,5 +1,5 @@
 """Every client-table text row either ships through a ui_keys.txt key or is named with a reason in
-pipeline/family_rows.txt, taken on the pinned build (wfj.dev.family_rows)."""
+pipeline/family_rows.txt, taken on the pinned build (wfi.dev.family_rows)."""
 
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ from pathlib import Path
 import pytest
 from local_inputs import forever_build, predecessors
 
-from wfj.dev import family_rows as fr
-from wfj.io import wago
+from wfi.dev import family_rows as fr
+from wfi.io import wago
 
 REASONS = {"curated", "developer", "name", "gossip", "not-shown"}
 

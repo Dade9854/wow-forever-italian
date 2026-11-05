@@ -29,7 +29,7 @@ def test_luacheck_fails_on_font_object_use(root, tmp_path: Path):
 
         pytest.skip("luacheck not installed")
     bad = tmp_path / "Bad.lua"
-    src = 'local f = CreateFont("WFJFont")\nGameFontNormal:SetFont("x", 12)\nreturn f\n'
+    src = 'local f = CreateFont("WFIFont")\nGameFontNormal:SetFont("x", 12)\nreturn f\n'
     bad.write_text(src, encoding="utf-8")
     r = subprocess.run([lc, "--config", str(root / ".luacheckrc"), str(bad)], capture_output=True, text=True, check=False)
     assert r.returncode != 0

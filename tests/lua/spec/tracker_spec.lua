@@ -186,11 +186,11 @@ local GLOBALS = { "ObjectiveTrackerFrame", "QuestObjectiveTracker", "CampaignQue
   "ObjectiveTrackerTopBannerFrame", "ObjectiveTrackerManager" }
 
 describe("the objective tracker's other modules on Forever (surface tracker)", function()
-  local WFJ, SS, toasts
+  local WFI, SS, toasts
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
   local function header(name) return _G[name].Header.Text end
   local function unrecorded(widget)
@@ -202,14 +202,14 @@ describe("the objective tracker's other modules on Forever (surface tracker)", f
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     P.popups = {}
     toasts = installTracker()
-    assert.is_true(WFJ.Tracker.init())
+    assert.is_true(WFI.Tracker.init())
   end)
 
   after_each(function()
@@ -271,7 +271,7 @@ describe("the objective tracker's other modules on Forever (surface tracker)", f
       assert.are.equal("The Missing Diplomat", cc.QuestName:GetText())
       -- the client rewrites the same widget
       cc.TopText.text = en("QUEST_WATCH_POPUP_CLICK_TO_COMPLETE")
-      WFJ.Tracker.onAutoQuestPopups(_G.CampaignQuestObjectiveTracker)
+      WFI.Tracker.onAutoQuestPopups(_G.CampaignQuestObjectiveTracker)
       assert.are.equal(ja("QUEST_WATCH_POPUP_CLICK_TO_COMPLETE"), cc.TopText:GetText())
     end)
 
@@ -319,7 +319,7 @@ describe("the objective tracker's other modules on Forever (surface tracker)", f
   it("help tooltips: a task block's rewards tooltip and the find-group buttons, each restricted to its keys", function()
     local tt = _G.GameTooltip
     local block = _G.BonusObjectiveTracker:GetBlock(55)
-    assert.is_true(WFJ.HelpTooltip.registered(block))
+    assert.is_true(WFI.HelpTooltip.registered(block))
     tt:SetOwner(block)
     tt:SetText(en("REWARDS"))
     tt:AddLine(en("BONUS_OBJECTIVE_TOOLTIP_DESCRIPTION"))
@@ -333,8 +333,8 @@ describe("the objective tracker's other modules on Forever (surface tracker)", f
     local eye = _G.QuestObjectiveTracker:GetRightEdgeFrame({ frameKey = "FindGroup", template = FIND_GROUP }, 9)
     local item = _G.QuestObjectiveTracker:GetRightEdgeFrame(
       { frameKey = "Item", template = "QuestObjectiveItemButtonTemplate" }, 9)
-    assert.is_true(WFJ.HelpTooltip.registered(eye))
-    assert.is_false(WFJ.HelpTooltip.registered(item))
+    assert.is_true(WFI.HelpTooltip.registered(eye))
+    assert.is_false(WFI.HelpTooltip.registered(item))
     tt:SetOwner(eye)
     tt:ClearLines() -- the client's SetOwner clears the tooltip
     tt:AddLine(en("TOOLTIP_TRACKER_FIND_GROUP_BUTTON"))
@@ -344,7 +344,7 @@ describe("the objective tracker's other modules on Forever (surface tracker)", f
 
     local stage = _G.ScenarioObjectiveTracker.StageBlock
     stage:UpdateFindGroupButton(true)
-    assert.is_true(WFJ.HelpTooltip.registered(stage.findGroupButton))
+    assert.is_true(WFI.HelpTooltip.registered(stage.findGroupButton))
     tt:SetOwner(stage)
     tt:SetText(en("SCENARIO_STAGE_STATUS"):format(1, 3))
     tt:AddLine("Rewards") -- the stage's name
@@ -354,7 +354,7 @@ describe("the objective tracker's other modules on Forever (surface tracker)", f
   end)
 
   it("hooks install once", function()
-    assert.is_false(WFJ.Tracker.init())
+    assert.is_false(WFI.Tracker.init())
     assert.are.equal(1, #Stub.hooks["BonusObjectiveTracker:SetHeader"])
     assert.are.equal(1, #Stub.hooks["ObjectiveTrackerManager:ShowRewardsToast"])
   end)
@@ -367,23 +367,23 @@ describe("the tracker surface degrades", function()
   end)
 
   local function fresh()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    local WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    return WFJ
+    local WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    return WFI
   end
 
   it("no ObjectiveTrackerFrame: init returns false and hooks nothing", function()
-    local WFJ = fresh()
+    local WFI = fresh()
     local before = {}
     for label, list in pairs(Stub.hooks) do before[label] = #list end
-    assert.has_no.errors(function() assert.is_false(WFJ.Tracker.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Tracker.init()) end)
     for label, list in pairs(Stub.hooks) do assert.are.equal(before[label], #list, label) end
   end)
 
   it("client names bound to the wrong type leave the English and raise nothing", function()
-    local WFJ = fresh()
+    local WFI = fresh()
     installTracker()
     _G.CampaignQuestObjectiveTracker = "not a frame"
     _G.AchievementObjectiveTracker.Header = 7
@@ -395,14 +395,14 @@ describe("the tracker surface degrades", function()
     _G.QuestObjectiveTracker.usedBlocks = { [POPUP] = { a = 1, b = { Contents = "c" },
       c = { Contents = { TopText = 3 } } } }
     _G.WorldQuestObjectiveTracker.usedRightEdgeFrames = { x = 5, y = { template = 4 } }
-    assert.has_no.errors(function() assert.is_true(WFJ.Tracker.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Tracker.init()) end)
     assert.has_no.errors(function()
-      WFJ.Tracker.onBanner()
+      WFI.Tracker.onBanner()
       _G.QuestObjectiveTracker:AddAutoQuestObjectives()
       _G.WorldQuestObjectiveTracker:GetRightEdgeFrame({ frameKey = "k", template = FIND_GROUP }, 1)
-      WFJ.Tracker.onRewardsToast(12)
-      WFJ.Tracker.onTaskBlock({ GetExistingBlock = function() error("boom") end }, 1)
-      WFJ.Tracker.onStageFindGroup(true)
+      WFI.Tracker.onRewardsToast(12)
+      WFI.Tracker.onTaskBlock({ GetExistingBlock = function() error("boom") end }, 1)
+      WFI.Tracker.onStageFindGroup(true)
     end)
     assert.are.equal("Achievements", UI.TRACKER_HEADER_ACHIEVEMENTS[1])
     -- the modules that still resolve are served
@@ -415,7 +415,7 @@ end)
 -- block:SetHeader(achievementName) → HeaderText (blizzard_achievementobjectivetracker.lua:121–123); post-hooked on the
 -- instance, the block found with GetExistingBlock(id), the AchievementTitle family only.
 describe("the tracker's achievement titles", function()
-  local WFJ
+  local WFI
 
   local ROWS = {}
   for k, v in pairs(UI) do ROWS[k] = v end
@@ -424,14 +424,14 @@ describe("the tracker's achievement titles", function()
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
     installTracker()
     function _G.AchievementObjectiveTracker.AddAchievement(self, id, name) -- lua:115–123
       local block = self:GetBlock(id)
@@ -439,7 +439,7 @@ describe("the tracker's achievement titles", function()
       block.HeaderText.text = name
       return true
     end
-    assert.is_true(WFJ.Tracker.init())
+    assert.is_true(WFI.Tracker.init())
   end)
 
   after_each(function()
@@ -473,9 +473,9 @@ describe("the tracker's achievement titles", function()
   end)
 
   it("a missing block or a module of the wrong shape raises nothing", function()
-    assert.are.equal(0, WFJ.Tracker.onAchievement(_G.AchievementObjectiveTracker, 404))
-    assert.are.equal(0, WFJ.Tracker.onAchievement({ GetExistingBlock = function() error("boom") end }, 1))
-    assert.are.equal(0, WFJ.Tracker.onAchievement("x", 1))
+    assert.are.equal(0, WFI.Tracker.onAchievement(_G.AchievementObjectiveTracker, 404))
+    assert.are.equal(0, WFI.Tracker.onAchievement({ GetExistingBlock = function() error("boom") end }, 1))
+    assert.are.equal(0, WFI.Tracker.onAchievement("x", 1))
   end)
 end)
 
@@ -484,7 +484,7 @@ end)
 -- blizzard_objectivetrackerblock.lua:79-98, 161-208). The CriteriaText family, and AchievementDescription for an
 -- achievement whose one line is its description.
 describe("the tracker's achievement criteria", function()
-  local WFJ
+  local WFI
 
   local ROWS = {}
   for k, v in pairs(UI) do ROWS[k] = v end
@@ -494,14 +494,14 @@ describe("the tracker's achievement criteria", function()
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
     installTracker()
     -- lua:121-152: the title, then one objective line per shown criterion
     function _G.AchievementObjectiveTracker.AddAchievement(self, id, name, criteria)
@@ -516,7 +516,7 @@ describe("the tracker's achievement criteria", function()
       end
       return true
     end
-    assert.is_true(WFJ.Tracker.init())
+    assert.is_true(WFI.Tracker.init())
   end)
 
   after_each(function()

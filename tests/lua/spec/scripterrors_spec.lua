@@ -26,13 +26,13 @@ local function installFrame()
 end
 
 describe("the Lua error window on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   after_each(function()
@@ -44,20 +44,20 @@ describe("the Lua error window on Forever", function()
   it("the title follows the message type, the buttons are Japanese, the message is never touched", function()
     load()
     local f = installFrame()
-    WFJ.Labels.forbidNames(WFJ.ScriptErrors.NEVER_TOUCH)
-    assert.is_true(WFJ.ScriptErrors.init())
+    WFI.Labels.forbidNames(WFI.ScriptErrors.NEVER_TOUCH)
+    assert.is_true(WFI.ScriptErrors.init())
     f:DisplayMessageInternal("Close", false) -- an error message that is a dictionary word
     assert.are.equal("Luaエラー", f.Title:GetText())
     assert.are.equal("UIを再読み込み", f.Reload:GetText())
     assert.are.equal("閉じる", f.CloseButton:GetText())
     assert.are.equal("Close", f.ScrollFrame.Text:GetText())
-    assert.are.equal(0, WFJ.Labels.show("scripterrors", "x", f.ScrollFrame.Text))
+    assert.are.equal(0, WFI.Labels.show("scripterrors", "x", f.ScrollFrame.Text))
     f:DisplayMessageInternal("Close", true)
     assert.are.equal("Lua警告", f.Title:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Lua Warning", f.Title:GetText())
-    assert.is_false(WFJ.ScriptErrors.init())
+    assert.is_false(WFI.ScriptErrors.init())
     assert.are.equal(1, #Stub.hooks["ScriptErrorsFrame:DisplayMessageInternal"])
   end)
 
@@ -65,13 +65,13 @@ describe("the Lua error window on Forever", function()
     load()
     local f = installFrame()
     f.Title, f.Reload, f.DisplayMessageInternal = 4, "reload", "not a function"
-    assert.has_no.errors(function() assert.is_true(WFJ.ScriptErrors.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.ScriptErrors.init()) end)
     assert.has_no.errors(function() f:Show() end)
     assert.are.equal("閉じる", f.CloseButton:GetText())
   end)
 
   it("no ScriptErrorsFrame → init is false, nothing touched", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.ScriptErrors.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.ScriptErrors.init()) end)
   end)
 end)

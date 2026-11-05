@@ -1,5 +1,5 @@
-from wfj.core.align import allowlist_problems, load_allowlist
-from wfj.io.jsonl_store import Store
+from wfi.core.align import allowlist_problems, load_allowlist
+from wfi.io.jsonl_store import Store
 
 
 def test_every_allowlist_line_is_justified(root):

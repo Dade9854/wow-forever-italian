@@ -2,13 +2,13 @@ local H = require("tests.lua.spec.helpers")
 local Stub = require("tests.lua.spec.wow_stub")
 
 describe("SurfaceState: the capture, apply and restore state machine", function()
-  local WFJ, SS
-  local JA = { path = "Interface\\AddOns\\WoWForeverJapanese\\Fonts\\ipagui.ttf", size = 13, flags = "" }
+  local WFI, SS
+  local JA = { path = "Interface\\AddOns\\WoWForeverItalian\\Fonts\\ipagui.ttf", size = 13, flags = "" }
 
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/SurfaceState.lua", "WoWForeverJapanese", WFJ)
-    SS = WFJ.SurfaceState
+    WFI = {}
+    H.loadPure("Core/SurfaceState.lua", "WoWForeverItalian", WFI)
+    SS = WFI.SurfaceState
     Stub.fontSetFails = false
   end)
 
@@ -203,13 +203,13 @@ describe("SurfaceState: the capture, apply and restore state machine", function(
 end)
 
 describe("SurfaceState.drop / dropAll: forget without restoring over the client's new text", function()
-  local WFJ, SS
-  local JA = { path = "Interface\\AddOns\\WoWForeverJapanese\\Fonts\\ipagui.ttf", size = 13, flags = "" }
+  local WFI, SS
+  local JA = { path = "Interface\\AddOns\\WoWForeverItalian\\Fonts\\ipagui.ttf", size = 13, flags = "" }
 
   before_each(function()
-    WFJ = {}
-    H.loadPure("Core/SurfaceState.lua", "WoWForeverJapanese", WFJ)
-    SS = WFJ.SurfaceState
+    WFI = {}
+    H.loadPure("Core/SurfaceState.lua", "WoWForeverItalian", WFI)
+    SS = WFI.SurfaceState
     Stub.fontSetFails = false
   end)
 

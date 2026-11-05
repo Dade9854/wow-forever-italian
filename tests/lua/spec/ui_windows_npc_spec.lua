@@ -32,14 +32,14 @@ local UI = {
 }
 
 describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
-  local WFJ, S, SS, tt
+  local WFI, S, SS, tt
 
   local function left(i) return _G["GameTooltipTextLeft" .. i] end
   local function font(widget)
     local fs = widget.GetFontString and widget:GetFontString() or widget
     return (fs:GetFont())
   end
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   -- every record, on any surface, whose widget is `widget` (a FontString, or a button's adapter)
   local function recordsOn(widget)
     local n = 0
@@ -51,16 +51,16 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
     return n
   end
   local function initModules()
-    WFJ.GossipChrome.init(); WFJ.Merchant.init(); WFJ.Bank.init(); WFJ.Bags.init()
+    WFI.GossipChrome.init(); WFI.Merchant.init(); WFI.Bank.init(); WFI.Bags.init()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     NPC.install()
-    WFJ = H.loadChunks(FILES)
-    S, SS = WFJ.Settings, WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    S, SS = WFI.Settings, WFI.SurfaceState
+    H.uiSetup(WFI, UI)
     tt = _G.GameTooltip
   end)
 
@@ -79,7 +79,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
       initModules()
       local goodbye = _G.GossipFrame.GreetingPanel.GoodbyeButton
       assert.are.equal("さようなら", goodbye:GetText())
-      assert.are.equal(WFJ.Font.PATH, font(goodbye))
+      assert.are.equal(WFI.Font.PATH, font(goodbye))
       NPC.gossip({ { buttonType = 1, text = "Well met." } }, "Goodbye")
       assert.are.equal("Goodbye", _G.GossipFrameTitleText:GetText())
       assert.are.equal(0, _G.GossipFrameTitleText.calls.SetText)
@@ -95,7 +95,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
         })
         local rows = NPC.gossipRows
         assert.are.equal("|cff000000Merchant (低レベル)|r", rows[3]:GetText())
-        assert.are.equal(WFJ.Font.PATH, font(rows[3]))
+        assert.are.equal(WFI.Font.PATH, font(rows[3]))
         assert.are.equal("|cff000000Buyback|r", rows[4]:GetText())
         assert.are.equal(0, rows[4].fontString.calls.SetText)
         assert.are.equal("|cff000000The Balance of Nature (無視)|r", rows[5]:GetText())
@@ -151,10 +151,10 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
         NPC.openMerchant()
         assert.are.equal("商人", _G.MerchantFrameTab1.measured)
         assert.are.equal("買い戻し", _G.MerchantFrameTab2.measured)
-        assert.are.equal(WFJ.Font.PATH, font(_G.MerchantFrameTab1)) -- selected by OnShow (font object reset)
+        assert.are.equal(WFI.Font.PATH, font(_G.MerchantFrameTab1)) -- selected by OnShow (font object reset)
         NPC.merchantTab(2)
-        assert.are.equal(WFJ.Font.PATH, font(_G.MerchantFrameTab2))
-        assert.are.equal(WFJ.Font.PATH, font(_G.MerchantFrameTab1))
+        assert.are.equal(WFI.Font.PATH, font(_G.MerchantFrameTab2))
+        assert.are.equal(WFI.Font.PATH, font(_G.MerchantFrameTab1))
         alt(true)
         assert.are.equal("Merchant", _G.MerchantFrameTab1:GetText())
         alt(false)
@@ -168,7 +168,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
       _G.MerchantFrame.page = 2
       NPC.openMerchant()
       assert.are.equal("ページ 2", _G.MerchantPageText:GetText())
-      assert.are.equal(WFJ.Font.PATH, font(_G.MerchantPageText))
+      assert.are.equal(WFI.Font.PATH, font(_G.MerchantPageText))
       local prev = select(2, _G.MerchantPrevPageButton:GetRegions())
       local nxt = select(2, _G.MerchantNextPageButton:GetRegions())
       assert.are.equal("前へ", prev:GetText())
@@ -181,7 +181,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
       initModules()
       NPC.hover(_G.MerchantRepairAllButton)
       assert.are.equal("すべて修理", left(1):GetText())
-      assert.are.equal(WFJ.Font.PATH, font(left(1)))
+      assert.are.equal(WFI.Font.PATH, font(left(1)))
       assert.are.equal("12|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t", left(2):GetText())
       NPC.leave()
       assert.are.equal("Repair All Items", left(1):GetText())
@@ -200,7 +200,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
       local _, items, bags = _G.BankFrame:GetRegions()
       assert.are.equal("アイテムスロット", items:GetText())
       assert.are.equal("バッグスロット", bags:GetText())
-      assert.are.equal(WFJ.Font.PATH, font(items))
+      assert.are.equal(WFI.Font.PATH, font(items))
       _G.BankFrame:Show()
       assert.are.equal("Purchase", _G.BankFrameTitleText:GetText()) -- UnitName("npc"), also a dictionary word
       assert.are.equal(0, _G.BankFrameTitleText.calls.SetText)
@@ -216,7 +216,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
         initModules()
         NPC.hover(_G.MainMenuBarBackpackButton)
         assert.are.equal("バックパック |cffffd200(B)|r", left(1):GetText())
-        assert.are.equal(WFJ.Font.PATH, font(left(1)))
+        assert.are.equal(WFI.Font.PATH, font(left(1)))
         alt(true)
         assert.are.equal("Backpack |cffffd200(B)|r", left(1):GetText())
         alt(false)
@@ -234,7 +234,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
       assert.are.equal("バックパック |cffffd200(B)|r", left(1):GetText())
       NPC.hover(keyring.PortraitButton)
       assert.are.equal("キーリング |cffffd200(K)|r", left(1):GetText())
-      assert.are.equal(WFJ.Font.PATH, font(left(1)))
+      assert.are.equal(WFI.Font.PATH, font(left(1)))
       NPC.hover(pouch.PortraitButton)
       assert.are.equal("Small Red Pouch", left(1):GetText())
       assert.are.equal("Fonts\\FRIZQT__.TTF", font(left(1)))
@@ -249,7 +249,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
         assert.are.equal("バッグを装備", left(1):GetText())
         NPC.refresh(_G.CharacterBag0Slot)
         assert.are.equal("バッグを装備", left(1):GetText())
-        assert.are.equal(WFJ.Font.PATH, font(left(1)))
+        assert.are.equal(WFI.Font.PATH, font(left(1)))
         _G.CharacterBag1Slot.item = "Equip Container"
         NPC.hover(_G.CharacterBag1Slot)
         assert.are.equal("Equip Container", left(1):GetText())
@@ -296,7 +296,7 @@ describe("the NPC windows: gossip chrome, merchant, bank, bags", function()
       NPC.openBag(0); NPC.openBag(-2, 4)
       NPC.hover(_G.MainMenuBarBackpackButton)
       alt(true); alt(false)
-      local modules = { WFJ.GossipChrome, WFJ.Merchant, WFJ.Bank, WFJ.Bags }
+      local modules = { WFI.GossipChrome, WFI.Merchant, WFI.Bank, WFI.Bags }
       local checked = 0
       for _, module in ipairs(modules) do
         for _, name in ipairs(module.NEVER_TOUCH) do

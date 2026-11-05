@@ -25,8 +25,8 @@ token, and the saved file is shared by every character on the account.
 
 ## Decision
 
-1. **A recorded line replaces a stand-in.** `wfj import english collector` (`run_collector` in
-   `pipeline/wfj/cmd/import_english.py`) compares, per `(type, id, field)`, the dump's hash with the stored line.
+1. **A recorded line replaces a stand-in.** `wfi import english collector` (`run_collector` in
+   `pipeline/wfi/cmd/import_english.py`) compares, per `(type, id, field)`, the dump's hash with the stored line.
    Absent → added; same hash → unchanged; another hash → replaced, when the stored line is an earlier collector
    line or a stand-in (VMaNGOS, pfQuest, a client of another game version).
 2. **The same client's own files are kept.** A stored line read from the same client as the dump (its client
@@ -44,7 +44,7 @@ token, and the saved file is shared by every character on the account.
    that holds `$` codes (`$o1`, `$d`) is never replaced by a recorded line, which has one player's numbers filled
    in; it is listed under differs.
 5. **`check` consults collector English for quest and gossip.** `CONSULTED_COLLECTOR_TYPES = ("quest", "gossip")`
-   in `pipeline/wfj/cmd/check.py`: for these types collector lines build scopes like any other source, so their
+   in `pipeline/wfi/cmd/check.py`: for these types collector lines build scopes like any other source, so their
    hashes become the lines' English. Item and spell collector English stays unconsulted: it is recorded with the
    numbers filled in, while the client tables hold the templates the alignment check needs.
 6. **The live check tries race-only and class-only candidates.** `candidates` in `Core/Collector.lua` adds a
@@ -57,7 +57,7 @@ token, and the saved file is shared by every character on the account.
   game and the dump is imported; after that the shipped hash is Forever's and the translation is checked against
   it.
 - Importing a dump now changes what `check`, `validate` and `stats` see for quest and gossip lines. A dump is no
-  longer a no-op for status: it is reviewed like any English import (`wfj stats --delta`).
+  longer a no-op for status: it is reviewed like any English import (`wfi stats --delta`).
 - A transient or per-player variant of a line can replace a stand-in. The same player seeing the line again, or
   another dump, replaces it again; the client's own files are never replaced.
 - `_restore_literals` puts back only one-for-one or one-for-two word swaps of alphabetic words, so a token the

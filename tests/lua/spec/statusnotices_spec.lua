@@ -71,8 +71,8 @@ local function load(addon)
 end
 
 describe("the status tray notices on Forever", function()
-  local WFJ
-  before_each(function() WFJ = S.load(FILES, UI) end)
+  local WFI
+  before_each(function() WFI = S.load(FILES, UI) end)
   after_each(function() S.teardown(GLOBALS) end)
 
   local function check()
@@ -91,22 +91,22 @@ describe("the status tray notices on Forever", function()
       S.en("BEHAVIORAL_DETAILS_SOCIAL_MESSAGE"))
     assert.are.equal("警告 - コミュニケーション", _G.BehavioralMessagingDetails.Body.TitleText:GetText())
     assert.are.equal("最近の発言に問題があります。", _G.BehavioralMessagingDetails.Body.BodyText:GetText())
-    S.alt(WFJ, true)
+    S.alt(WFI, true)
     assert.are.equal("GM Chat Request", _G.GMChatStatusFrame.TitleText:GetText())
-    S.alt(WFJ, false)
+    S.alt(WFI, false)
   end
 
   it("addons loaded before the surface starts", function()
     for addon in pairs(LOADERS) do load(addon) end
-    assert.is_true(WFJ.StatusNotices.init())
+    assert.is_true(WFI.StatusNotices.init())
     check()
   end)
 
   it("addons loaded on demand", function()
-    assert.is_false(WFJ.StatusNotices.init()) -- nothing loaded: nothing touched
+    assert.is_false(WFI.StatusNotices.init()) -- nothing loaded: nothing touched
     for addon in pairs(LOADERS) do
       load(addon)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(addon))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(addon))
     end
     check()
     assert.are.equal(1, #Stub.hooks["BehavioralMessagingTray:EvaluateLayout"])
@@ -118,7 +118,7 @@ describe("the status tray notices on Forever", function()
     _G.WowSurveyStatusFrame = "?"
     _G.BehavioralMessagingTray.pool = true
     _G.BehavioralMessagingDetails.DisplayInternal = 1
-    assert.has_no.errors(function() WFJ.StatusNotices.init() end)
+    assert.has_no.errors(function() WFI.StatusNotices.init() end)
     assert.are.equal("GMとチャット中", _G.GMChatTabText:GetText())
   end)
 end)

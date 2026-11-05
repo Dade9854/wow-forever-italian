@@ -148,23 +148,23 @@ local GLOBALS = { "TutorialMainFrame_Frame", "TutorialSingleKey_Frame", "Tutoria
   "TutorialWalk_Frame", "KeyboardMouseConfirmButton", "SkipTutorialButton" }
 
 describe("UI/NewPlayerTutorial: camelot's new player experience", function()
-  local WFJ, main, single, kbm, walk
+  local WFI, main, single, kbm, walk
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function loadNPE()
     kbm, walk = buildKeyboardMouse(), buildWalk()
     Stub.loadedAddons[ADDON] = true
-    return WFJ.LoadOnDemand.loaded(ADDON)
+    return WFI.LoadOnDemand.loaded(ADDON)
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     main, single = buildMain(), buildSingleKey()
   end)
 
@@ -185,10 +185,10 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
 
     it("waits for the addon, then shows all four texts in Japanese, redoes the Skip anchor and relays out",
       function()
-        assert.is_false(WFJ.NewPlayerTutorial.init()) -- the addon loads on demand
+        assert.is_false(WFI.NewPlayerTutorial.init()) -- the addon loads on demand
         assert.are.equal(1, loadNPE())
         assert.are.equal(UI.NPEV2_INTRO_TO_MOUSE_AND_KEYBOARD[2], kbm.Text:GetText())
-        assert.are.equal(WFJ.Font.PATH, (kbm.Text:GetFont()))
+        assert.are.equal(WFI.Font.PATH, (kbm.Text:GetFont()))
         assert.are.equal("決定", kbm.ConfirmButton:GetText())
         assert.are.equal(UI.NPEV2_SKIP_TUTORIAL_BUTTON[2], kbm.SkipTutorialButton:GetText())
         local prompt = kbm.SkipTutorialButton.SkipTutorialPrompt
@@ -198,7 +198,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
       end)
 
     it("on show the client's own anchor measures the Japanese prompt", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       loadNPE()
       kbm:ShowTutorial()
       local prompt = kbm.SkipTutorialButton.SkipTutorialPrompt
@@ -208,7 +208,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
 
     it("the reveal key shows the client's English, re-anchored and relaid for it; release brings the Japanese back",
       function()
-        WFJ.NewPlayerTutorial.init()
+        WFI.NewPlayerTutorial.init()
         loadNPE()
         kbm:ShowTutorial()
         local prompt = kbm.SkipTutorialButton.SkipTutorialPrompt
@@ -229,14 +229,14 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
     it("already loaded at init: shown at once", function()
       kbm, walk = buildKeyboardMouse(), buildWalk()
       Stub.loadedAddons[ADDON] = true
-      assert.is_true(WFJ.NewPlayerTutorial.init())
+      assert.is_true(WFI.NewPlayerTutorial.init())
       assert.are.equal(UI.NPEV2_INTRO_TO_MOUSE_AND_KEYBOARD[2], kbm.Text:GetText())
       assert.are.equal(UI.NPEV2_INTRO_MOVE_ALLIANCE[2], walk.ContainerFrame.Text:GetText())
     end)
 
     it("translation off leaves the client's English and the client's anchor", function()
-      WFJ.State.setEnabled(false)
-      WFJ.NewPlayerTutorial.init()
+      WFI.State.setEnabled(false)
+      WFI.NewPlayerTutorial.init()
       loadNPE()
       kbm:ShowTutorial()
       assert.are.equal(UI.NPEV2_INTRO_TO_MOUSE_AND_KEYBOARD[1], kbm.Text:GetText())
@@ -244,7 +244,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
       assert.are.equal(UI.NPEV2_SKIP_TUTORIAL_PROMPT[1], kbm.SkipTutorialButton.SkipTutorialPrompt:GetText())
       assert.are.equal(0, kbm.Text.calls.addonSetText)
       assert.are.equal((stringWidth(kbm.SkipTutorialButton.SkipTutorialPrompt) + 20) / 2, skipAnchor())
-      WFJ.State.setEnabled(true) -- switched on later: Japanese, re-anchored
+      WFI.State.setEnabled(true) -- switched on later: Japanese, re-anchored
       assert.are.equal(UI.NPEV2_SKIP_TUTORIAL_PROMPT[2], kbm.SkipTutorialButton.SkipTutorialPrompt:GetText())
       assert.are.equal((stringWidth(kbm.SkipTutorialButton.SkipTutorialPrompt) + 20) / 2, skipAnchor())
     end)
@@ -257,17 +257,17 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
     end
 
     it("a prompt is Japanese and the text box is measured for it; the container relays out", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       local text = main.ContainerFrame.Text
       main:_SetContent({ text = _G.NPEV2_INTRO_CAMERA_LOOK })
       assert.are.equal(UI.NPEV2_INTRO_CAMERA_LOOK[2], text:GetText())
-      assert.are.equal(WFJ.Font.PATH, (text:GetFont()))
+      assert.are.equal(WFI.Font.PATH, (text:GetFont()))
       sizedFor(text)
       assert.are.equal(2, main.ContainerFrame.dirty) -- the client's, then the refit's
     end)
 
     it("the reveal key shows the English measured for the English; translation off too", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       local text = main.ContainerFrame.Text
       main:_SetContent({ text = _G.NPEV2_INTRO_QUESTGIVER_INTERACT_HUMAN })
       assert.are.equal(UI.NPEV2_INTRO_QUESTGIVER_INTERACT_HUMAN[2], text:GetText())
@@ -277,13 +277,13 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
       alt(false)
       assert.are.equal(UI.NPEV2_INTRO_QUESTGIVER_INTERACT_HUMAN[2], text:GetText())
       sizedFor(text)
-      WFJ.State.setEnabled(false)
+      WFI.State.setEnabled(false)
       assert.are.equal(UI.NPEV2_INTRO_QUESTGIVER_INTERACT_HUMAN[1], text:GetText())
       sizedFor(text)
     end)
 
     it("a later write with no content (the fade-out's finish) is read off the text, not the argument", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       main:_SetContent({ text = _G.NPEV2_INTRO_CAMERA_LOOK })
       main.DesiredContent = { text = _G.NPEV2_LOOT_CORPSE }
       main:_SetContent() -- _AnimateOut's Finish (mainframe.lua:210–216)
@@ -292,7 +292,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
     end)
 
     it("a prompt naming a spell keeps the spell's name as the client wrote it", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       local live = _G.NPEV2_PLACE_ABILITY_BACK_ON_ACTION_BAR:format("|cFF00FFFFHeroic Strike|r")
       main:_SetContent({ text = live })
       assert.are.equal("|cFF00FFFFHeroic Strike|rをアクションバーに戻すと、また使えます。",
@@ -302,7 +302,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
     end)
 
     it("a text outside the prompt keys stays the client's; the earlier prompt's record goes", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       main:_SetContent({ text = _G.NPEV2_INTRO_CAMERA_LOOK })
       main:_SetContent({ text = _G.RAID })
       assert.are.equal("Raid", main.ContainerFrame.Text:GetText())
@@ -313,7 +313,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
 
   describe("the single-key prompt (TutorialSingleKey_Frame)", function()
     it("the prompt and an unbound key are Japanese; the key box is widened for the Japanese", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       single:_SetContent({ text = _G.NPEV2_FINDCORPSE, keyText = _G.NPE_UNBOUND_KEYBIND })
       local box, text = single.ContainerFrame.KeyBind, single.ContainerFrame.Text
       assert.are.equal(UI.NPEV2_FINDCORPSE[2], text:GetText())
@@ -328,7 +328,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
     end)
 
     it("a bound key is a key name and stays as written", function()
-      WFJ.NewPlayerTutorial.init()
+      WFI.NewPlayerTutorial.init()
       single:_SetContent({ text = _G.NPEV2_FINDCORPSE, keyText = "M" })
       assert.are.equal("M", single.ContainerFrame.KeyBind.KeyBind:GetText())
       assert.are.equal(UI.NPEV2_FINDCORPSE[2], single.ContainerFrame.Text:GetText())
@@ -338,7 +338,7 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
   describe("the walk prompt (TutorialWalk_Frame)", function()
     it("its static text is Japanese at load and after the client's _SetContent; the reveal key shows the English",
       function()
-        WFJ.NewPlayerTutorial.init()
+        WFI.NewPlayerTutorial.init()
         loadNPE()
         local text = walk.ContainerFrame.Text
         assert.are.equal(UI.NPEV2_INTRO_MOVE_ALLIANCE[2], text:GetText())
@@ -353,10 +353,10 @@ describe("UI/NewPlayerTutorial: camelot's new player experience", function()
   end)
 
   it("hooks once: a second init and a second load add no hook", function()
-    WFJ.NewPlayerTutorial.init()
+    WFI.NewPlayerTutorial.init()
     loadNPE()
-    WFJ.NewPlayerTutorial.init()
-    WFJ.NewPlayerTutorial.setup()
+    WFI.NewPlayerTutorial.init()
+    WFI.NewPlayerTutorial.setup()
     assert.are.equal(1, #Stub.hooks["TutorialMainFrame_Frame:_SetContent"])
     assert.are.equal(1, #Stub.hooks["TutorialSingleKey_Frame:_SetContent"])
     assert.are.equal(1, #Stub.hooks["TutorialWalk_Frame:_SetContent"])

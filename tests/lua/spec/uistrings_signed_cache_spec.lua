@@ -21,8 +21,8 @@ describe("Core/UIStrings additions", function()
 
   before_each(function()
     local ns = {}
-    H.loadPure("Core/UIStringKeys.lua", "WoWForeverJapanese", ns)
-    H.loadPure("Core/UIStrings.lua", "WoWForeverJapanese", ns)
+    H.loadPure("Core/UIStringKeys.lua", "WoWForeverItalian", ns)
+    H.loadPure("Core/UIStrings.lua", "WoWForeverItalian", ns)
     UIS = ns.UIStrings
     rows = {}
     local english = {}

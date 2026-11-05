@@ -109,7 +109,7 @@ end
 local function enter(frame) frame.scripts.OnEnter(frame) end
 
 describe("the minimap cluster's help tooltips on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
     local ns = H.loadChunks(FILES)
@@ -118,14 +118,14 @@ describe("the minimap cluster's help tooltips on Forever", function()
   end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     CreateFrame("Frame", "PVPRankFrame") -- the Forever marker (UI/Camelot)
     Stub.installTooltipAPI()
     M = { zone = "Raid", subzone = "Valley of Trials", territory = "(Contested Territory)", senders = {}, uber = true }
-    WFJ = load()
+    WFI = load()
     installMinimap()
-    WFJ.Labels.forbidNames(WFJ.Minimap.NEVER_TOUCH)
-    assert.are.equal(8, WFJ.Minimap.init())
+    WFI.Labels.forbidNames(WFI.Minimap.NEVER_TOUCH)
+    assert.are.equal(8, WFI.Minimap.init())
   end)
 
   after_each(function()
@@ -143,7 +143,7 @@ describe("the minimap cluster's help tooltips on Forever", function()
     assert.are.equal("ワールドマップ |cffffd200(M)|r", tip(4))
     assert.are.equal("Raid", _G.MinimapZoneText:GetText())
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal(en("CONTESTED_TERRITORY"), tip(3))
   end)
 
@@ -173,7 +173,7 @@ describe("the minimap cluster's help tooltips on Forever", function()
     enter(_G.MinimapBackdrop.ExternalEventURLButton)
     assert.are.equal(ja("GAMEMENU_EXTERNALEVENT"), tip(1))
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal(en("GAMEMENU_EXTERNALEVENT"), tip(1))
   end)
 
@@ -183,10 +183,10 @@ describe("the minimap cluster's help tooltips on Forever", function()
       enter(_G.MinimapCluster.IndicatorFrame.MailFrame)
       assert.are.equal(ja("HAVE_MAIL_FROM") .. "\nThrall\nJaina", tip(1))
       Stub.keys.alt = true
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
       assert.are.equal("Unread mail from:\nThrall\nJaina", tip(1))
       Stub.keys.alt = false
-      WFJ.Modifier.refresh()
+      WFI.Modifier.refresh()
     end)
 
   it("the zoom buttons' UIParent-owned tooltip is walked once; UIParent is never registered", function()
@@ -194,7 +194,7 @@ describe("the minimap cluster's help tooltips on Forever", function()
     assert.are.equal(ja("ZOOM_IN"), tip(1))
     enter(_G.Minimap.ZoomOut)
     assert.are.equal(ja("ZOOM_OUT"), tip(1))
-    assert.is_false(WFJ.HelpTooltip.registered(_G.UIParent))
+    assert.is_false(WFI.HelpTooltip.registered(_G.UIParent))
     -- another default-anchored tooltip with the same words is not ours
     _G.GameTooltip:SetOwner(_G.UIParent)
     _G.GameTooltip:SetText(en("ZOOM_IN"))
@@ -209,7 +209,7 @@ describe("the minimap cluster's help tooltips on Forever", function()
 
   it("client names bound to the wrong type degrade to untouched English with no error", function()
     H.uiTeardown()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     CreateFrame("Frame", "PVPRankFrame") -- the Forever marker (UI/Camelot)
     Stub.installTooltipAPI()
     local ns = load()
@@ -227,9 +227,9 @@ describe("the minimap cluster's help tooltips on Forever", function()
   end)
 
   it("init runs once; a client without the cluster's zone button is skipped without error", function()
-    assert.are.equal(8, WFJ.Minimap.init())
+    assert.are.equal(8, WFI.Minimap.init())
     H.uiTeardown()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     CreateFrame("Frame", "PVPRankFrame") -- the Forever marker (UI/Camelot)
     Stub.installTooltipAPI()
     _G.MinimapCluster = nil

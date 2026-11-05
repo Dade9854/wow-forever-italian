@@ -27,22 +27,22 @@ local UI = {
 }
 
 describe("the reputation frame on the Forever client", function()
-  local WFJ, SS
+  local WFI, SS
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
   local function detail() return _G.ReputationFrame.ReputationDetailFrame end
   local function bar(row) return row.Content.ReputationBar.Text end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     RC.install()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
-    WFJ.Labels.forbidNames(WFJ.Reputation.NEVER_TOUCH) -- Main registers every list before any init
-    WFJ.Reputation.init()
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
+    WFI.Labels.forbidNames(WFI.Reputation.NEVER_TOUCH) -- Main registers every list before any init
+    WFI.Reputation.init()
   end)
 
   after_each(function() H.uiTeardown() end)
@@ -51,11 +51,11 @@ describe("the reputation frame on the Forever client", function()
     assert.are.equal(1, #Stub.hooks["?:SetEmpty"])
     assert.are.equal(1, #Stub.hooks["?:SetPaneTitle"])
     assert.are.equal(1, #Stub.hooks["?:LayoutRows"])
-    assert.is_false(WFJ.Reputation.init())
+    assert.is_false(WFI.Reputation.init())
     assert.are.equal(1, #_G.ReputationFrame.ScrollBox.initCallbacks)
-    assert.is_true(WFJ.Labels.forbidden(detail().Title))
+    assert.is_true(WFI.Labels.forbidden(detail().Title))
     -- The description is the Faction table's text (FactionDescription rows), so the addon may translate it
-    assert.is_false(WFJ.Labels.forbidden(detail().Description))
+    assert.is_false(WFI.Labels.forbidden(detail().Description))
   end)
 
   it("the detail pane's static labels translate at init, and the checkboxes' tooltips on hover", function()
@@ -82,7 +82,7 @@ describe("the reputation frame on the Forever client", function()
     assert.are.equal("Stormwind", rows[2].Content.Name:GetText())
     assert.are.equal("非アクティブ", rows[3].Name:GetText())
     assert.are.equal("Honor Hold", rows[4].Content.Name:GetText())
-    assert.is_true(WFJ.Labels.forbidden(rows[4].Content.Name))
+    assert.is_true(WFI.Labels.forbidden(rows[4].Content.Name))
     assert.are.equal("尊敬", bar(rows[4]):GetText())
     alt(true)
     assert.are.equal("Friendly", bar(rows[2]):GetText())
@@ -102,8 +102,8 @@ describe("the reputation frame on the Forever client", function()
     RC.hover(row)
     RC.leave(row.Content.AccountWideIcon) -- the icon's OnLeave calls the entry's OnLeave
     assert.are.equal("友好", bar(row):GetText())
-    assert.is_true(WFJ.HelpTooltip.registered(row.Content.AccountWideIcon))
-    assert.is_true(WFJ.HelpTooltip.registered(row.Content.ReputationBar.BonusIcon))
+    assert.is_true(WFI.HelpTooltip.registered(row.Content.AccountWideIcon))
+    assert.is_true(WFI.HelpTooltip.registered(row.Content.ReputationBar.BonusIcon))
     RC.hover(row.Content.AccountWideIcon)
     assert.is_truthy(left(1):find("^この評判はウォーバンド全体で共有されます。"))
   end)
@@ -145,14 +145,14 @@ describe("the reputation frame on the Forever client", function()
 
   it("a moved pane, pool or list degrades to English with no error (type guards)", function()
     detail().rowPools = { EnumerateActive = "moved" }
-    assert.are.equal(0, WFJ.Reputation.onLayoutRows())
-    assert.has_no.errors(function() WFJ.Reputation.onRow(WFJ.Reputation, "moved") end)
-    assert.has_no.errors(function() WFJ.Reputation.onRow({ Content = "moved" }) end)
+    assert.are.equal(0, WFI.Reputation.onLayoutRows())
+    assert.has_no.errors(function() WFI.Reputation.onRow(WFI.Reputation, "moved") end)
+    assert.has_no.errors(function() WFI.Reputation.onRow({ Content = "moved" }) end)
     _G.ReputationFrame.ReputationDetailFrame = "moved"
-    WFJ.Compat.declare("reputation", "detail", { "ReputationFrame.ReputationDetailFrame" })
-    assert.are.equal(0, WFJ.Reputation.onLayoutRows())
-    assert.are.equal(0, WFJ.Reputation.onSetEmpty())
-    assert.are.equal(0, WFJ.Reputation.onPaneTitle())
+    WFI.Compat.declare("reputation", "detail", { "ReputationFrame.ReputationDetailFrame" })
+    assert.are.equal(0, WFI.Reputation.onLayoutRows())
+    assert.are.equal(0, WFI.Reputation.onSetEmpty())
+    assert.are.equal(0, WFI.Reputation.onPaneTitle())
   end)
 end)
 
@@ -160,7 +160,7 @@ end)
 -- ScrollingFont (reputationframe.lua:758, 771; characterframe.lua:860–872); only FactionDescription:* rows match it,
 -- and a FactionDescription text on any other widget (the faction name title) is never changed.
 describe("the reputation frame's faction description", function()
-  local WFJ
+  local WFI
 
   local DESC = "The Stormwind army and its citizens defend the human capital."
   local ROWS = {
@@ -169,20 +169,20 @@ describe("the reputation frame's faction description", function()
     OTHER_WORD = { "A plain dictionary word.", "ただの辞書の言葉。" }, -- not a FactionDescription row
   }
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function detail() return _G.ReputationFrame.ReputationDetailFrame end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     RC.install()
     local d = _G.ReputationFrame.ReputationDetailFrame
     d.Description = Stub.scrollingFont("") -- ScrollingFontTemplate (reputationframe.xml)
     function d.SetDescription(self, text) self.Description:SetText(text) end -- CharacterFrameSidePaneMixin
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, ROWS)
-    WFJ.Labels.forbidNames(WFJ.Reputation.NEVER_TOUCH)
-    WFJ.Reputation.init()
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, ROWS)
+    WFI.Labels.forbidNames(WFI.Reputation.NEVER_TOUCH)
+    WFI.Reputation.init()
   end)
 
   after_each(function() H.uiTeardown(); Stub.keys.alt = false end)
@@ -209,13 +209,13 @@ describe("the reputation frame's faction description", function()
     detail():SetDescription(DESC) -- then another faction: the record follows the new text
     detail():SetDescription("A faction nobody translated.")
     assert.are.equal("A faction nobody translated.", sf:GetText())
-    assert.is_nil(WFJ.SurfaceState.get("reputation", "detail.description"))
+    assert.is_nil(WFI.SurfaceState.get("reputation", "detail.description"))
   end)
 
   it("a FactionDescription English on the Title (a faction name) is never changed", function()
     RC.select({ name = "Honor Hold", standing = "Honored" })
     assert.are.equal("Honor Hold", detail().Title:GetText())
     assert.are.equal(0, detail().Title.calls.SetText)
-    assert.is_true(WFJ.Labels.forbidden(detail().Title))
+    assert.is_true(WFI.Labels.forbidden(detail().Title))
   end)
 end)

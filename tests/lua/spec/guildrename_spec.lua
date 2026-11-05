@@ -47,8 +47,8 @@ C.suite(getfenv(1), {
   title = "the guild rename window on Forever", module = "GuildRename", file = "UI/GuildRename.lua",
   root = "GuildRenameFrame", ui = UI, build = build, globals = { "GuildRenameFrame" },
   cases = {
-    { "the static labels and the writers' words are Japanese; Alt shows English; hide releases", function(frame, WFJ)
-      C.args(WFJ, UI, ARGS)
+    { "the static labels and the writers' words are Japanese; Alt shows English; hide releases", function(frame, WFI)
+      C.args(WFI, UI, ARGS)
       frame:Show()
       assert.are.equal("希望するギルド名を教えてください。", frame.RenameFlow.Description:GetText())
       assert.are.equal("新しいギルド名を入力", frame.RenameFlow.NameBox.Instructions:GetText())
@@ -65,9 +65,9 @@ C.suite(getfenv(1), {
       assert.are.equal("無効な名前です", frame.RenameFlow.StatusText:GetText())
       frame.RenameFlow:ClearRenameStatus()
       assert.are.equal(" ", frame.RenameFlow.StatusText:GetText())
-      C.alt(WFJ, true)
+      C.alt(WFI, true)
       assert.are.equal("Rename", frame.ContextButton:GetText())
-      C.alt(WFJ, false)
+      C.alt(WFI, false)
       frame:Hide()
       assert.are.equal("Enter New Guild Name", frame.RenameFlow.NameBox.Instructions:GetText())
     end },
@@ -78,13 +78,13 @@ C.suite(getfenv(1), {
       assert.are.equal("無効な名前です", _G.GameTooltipTextLeft1:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:Show()
     local title = frame.TitleContainer.TitleText
     assert.are.equal("Goodbye", title:GetText())
-    assert.are.equal(0, WFJ.Labels.show("guildrename", "x", title))
-    assert.is_true(C.unrecorded(WFJ, title))
-    assert.are.equal(0, WFJ.Labels.show("guildrename", "y", frame.RenameFlow.NameBox))
+    assert.are.equal(0, WFI.Labels.show("guildrename", "x", title))
+    assert.is_true(C.unrecorded(WFI, title))
+    assert.are.equal(0, WFI.Labels.show("guildrename", "y", frame.RenameFlow.NameBox))
   end,
   wrong = function(frame)
     frame.TitleFlow, frame.ContextButton, frame.MoneyFrame = "flow", 5, true

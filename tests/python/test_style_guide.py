@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from wfj.core import align, language, stat_words
-from wfj.core.report import SHIPPED
-from wfj.dev import translate_lint as tl
-from wfj.dev.translate_batch import STYLE_GUIDE, model_english, style_version
-from wfj.io.jsonl_store import Store
+from wfi.core import align, language, stat_words
+from wfi.core.report import SHIPPED
+from wfi.dev import translate_lint as tl
+from wfi.dev.translate_batch import STYLE_GUIDE, model_english, style_version
+from wfi.io.jsonl_store import Store
 
 EXAMPLE = re.compile(r"```example quest=(\d+) field=(\w+)\nEN:\n(.*?)\nJA:\n(.*?)\n```", re.S)
 MIN_EXAMPLES = 12
@@ -52,7 +52,7 @@ def test_examples_equal_the_trusted_human_corpus(guide, quest):
         assert model_english(en[key]["en"]) == en_text, key
 
 
-PLACEHOLDERS_LUA = Path("addon/WoWForeverJapanese/Core/Placeholders.lua")
+PLACEHOLDERS_LUA = Path("addon/WoWForeverItalian/Core/Placeholders.lua")
 # English word → the key of Placeholders.CLASS / Placeholders.RACE that the addon fills `{class}` / `{race}` from
 TOKEN_WORDS = {
     "warrior": "WARRIOR", "paladin": "PALADIN", "hunter": "HUNTER", "rogue": "ROGUE", "priest": "PRIEST",

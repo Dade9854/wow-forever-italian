@@ -3,13 +3,13 @@ comparison, and reads that table from the addon (no second copy)."""
 
 from pathlib import Path
 
-from wfj.cmd import validate
-from wfj.core.hashing import key
-from wfj.core.model import english_line
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd import validate
+from wfi.core.hashing import key
+from wfi.core.model import english_line
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
-ADDON = Path(__file__).resolve().parents[2] / "addon" / "WoWForeverJapanese"
+ADDON = Path(__file__).resolve().parents[2] / "addon" / "WoWForeverItalian"
 MACHINE = {"class": "machine", "model": "m", "critic": "c", "source": "draft-ui@2026-09-25", "imported": "2026-09-25"}
 
 

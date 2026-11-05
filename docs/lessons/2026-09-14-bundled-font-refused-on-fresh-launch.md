@@ -29,17 +29,17 @@ Two faults combined:
 Details in [Addon modules](../architecture/addon-modules.md):
 - **`SurfaceState.apply`** records no `appliedFont` when `SetFont` returns `false`. The new `SurfaceState.applyFont` retries only the font of an applied record whose widget still shows our text.
 - **`Render`** keeps refused records in a weak `pendingFonts` table. `Render.retryFonts()` retries the font only: no policy resolve, no text write.
-- **`Render` diagnostics:** `Render.pendingFonts()` and `Render.fontFailureSurfaces` for `/wfj debug`.
+- **`Render` diagnostics:** `Render.pendingFonts()` and `Render.fontFailureSurfaces` for `/wfi debug`.
 - **`UI/Font.lua`:** `Font.set` / `Font.retryPending` do the same for the addon's own widgets (settings pages, marker banner).
 - **The probe:** `Font.startProbe` / `Font.stopProbe` show one visible, nearly transparent character that asks for the bundled font, which makes the client load the file.
 - **`Main.lua` on `PLAYER_ENTERING_WORLD`:** retries once. If anything is still refused, it starts the probe and a 1 s `C_Timer.NewTicker` that retries until nothing is pending, then stops the probe. A 600-try safety stop ends it after 10 minutes.
-- **`/wfj debug`** prints `font failures: N (M pending)` with per-surface detail. `/wfj debug fonts` shows the retry state and retries now.
+- **`/wfi debug`** prints `font failures: N (M pending)` with per-surface detail. `/wfi debug fonts` shows the retry state and retries now.
 - **Tests:** `surfacestate_spec`, `render_spec`, `addon_load_spec`, `slash_spec` ([Testing](../testing/strategy.md)).
 
 ## Prevention
-- **Test a fresh launch, not only `/reload`.** After a `/reload` the same code saw 0 refusals, so load-time font behaviour can only be checked from a fresh launch. The in-game checklist now has a fresh-launch step: [Testing → checklist 15](../testing/strategy.md), where `/wfj debug fonts` must show `retry stopped · … 0 left` without opening any window.
+- **Test a fresh launch, not only `/reload`.** After a `/reload` the same code saw 0 refusals, so load-time font behaviour can only be checked from a fresh launch. The in-game checklist now has a fresh-launch step: [Testing → checklist 15](../testing/strategy.md), where `/wfi debug fonts` must show `retry stopped · … 0 left` without opening any window.
 - **Never record a refused `SetFont` as applied.** A widget call that returns a status is checked before state is updated; a `false` leaves the record retryable (`surfacestate_spec`).
-- **Treat a non-zero failure counter as a bug to act on.** `/wfj debug` now names the surfaces and whether anything is still pending, so a count can be traced to widgets.
+- **Treat a non-zero failure counter as a bug to act on.** `/wfi debug` now names the surfaces and whether anything is still pending, so a count can be traced to widgets.
 
 ## Later observations
-- **Forever, the tracker's "Quests" header.** On a Forever session `/wfj debug` reported one font failure on `questmap.trackerlabels` (`ui.trackerQuests`, size 14) with **0 pending**. This is the same fresh-launch refusal, not a new fault: the header is written in the tracker module's `OnLoad`, before the bundled font file is ready, so the load-time `SetFont` is refused; `Render.retryFonts` then applied it. The failure counter keeps counting a refusal the retry healed, so read it together with "pending". A busted spec pins this case: a refused `SetFont` on `ui.trackerQuests` at load, applied by `Render.retryFonts` (`questmap_objectives_spec.lua`).
+- **Forever, the tracker's "Quests" header.** On a Forever session `/wfi debug` reported one font failure on `questmap.trackerlabels` (`ui.trackerQuests`, size 14) with **0 pending**. This is the same fresh-launch refusal, not a new fault: the header is written in the tracker module's `OnLoad`, before the bundled font file is ready, so the load-time `SetFont` is refused; `Render.retryFonts` then applied it. The failure counter keeps counting a refusal the retry healed, so read it together with "pending". A busted spec pins this case: a refused `SetFont` on `ui.trackerQuests` at load, applied by `Render.retryFonts` (`questmap_objectives_spec.lua`).

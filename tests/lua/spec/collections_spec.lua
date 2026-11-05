@@ -14,11 +14,11 @@ end
 local MODULES = { "Collections", "MountJournal", "PetJournal", "Wardrobe" }
 
 describe("the Collections window on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -31,22 +31,22 @@ describe("the Collections window on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, C.UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, C.UI)
   end
 
   local function setup(loadedFirst)
     load()
     if loadedFirst then
       C.load()
-      for _, m in ipairs(MODULES) do assert.is_true(WFJ[m].init(), m) end
+      for _, m in ipairs(MODULES) do assert.is_true(WFI[m].init(), m) end
     else
-      for _, m in ipairs(MODULES) do assert.is_false(WFJ[m].init(), m) end -- each waits for the addon
+      for _, m in ipairs(MODULES) do assert.is_false(WFI[m].init(), m) end -- each waits for the addon
       C.load()
-      assert.are.equal(4, WFJ.LoadOnDemand.loaded(C.ADDON))
+      assert.are.equal(4, WFI.LoadOnDemand.loaded(C.ADDON))
     end
   end
 
@@ -207,7 +207,7 @@ describe("the Collections window on Forever", function()
 
   it("hooks install once", function()
     setup(true)
-    for _, m in ipairs(MODULES) do assert.is_false(WFJ[m].setup(), m) end
+    for _, m in ipairs(MODULES) do assert.is_false(WFI[m].setup(), m) end
     assert.are.equal(1, #Stub.hooks["CollectionsJournal:SetTitle"])
     assert.are.equal(1, #Stub.hooks["HeirloomsJournal:LayoutCurrentPage"])
     assert.are.equal(1, #Stub.hooks["MountJournal_UpdateMountDisplay"])
@@ -232,7 +232,7 @@ describe("the Collections window on Forever", function()
     _G.WardrobeCollectionFrame.ItemsCollectionFrame.Models = "nope"
     _G.WardrobeCollectionFrame.ItemsCollectionFrame.SlotsFrame.Buttons = 3
     assert.has_no.errors(function()
-      for _, m in ipairs(MODULES) do assert.is_true(WFJ[m].init(), m) end
+      for _, m in ipairs(MODULES) do assert.is_true(WFI[m].init(), m) end
     end)
     assert.are.equal("マウント総数", _G.MountJournal.MountCount.Label:GetText()) -- the rest still works
     assert.is_nil(Stub.hooks["MountJournal_UpdateEquipment"]) -- a non-function is never hooked
@@ -242,11 +242,11 @@ describe("the Collections window on Forever", function()
     load()
     local before = 0
     for _ in pairs(Stub.hooks) do before = before + 1 end
-    for _, m in ipairs(MODULES) do assert.is_false(WFJ[m].init(), m) end
+    for _, m in ipairs(MODULES) do assert.is_false(WFI[m].init(), m) end
     Stub.loadedAddons[C.ADDON] = true -- the addon name loaded, but no CollectionsJournal
     for _, m in ipairs(MODULES) do
-      assert.is_false(WFJ[m].init(), m)
-      assert.is_false(WFJ[m].setup(), m)
+      assert.is_false(WFI[m].init(), m)
+      assert.is_false(WFI[m].setup(), m)
     end
     local after = 0
     for _ in pairs(Stub.hooks) do after = after + 1 end

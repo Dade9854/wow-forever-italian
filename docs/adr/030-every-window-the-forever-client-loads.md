@@ -1,9 +1,9 @@
 # ADR-030: The window list is read from the Forever client's TOCs, and every window it loads has a recorded disposition
 
-- **Status:** Accepted. Implemented in `pipeline/wfj/dev/client_addons.py`, `pipeline/forever_addons.txt`,
+- **Status:** Accepted. Implemented in `pipeline/wfi/dev/client_addons.py`, `pipeline/forever_addons.txt`,
   `pipeline/forever_addon_dispositions.txt`, `pipeline/forever_titles.txt` (committed data),
-  `tests/python/test_client_addons.py`, `tests/python/test_forever_windows.py`; `pipeline/wfj/dev/ui_windows.py`
-  (`FOREVER_WINDOWS`); one surface module per window in `addon/WoWForeverJapanese/UI/` and three shared helpers
+  `tests/python/test_client_addons.py`, `tests/python/test_forever_windows.py`; `pipeline/wfi/dev/ui_windows.py`
+  (`FOREVER_WINDOWS`); one surface module per window in `addon/WoWForeverItalian/UI/` and three shared helpers
   (`UI/LabelTree.lua`, `UI/TooltipLines.lua`, `UI/SettingsKeys.lua`); `Labels.title` in `UI/Labels.lua`; `Main.lua`,
   the TOC; `Core/UIStringKeys.lua` (ARGS, LABELS) and `Core/UIStrings.lua` (the `signed` capture). Not yet verified
   in game on Forever (the Forever window checklist in [Testing strategy](../testing/strategy.md)).
@@ -40,7 +40,7 @@ Four facts about the client shaped the design:
 
 ## Decision
 
-1. **The window list is mechanical.** `wfj.dev.client_addons` resolves every addon from its TOC under ADR-029's rule,
+1. **The window list is mechanical.** `wfi.dev.client_addons` resolves every addon from its TOC under ADR-029's rule,
    plus three more facts from the TOC headers: `standard` and `classic` do not include `camelot` (thirteen headers write
    `standard, camelot` where both are meant), `## AllowLoad: Glue` is the login screen, and `_Mainline.toc` is
    preferred. XML includes are followed. Its addon-level output, `pipeline/forever_addons.txt`, is committed.
@@ -78,7 +78,7 @@ Four facts about the client shaped the design:
    `pipeline/forever_titles.txt` gives each one a disposition: `key <KEY> <surface>`, `name`, `ruled` (`BANK`) or
    `dynamic`. The test fails on an unlisted site.
 
-5. **A camelot marker for windows whose names exist on both clients** (removed by ADR-034). `WFJ.Camelot.present()`
+5. **A camelot marker for windows whose names exist on both clients** (removed by ADR-034). `WFI.Camelot.present()`
    was true only when `PVPRankFrame` exists. That frame is created at login only by camelot
    (`blizzard_uipanels_game.toc:213–214` `[AllowLoadGameType camelot]`), in the same Blizzard addon as the
    shared-name windows, and that addon loads before any third-party addon. The windows whose frames Classic Era also

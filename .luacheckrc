@@ -38,16 +38,16 @@ read_globals = {
 
 -- Globals the addon defines (SavedVariables, slash registrations, bindings).
 globals = {
-  "SlashCmdList", "WFJ_DB", "WFJ_Collector", "WFJ_Log", "SLASH_WFJ1", "SLASH_WFJ2", "BINDING_HEADER_WFJ", "BINDING_NAME_WFJ_TOGGLE",
-  "WFJ_ToggleTranslation", "WFJ_RevealKey", "BINDING_NAME_WFJ_REVEAL",
+  "SlashCmdList", "WFI_DB", "WFI_Collector", "WFI_Log", "SLASH_WFI1", "SLASH_WFI2", "BINDING_HEADER_WFI", "BINDING_NAME_WFI_TOGGLE",
+  "WFI_ToggleTranslation", "WFI_RevealKey", "BINDING_NAME_WFI_REVEAL",
   -- the voice panel's key bindings
-  "WFJ_VoicePause", "WFJ_VoiceReplay", "BINDING_NAME_WFJ_VOICE_PAUSE", "BINDING_NAME_WFJ_VOICE_REPLAY",
+  "WFI_VoicePause", "WFI_VoiceReplay", "BINDING_NAME_WFI_VOICE_PAUSE", "BINDING_NAME_WFI_VOICE_REPLAY",
   -- The TOC's AddonCompartmentFunc handlers (Blizzard's addon dropdown calls them by name)
-  "WFJ_OnAddonCompartmentClick", "WFJ_OnAddonCompartmentEnter", "WFJ_OnAddonCompartmentLeave",
-  "WoWForeverJapanese_RegisterVoice", -- the voice pack calls it from its own chunk (ADR-061)
+  "WFI_OnAddonCompartmentClick", "WFI_OnAddonCompartmentEnter", "WFI_OnAddonCompartmentLeave",
+  "WoWForeverItalian_RegisterVoice", -- the voice pack calls it from its own chunk (ADR-061)
 }
 
-files["addon/WoWForeverJapanese/Data/"] = { ignore = { ".*" } }
+files["addon/WoWForeverItalian/Data/"] = { ignore = { ".*" } }
 files["tests/lua/"] = {
   std = "+busted",
   read_globals = {
@@ -71,7 +71,7 @@ files["tests/lua/"] = {
     "GossipFrame", "C_GossipInfo", "GOSSIP_OPTION_PREPEND", "QUEST_PREPEND", "NORMAL_QUEST_DISPLAY",
     "QuestGreetingScrollFrame", "GetGreetingText",
     -- The stub AddOn List and the settings pages' tooltip, plus the key / binding API the specs drive
-    "AddonList", "AddonList_InitAddon", "WFJSettingsTooltip",
+    "AddonList", "AddonList_InitAddon", "WFISettingsTooltip",
   },
-  globals = { "WFJ", "_G" },
+  globals = { "WFI", "_G" },
 }

@@ -90,7 +90,7 @@ end
 local function installPerformanceBar()
   M.perf = { latencyHome = 45, latencyWorld = 60, fps = 59.6, bandwidth = 100, downloaded = 1.0, ipv6 = false,
     ipHome = 1, ipWorld = 2, protocolHome = 1, protocolWorld = 2, profiler = false, avgCPU = "12%", peakCPU = "40%",
-    addons = { { name = "WoWForeverJapanese", mem = 2048.5 }, { name = "Quest Log", mem = 512 } } }
+    addons = { { name = "WoWForeverItalian", mem = 2048.5 }, { name = "Quest Log", mem = 512 } } }
   _G.GetNetStats = function() return 0, 0, M.perf.latencyHome, M.perf.latencyWorld end
   -- Blizzard_PerformanceBar/PerformanceBar.lua:52–198
   _G.MainMenuBarPerformanceBarFrame_OnEnter = function(self)

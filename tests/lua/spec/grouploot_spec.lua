@@ -27,34 +27,34 @@ local function install()
 end
 
 describe("group loot on Forever", function()
-  local WFJ
+  local WFI
 
-  before_each(function() WFJ = G.load(FILES, UI) end)
+  before_each(function() WFI = G.load(FILES, UI) end)
   after_each(function() G.clear(NAMES) end)
 
   it("the roll buttons' tooltips translate, with the ineligible reason; the item's name stays English", function()
     install()
-    WFJ.Labels.forbidNames(WFJ.GroupLoot.NEVER_TOUCH)
-    assert.is_true(WFJ.GroupLoot.init())
-    assert.are.equal(16, WFJ.GroupLoot.registered())
+    WFI.Labels.forbidNames(WFI.GroupLoot.NEVER_TOUCH)
+    assert.is_true(WFI.GroupLoot.init())
+    assert.are.equal(16, WFI.GroupLoot.registered())
     local need = _G.GroupLootFrame2.LootButtonContainer.NeedButton
     G.tooltip(need, { "Need", UI.LOOT_ROLL_INELIGIBLE_REASON1[1] })
     assert.are.equal("ニード", G.line(1))
     assert.are.equal(UI.LOOT_ROLL_INELIGIBLE_REASON1[2], G.line(2))
     G.tooltip(_G.GroupLootFrame1.LootButtonContainer.PassButton, { "Pass" })
     assert.are.equal("パス", G.line(1))
-    G.alt(WFJ, true)
+    G.alt(WFI, true)
     assert.are.equal("Pass", G.line(1))
-    G.alt(WFJ, false)
+    G.alt(WFI, false)
     assert.are.equal("Need", _G.GroupLootFrame2.Name:GetText())
-    assert.is_true(G.unrecorded(WFJ, _G.GroupLootFrame2.Name))
+    assert.is_true(G.unrecorded(WFI, _G.GroupLootFrame2.Name))
   end)
 
   it("the master looter's title renders Japanese and keeps it after a second SetTitle; the item name does not",
     function()
       local master = install()
-      WFJ.Labels.forbidNames(WFJ.GroupLoot.NEVER_TOUCH)
-      assert.is_true(WFJ.GroupLoot.init())
+      WFI.Labels.forbidNames(WFI.GroupLoot.NEVER_TOUCH)
+      assert.is_true(WFI.GroupLoot.init())
       master:Show()
       assert.are.equal("ルートの割り当て", master.TitleContainer.TitleText:GetText())
       master:SetTitle(_G.ASSIGN_LOOT)
@@ -70,16 +70,16 @@ describe("group loot on Forever", function()
     _G.GroupLootFrame2.LootButtonContainer = "x"
     _G.GroupLootFrame3.LootButtonContainer.NeedButton = false
     _G.MasterLooterFrame = 1
-    assert.has_no.errors(function() assert.is_true(WFJ.GroupLoot.init()) end)
-    assert.are.equal(7, WFJ.GroupLoot.registered())
-    assert.is_false(WFJ.GroupLoot.init())
+    assert.has_no.errors(function() assert.is_true(WFI.GroupLoot.init()) end)
+    assert.are.equal(7, WFI.GroupLoot.registered())
+    assert.is_false(WFI.GroupLoot.init())
   end)
 
   it("no roll frames, or ones without a LootButtonContainer: init is false", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.GroupLoot.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.GroupLoot.init()) end)
     local bare = CreateFrame("Frame", "GroupLootFrame1")
     bare.NeedButton = CreateFrame("Button")
-    assert.is_false(WFJ.GroupLoot.init())
-    assert.is_false(WFJ.HelpTooltip.registered(bare.NeedButton))
+    assert.is_false(WFI.GroupLoot.init())
+    assert.is_false(WFI.HelpTooltip.registered(bare.NeedButton))
   end)
 end)

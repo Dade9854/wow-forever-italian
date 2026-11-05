@@ -5,9 +5,9 @@ words"; and every composite exclusion says whether it is permanent or waits on a
 import re
 from pathlib import Path
 
-from wfj.io import wago
+from wfi.io import wago
 
-ADDON = Path("addon/WoWForeverJapanese")
+ADDON = Path("addon/WoWForeverItalian")
 _EXCL = re.compile(r"^([A-Z][A-Z0-9_]*|ItemSubClass:\d+:\d+)\s+#\s+(\S.*)$")
 _COMPOSITE = re.compile(r"composite|concatenated|fragment", re.IGNORECASE)
 
@@ -38,7 +38,7 @@ def _menu_keys(root: Path) -> set[str]:
     body += (root / ADDON / "UI/MenusUntagged.lua").read_text(encoding="utf-8")  # the untagged menus' specs
     keys: set[str] = set()
     if "WHICH" in unit:
-        which = unit[unit.index("WHICH"):].split("function WFJ.MenusUnit.tags", 1)[0]  # the lists, not the builder
+        which = unit[unit.index("WHICH"):].split("function WFI.MenusUnit.tags", 1)[0]  # the lists, not the builder
         keys |= set(re.findall(r'"([A-Z][A-Z0-9_]*)"', which))
     # a list may open with the unit menus' shared raid target run (raidTargetsThen), whose own list is `out = {…}`
     for m in re.finditer(r"\b(?:keys|tooltips|KEYS|TOOLTIPS|CHAT_SHORTCUT_KEYS|WORLD_MAP_FILTERS|out)\s*=\s*"

@@ -4,16 +4,16 @@ local H = require("tests.lua.spec.helpers")
 local Stub = require("tests.lua.spec.wow_stub")
 local C = {}
 
--- A fresh addon namespace over `files` (appended to H.UI_FILES) with the `ui` dictionary. → WFJ
+-- A fresh addon namespace over `files` (appended to H.UI_FILES) with the `ui` dictionary. → WFI
 function C.fresh(files, ui)
-  Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+  Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
   Stub.installTooltipAPI()
   local list = {}
   for i, f in ipairs(H.UI_FILES) do list[i] = f end
   for _, f in ipairs(files) do list[#list + 1] = f end
-  local WFJ = H.loadChunks(list)
-  H.uiSetup(WFJ, ui)
-  return WFJ
+  local WFI = H.loadChunks(list)
+  H.uiSetup(WFI, ui)
+  return WFI
 end
 
 -- A PortraitFrame / ButtonFrame window: TitleContainer.TitleText written by SetTitle (portraitframe.lua:11–13).
@@ -87,8 +87,8 @@ function C.pool(make)
 end
 
 -- True when no surface holds a record on `widget`.
-function C.unrecorded(WFJ, widget)
-  for _, bucket in pairs(WFJ.SurfaceState.surfaces()) do
+function C.unrecorded(WFI, widget)
+  for _, bucket in pairs(WFI.SurfaceState.surfaces()) do
     for _, rec in pairs(bucket) do
       if rec.fs == widget then return false end
     end
@@ -96,9 +96,9 @@ function C.unrecorded(WFJ, widget)
   return true
 end
 
-function C.alt(WFJ, down)
+function C.alt(WFI, down)
   Stub.keys.alt = down
-  WFJ.Modifier.refresh()
+  WFI.Modifier.refresh()
 end
 
 -- The client building a Lua tooltip owned by `owner` (GameTooltip:SetOwner / SetText / AddLine / Show).
@@ -114,25 +114,25 @@ end
 
 -- The assertions every window spec makes, generated once. `env` is the spec's busted environment
 -- ({ describe, it, before_each, after_each, assert }); `o`:
---   title    the describe title            module  the WFJ field ("GuildBank")     file  "UI/GuildBank.lua"
+--   title    the describe title            module  the WFI field ("GuildBank")     file  "UI/GuildBank.lua"
 --   addon    the load-on-demand Blizzard addon, or nil for one the client loads at login
 --   root     the window's global name      globals every global `build` creates     ui    the test dictionary
 --   build()  creates the camelot-shaped frames → the window
---   cases    { { "it title", function(frame, WFJ) … end }, … } run in every load order
---   name     function(frame, WFJ): asserts a name is left untouched
---   wrong    function(frame): binds client names to wrong types; → function(frame, WFJ) asserting what still works
+--   cases    { { "it title", function(frame, WFI) … end }, … } run in every load order
+--   name     function(frame, WFI): asserts a name is left untouched
+--   wrong    function(frame): binds client names to wrong types; → function(frame, WFI) asserting what still works
 function C.suite(env, o)
   local describe, it, before_each, after_each, assert = env.describe, env.it, env.before_each, env.after_each,
     env.assert
   describe(o.title, function()
-    local WFJ
+    local WFI
 
-    local function load() WFJ = C.fresh({ o.file }, o.ui) end
-    local function module() return WFJ[o.module] end
+    local function load() WFI = C.fresh({ o.file }, o.ui) end
+    local function module() return WFI[o.module] end
     local function build()
       local frame = o.build()
       if o.addon then Stub.loadedAddons[o.addon] = true end
-      WFJ.Labels.forbidNames(module().NEVER_TOUCH)
+      WFI.Labels.forbidNames(module().NEVER_TOUCH)
       return frame
     end
 
@@ -144,7 +144,7 @@ function C.suite(env, o)
       else
         assert.is_false(module().init()) -- waits for the addon
         build()
-        assert.are.equal(1, WFJ.LoadOnDemand.loaded(o.addon))
+        assert.are.equal(1, WFI.LoadOnDemand.loaded(o.addon))
       end
     end
 
@@ -156,7 +156,7 @@ function C.suite(env, o)
       describe(order[2], function()
         before_each(function() setup(order[1]) end)
         for _, case in ipairs(o.cases) do
-          it(case[1], function() case[2](_G[o.root], WFJ) end)
+          it(case[1], function() case[2](_G[o.root], WFI) end)
         end
         it("hooks install once", function()
           assert.is_false(module().init())
@@ -167,7 +167,7 @@ function C.suite(env, o)
 
     it("a name is left untouched", function()
       setup(true)
-      o.name(_G[o.root], WFJ)
+      o.name(_G[o.root], WFI)
     end)
 
     it("client names bound to the wrong type degrade to English with no error", function()
@@ -178,7 +178,7 @@ function C.suite(env, o)
         assert.is_true(module().init())
         if frame.Show then frame:Show() end
       end)
-      after(frame, WFJ)
+      after(frame, WFI)
       load()
       _G[o.root] = 42
       if o.addon then Stub.loadedAddons[o.addon] = true end
@@ -195,16 +195,16 @@ end
 -- The Core/UIStrings ARGS kinds a template needs (`args`: { KEY = { [n] = "text" | "time" … } }), added when the core
 -- does not declare them yet, and the dictionary index rebuilt from `ui` so they take effect (the index compiles its
 -- patterns once). A no-op for a key the core already declares. Core/UIStrings carries these entries.
-function C.args(WFJ, ui, args)
+function C.args(WFI, ui, args)
   local missing = false
   for key, kinds in pairs(args) do
-    if WFJ.UIStrings.ARGS[key] == nil then WFJ.UIStrings.ARGS[key], missing = kinds, true end
+    if WFI.UIStrings.ARGS[key] == nil then WFI.UIStrings.ARGS[key], missing = kinds, true end
   end
   if not missing then return end
-  local function h1(text) return (WFJ.Hash.h32x2(WFJ.Normalize.v1(text))) end
+  local function h1(text) return (WFI.Hash.h32x2(WFI.Normalize.v1(text))) end
   local rows = {}
   for key, pair in pairs(ui) do rows[key] = { pair[2], h1(pair[1]), "." } end
-  WFJ.UIIndex = WFJ.UIStrings.build({ rows = rows, hash = h1, english = function(key) return _G[key] end })
+  WFI.UIIndex = WFI.UIStrings.build({ rows = rows, hash = h1, english = function(key) return _G[key] end })
 end
 
 function C.teardown(names)

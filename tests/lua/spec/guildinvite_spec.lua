@@ -39,16 +39,16 @@ R.suite(getfenv(1), {
   root = "GuildInviteFrame", globals = GLOBALS, ui = UI, build = build,
   args = { GUILD_REPUTATION_WARNING = { [1] = "text" } },
   cases = {
-    { "the labels and buttons are Japanese on an invite; Alt shows English", function(frame, WFJ)
+    { "the labels and buttons are Japanese on an invite; Alt shows English", function(frame, WFI)
       frame:invite("Thrall", "Horde Guild", _G.GUILD_REPUTATION_WARNING_GENERIC)
       assert.are.equal("がギルドに招待しています:", _G.GuildInviteFrameInviteText:GetText())
       assert.are.equal("アチーブメント", frame.Points.Title:GetText())
       assert.are.equal("ギルドに参加", _G.GuildInviteFrameJoinButton:GetText())
       assert.are.equal("招待を断る", _G.GuildInviteFrameDeclineButton:GetText())
       assert.are.equal("以前のギルドでのギルド評判が1段階下がります。", _G.GuildInviteFrameWarningText:GetText())
-      R.alt(WFJ, true)
+      R.alt(WFI, true)
       assert.are.equal("Join Guild", _G.GuildInviteFrameJoinButton:GetText())
-      R.alt(WFJ, false)
+      R.alt(WFI, false)
     end },
     { "the named warning keeps the old guild's name in English inside the Japanese", function(frame)
       frame:invite("Thrall", "Horde Guild", string.format(_G.GUILD_REPUTATION_WARNING, "Old Friends"))
@@ -57,19 +57,19 @@ R.suite(getfenv(1), {
       assert.are.equal("", _G.GuildInviteFrameWarningText:GetText())
     end },
   },
-  name = function(frame, WFJ)
+  name = function(frame, WFI)
     frame:invite("Achievements", "Join Guild") -- names spelled like dictionary words
     assert.are.equal("Achievements", _G.GuildInviteFrameInviterName:GetText())
     assert.are.equal("Join Guild", _G.GuildInviteFrameGuildName:GetText())
-    assert.is_true(R.unrecorded(WFJ, _G.GuildInviteFrameInviterName))
-    assert.is_true(R.unrecorded(WFJ, _G.GuildInviteFrameGuildName))
+    assert.is_true(R.unrecorded(WFI, _G.GuildInviteFrameInviterName))
+    assert.is_true(R.unrecorded(WFI, _G.GuildInviteFrameGuildName))
   end,
   wrong = function(frame)
     _G.GuildInviteFrameInviteText = "x"
     frame.Points = 7
-    return function(_, WFJ)
+    return function(_, WFI)
       assert.are.equal("ギルドに参加", _G.GuildInviteFrameJoinButton:GetText())
-      assert.is_true(R.unrecorded(WFJ, _G.GuildInviteFrameWarningText))
+      assert.is_true(R.unrecorded(WFI, _G.GuildInviteFrameWarningText))
     end
   end,
 })

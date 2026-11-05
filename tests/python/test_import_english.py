@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from wfj.cmd.import_ import run
-from wfj.core.hashing import key
-from wfj.core.model import validate_line
-from wfj.core.normalize import normalize_v1
-from wfj.io.jsonl_store import Store
+from wfi.cmd.import_ import run
+from wfi.core.hashing import key
+from wfi.core.model import validate_line
+from wfi.core.normalize import normalize_v1
+from wfi.io.jsonl_store import Store
 
 
 def _data_dir(tmp_path: Path, monkeypatch):

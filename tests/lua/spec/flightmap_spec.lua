@@ -26,31 +26,31 @@ local UI = {
 local function en(key) return _G[key] end
 
 describe("the flight map on Forever", function()
-  local WFJ, frame
+  local WFI, frame
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
     Maps.clear()
   end
 
   local function setup(loadedFirst)
     load()
-    assert.is_true(WFJ.MapPins.init())
+    assert.is_true(WFI.MapPins.init())
     if loadedFirst then
       frame = Maps.flightMap(en)
-      assert.is_true(WFJ.FlightMap.init())
+      assert.is_true(WFI.FlightMap.init())
     else
-      assert.is_false(WFJ.FlightMap.init()) -- waits for the addon
+      assert.is_false(WFI.FlightMap.init()) -- waits for the addon
       frame = Maps.flightMap(en)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(ADDON))
     end
   end
 
@@ -110,18 +110,18 @@ describe("the flight map on Forever", function()
     map.BorderFrame = "border"
     map.dataProviders = { [1] = true, ["x"] = true, [{ MapLabel = 3, ZoomOutMapLabel = {} }] = true,
       [{ MapLabel = { Text = 9 }, ZoomOutMapLabel = { Text = "t" } }] = true }
-    assert.has_no.errors(function() assert.is_true(WFJ.FlightMap.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.FlightMap.init()) end)
     assert.has_no.errors(function() map:Show() end)
     load()
     _G.FlightMapFrame = 12
     Stub.loadedAddons[ADDON] = true
-    assert.has_no.errors(function() WFJ.FlightMap.init() end)
+    assert.has_no.errors(function() WFI.FlightMap.init() end)
   end)
 
   it("without the frame, nothing is set up", function()
     load()
     Stub.loadedAddons[ADDON] = true
-    assert.is_true(WFJ.FlightMap.init()) -- the setup ran …
-    assert.is_false(WFJ.FlightMap.setup()) -- … and found no frame
+    assert.is_true(WFI.FlightMap.init()) -- the setup ran …
+    assert.is_false(WFI.FlightMap.setup()) -- … and found no frame
   end)
 end)

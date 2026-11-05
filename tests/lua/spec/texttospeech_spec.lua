@@ -50,13 +50,13 @@ local function installFrame()
 end
 
 describe("the text-to-speech panes on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   after_each(function()
@@ -68,8 +68,8 @@ describe("the text-to-speech panes on Forever", function()
   it("static labels and the message-type check buttons are Japanese; a voice's name is never touched", function()
     load()
     local f, messages = installFrame()
-    WFJ.Labels.forbidNames(WFJ.TextToSpeech.NEVER_TOUCH)
-    assert.is_true(WFJ.TextToSpeech.init())
+    WFI.Labels.forbidNames(WFI.TextToSpeech.NEVER_TOUCH)
+    assert.is_true(WFI.TextToSpeech.init())
     local p = f.PanelContainer
     assert.are.equal("音声オプション", p.VoiceOptionsLabel:GetText())
     assert.are.equal("自分のメッセージも読み上げる", p.NarrateMyMessagesCheckButton.text:GetText())
@@ -88,11 +88,11 @@ describe("the text-to-speech panes on Forever", function()
     for i, box in ipairs(messages.checkBoxes) do shown[i] = box.text:GetText() end
     assert.are.same({ "発言", "パーティーリーダー", "アイテム獲得", "ENCOUNTER_EVENT" }, shown)
     Stub.keys.alt = true
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
     assert.are.equal("Say", messages.checkBoxes[1].text:GetText())
     Stub.keys.alt = false
-    WFJ.Modifier.refresh()
-    assert.is_false(WFJ.TextToSpeech.init())
+    WFI.Modifier.refresh()
+    assert.is_false(WFI.TextToSpeech.init())
     assert.are.equal(1, #Stub.hooks["TextToSpeechFrame_CreateCheckboxes"])
   end)
 
@@ -100,7 +100,7 @@ describe("the text-to-speech panes on Forever", function()
     function()
     load()
     local _, messages = installFrame()
-    assert.is_true(WFJ.TextToSpeech.init())
+    assert.is_true(WFI.TextToSpeech.init())
     _G.TextToSpeechFrame_CreateCheckboxes(messages, { "GUILD", "RAID", "RAID_LEADER" })
     local shown = {}
     for i, box in ipairs(messages.checkBoxes) do shown[i] = box.text:GetText() end
@@ -113,9 +113,9 @@ describe("the text-to-speech panes on Forever", function()
     load()
     local _, messages = installFrame()
     _G.TEXT_TO_SPEECH_CHAT_TYPES = nil
-    assert.is_true(WFJ.TextToSpeech.init())
+    assert.is_true(WFI.TextToSpeech.init())
     messages.checkBoxes = { { text = Stub.fontString("Guild") } }
-    assert.are.equal(0, WFJ.TextToSpeech.onCheckboxes(messages))
+    assert.are.equal(0, WFI.TextToSpeech.onCheckboxes(messages))
     assert.are.equal("Guild", messages.checkBoxes[1].text:GetText())
   end)
 
@@ -123,7 +123,7 @@ describe("the text-to-speech panes on Forever", function()
     load()
     local _, messages = installFrame()
     _G.TextToSpeechFrame_CreateCheckboxes(messages, { "SAY" })
-    assert.is_true(WFJ.TextToSpeech.init())
+    assert.is_true(WFI.TextToSpeech.init())
     assert.are.equal("発言", messages.checkBoxes[1].text:GetText())
   end)
 
@@ -133,13 +133,13 @@ describe("the text-to-speech panes on Forever", function()
     f.PanelContainer.AdjustRateSlider, f.PanelContainer.VoiceOptionsLabel = 9, "label"
     messages.checkBoxes = { 1, "two", { text = 3 } }
     _G.TextToSpeechFrame_CreateCheckboxes = "nope"
-    assert.has_no.errors(function() assert.is_true(WFJ.TextToSpeech.init()) end)
-    assert.has_no.errors(function() WFJ.TextToSpeech.onCheckboxes(5) end)
+    assert.has_no.errors(function() assert.is_true(WFI.TextToSpeech.init()) end)
+    assert.has_no.errors(function() WFI.TextToSpeech.onCheckboxes(5) end)
     assert.are.equal("サンプルを再生", f.PanelContainer.PlaySampleButton:GetText())
   end)
 
   it("no TextToSpeechFrame → init is false, nothing touched", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.TextToSpeech.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.TextToSpeech.init()) end)
   end)
 end)

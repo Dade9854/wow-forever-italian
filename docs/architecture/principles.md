@@ -62,14 +62,14 @@ never silently. See [ADR-001](../adr/001-id-keyed-data-with-per-field-provenance
 
 Every entry in `data/` records where it came from: its class (`human`, `correction`, `machine`), who or what
 produced it, and which English it was made from. Machine output fills gaps and replaces machine output. It
-replaces a human translation only through an explicit, recorded ruling on that line; `wfj validate --base` fails a
+replaces a human translation only through an explicit, recorded ruling on that line; `wfi validate --base` fails a
 change that would do otherwise. See [ADR-011](../adr/011-provenance-layers-and-completeness.md) and
 [ADR-012](../adr/012-human-decisions-survive-regeneration.md).
 
 ## 7. Generated files are never edited by hand
 
-The Lua data under `addon/WoWForeverJapanese/Data/` is built from `data/` by `make generate`. Edit `data/` and
-regenerate; `wfj validate` regenerates and fails on any difference. See
+The Lua data under `addon/WoWForeverItalian/Data/` is built from `data/` by `make generate`. Edit `data/` and
+regenerate; `wfi validate` regenerates and fails on any difference. See
 [ADR-008](../adr/008-generated-data-layout.md).
 
 ## 8. Rendering apart from data

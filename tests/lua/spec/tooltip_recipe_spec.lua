@@ -29,7 +29,7 @@ local function recipeData()
 end
 
 describe("UI/Tooltip on a recipe's tooltip", function()
-  local WFJ, tt, records
+  local WFI, tt, records
 
   local function show(link, lines, data)
     tt.item = { name = link:match("%[(.-)%]"), link = link }
@@ -43,27 +43,27 @@ describe("UI/Tooltip on a recipe's tooltip", function()
   local function text(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     _G.Enum.TooltipDataLineType = { ItemName = 22, NestedBlock = 19, ItemSpellTriggerLearn = 38,
       ItemSpellTriggerOnUse = 44, UsageRequirement = 43, SellPrice = 11 }
-    WFJ = H.loadChunks(FILES)
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Settings.load(nil, 1, {})
-    WFJ.Render.init(WFJ.Translator.new({
-      enabled = function() return WFJ.State.enabled end,
-      areaEnabled = WFJ.State.areaEnabled,
-      modifierHeld = WFJ.Modifier.isDown,
+    WFI = H.loadChunks(FILES)
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Settings.load(nil, 1, {})
+    WFI.Render.init(WFI.Translator.new({
+      enabled = function() return WFI.State.enabled end,
+      areaEnabled = WFI.State.areaEnabled,
+      modifierHeld = WFI.Modifier.isDown,
       lookup = function(kind, id) return DATA[kind] and DATA[kind][id] end,
-      marker = function(n) return WFJ.Settings.get("marker." .. n) end,
-      align = WFJ.Align.check,
+      marker = function(n) return WFI.Settings.get("marker." .. n) end,
+      align = WFI.Align.check,
     }))
     records = {}
-    WFJ.Collector.record = function(kind, id, field, raw)
+    WFI.Collector.record = function(kind, id, field, raw)
       records[#records + 1] = { kind, id, field, raw }
       return "recorded"
     end
-    WFJ.Tooltip.init()
+    WFI.Tooltip.init()
     tt = _G.GameTooltip
   end)
 
@@ -107,7 +107,7 @@ describe("UI/Tooltip on a recipe's tooltip", function()
       { type = 19, lineIndex = 3, tooltipID = 117, tooltipType = 0 }, { type = 22, lineIndex = 3 },
       { type = 44, lineIndex = 4 }, { type = 11, lineIndex = 5 } }
     show("|Hitem:117::|h[Tough Jerky]|h", lines, data)
-    assert.is_nil(WFJ.Tooltip.recipeOf(tt, #lines))
+    assert.is_nil(WFI.Tooltip.recipeOf(tt, #lines))
     assert.are.equal(1, #records) -- one run under the link's item, no separate Teaches record
     assert.are.equal(117, records[1][2])
   end)
@@ -125,10 +125,10 @@ describe("UI/Tooltip on a recipe's tooltip", function()
   it("the reveal key shows the recipe's English again", function()
     show("|Hitem:117::|h[Tough Jerky]|h", LINES, recipeData())
     assert.are.equal(RECIPE_JA, text(5))
-    Stub.keys.alt = true; WFJ.Modifier.refresh()
+    Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal(LINES[3], text(3))
     assert.are.equal(LINES[5], text(5))
-    Stub.keys.alt = false; WFJ.Modifier.refresh()
+    Stub.keys.alt = false; WFI.Modifier.refresh()
     assert.are.equal(RECIPE_JA, text(5))
   end)
 end)

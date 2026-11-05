@@ -27,12 +27,12 @@ local UI = {
 }
 
 describe("client-table text families in UIStrings", function()
-  local WFJ, index
+  local WFI, index
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(H.UI_FILES)
-    H.uiSetup(WFJ, UI)
-    index = WFJ.UIIndex
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(H.UI_FILES)
+    H.uiSetup(WFI, UI)
+    index = WFI.UIIndex
   end)
   after_each(function() H.uiTeardown() end)
 
@@ -41,30 +41,30 @@ describe("client-table text families in UIStrings", function()
       "AchievementReward:1", "AchievementCategory:1", "SkillLineDescription:1", "SkillCategory:1", "EmoteText:1",
       "HolidayDescription:1", "CurrencyDescription:1", "CurrencyCategory:1", "DispelType:1", "CreatureType:1",
       "QuestSort:1" }) do
-      assert.is_true(WFJ.UIStrings.isFingerprintKey(key), key)
-      assert.are.equal(key:find("^EmoteText:") ~= nil, WFJ.UIStrings.isSlottedKey(key), key)
+      assert.is_true(WFI.UIStrings.isFingerprintKey(key), key)
+      assert.are.equal(key:find("^EmoteText:") ~= nil, WFI.UIStrings.isSlottedKey(key), key)
     end
-    assert.is_false(WFJ.UIStrings.isFingerprintKey("FACTION_OTHER"))
+    assert.is_false(WFI.UIStrings.isFingerprintKey("FACTION_OTHER"))
   end)
 
   it("a family row is found only where a widget names its family, never by the open match", function()
-    local faction = WFJ.UIStrings.familyKeys(index.rows, "FactionDescription")
+    local faction = WFI.UIStrings.familyKeys(index.rows, "FactionDescription")
     assert.are.equal("FactionDescription:69",
       (index:matchOnly("The Alliance capital is populated by Night Elves.", faction)))
     assert.is_nil(index:match("The Alliance capital is populated by Night Elves."))
     assert.is_nil(index:exactKey("Duels won")) -- also a name somewhere: the open match never turns it Japanese
     assert.is_nil(index:match("Curse"))
-    assert.are.equal("DispelType:2", (index:matchOnly("Curse", WFJ.UIStrings.familyKeys(index.rows, "DispelType"))))
+    assert.are.equal("DispelType:2", (index:matchOnly("Curse", WFI.UIStrings.familyKeys(index.rows, "DispelType"))))
     assert.is_nil(index:matchOnly("Duels won", faction)) -- another family's row
-    assert.is_true(WFJ.UIStrings.isRestrictedKey("AchievementTitle:1"))
-    assert.is_false(WFJ.UIStrings.isRestrictedKey("SpellSubtext:1")) -- the spell-subtext family stays open
+    assert.is_true(WFI.UIStrings.isRestrictedKey("AchievementTitle:1"))
+    assert.is_false(WFI.UIStrings.isRestrictedKey("SpellSubtext:1")) -- the spell-subtext family stays open
   end)
 
   it("a widget restricted to one family finds a word another family or a global string shares", function()
-    local currency = WFJ.UIStrings.familyKeys(index.rows, "CurrencyCategory")
+    local currency = WFI.UIStrings.familyKeys(index.rows, "CurrencyCategory")
     assert.are.same({ ["CurrencyCategory:2"] = true }, currency)
     assert.is_not_nil(index:matchOnly("Player vs. Player", currency))
-    local sort = WFJ.UIStrings.familyKeys(index.rows, "QuestSort")
+    local sort = WFI.UIStrings.familyKeys(index.rows, "QuestSort")
     assert.is_not_nil(index:matchOnly("Epic", sort)) -- answered by ITEM_QUALITY4_DESC, QuestSort:1 its synonym
     assert.is_nil(index:matchOnly("Epic", { ["CreatureType:7"] = true }))
   end)
@@ -75,9 +75,9 @@ describe("client-table text families in UIStrings", function()
     for _, k in ipairs(index.problems.ambiguous) do amb[k] = true end
     assert.is_true(amb["QuestSort:22"] and amb["QuestSort:23"])
     assert.is_nil(amb["AchievementCategory:125"])
-    assert.is_nil(index:matchOnly("Dungeons and Raids", WFJ.UIStrings.familyKeys(index.rows, "QuestSort")))
+    assert.is_nil(index:matchOnly("Dungeons and Raids", WFI.UIStrings.familyKeys(index.rows, "QuestSort")))
     assert.are.equal("AchievementCategory:125", (index:matchOnly("Dungeons and Raids",
-      WFJ.UIStrings.familyKeys(index.rows, "AchievementCategory"))))
+      WFI.UIStrings.familyKeys(index.rows, "AchievementCategory"))))
   end)
 
   it("a slotted row is not a plain fingerprint: its English with the name filled in is matched by slots", function()

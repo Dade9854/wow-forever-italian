@@ -6,7 +6,7 @@
 
 ## Context
 
-The collector writes English the addon cannot recognise to `WFJ_Collector` in the player's SavedVariables
+The collector writes English the addon cannot recognise to `WFI_Collector` in the player's SavedVariables
 ([ADR-013](013-collector-english.md)). Handing it off meant finding that file under the client folder, zipping it
 and attaching it to an issue form. Few players finish that. An addon cannot reach the network or the clipboard,
 but it can show text the player copies, and GitHub's new-issue link can prefill an issue form field. The Forever
@@ -14,7 +14,7 @@ client exposes `C_EncodingUtil` (JSON, zlib, Base64) to addons.
 
 ## Decision
 
-1. **A string, packed by the client.** The addon packs the entries not sent before into `WFJC1:` + URL-safe
+1. **A string, packed by the client.** The addon packs the entries not sent before into `WFIC1:` + URL-safe
    Base64 of zlib-compressed JSON `{v, a, b, e}`: the format version (1), the addon version, the builds those
    entries were recorded on, and the entries in the dump's own fields (`t, i, f, h, e, b, n, p`; `b` indexes the
    string's own build list). It uses only the client's `C_EncodingUtil` (`SerializeJSON`, `CompressString` with
@@ -25,7 +25,7 @@ client exposes `C_EncodingUtil` (JSON, zlib, Base64) to addons.
    6,000 leaves room for the browser and the login redirect. Otherwise the link opens the form and the string goes
    in the form's box by paste, at most 60,000 characters (the issue body holds 65,536). A string too long even for
    that becomes the SavedVariables file, zipped and attached to that same issue. Nothing is split across issues.
-3. **A sent marker the player sets.** A top-level `sent = { [entry key] = h }` in `WFJ_Collector` records what was
+3. **A sent marker the player sets.** A top-level `sent = { [entry key] = h }` in `WFI_Collector` records what was
    sent. The player sets it with an **I sent it** button, clicked after submitting the issue, because an addon
    cannot tell that a copy or a submit happened. A line replaced since it was sent has a new hash and is unsent
    again. There is no file version bump: an older addon keeps a top-level field it does not know.
@@ -46,7 +46,7 @@ client exposes `C_EncodingUtil` (JSON, zlib, Base64) to addons.
 
 - Sending takes clicks only, and the build and addon version travel inside the string.
 - The string format is a contract between addon versions and the pipeline; a new shape needs a new prefix
-  (`WFJC2:`), and the decoder refuses a `v` it does not read.
+  (`WFIC2:`), and the decoder refuses a `v` it does not read.
 - The client's zlib output must decode in Python; zlib's checksum turns a mismatch into a broken label, not bad
   data. Every decoded entry goes through the same `check_entry` as a dump file, so a string carries nothing a file
   could not. Sizes are capped before decompressing (text 70,000 characters, JSON 4 MB, attachment 25 MB, the file inside
@@ -54,7 +54,7 @@ client exposes `C_EncodingUtil` (JSON, zlib, Base64) to addons.
 - **Unverified until tried with a real send:** that a zip dragged into the form's text box becomes a
   `user-attachments` link the Actions runner can download without signing in, and that a link near 6,000
   characters opens the form for a player who is signed in to GitHub (the limits above were measured logged out).
-- A pack marked sent but never submitted is recovered with `/wfj collector send all`.
+- A pack marked sent but never submitted is recovered with `/wfi collector send all`.
 - The `sent` map is part of the saved file: each row counts toward the 4 MB cap estimate (`#key + 30` bytes).
 
 ## Alternatives considered

@@ -73,7 +73,7 @@ ones that are gone. The generator uses `TraitDefinition` and says so in its own 
 
 Neither table carries translatable text, so neither is in `io/client_tables.py`: they need no CSV, no source
 stamp, no hotfix decode and no provenance, and building that machinery for them would be unneeded. Their maps are pinned in
-`pipeline/wfj/dev/visible_spells.py` with the evidence below, and the tool **refuses a layout hash it was not
+`pipeline/wfi/dev/visible_spells.py` with the evidence below, and the tool **refuses a layout hash it was not
 verified on** rather than reading a field on faith.
 
 Both FileDataIDs were resolved from the **client's own root by name hash** (`DBFilesClient\SkillLineAbility.db2`

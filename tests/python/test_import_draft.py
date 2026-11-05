@@ -1,13 +1,13 @@
-"""`wfj import draft` merges machine drafts into a store and never edits a hand-written variant."""
+"""`wfi import draft` merges machine drafts into a store and never edits a hand-written variant."""
 
 import json
 from pathlib import Path
 
 import pytest
 
-from wfj.cmd import import_ as imp
-from wfj.cmd import import_draft
-from wfj.io.jsonl_store import Store
+from wfi.cmd import import_ as imp
+from wfi.cmd import import_draft
+from wfi.io.jsonl_store import Store
 
 HUMAN = {"class": "human", "translator": "Tammy", "source": "cqjt@3446c82", "imported": "2026-09-13"}
 CORRECTION = {
@@ -257,14 +257,14 @@ REJECT = {"ruling": "reject", "by": "maintainer", "date": "2026-09-25", "note": 
 
 
 def _h(en):
-    from wfj.core.hashing import key
-    from wfj.core.normalize import normalize_v1
+    from wfi.core.hashing import key
+    from wfi.core.normalize import normalize_v1
 
     return key(normalize_v1(en))
 
 
 def _checked(d: Path, type_: str) -> dict:
-    from wfj.cmd.check import build_scopes, check_type
+    from wfi.cmd.check import build_scopes, check_type
 
     [out] = check_type(Store(d).load(type_), build_scopes(Store(d, english=True), type_), set())
     return out
@@ -398,7 +398,7 @@ def test_global_strings_are_unescaped_once(tmp_path):
     backslash-quote a quote) in one pass, so an escaped backslash before an `n` is never read as a break."""
     import csv
 
-    from wfj.io import wago
+    from wfi.io import wago
 
     bs = "\\"
     rows = [("A", f"One{bs}nTwo"), ("B", f"|TInterface{bs}{bs}GroupFrame{bs}{bs}Icon:16|t"),

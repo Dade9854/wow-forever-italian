@@ -2,12 +2,12 @@
 # ItemSubClass:<classID>:<subClassID>. English comes from wago.tools at WAGO_BUILD (`make import-english`).
 # Curation rules: never a key whose English is a name of a person, place, mob, item, spell or zone; colour codes
 # (|c, |cn), line breaks, textures (|T) and atlases (|A) are markup the Japanese keeps (ADR-016,
-# pipeline/wfj/core/markup.py); |4 plural grammar is English-only (the Japanese drops the group, keeps the
+# pipeline/wfi/core/markup.py); |4 plural grammar is English-only (the Japanese drops the group, keeps the
 # specifier); a link (|H…|h…|h) is admitted when its content is literal text plus plain %s / %d specifiers, and
 # the Japanese keeps the whole link byte for byte, label included, with its arguments in the English order
 # (core/markup.link_refused, ADR-067; tests/python/test_ui_keys.py); never |K or $ tokens, and never a
 # positional specifier inside a link; keys that share one English must be drafted with one Japanese
-# (`wfj validate` fails otherwise) unless one of them owns its Japanese (Core/UIStrings.lua OWN). A key left
+# (`wfi validate` fails otherwise) unless one of them owns its Japanese (Core/UIStrings.lua OWN). A key left
 # out goes in ui_exclusions.txt with a reason that names a proof (a client file and line, a table row count, a
 # key sharing the English). Adding a key: list it here, `make import-english`, draft it, `make check`.
 
@@ -7608,7 +7608,7 @@ SPELL_FAILED_YOU_CANNOT_USE_THAT_IN_PVP_INSTANCE
 
 # ── errors-frame lines Blizzard's Lua adds (no game-message id) ──────────────────────
 # The keys named on an UIErrorsFrame call in the camelot load set and the helper families that feed it
-# (pipeline/wfj/dev/ui_inventory.py, errors_call_keys + DYNAMIC["errors"]).
+# (pipeline/wfi/dev/ui_inventory.py, errors_call_keys + DYNAMIC["errors"]).
 ACHIEVEMENT_WATCH_TOO_MANY
 ADVENTURE_TRACKING_OPEN_PROFESSION_ERROR_TEXT
 AUCTION_HOUSE_BID_AMOUNT_IS_TOO_LOW

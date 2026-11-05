@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from wfj.core import align
-from wfj.dev import translate_lint as tl
-from wfj.dev.translate_batch import read_jsonl, write_jsonl
+from wfi.core import align
+from wfi.dev import translate_lint as tl
+from wfi.dev.translate_batch import read_jsonl, write_jsonl
 
 ALLOW = {"horde"}
 GLOSSARY = {"light"}
@@ -706,7 +706,7 @@ def test_a_plural_codes_word_is_not_a_name():
 def test_the_home_location_code_is_not_a_value_slot():
     """`$z` prints the player's home town, not a number, so a `$N<k>` aimed at it would never fill and the
     whole line would drop back to English (`Align.fill` is closed-ended)."""
-    from wfj.core import align
+    from wfi.core import align
 
     # single-spaced, as `model_english` gives it to a drafter
     en = "Returns you to $z. Speak to an Innkeeper in a different place to change your home location."

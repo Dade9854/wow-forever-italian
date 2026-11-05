@@ -1,8 +1,8 @@
 """generate.quest_text_aliases: a repeated quest's progress / turn-in text keyed by its English (ADR-054)."""
 
-from wfj.cmd.generate import quest_text_aliases
-from wfj.core.hashing import key
-from wfj.core.normalize import normalize_v1
+from wfi.cmd.generate import quest_text_aliases
+from wfi.core.hashing import key
+from wfi.core.normalize import normalize_v1
 
 
 def _en(id_, field, en):

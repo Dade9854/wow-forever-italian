@@ -1,5 +1,5 @@
-"""`wfj voice speakers`: who speaks each line, built from the database, the collector, captures, the quest
-cache and book signatures, and the verbs `wfj voice` hands to its other modules."""
+"""`wfi voice speakers`: who speaks each line, built from the database, the collector, captures, the quest
+cache and book signatures, and the verbs `wfi voice` hands to its other modules."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ from types import SimpleNamespace
 import pytest
 import voice_fixture as vf
 
-from wfj.cmd import voice as cmd
-from wfj.core import voice
+from wfi.cmd import voice as cmd
+from wfi.core import voice
 
 TODAY = "2026-10-08"
 
@@ -174,7 +174,7 @@ def test_each_verb_goes_to_its_module(monkeypatch, argv, module, attr, passed):
     import importlib
 
     seen = []
-    mod = importlib.import_module(f"wfj.cmd.{module}")
+    mod = importlib.import_module(f"wfi.cmd.{module}")
     monkeypatch.setattr(mod, attr, lambda a: seen.append(list(a)) or 7)
     assert cmd.run(argv) == 7
     assert seen == [passed]

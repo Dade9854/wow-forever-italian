@@ -10,9 +10,9 @@ The research found local generation with the AivisSpeech Engine good enough to l
 
 ## Decision
 
-1. **Audio is made locally from the shipped Japanese.** `wfj voice generate` reads each line through the AivisSpeech Engine on the same machine, in the voice of the creature that says it (male, female, or a narrator for a quest an item or object starts), and writes one MP3 per line.
+1. **Audio is made locally from the shipped Japanese.** `wfi voice generate` reads each line through the AivisSpeech Engine on the same machine, in the voice of the creature that says it (male, female, or a narrator for a quest an item or object starts), and writes one MP3 per line.
 2. **Each file is keyed like its Japanese, plus a hash.** A quest field's file is `<quest id>-<field>`, a gossip line's `g-<gossip key>`. The pack records the hash of the Japanese it was made from (`Hash.key` over the shipped text, tokens unfilled).
-3. **The audio ships in a separate pack addon**, `WoWForeverJapanese_Voice`, which depends on the main addon and hands it one table through a single global, `WoWForeverJapanese_RegisterVoice`.
+3. **The audio ships in a separate pack addon**, `WoWForeverItalian_Voice`, which depends on the main addon and hands it one table through a single global, `WoWForeverItalian_RegisterVoice`.
 4. **The main addon holds the player.** It plays a line only when the quest or gossip window has just shown that line's Japanese and the pack's hash equals the hash of the Japanese the addon ships for that key. A missing or stale line stays silent.
 5. **Japanese voice only while Japanese shows.** Holding the reveal key, switching translation off or closing the window stops the line. While a line plays the addon turns the client's dialog channel (`Sound_EnableDialog`) off, so the game's English voice does not talk over it, and always puts it back.
 
@@ -30,7 +30,7 @@ The research found local generation with the AivisSpeech Engine good enough to l
 
 ### Negative
 - Every change to a voiced line's Japanese silences that line until the pack is made again.
-- The addon writes one client setting (`Sound_EnableDialog`) while a line plays. It records that in `WFJ_DB.voiceDialogMuted` and restores the setting when the line ends, when it stops, at logout and on the next load. A player who had the dialog channel off keeps it off.
+- The addon writes one client setting (`Sound_EnableDialog`) while a line plays. It records that in `WFI_DB.voiceDialogMuted` and restores the setting when the line ends, when it stops, at logout and on the next load. A player who had the dialog channel off keeps it off.
 
 ### Neutral
 - The player's name, class and race are spoken as 冒険者: the pack is made before anyone plays. Audio per class or race is a size question for the packing work.

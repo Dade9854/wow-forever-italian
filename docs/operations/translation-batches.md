@@ -29,7 +29,7 @@ One batch goes from untranslated English to imported, checked, generated `machin
 
 1. **Cut the batch** (from `pipeline/`):
    ```sh
-   python3 -m wfj.dev.translate_batch cut --kind progress --size 100 --out batches/progress-01.jsonl
+   python3 -m wfi.dev.translate_batch cut --kind progress --size 100 --out batches/progress-01.jsonl
    # --ids FILE            one id per line, `#` comments (integers for quest and book, 16-hex keys for gossip)
    # --redraft-older       also lines whose drafts are all from an older style version
    # --ids FILE --redraft  the listed lines even when drafted: fix them in place, same draft name
@@ -40,12 +40,12 @@ One batch goes from untranslated English to imported, checked, generated `machin
 2. **Draft.** Give the drafting model the style guide, the glossary and the batch file, with the [drafting prompt](#drafting-prompt). It writes `batches/<batch>.draft.jsonl`. For a quest, gossip, UI or plain-text book batch it also writes the lines' `words` ([Readings for a batch](#readings-for-a-batch)).
 3. **Lint** the draft:
    ```sh
-   python3 -m wfj.dev.translate_lint batches/progress-01.jsonl batches/progress-01.draft.jsonl
+   python3 -m wfi.dev.translate_lint batches/progress-01.jsonl batches/progress-01.draft.jsonl
    ```
    Each failing row prints as `<ref>: <reason>; <reason>` ([Lint reasons](#lint-reasons)), then any `warn <ref>: no words; its readings are still owed`, then `lint: N ok · M failed · K without words → <draft stem>.ok.jsonl` (exit 1 when a row failed). The passing rows are always written to `<batch>.draft.ok.jsonl`. Have the model redraft the failing refs once, in the same draft file, and lint again; rows that still fail are left out. A left-out line gets no machine variant, so a later batch can take it.
 4. **Expand** the passing rows into import files:
    ```sh
-   python3 -m wfj.dev.translate_batch expand batches/progress-01.draft.ok.jsonl --name progress-sg11 --out batches
+   python3 -m wfi.dev.translate_batch expand batches/progress-01.draft.ok.jsonl --name progress-sg11 --out batches
    ```
    It writes one `{id, field, ja}` row per target into `<name>.quest.jsonl`, `.item.jsonl`, `.spell.jsonl`, `.gossip.jsonl`, `.book.jsonl`, `.objective.jsonl` or `.area.jsonl`, and `<name>.words.jsonl` when rows carried `words`. The name must end in `-sg<N>` for the current style version and may use lower-case letters, digits and `-` (31 characters at most). Later batches of the same kind can reuse a name, but the file is overwritten, so import it before expanding the next batch.
 5. **Import and rebuild** (repository root):
@@ -58,7 +58,7 @@ One batch goes from untranslated English to imported, checked, generated `machin
 6. **Import the readings**, when the batch wrote `words` ([Readings for a batch](#readings-for-a-batch)), then `make generate` and `make validate` again.
 7. **Coverage.** `make coverage` rewrites [Coverage](coverage.md); a test fails while the committed file is out of date.
 8. **Voice.** The import already remade the voice of the changed lines ([Voice for a batch](#voice-for-a-batch)); commit the audio record and the pin with the batch.
-9. **Look in the game.** Copy the addon into the Forever client's `Interface/AddOns/WoWForeverJapanese/` and read the lines ([Testing strategy](../testing/strategy.md)).
+9. **Look in the game.** Copy the addon into the Forever client's `Interface/AddOns/WoWForeverItalian/` and read the lines ([Testing strategy](../testing/strategy.md)).
 9. **The pull request** states, under its Data table:
    - lines added / changed / removed by provenance class (`human` / `correction` / `machine`), and that no hand-written line was overwritten by machine output;
    - that the generated Lua was regenerated in the same PR, never hand-patched;
@@ -72,9 +72,9 @@ The cases that have been ruled so far, each with its tool:
 
 | Case | What is wrong | How the ruling is written |
 |---|---|---|
-| Hand-written completion text rejected by the rules | Every hand-written variant fails (`truncated`, `alignment_failed`, `numbers_changed`, `duplicate_conflict`, `not_japanese`), so the addon shows English | `python3 -m wfj.dev.rule_held_back --date <YYYY-MM-DD> [--apply]` |
+| Hand-written completion text rejected by the rules | Every hand-written variant fails (`truncated`, `alignment_failed`, `numbers_changed`, `duplicate_conflict`, `not_japanese`), so the addon shows English | `python3 -m wfi.dev.rule_held_back --date <YYYY-MM-DD> [--apply]` |
 | Truncated quest descriptions and objectives | The older predecessor layer kept only the first paragraph ([ADR-011](../adr/011-provenance-layers-and-completeness.md)). The model translates the whole line; it never splices onto the hand-written first paragraph, which would mix two translators' voices ([ADR-023](../adr/023-server-only-text-drafted-in-measured-batches.md)) | `rule_held_back --field description` or `--field objectives`; only lines with a `truncated` reason are selected |
-| Tooltip lines with a baked number | A hand-written tooltip holds a number the template cannot produce (`18秒間でhealthを61回復。` for `Restores $o1 health over $d.`): right for one rank, refused by the in-game check on the next | `python3 -m wfj.dev.rule_baked_numbers --date <YYYY-MM-DD> [--field description] [--match REGEX] [--apply]` |
+| Tooltip lines with a baked number | A hand-written tooltip holds a number the template cannot produce (`18秒間でhealthを61回復。` for `Restores $o1 health over $d.`): right for one rank, refused by the in-game check on the next | `python3 -m wfi.dev.rule_baked_numbers --date <YYYY-MM-DD> [--field description] [--match REGEX] [--apply]` |
 | Tooltip lines that name a duration's unit | `$N3秒間`, `18秒`: wrong whenever the client prints minutes, and invisible to the in-game check | `rule_baked_numbers --durations` |
 | Lines found wrong by review | Values on the wrong words, another quest's text, garbled Japanese | A reviewer's decision list applied with `dev/apply_review` (below) |
 
@@ -82,7 +82,7 @@ The cases that have been ruled so far, each with its tool:
 
 Then cut with the flag, adding `--ids` to limit the batch to the ruled lines:
 ```sh
-python3 -m wfj.dev.translate_batch cut --kind quest_description --size 100 --held-back --ids batches/ruled.ids --out batches/held-01.jsonl
+python3 -m wfi.dev.translate_batch cut --kind quest_description --size 100 --held-back --ids batches/ruled.ids --out batches/held-01.jsonl
 ```
 
 Draft, lint, expand and import as usual. At `check` the machine draft wins because no unruled hand-written variant is left. **Replacing a line that shipped** also needs `ruling: accept` on the machine winner; `validate --base` enforces it. `rule_baked_numbers --accept [--apply]` writes it for the baked-number lines once the redraft has landed (`make check` first, so the winner is known). The data PR states the change as `human` → `machine` on the ruling, with 0 shipping hand-written lines touched otherwise.
@@ -97,10 +97,10 @@ The rules catch a changed number, a missing name, a cut-off paragraph, never a w
 
 1. **Cut** the lines to read, in parts:
    ```sh
-   python -m wfj.dev.audit_batch cut --type quest --size 250 --out-dir batches/audit --prefix q [--words <existing .words.jsonl>]
+   python -m wfi.dev.audit_batch cut --type quest --size 250 --out-dir batches/audit --prefix q [--words <existing .words.jsonl>]
    ```
    It takes every shipped line (`trusted` / `stale` / `unaligned`) whose winner is hand-written and that has English, as `{type, id, field, class, ja, ja_hash, en}` rows. An item or spell English that includes another spell's text carries that text in `included`, so the line is judged whole. `--words` reuses a word list already written for the same Japanese.
-2. **Read.** A reviewing model writes `<part>.verdicts.jsonl`, one row per part row, in order, and checks it with `python -m wfj.dev.audit_batch check batches/audit/<part>.jsonl`:
+2. **Read.** A reviewing model writes `<part>.verdicts.jsonl`, one row per part row, in order, and checks it with `python -m wfi.dev.audit_batch check batches/audit/<part>.jsonl`:
 
    | verdict | when | the row carries |
    |---|---|---|
@@ -109,16 +109,16 @@ The rules catch a changed number, a missing name, a cut-off paragraph, never a w
    | **redraft** | the meaning is wrong, garbled, another quest's text, or cut off | `kind`, `problem`; no `ja`, no `words` |
 
    Names stay English: a translated name is a `correct`.
-3. **Report.** `python -m wfj.dev.audit_batch report batches/audit --out <report.md>` checks every part (a missing, extra, duplicate or re-ordered row, a changed `ja_hash`, an unknown verdict, a `correct` with no new `ja`, words missing or refused) and, with no problem, writes `audit.decisions.jsonl` (the `correct` / `redraft` rows), `audit.words.jsonl` (the `match` rows' words) and `audit.correct-words.jsonl`. With any problem it writes nothing. `--partial` gives a progress view over finished parts. Nothing in `data/` is written.
+3. **Report.** `python -m wfi.dev.audit_batch report batches/audit --out <report.md>` checks every part (a missing, extra, duplicate or re-ordered row, a changed `ja_hash`, an unknown verdict, a `correct` with no new `ja`, words missing or refused) and, with no problem, writes `audit.decisions.jsonl` (the `correct` / `redraft` rows), `audit.words.jsonl` (the `match` rows' words) and `audit.correct-words.jsonl`. With any problem it writes nothing. `--partial` gives a progress view over finished parts. Nothing in `data/` is written.
 4. **Approval.** Nothing is applied until the maintainer approves the decision list. Machine output never replaces a human translation without a logged decision ([Principles §6](../architecture/principles.md#6-provenance-on-every-line-people-over-machines)).
 5. **Apply**, dry run first, then `make check`:
    ```sh
-   python -m wfj.dev.apply_review batches/audit/audit.decisions.jsonl --scope audit --date <YYYY-MM-DD> --by maintainer --model <model id> --dry-run
-   python -m wfj.dev.apply_review batches/audit/audit.decisions.jsonl --scope audit --date <YYYY-MM-DD> --by maintainer --model <model id>
+   python -m wfi.dev.apply_review batches/audit/audit.decisions.jsonl --scope audit --date <YYYY-MM-DD> --by maintainer --model <model id> --dry-run
+   python -m wfi.dev.apply_review batches/audit/audit.decisions.jsonl --scope audit --date <YYYY-MM-DD> --by maintainer --model <model id>
    make check
    ```
    A `correct` becomes a `correction` variant (`translator` = the corrected variant's translator, `source: correction@<date>`, `corrects` = its source, a note saying the model drafted the edit and the maintainer ruled it); an earlier correction on the line is ruled `reject` as superseded. A `redraft` puts `ruling: reject` on every hand-written variant of the line, so it ships nothing until the redraft lands.
-6. **Word lists.** `wfj readings import` of `audit.words.jsonl`, and, once the corrections are applied and generated, `audit.correct-words.jsonl`, dry run first each time.
+6. **Word lists.** `wfi readings import` of `audit.words.jsonl`, and, once the corrections are applied and generated, `audit.correct-words.jsonl`, dry run first each time.
 7. **Redrafts.** Cut the ruled lines per kind with `--held-back --ids`, draft (quest rows with `words`), lint, expand, import.
 8. **Accept rulings** on each machine winner that replaced a shipping hand-written line; `validate --base` requires them.
 
@@ -156,7 +156,7 @@ When a style rule changes only which word the Japanese uses (a stat word in tool
 
 1. **Draft** (from `pipeline/`):
    ```sh
-   python -m wfj.dev.draft_stat_words ../batches/<folder> --tag <model id>=<tag> [--tag …] [--skip <file>]
+   python -m wfi.dev.draft_stat_words ../batches/<folder> --tag <model id>=<tag> [--tag …] [--skip <file>]
    ```
    `--tag` gives each drafting model a short tag for its file and draft name. It writes one draft file per drafting model and type (`<tag>.item.jsonl`, `<tag>.spell.jsonl`), `contexts.txt` (every distinct stretch of text around a swapped word, with its count) and `lint.txt` (lines where the swap brought a lint problem the old line did not have; exit 1 when there is one). It stops if a line's model has no draft tag, or if a row differs from its line by more than the swapped words.
 2. **Read `contexts.txt`** for a stat word that is really part of a name. List any such line in the skip file (`<type> <id> <field>` per line, `#` comments) and run step 1 again.
@@ -168,12 +168,12 @@ When a style rule changes only which word the Japanese uses (a stat word in tool
    The old variants stay in `conflicts`. The new ones win on the style-version tiebreak.
 5. **Move the accept rulings.** A machine line the maintainer accepted in place of rejected hand-written text keeps winning over its redraft, because an accept beats every tiebreak. This moves each accept onto the redraft of the same text. The ruling keeps who made it, its date and its reason, and its note adds the move (the hand-written variants stay ruled `reject`):
    ```sh
-   cd pipeline && python -m wfj.dev.draft_stat_words --move-accepts <YYYY-MM-DD>
+   cd pipeline && python -m wfi.dev.draft_stat_words --move-accepts <YYYY-MM-DD>
    ```
 6. **Hand-written lines, on the maintainer's ruling.** The swap never touches a `human` or `correction` line. When the maintainer rules that the settled words apply to them too, write one correction row per shipped hand-written line that keeps a stat word (or ヘルス), read `corrections.contexts.txt` the same way, and apply them (the translator's text stays beside each correction; an earlier correction is ruled superseded):
    ```sh
-   cd pipeline && python -m wfj.dev.draft_stat_words --corrections ../batches/<folder>/corrections.jsonl [--skip <file>]
-   python -m wfj.dev.apply_review ../batches/<folder>/corrections.jsonl --scope stat-words --date <YYYY-MM-DD> --by maintainer --model "the stat-word script"
+   cd pipeline && python -m wfi.dev.draft_stat_words --corrections ../batches/<folder>/corrections.jsonl [--skip <file>]
+   python -m wfi.dev.apply_review ../batches/<folder>/corrections.jsonl --scope stat-words --date <YYYY-MM-DD> --by maintainer --model "the stat-word script"
    ```
 7. **Check**: `make check`, `make generate`, `make validate VALIDATE_FLAGS="--base origin/main"`, `make coverage`. No line should change status, and no translator's text should be lost. `test_style_guide.py` fails while any shipped tooltip line keeps a stat word in English letters.
 
@@ -248,14 +248,14 @@ Interface strings (`ui` type) are not a `cut` kind. The keys come from the curat
 Before the import, check the draft with `ui_lint` (from `pipeline/`):
 
 ```sh
-python -m wfj.dev.ui_lint batches/<batch>.ui.jsonl
+python -m wfi.dev.ui_lint batches/<batch>.ui.jsonl
 ```
 
-It fails a row whose key has no English, a key drafted twice, a line that is not Japanese, a line whose specifiers or markup differ from the English, and a key that would ship a different Japanese from another key the addon finds by the same English (`ambiguous:`; the rules `make check` and `make validate` apply, run early so the row is fixed in the draft). On a short label it also warns `too_wide:<width>/<limit>` and `register:<ending>`; a warning does not fail, it asks for a second look against the style guide. `python -m wfj.dev.ui_lint --shipped` runs the same checks over every shipped UI line.
+It fails a row whose key has no English, a key drafted twice, a line that is not Japanese, a line whose specifiers or markup differ from the English, and a key that would ship a different Japanese from another key the addon finds by the same English (`ambiguous:`; the rules `make check` and `make validate` apply, run early so the row is fixed in the draft). On a short label it also warns `too_wide:<width>/<limit>` and `register:<ending>`; a warning does not fail, it asks for a second look against the style guide. `python -m wfi.dev.ui_lint --shipped` runs the same checks over every shipped UI line.
 
 **Reviewing UI lines.** To read the shipped interface text against the style guide (a quality pass, not a redraft):
 
-1. `python -m wfj.dev.audit_batch cut --type ui --size 400 --out-dir batches/<dir> --prefix u` writes one row per (English, Japanese) pair with its keys, windows, widths, `ui_lint` warnings and `siblings`.
+1. `python -m wfi.dev.audit_batch cut --type ui --size 400 --out-dir batches/<dir> --prefix u` writes one row per (English, Japanese) pair with its keys, windows, widths, `ui_lint` warnings and `siblings`.
 2. A reviewing model writes `<part>.verdicts.jsonl` per part (`match`, `correct`, `redraft`, `split`; `context` `screen` or `key`) and checks it with `audit_batch check`. Run one part first and read its corrections before the rest.
 3. `audit_batch report batches/<dir> --out <report>` writes `audit.ui-draft.jsonl`, `audit.ui-base.jsonl`, `audit.ui-redraft.ids` and `audit.ui-split.jsonl`. Settle any term the parts spelled two ways (the style guide's settled-terms table), bring every line to it, and draft the redraft keys into the same batch.
 4. A split key needs `UIStrings.OWN` and a widget that asks for it by name ([ADR-037](../adr/037-staticpopup-dialogs-and-owned-keys.md)) before its Japanese can differ.
@@ -280,21 +280,21 @@ Every batch that adds or changes shipped quest, gossip, UI or plain-text book Ja
 1. **Lint** checks the `words` with the import's own rules: `words:<problem>` (a word not found after the previous one, no kanji, an ASCII character, a non-kana reading) and `words_unexpected` fail the row. A row with something to annotate and no `words` passes with a warning. `"words": []` on a row with nothing to annotate counts as no `words`.
 2. **Expand** also writes `<name>.words.jsonl`, one `{type, id, field, ja_hash, words}` row per target.
 3. **Import the lines first** (`make import-draft`, `make check`, `make generate`): readings are pinned to the Japanese as it ships.
-4. **Import the readings.** `wfj readings import batches/<name>.words.jsonl --model <model id> --batch <name> --dry-run` lists every rejected row with its reason (for example `written for Japanese that has since changed; export it again`, or `written for a variant that does not ship`, when a hand-written line still wins). Fix the rows, then run it without `--dry-run`. A `correction` reading is never replaced.
-5. **Generate and validate.** A word the line uses more than once needs no second entry: the import copies its entry to each further place. `make validate` fails on a reading that still misses a repeat (`wfj readings fill-repeats` fills them). It checks every reading, prints stale ones, the lines still owed one (`validate: readings: N <type> lines with words to annotate have none: …`) and, per type, the words without a meaning.
+4. **Import the readings.** `wfi readings import batches/<name>.words.jsonl --model <model id> --batch <name> --dry-run` lists every rejected row with its reason (for example `written for Japanese that has since changed; export it again`, or `written for a variant that does not ship`, when a hand-written line still wins). Fix the rows, then run it without `--dry-run`. A `correction` reading is never replaced.
+5. **Generate and validate.** A word the line uses more than once needs no second entry: the import copies its entry to each further place. `make validate` fails on a reading that still misses a repeat (`wfi readings fill-repeats` fills them). It checks every reading, prints stale ones, the lines still owed one (`validate: readings: N <type> lines with words to annotate have none: …`) and, per type, the words without a meaning.
 
 **The meaning numbers file.** `make generate` gives each new meaning the next free number and appends it to `data/reading/meaning-numbers.tsv` (`generate: N meanings numbered for the first time`). Commit that file with the batch, beside the generated Lua. A meaning keeps its number, so a batch changes only the Reading files that use its words and the last Gloss file ([ADR-060](../adr/060-stable-meaning-numbers.md)). `make validate` fails when the file is missing or is not what `generate` would write; run `make generate`, never edit it by hand.
 
 **Lines that got Japanese without words** (a line whose Japanese changed, a row lint warned about) take a separate flow after the lines are imported and generated:
 
 1. **Ids**: one per line (quest ids, 16-hex gossip keys, UI string keys, or book page ids).
-2. **Export**: `wfj readings export --type quest|gossip|ui|book --ids <file> --out <file>`, one row `{type, id, field, ja, ja_hash, en}` per shipped line with something to annotate and no current reading (a line holding a `|` escape is left out: it takes no readings). `--all` takes every such line; `--class machine|human|correction` keeps only lines whose shipped variant has that class. `en` is batch input only: the import ignores it and it is never stored or shipped.
+2. **Export**: `wfi readings export --type quest|gossip|ui|book --ids <file> --out <file>`, one row `{type, id, field, ja, ja_hash, en}` per shipped line with something to annotate and no current reading (a line holding a `|` escape is left out: it takes no readings). `--all` takes every such line; `--class machine|human|correction` keeps only lines whose shipped variant has that class. `en` is batch input only: the import ignores it and it is never stored or shipped.
 3. **Words**: the model adds 5-item `words` to each row, keeping `ja_hash`, and saves `<name>.words.jsonl`.
 4. **Import, generate, validate** as above. For a large pass, have a second model check a random 100 words per round against a pass bar before importing.
 
 **Fixing a wrong reading: `--correction`.** Write the line's whole fixed `words` list with its current `ja_hash` and import it as a correction:
 ```sh
-wfj readings import batches/fixes/<name>.words.jsonl --correction --by <who wrote the fix> --date YYYY-MM-DD [--note "<what was fixed>"] --dry-run
+wfi readings import batches/fixes/<name>.words.jsonl --correction --by <who wrote the fix> --date YYYY-MM-DD [--note "<what was fixed>"] --dry-run
 ```
 Each row becomes a `correction` record (`translator` = `--by`, source `correction@<date>`, `corrects` = the record it replaces). A line with no reading yet is rejected (`no reading to correct`) and takes the normal import. A later machine import never replaces a correction; a translation change still makes it stale.
 
@@ -305,7 +305,7 @@ Each row becomes a `correction` record (`translator` = `--by`, source `correctio
 Two branches that both import readings conflict only in generated or reading files: `data/reading/*.jsonl`, `data/reading/meaning-numbers.tsv` (both branches added meanings at its end), the addon's `Data/Reading/*.lua` and `Data/Gloss/*.lua` (most often the last Gloss file), `Data/Meta.lua` and the TOC's generated block. Never hand-merge them:
 
 1. Take `origin/main`'s side of those files.
-2. Re-run `wfj readings import` on this branch's `.words.jsonl` files. A row written for Japanese that has since changed, or for a variant that does not ship, is rejected: export that line again and write its words anew.
+2. Re-run `wfi readings import` on this branch's `.words.jsonl` files. A row written for Japanese that has since changed, or for a variant that does not ship, is rejected: export that line again and write its words anew.
 3. `make generate`, then `make validate`. `generate` numbers this branch's new meanings after main's, so they take new numbers.
 
 ## Voice for a batch
@@ -325,7 +325,7 @@ A player's fix report is a small batch of its own: `make report-intake ISSUE=N` 
 
 ## Rollback / troubleshooting
 
-- **Undo an uncommitted batch:** discard the working-tree changes under `data/` and `addon/WoWForeverJapanese/` (`git restore`, and remove new files there). After a merge, revert the PR and regenerate.
+- **Undo an uncommitted batch:** discard the working-tree changes under `data/` and `addon/WoWForeverItalian/` (`git restore`, and remove new files there). After a merge, revert the PR and regenerate.
 - **`draft: --name must be lowercase letters, digits and dashes`**: also raised for a name over 31 characters; shorten it.
 - **`draft name '…' must end in -sg<N>`**: the name's version differs from the style guide's `version:`; use the current one, or re-cut if the guide was bumped after the batch was cut.
 - **`no 'version: sg<N>' line`**: the style guide lost its version line; restore it (a test guards it).
@@ -476,7 +476,7 @@ drafts, and voice) follows in the scan's re-pull; items, spells and interface li
 
 ### 1.60.1.70450 → 1.60.1.70532 (2026-10-23)
 
-The first build scanned with the full sweep as the automatic scan: WFJScan asked all 71,149 ids (1 to 9999 and
+The first build scanned with the full sweep as the automatic scan: WFIScan asked all 71,149 ids (1 to 9999 and
 50000 to 105000, 4 passes) and ran its slow recheck. Quest cache: 3,081 records, 3,000 quests, read with the 69913
 payload layout, pinned again for 70532. 44 quests are answered that the 70450 cache lacked; 35 of them no earlier
 Forever build had answered (807, 820, 1005, 1006, 1423, 1714, 2953, 3567, 3644, 4603, 4604, 5421, 5691 to 5693, 6701,
@@ -523,10 +523,10 @@ Voice: `make voice-speakers` (speakers for the quests that now ship, and the con
 ### 1.60.1.70425 → 1.60.1.70450 (2026-10-16, 2026-10-17)
 
 Two pulls of the same build. The second came after the maintainer watched every race's opening cinematic on a new
-character (the Skyborne one on both factions) and the WFJScan scan ran again, then Exit Game; its numbers replace
+character (the Skyborne one on both factions) and the WFIScan scan ran again, then Exit Game; its numbers replace
 the first pull's below.
 
-Quest cache: 3,078 records, 2,991 quests (two finished WFJScan scans: 4 passes each, 17,457 ids asked), read with the
+Quest cache: 3,078 records, 2,991 quests (two finished WFIScan scans: 4 passes each, 17,457 ids asked), read with the
 69913 payload layout, pinned again for 70450. 50 quests are answered that the 70425 cache lacked (four are new:
 79483, 79492 and 79495, Forever's copies of the Winter Veil quests 6963, 8762 and 8746 with the same English, and
 97420; two new titles, 98914 and 98915; the rest had English from an earlier build). 6 quests 70425 answered are not
@@ -575,7 +575,7 @@ English (listed in [Coverage](coverage.md)).
 
 ### 1.60.1.70338 → 1.60.1.70425 (2026-10-16)
 
-Quest cache: 3,020 records, 2,947 quests (the finished WFJScan scan: 4 passes, 8,921 ids asked, 3,020 answered);
+Quest cache: 3,020 records, 2,947 quests (the finished WFIScan scan: 4 passes, 8,921 ids asked, 3,020 answered);
 57 quests are answered that the 70338 cache lacked (most of them answered by an earlier build), and 26 quests 70338
 answered are not answered on 70425 (they keep their English and Japanese, [ADR-050](../adr/050-english-is-additive.md)).
 Client tables: 62, with the build's own hotfixes (ItemSparse 15 replaced, 4,773 added; SpellName and Spell 113
@@ -616,7 +616,7 @@ descriptions and 10 auras whose template uses a code drafting cannot place yet (
 
 ### 1.60.1.70291 → 1.60.1.70338 (2026-10-10)
 
-Quest cache: 2,986 records, 2,916 quests (the finished WFJScan scan: 4 passes, 8,957 ids asked, 2,986 answered);
+Quest cache: 2,986 records, 2,916 quests (the finished WFIScan scan: 4 passes, 8,957 ids asked, 2,986 answered);
 4 quests have new text (81570, 95817, 95818 and the title of 79096); three `<UNUSED>` placeholder quests (810, 814,
 7904) are no longer answered, so their pfQuest stand-in English is back, untranslated (placeholder quests are never
 drafted), and quest 137 is now answered as a placeholder and its pfQuest stand-in dropped; 7 quests an earlier build
@@ -642,7 +642,7 @@ level band's pack (92480, 94559 and 98471 on this build).
 
 ### 1.60.1.70245 → 1.60.1.70291 (2026-10-09)
 
-Quest cache: 2,880 records, 2,809 quests (the finished WFJScan scan: 4 passes, 9,421 ids asked, 2,880 answered);
+Quest cache: 2,880 records, 2,809 quests (the finished WFIScan scan: 4 passes, 9,421 ids asked, 2,880 answered);
 5 quests are answered for the first time, and 123 quests an earlier build answered are not answered on 70291 (they
 keep their English and Japanese, [ADR-050](../adr/050-english-is-additive.md)). Client tables: 62, with the build's
 own hotfixes (ItemSparse 15 replaced, 4,697 added; SpellName and Spell 1 replaced; QuestV2 25 replaced;
@@ -676,7 +676,7 @@ nothing had slipped through before this build.
 
 ### 1.60.1.70170 → 1.60.1.70245 (2026-10-07)
 
-Quest cache: 3,003 records, 2,927 quests (the WFJScan known-list scan of 15,850 ids and its slow recheck); 605
+Quest cache: 3,003 records, 2,927 quests (the WFIScan known-list scan of 15,850 ids and its slow recheck); 605
 quests are answered for the first time, most of them vanilla quests already carried from Classic Era, and 12 quests
 70170 answered are not answered on 70245 (they keep their English and Japanese,
 [ADR-050](../adr/050-english-is-additive.md)). Client tables: 58, with the build's own hotfixes (ItemSparse 4,666

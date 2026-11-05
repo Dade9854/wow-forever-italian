@@ -2,7 +2,7 @@
 
 import pytest
 
-from wfj.core import style
+from wfi.core import style
 
 
 @pytest.mark.parametrize(("source", "version"), [
@@ -24,7 +24,7 @@ def test_name_version_and_check_name():
     assert style.name_version("progress") is None
     assert style.name_version("progress-sg3x") is None
     assert style.name_version("Progress-sg3") is None
-    assert style.name_version("a" * 30 + "-sg3") is None  # longer than `wfj import draft` accepts
+    assert style.name_version("a" * 30 + "-sg3") is None  # longer than `wfi import draft` accepts
     style.check_name("completion-sg3", 3)
     with pytest.raises(ValueError, match="-sg3"):
         style.check_name("completion-sg2", 3)

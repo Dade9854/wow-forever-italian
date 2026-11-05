@@ -6,9 +6,9 @@ callouts work. NUM_FREE_SLOTS, BACKGROUND and MACRO carry no stale reasons ("|4 
 import re
 from pathlib import Path
 
-from wfj.io import wago
+from wfi.io import wago
 
-ADDON = "addon/WoWForeverJapanese"
+ADDON = "addon/WoWForeverItalian"
 
 
 def _exclusions(root: Path) -> dict[str, str]:

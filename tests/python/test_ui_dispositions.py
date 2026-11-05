@@ -5,7 +5,7 @@ hand-off to the per-screen forms; this test holds the key lists to it."""
 import re
 from pathlib import Path
 
-from wfj.io import wago
+from wfi.io import wago
 
 DOC = "docs/research/2026-09-25-menus-callouts-and-composites.md"
 DISPOSITIONS = {"list", "permanent"}

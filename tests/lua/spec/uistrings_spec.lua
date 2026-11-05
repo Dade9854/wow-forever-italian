@@ -4,11 +4,11 @@ local H = require("tests.lua.spec.helpers")
 local function ns()
   H.coreStub()
   local t = {}
-  H.loadChunk("Core/Const.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/Normalize.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/Hash.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/UIStringKeys.lua", "WoWForeverJapanese", t)
-  H.loadPure("Core/UIStrings.lua", "WoWForeverJapanese", t)
+  H.loadChunk("Core/Const.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/Normalize.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/Hash.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/UIStringKeys.lua", "WoWForeverItalian", t)
+  H.loadPure("Core/UIStrings.lua", "WoWForeverItalian", t)
   return t
 end
 
@@ -275,8 +275,8 @@ end)
 -- line for the others. `PVP_LEAVE_BUTTON_TIME`, `KEY_BINDING_NAME_AND_KEY` and `SETTINGS_SUBCATEGORY_FMT` all hold
 -- "%s (%s)"; the PvP countdown regressed to English when the two new keys declared narrower kinds.
 describe("keys that share one English declare one set of argument kinds", function()
-  local WFJ
-  setup(function() WFJ = ns() end)
+  local WFI
+  setup(function() WFI = ns() end)
 
   it("the PvP countdown still matches with the two new keys in the same group", function()
     local t = ns()
@@ -297,7 +297,7 @@ describe("keys that share one English declare one set of argument kinds", functi
   end)
 
   it("the three \"%s (%s)\" keys agree, so the PvP countdown still matches", function()
-    local A = WFJ.UIStrings.ARGS
+    local A = WFI.UIStrings.ARGS
     for _, key in ipairs({ "PVP_LEAVE_BUTTON_TIME", "KEY_BINDING_NAME_AND_KEY", "SETTINGS_SUBCATEGORY_FMT" }) do
       assert.are.equal("entry", A[key][1], key)
       assert.are.equal("text", A[key][2], key)

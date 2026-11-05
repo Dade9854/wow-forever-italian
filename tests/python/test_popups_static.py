@@ -5,7 +5,7 @@ function (it only hooks them); nothing an OnAccept handler reads may come from a
 import re
 from pathlib import Path
 
-POPUPS = Path(__file__).resolve().parents[2] / "addon" / "WoWForeverJapanese" / "UI" / "Popups.lua"
+POPUPS = Path(__file__).resolve().parents[2] / "addon" / "WoWForeverItalian" / "UI" / "Popups.lua"
 
 
 def _code() -> list[str]:
@@ -21,7 +21,7 @@ def test_no_write_into_a_blizzard_table():
     for n, ln in enumerate(_code(), 1):
         # a field assignment `x.y = …` / `x[y] = …` that is not the module's own table or a local table we built
         m = re.match(r"\s*([A-Za-z_][\w]*)\s*(?:\.[\w.]+|\[[^\]]*\])\s*=(?!=)", ln)
-        if m and m.group(1) not in {"Popups", "WFJ", "args", "writerHooked", "seen"}:  # ours: module, namespace, tables
+        if m and m.group(1) not in {"Popups", "WFI", "args", "writerHooked", "seen"}:  # ours: module, namespace, tables
             bad.append(f"{n}: {ln.strip()}")
     assert bad == []
 

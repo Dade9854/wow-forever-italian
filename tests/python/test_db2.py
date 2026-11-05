@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from db2_fixture import wdc5
 
-from wfj.io import db2
+from wfi.io import db2
 
 
 def _wago(root: Path, name: str) -> list[dict[str, str]]:

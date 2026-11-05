@@ -54,11 +54,11 @@ local STATE = { points = 1, max = 2, available = 3, cap = 4 }
 local RESULTS = { { name = "Close" }, { name = "Fireball" }, { name = "Frostbolt" }, { name = "Blink" } }
 
 describe("the shared spell search on Forever", function()
-  local WFJ, SS
+  local WFI, SS
 
   local function alt(down)
     Stub.keys.alt = down
-    WFJ.Modifier.refresh()
+    WFI.Modifier.refresh()
   end
 
   local function unrecorded(widget)
@@ -71,11 +71,11 @@ describe("the shared spell search on Forever", function()
   end
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    SS = WFJ.SurfaceState
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    SS = WFI.SurfaceState
+    H.uiSetup(WFI, UI)
   end
 
   local function setup(loadedFirst)
@@ -83,13 +83,13 @@ describe("the shared spell search on Forever", function()
     if loadedFirst then
       loadPlayerSpells()
       L.load(STATE)
-      assert.is_true(WFJ.SpellSearch.init())
+      assert.is_true(WFI.SpellSearch.init())
     else
-      assert.is_false(WFJ.SpellSearch.init()) -- waits for both addons
+      assert.is_false(WFI.SpellSearch.init()) -- waits for both addons
       loadPlayerSpells()
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(PLAYER_SPELLS)) -- the talent tree (never the spellbook)
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(PLAYER_SPELLS)) -- the talent tree (never the spellbook)
       L.load(STATE)
-      assert.are.equal(1, WFJ.LoadOnDemand.loaded(L.ADDON))
+      assert.are.equal(1, WFI.LoadOnDemand.loaded(L.ADDON))
     end
   end
 
@@ -172,7 +172,7 @@ describe("the shared spell search on Forever", function()
     load()
     local f = loadPlayerSpells()
     local b = f.TalentsFrame:acquireButton()
-    assert.is_true(WFJ.SpellSearch.init())
+    assert.is_true(WFI.SpellSearch.init())
     b.SearchIcon:SetMatchType("TALENT_FRAME_SEARCH_TOOLTIP_MATCH")
     b.SearchIcon:OnEnter()
     assert.are.equal("検索に一致", _G.GameTooltipTextLeft1:GetText())
@@ -180,7 +180,7 @@ describe("the shared spell search on Forever", function()
 
   it("hooks install once per host", function()
     setup(true)
-    assert.is_false(WFJ.SpellSearch.setupHost("talents"))
+    assert.is_false(WFI.SpellSearch.setupHost("talents"))
     assert.are.equal(2, #Stub.hooks["SearchPreviewContainer:SetPreviewResults"])
     assert.are.equal(2, #Stub.hooks["SearchPreviewContainer:UpdateResultsDisplay"])
     assert.are.equal(1, #_G.PlayerSpellsFrame.TalentsFrame.callbacks)
@@ -195,23 +195,23 @@ describe("the shared spell search on Forever", function()
     f.TalentsFrame.SearchBox = true
     f.SpellBookFrame.SearchPreviewContainer.suggestedResultButtonsPool = 7
     f.SpellBookFrame.SearchPreviewContainer.OverflowCount = "x"
-    assert.has_no.errors(function() assert.is_true(WFJ.SpellSearch.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.SpellSearch.init()) end)
     assert.has_no.errors(function() -- the hook targets, as the client's writers would reach them
-      assert.are.equal(0, WFJ.SpellSearch.onResults("spellbook"))
-      assert.are.equal(0, WFJ.SpellSearch.onDisplay("spellbook"))
-      assert.are.equal(0, WFJ.SpellSearch.onResults("talents"))
+      assert.are.equal(0, WFI.SpellSearch.onResults("spellbook"))
+      assert.are.equal(0, WFI.SpellSearch.onDisplay("spellbook"))
+      assert.are.equal(0, WFI.SpellSearch.onResults("talents"))
     end)
-    assert.has_no.errors(function() WFJ.SpellSearch.registerIcon({ SearchIcon = 1 }) end)
-    assert.is_false(WFJ.SpellSearch.registerIcon("x"))
+    assert.has_no.errors(function() WFI.SpellSearch.registerIcon({ SearchIcon = 1 }) end)
+    assert.is_false(WFI.SpellSearch.registerIcon("x"))
   end)
 
   it("a client with neither window: init returns false and hooks nothing", function()
     load()
     local before = 0
     for _ in pairs(Stub.hooks) do before = before + 1 end
-    assert.is_false(WFJ.SpellSearch.init())
+    assert.is_false(WFI.SpellSearch.init())
     Stub.loadedAddons[PLAYER_SPELLS], Stub.loadedAddons[L.ADDON] = true, true -- loaded, but no frames
-    assert.is_false(WFJ.SpellSearch.init())
+    assert.is_false(WFI.SpellSearch.init())
     local after = 0
     for _ in pairs(Stub.hooks) do after = after + 1 end
     assert.are.equal(before, after)

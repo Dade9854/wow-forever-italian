@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from wfj.dev import coverage
+from wfi.dev import coverage
 
 
 def test_nothing_to_translate_classes():
@@ -26,7 +26,7 @@ def test_the_committed_report_is_current(root: Path):
 
 
 def _store(tmp_path: Path):
-    from wfj.io.jsonl_store import Store
+    from wfi.io.jsonl_store import Store
 
     data = tmp_path / "data"
     (tmp_path / "pipeline").mkdir()
@@ -82,7 +82,7 @@ def test_an_interface_line_off_the_key_list_needs_a_reason():
 def test_a_spell_once_off_the_visible_list_ships_its_japanese(root: Path):
     # coverage counts every served spell line, so a buff no level-1 character sees (Campfire Nearby) ships its
     # Japanese in the generated data the addon loads
-    shard = (root / "addon/WoWForeverJapanese/Data/Spell/Spell_1283.lua").read_text(encoding="utf-8")
+    shard = (root / "addon/WoWForeverItalian/Data/Spell/Spell_1283.lua").read_text(encoding="utf-8")
     line = next(ln for ln in shard.splitlines() if "[1283391]" in ln)
     assert "キャンプファイア" in line
 
@@ -111,7 +111,7 @@ def test_silent_voice_lines_are_counted_by_reason_and_an_unknown_kind_does_not_c
 def test_a_line_sharing_a_stale_file_counts_as_shared_not_silent(monkeypatch):
     """A female wording plays its male line's file: it is a shared line whether that file is in step or
     stale, never a silent line with no speaker."""
-    from wfj.cmd import voice_make
+    from wfi.cmd import voice_make
 
     root = Path(__file__).resolve().parents[2] / "data"
     real = voice_make.aliases(root)
@@ -147,7 +147,7 @@ def test_every_ui_exclusion_has_one_reason_category(root: Path):
     """coverage.md counts the interface lines left English by the kind of reason: every reason in
     pipeline/ui_exclusions.txt falls in exactly one category (the first pattern that matches, in order), and
     one that falls in none fails here instead of vanishing from the count."""
-    from wfj.dev import coverage
+    from wfi.dev import coverage
 
     counts, uncategorized = coverage.ui_exclusions_by_reason(root)
     assert uncategorized == []

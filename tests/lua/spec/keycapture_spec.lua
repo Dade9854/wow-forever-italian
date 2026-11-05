@@ -5,14 +5,14 @@ local FILES = { "Core/Const.lua", "Core/Compat.lua", "Core/State.lua", "Core/Set
   "UI/Font.lua", "UI/OptionsText.lua", "UI/OptionsWidgets.lua", "UI/KeyCapture.lua" }
 
 describe("UI/KeyCapture: capturing a key on the settings page", function()
-  local WFJ, KC, got, refused
+  local WFI, KC, got, refused
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks(FILES)
-    WFJ.Compat.init(function(name) return _G[name] end)
-    WFJ.Settings.load(nil, 1, {})
-    KC = WFJ.KeyCapture
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks(FILES)
+    WFI.Compat.init(function(name) return _G[name] end)
+    WFI.Settings.load(nil, 1, {})
+    KC = WFI.KeyCapture
     got, refused = {}, {}
   end)
 
@@ -77,7 +77,7 @@ describe("UI/KeyCapture: capturing a key on the settings page", function()
 
   it("a key bound to another action names it; our own or an unbound key does not", function()
     Stub.bindings.Q = "ACTIONBUTTON5"
-    Stub.bindings.J = "WFJ_TOGGLE"
+    Stub.bindings.J = "WFI_TOGGLE"
     assert.are.equal("Action Button 5", KC.conflict("Q", KC.REVEAL))
     assert.is_nil(KC.conflict("J", KC.TOGGLE))
     assert.is_nil(KC.conflict("F9", KC.REVEAL))
@@ -93,11 +93,11 @@ describe("UI/KeyCapture: capturing a key on the settings page", function()
     cap.button:keyDown("J")
     assert.are.same({ "CTRL-J" }, got)
     assert.is_true(KC.setToggle("CTRL-J"))
-    assert.are.same({ { "SetBinding", "CTRL-J", "WFJ_TOGGLE" }, { "SaveBindings", 2 } }, Stub.bindingCalls)
+    assert.are.same({ { "SetBinding", "CTRL-J", "WFI_TOGGLE" }, { "SaveBindings", 2 } }, Stub.bindingCalls)
     assert.are.equal("CTRL-J", KC.toggleKey())
     Stub.bindingCalls = {}
     assert.is_true(KC.setToggle("F7")) -- the old key is released first
-    assert.are.same({ { "SetBinding", "CTRL-J" }, { "SetBinding", "F7", "WFJ_TOGGLE" }, { "SaveBindings", 2 } },
+    assert.are.same({ { "SetBinding", "CTRL-J" }, { "SetBinding", "F7", "WFI_TOGGLE" }, { "SaveBindings", 2 } },
       Stub.bindingCalls)
     Stub.bindingCalls = {}
     assert.is_true(KC.clearToggle())
@@ -125,7 +125,7 @@ end)
 describe("KeyCapture.parseChord", function()
   local KC
   setup(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     KC = H.loadChunks(FILES).KeyCapture
   end)
 

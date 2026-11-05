@@ -1,6 +1,6 @@
 import pytest
 
-from wfj.io.lua_reader import LuaSyntaxError, Table, as_int_id, parse_assignment, parse_assignments
+from wfi.io.lua_reader import LuaSyntaxError, Table, as_int_id, parse_assignment, parse_assignments
 
 
 def test_escapes_decoded_and_markup_preserved():
@@ -61,7 +61,7 @@ def test_fixture_excerpts_parse(root):
     ['X={["1"]=', 'X={["1"]={"a"', "X={", 'X={["1"]="a\\'],
 )
 def test_truncated_input_is_a_syntax_error_not_an_index_error(text):
-    """A truncated file raises the reader's own error, so `wfj import` prints its
+    """A truncated file raises the reader's own error, so `wfi import` prints its
     one-line message instead of a traceback."""
     with pytest.raises(LuaSyntaxError, match="unexpected end of input"):
         parse_assignment(text)

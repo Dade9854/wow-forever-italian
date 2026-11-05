@@ -1,5 +1,5 @@
 """Build a minimal local archive in a temp folder: `.build.info`, a build config, one index, one data
-file, an encoding file and a root, in the layouts `wfj.io.casc` reads (verified on Classic Era 1.15.9.69722).
+file, an encoding file and a root, in the layouts `wfi.io.casc` reads (verified on Classic Era 1.15.9.69722).
 Files are stored as BLTE: one `N` frame, or (for `chunks`) a chunk table whose frames are `N`, or `E` where the
 chunk is listed as encrypted."""
 
@@ -9,7 +9,7 @@ import hashlib
 import struct
 from pathlib import Path
 
-from wfj.io import casc
+from wfi.io import casc
 
 PRODUCT = "wow_test"
 VERSION = "1.15.9.99999"

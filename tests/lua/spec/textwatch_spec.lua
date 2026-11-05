@@ -3,13 +3,13 @@ local H = require("tests.lua.spec.helpers")
 local Stub = require("tests.lua.spec.wow_stub")
 
 describe("UI/TextWatch", function()
-  local WFJ, TW
+  local WFI, TW
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
-    WFJ = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "UI/TextWatch.lua" })
-    WFJ.Compat.init(function(name) return _G[name] end)
-    TW = WFJ.TextWatch
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
+    WFI = H.loadChunks({ "Core/Const.lua", "Core/Compat.lua", "UI/TextWatch.lua" })
+    WFI.Compat.init(function(name) return _G[name] end)
+    TW = WFI.TextWatch
   end)
 
   it("runs the callback on the next tick after the text or the font changed, once per change", function()

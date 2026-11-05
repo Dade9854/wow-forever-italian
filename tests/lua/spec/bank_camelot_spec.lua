@@ -48,23 +48,23 @@ local UI = {
 }
 
 describe("the bank on the Forever client", function()
-  local WFJ
+  local WFI
 
-  local function alt(down) Stub.keys.alt = down; WFJ.Modifier.refresh() end
+  local function alt(down) Stub.keys.alt = down; WFI.Modifier.refresh() end
   local function left(i) return _G["GameTooltipTextLeft" .. i]:GetText() end
   local function bank() return _G.BankFrame end
   local function panel() return _G.BankFrame.BankPanel end
 
   before_each(function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     for key, pair in pairs(UI) do _G[key] = pair[1] end -- the client's GlobalStrings, read by its XML
     CI.install()
     _G.BankCleanUpConfirmationPopup = { Text = Stub.fontString(_G.ACCOUNT_BANK_CONFIRM_CLEANUP_PROMPT) }
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    WFJ.Labels.forbidNames(WFJ.Bank.NEVER_TOUCH)
-    assert.is_true(WFJ.Bank.init())
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    WFI.Labels.forbidNames(WFI.Bank.NEVER_TOUCH)
+    assert.is_true(WFI.Bank.init())
   end)
 
   after_each(function()
@@ -84,12 +84,12 @@ describe("the bank on the Forever client", function()
     assert.are.equal("拡張:", menu.AssignExpansionHeader:GetText())
     assert.are.equal("タブに割り当て:", menu.AssignSettingsHeader:GetText())
     assert.are.equal("整理:", menu.CleanUpSettingsHeader:GetText())
-    assert.are.equal(WFJ.Font.PATH, (bank().BagText:GetFont()))
+    assert.are.equal(WFI.Font.PATH, (bank().BagText:GetFont()))
     assert.are.equal("Expand your bank", panel().PurchasePrompt.Title:GetText()) -- server data, never ours
     alt(true)
     assert.are.equal("Bag Slots:", bank().BagText:GetText())
     alt(false)
-    assert.is_false(WFJ.Bank.init()) -- once
+    assert.is_false(WFI.Bank.init()) -- once
     assert.is_not_nil(Stub.hooks["BankFrame:SetTitle"]) -- hooked for the account bank's title only
   end)
 
@@ -101,7 +101,7 @@ describe("the bank on the Forever client", function()
     assert.are.equal("アイテムを自動で整理しますか？|nすべてのアカウントタブに影響します。",
       _G.BankCleanUpConfirmationPopup.Text:GetText())
     panel().LockPrompt.PromptText:SetText(_G.BANK_LOCKED_REASON_NO_ACCOUNT_INVENTORY_LOCK) -- Refresh's write (lua:1205)
-    WFJ.Bank.onLockPrompt()
+    WFI.Bank.onLockPrompt()
     assert.are.equal("このバンクはアカウントの別のキャラクターが使用中です。", panel().LockPrompt.PromptText:GetText())
     local money = panel().MoneyFrame.WithdrawButton
     money.disabledTooltip = _G.ACCOUNT_BANK_ERROR_NO_LOCK
@@ -198,25 +198,25 @@ describe("the bank on the Forever client", function()
   end)
 
   it("a moved panel, pool or prompt degrades to English with no error (type guards)", function()
-    assert.are.equal(0, WFJ.Bank.onBagButtons({ itemButtonBagPool = { EnumerateActive = "moved" } }))
-    assert.are.equal(0, WFJ.Bank.onPageTabs("moved"))
-    assert.are.equal(0, WFJ.Bank.onBankTabs({}))
-    assert.are.equal(0, WFJ.Bank.onCheckboxInit("moved"))
+    assert.are.equal(0, WFI.Bank.onBagButtons({ itemButtonBagPool = { EnumerateActive = "moved" } }))
+    assert.are.equal(0, WFI.Bank.onPageTabs("moved"))
+    assert.are.equal(0, WFI.Bank.onBankTabs({}))
+    assert.are.equal(0, WFI.Bank.onCheckboxInit("moved"))
     panel().LockPrompt.PromptText = "moved"
-    assert.has_no.errors(function() WFJ.Bank.onLockPrompt() end)
+    assert.has_no.errors(function() WFI.Bank.onLockPrompt() end)
   end)
 
   it("with the panel moved away, init still shows the static words and installs no camelot hook", function()
     H.uiTeardown()
     CI.teardown()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
     for key, pair in pairs(UI) do _G[key] = pair[1] end
     CI.install()
     _G.BankFrame.BankPanel = "moved"
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
-    assert.has_no.errors(function() WFJ.Bank.init() end)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
+    assert.has_no.errors(function() WFI.Bank.init() end)
     assert.are.equal("費用:", _G.BankFrame.BagCost:GetText())
     assert.is_nil(Stub.hooks["BankFrame:SetTitle"])
   end)

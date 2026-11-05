@@ -25,14 +25,14 @@ local function itemRow(name, quality)
 end
 
 describe("the loot window on Forever", function()
-  local WFJ
+  local WFI
 
-  before_each(function() WFJ = G.load(FILES, UI) end)
+  before_each(function() WFI = G.load(FILES, UI) end)
   after_each(function() G.clear({ "LootFrame" }) end)
 
   it("the title renders Japanese after SetTitle, and keeps it after a second SetTitle", function()
     local frame = install()
-    assert.is_true(WFJ.Loot.init())
+    assert.is_true(WFI.Loot.init())
     local title = frame.TitleContainer.TitleText
     assert.are.equal("アイテム", title:GetText())
     frame:SetTitle(_G.ITEMS)
@@ -40,19 +40,19 @@ describe("the loot window on Forever", function()
     frame:SetTitle("Rare") -- not this title's key
     assert.are.equal("Rare", title:GetText())
     frame:SetTitle(_G.ITEMS)
-    G.alt(WFJ, true)
+    G.alt(WFI, true)
     assert.are.equal("Items", title:GetText())
   end)
 
   it("a row's quality word translates; the item's name never does; a reused row follows its new text", function()
     local frame = install()
-    assert.is_true(WFJ.Loot.init())
+    assert.is_true(WFI.Loot.init())
     frame:Show()
     local row, init = itemRow("Rare", 3) -- an item whose name is also a dictionary word
     frame.ScrollBox:initFrame(row, { slotIndex = 1 }, init)
     assert.are.equal("レア", row.QualityText:GetText())
     assert.are.equal("Rare", row.Text:GetText())
-    assert.is_true(G.unrecorded(WFJ, row.Text))
+    assert.is_true(G.unrecorded(WFI, row.Text))
     local _, again = itemRow("Linen Cloth", 1)
     frame.ScrollBox:initFrame(row, { slotIndex = 2 }, again)
     assert.are.equal("コモン", row.QualityText:GetText())
@@ -68,18 +68,18 @@ describe("the loot window on Forever", function()
     local row, init = itemRow("Linen Cloth", 1)
     frame.ScrollBox:initFrame(row, { slotIndex = 1 }, init)
     _G.ScrollUtil = 5
-    assert.has_no.errors(function() assert.is_true(WFJ.Loot.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Loot.init()) end)
     assert.are.equal("Common", row.QualityText:GetText()) -- no ScrollUtil: rows stay English
     assert.are.equal("アイテム", frame.TitleContainer.TitleText:GetText())
   end)
 
   it("no LootFrame, a wrong-typed one, or one without its ScrollBox: init is false", function()
-    assert.has_no.errors(function() assert.is_false(WFJ.Loot.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Loot.init()) end)
     _G.LootFrame = "x"
-    assert.has_no.errors(function() assert.is_false(WFJ.Loot.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Loot.init()) end)
     _G.LootFrame = nil
     local bare = G.titled("LootFrame", "Items")
-    assert.is_false(WFJ.Loot.init())
+    assert.is_false(WFI.Loot.init())
     assert.are.equal("Items", bare.TitleContainer.TitleText:GetText())
   end)
 end)

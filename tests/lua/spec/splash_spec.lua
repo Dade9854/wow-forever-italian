@@ -31,13 +31,13 @@ local function installFrame()
 end
 
 describe("the What's New splash on Forever", function()
-  local WFJ
+  local WFI
 
   local function load()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverJapanese.toc")
+    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installTooltipAPI()
-    WFJ = H.loadChunks(FILES)
-    H.uiSetup(WFJ, UI)
+    WFI = H.loadChunks(FILES)
+    H.uiSetup(WFI, UI)
   end
 
   after_each(function()
@@ -48,18 +48,18 @@ describe("the What's New splash on Forever", function()
   it("the header follows the screen type, the buttons are Japanese, the screen's own text is never touched", function()
     load()
     local f = installFrame()
-    WFJ.Labels.forbidNames(WFJ.Splash.NEVER_TOUCH)
-    assert.is_true(WFJ.Splash.init())
+    WFI.Labels.forbidNames(WFI.Splash.NEVER_TOUCH)
+    assert.is_true(WFI.Splash.init())
     assert.are.equal("閉じる", f.BottomCloseButton:GetText())
     assert.are.equal("今すぐクエストを開始", f.RightFeature.StartQuestButton.Text:GetText())
     f:SetupFrame({ header = "Close", title = "Close" }) -- splash text that is a dictionary word
     assert.are.equal("新着情報", f.Header:GetText())
     assert.are.equal("Close", f.Label:GetText())
     assert.are.equal("Close", f.TopLeftFeature.Title:GetText())
-    assert.are.equal(0, WFJ.Labels.show("splash", "x", f.Label))
+    assert.are.equal(0, WFI.Labels.show("splash", "x", f.Label))
     f:SetupFrame({ season = true, header = "Season 2", title = "Arena" })
     assert.are.equal("新シーズン！", f.Header:GetText())
-    assert.is_false(WFJ.Splash.init())
+    assert.is_false(WFI.Splash.init())
     assert.are.equal(1, #Stub.hooks["SplashFrame:SetupFrame"])
   end)
 
@@ -67,13 +67,13 @@ describe("the What's New splash on Forever", function()
     load()
     local f = installFrame()
     f.Header, f.RightFeature, f.SetupFrame = 1, "right", 2
-    assert.has_no.errors(function() assert.is_true(WFJ.Splash.init()) end)
+    assert.has_no.errors(function() assert.is_true(WFI.Splash.init()) end)
     assert.has_no.errors(function() f:Show() end)
     assert.are.equal("閉じる", f.BottomCloseButton:GetText())
   end)
 
   it("no SplashFrame: init is false with no error", function()
     load()
-    assert.has_no.errors(function() assert.is_false(WFJ.Splash.init()) end)
+    assert.has_no.errors(function() assert.is_false(WFI.Splash.init()) end)
   end)
 end)
