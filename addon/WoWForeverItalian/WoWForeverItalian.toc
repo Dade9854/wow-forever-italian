@@ -103,6 +103,7 @@ Data\Gossip\Gossip_6c.lua
 Data\Gossip\Gossip_6d.lua
 Data\Gossip\Gossip_73.lua
 Data\Gossip\Gossip_74.lua
+Data\Gossip\Gossip_75.lua
 Data\Gossip\Gossip_78.lua
 Data\Gossip\Gossip_7b.lua
 Data\Gossip\Gossip_7c.lua
