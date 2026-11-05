@@ -7,5 +7,6 @@ WFI.Data.add("quest", {
   [98340] = { nil, "Parla con Dendrite Starblaze nel villaggio di Nighthaven, a Moonglade.", nil, nil, nil, nil, 0x127a78ca, nil, nil, nil, "m.mmm" },
   [98386] = { "L'Alther's Mill", nil, nil, nil, nil, 0xe7ba8f99, nil, nil, nil, nil, ".mmmm" },
   [98393] = { nil, "Parla con Dendrite Starblaze nel villaggio di Nighthaven, a Moonglade.", nil, nil, nil, nil, 0x127a78ca, nil, nil, nil, "m.mmm" },
+  [98397] = { nil, "Torna a Darnassus e parla con Mathrengyl Bearwalker, nel Cenarion Enclave.", nil, nil, nil, nil, 0x17d4d4c5, nil, nil, nil, "m.mmm" },
   [98403] = { "Odio contorto", nil, nil, nil, nil, 0x10738b8e, nil, nil, nil, nil, ".mmmm" },
 })
