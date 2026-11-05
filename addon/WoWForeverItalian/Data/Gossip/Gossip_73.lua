@@ -2,5 +2,6 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["7340ad087d04a0a2"] = { "Hai già trovato un ingegnere esperto che costruisca un tubo di bronzo?", "." },
+  ["735eaefcf97f8590"] = { "{name}, non hai ancora assaltato le quattro basi. Torna da me quando avrai completato i tuoi obiettivi.", "." },
   ["73864487792c0737"] = { "Salve! Come posso aiutarti?", "." },
 })
