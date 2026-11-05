@@ -2,5 +2,6 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["8e312c3037781466"] = { "Ecco fatto, ora puoi creare un Rallying Banner tutto tuo. Alla maggior parte della gente non piace che si montino accampamenti in mezzo al paese, quindi dovrai andare nelle terre selvagge se vuoi provarlo.\n\nAh, e ricorda: nessun accampamento è completo senza un fuoco da campo. Te ne servirà uno prima di montare il tuo accampamento. Quasi tutti i cuochi possono insegnarti ad accendere un fuoco. Se non l'hai già fatto, potresti rivolgerti a qualcuno che possa addestrarti nell'arte culinaria per impararne le basi.", "." },
+  ["8e715e4334dc44c5"] = { "Una gioiosa festa del grande inverno dai tuoi amici di Smokeywood Pastures.", "." },
   ["8edac29bb807de31"] = { "Questa è la prova che ti ho chiesto. Hai fatto bene, {name}.\n\nSono lieta di essere la prima a congratularmi con te e a darti questo... il tuo totem dell'acqua.\n\nUsalo bene, e buona fortuna.\n\nLa tua prossima prova non arriverà per un po', quindi impara bene le tue lezioni. L'acqua pura non solo restituisce la vita a chi è ferito, ma può avere molti altri effetti. Ti suggerisco di cercare un istruttore degli sciamani quando ne avrai il tempo. Potrebbe avere altri incantesimi da insegnarti.", "." },
 })
