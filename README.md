@@ -20,7 +20,7 @@ Il progetto è all'inizio. Le traduzioni sono bozze a macchina controllate autom
 
 | | In italiano |
 |---|---|
-| Quest | 987 |
+| Quest | 1,118 |
 | Dialoghi degli NPC | 0 righe |
 | Pagine di libri | 0 |
 | Pagine di lettere | 0 |
@@ -97,7 +97,7 @@ GPL-2.0-or-later (vedi [LICENSE](LICENSE)). Il testo inglese in `data/english/` 
 
 | | In Italian |
 |---|---|
-| Quests | 987 |
+| Quests | 1,118 |
 | NPC dialogue lines | 0 |
 | Book pages | 0 |
 | Letter pages | 0 |
