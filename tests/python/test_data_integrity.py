@@ -58,7 +58,9 @@ def test_every_shipped_quest_line_keeps_its_paragraphs(root):
     for ln in _lines(root, "quest"):
         en = english.get((ln["id"], ln["field"]))
         if ln["status"] in SHIPPED and en and ln["field"] in ("description", "progress", "completion"):
-            assert paragraphs.count(ln["ja"]) == paragraphs.count_english(en), (ln["id"], ln["field"])
+            # the quest cache writes its breaks as CRLF pairs, pfQuest as $B: either counts
+            want = max(paragraphs.count_english(en), paragraphs.count(en.replace("\r\n", "\n")))
+            assert paragraphs.count(ln["ja"]) == want, (ln["id"], ln["field"])
 
 
 def test_generated_shard_carries_paragraph_breaks(root):
