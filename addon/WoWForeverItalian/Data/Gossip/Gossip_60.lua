@@ -2,4 +2,5 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["60a6efdda2e5f877"] = { "Hai detto qualcosa, <ragazzo/ragazza>? Non sento un accidente a parte il fischio nelle orecchie. Ehi, cos'hai lì?", "." },
+  ["60aba2226023ceaa"] = { "Salve, {race}. Cosa posso fare per te?", "." },
 })
