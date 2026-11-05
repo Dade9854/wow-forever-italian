@@ -2,4 +2,5 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["547275386e1e1645"] = { "Ecco fatto, ora puoi creare una Fish Bowl tutto tuo. Alla maggior parte della gente non piace che si montino accampamenti in mezzo al paese, quindi dovrai andare nelle terre selvagge se vuoi provarlo.\n\nAh, e ricorda: nessun accampamento è completo senza un fuoco da campo. Te ne servirà uno prima di montare il tuo accampamento. Quasi tutti i cuochi possono insegnarti ad accendere un fuoco. Se non l'hai già fatto, potresti rivolgerti a qualcuno che possa addestrarti nell'arte culinaria per impararne le basi.", "." },
+  ["547dd283aa1c2e09"] = { "Ah, sei <tornato/tornata> giusto in tempo.\n\nChe c'è, <ragazzo/ragazza>? Sembra che tu abbia visto un fantasma.", "." },
 })
