@@ -123,6 +123,7 @@ Data\Gossip\Gossip_ab.lua
 Data\Gossip\Gossip_ac.lua
 Data\Gossip\Gossip_ad.lua
 Data\Gossip\Gossip_ae.lua
+Data\Gossip\Gossip_b1.lua
 Data\Gossip\Gossip_b4.lua
 Data\Gossip\Gossip_b9.lua
 Data\Gossip\Gossip_ba.lua
@@ -136,6 +137,7 @@ Data\Gossip\Gossip_c9.lua
 Data\Gossip\Gossip_cb.lua
 Data\Gossip\Gossip_ce.lua
 Data\Gossip\Gossip_d4.lua
+Data\Gossip\Gossip_d8.lua
 Data\Gossip\Gossip_de.lua
 Data\Gossip\Gossip_df.lua
 Data\Gossip\Gossip_e3.lua

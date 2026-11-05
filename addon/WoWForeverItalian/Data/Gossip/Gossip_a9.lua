@@ -2,4 +2,5 @@
 local _, WFI = ...
 WFI.Data.add("gossip", {
   ["a900ecfd3b8eafc2"] = { "Quando sentirò che hai imparato abbastanza, ti concederò la capacità di scegliere qualsiasi animale ti piaccia.", "." },
+  ["a9c8dad921b9c6fc"] = { "Ahh, sei <tornato/tornata>. Se hai la pietra, significa che la montagna ti ha davvero <scelto/scelta>. Ti darò il totem che ha promesso. Ma se sei <venuto/venuta> a mani vuote, sparisci! Il sentiero non è per chi dimentica la propria strada.", "." },
 })
