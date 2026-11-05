@@ -33,6 +33,7 @@ Data\Quest\Quest_0007.lua
 Data\Quest\Quest_0008.lua
 Data\Quest\Quest_0009.lua
 Data\Quest\Quest_0065.lua
+Data\Quest\Quest_0080.lua
 Data\Quest\Quest_0091.lua
 Data\Quest\Quest_0092.lua
 Data\Quest\Quest_0094.lua
@@ -50,6 +51,7 @@ Data\Gossip\Gossip_15.lua
 Data\Gossip\Gossip_16.lua
 Data\Gossip\Gossip_18.lua
 Data\Gossip\Gossip_1b.lua
+Data\Gossip\Gossip_1e.lua
 Data\Gossip\Gossip_22.lua
 Data\Gossip\Gossip_24.lua
 Data\Gossip\Gossip_25.lua
@@ -104,6 +106,7 @@ Data\Gossip\Gossip_e4.lua
 Data\Gossip\Gossip_e6.lua
 Data\Gossip\Gossip_e8.lua
 Data\Gossip\Gossip_e9.lua
+Data\Gossip\Gossip_eb.lua
 Data\Gossip\Gossip_ec.lua
 Data\Gossip\Gossip_ee.lua
 Data\Gossip\Gossip_ef.lua
