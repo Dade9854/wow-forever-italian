@@ -16,7 +16,7 @@ Paste everything under "Description" into the project's description with the edi
 - **Quest**: la finestra della quest, il registro e gli obiettivi.
 - In arrivo: dialoghi degli NPC, libri e lettere, tooltip di oggetti e spell, interfaccia.
 
-In cifre: quest **19**, dialoghi degli NPC **0** righe, pagine di libri **0**, pagine di lettere **0**, tooltip degli oggetti **0**, tooltip delle spell **0**, interfaccia **0**.
+In cifre: quest **281**, dialoghi degli NPC **0** righe, pagine di libri **0**, pagine di lettere **0**, tooltip degli oggetti **0**, tooltip delle spell **0**, interfaccia **0**.
 
 I nomi di personaggi, luoghi, creature, oggetti, spell e fazioni restano in **inglese**, così puoi parlare con gli altri giocatori, leggere le guide e cercare per nome. Razze e classi sono in italiano, al genere del tuo personaggio.
 
@@ -34,7 +34,7 @@ Con l'app CurseForge (con l'installazione **Forever** selezionata), oppure estra
 
 Play World of Warcraft: Forever in Italian, with the game's own English one key away (hold **Alt**). Names stay in English. Early days: machine-drafted translations checked by automatic rules, one zone at a time.
 
-In numbers: **19** quests, **0** NPC dialogue lines, **0** book pages, **0** letter pages, **0** item tooltips, **0** spell tooltips, **0** UI.
+In numbers: **281** quests, **0** NPC dialogue lines, **0** book pages, **0** letter pages, **0** item tooltips, **0** spell tooltips, **0** UI.
 
 ### Credits and license
 
