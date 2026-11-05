@@ -69,6 +69,7 @@ Data\Gossip\Gossip_ce.lua
 Data\Gossip\Gossip_de.lua
 Data\Gossip\Gossip_e3.lua
 Data\Gossip\Gossip_e8.lua
+Data\Gossip\Gossip_ec.lua
 Data\Gossip\Gossip_ee.lua
 Data\Gossip\Gossip_f6.lua
 # >>>
