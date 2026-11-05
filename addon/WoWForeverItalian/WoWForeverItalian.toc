@@ -58,6 +58,7 @@ Data\Gossip\Gossip_4c.lua
 Data\Gossip\Gossip_51.lua
 Data\Gossip\Gossip_52.lua
 Data\Gossip\Gossip_60.lua
+Data\Gossip\Gossip_64.lua
 Data\Gossip\Gossip_6b.lua
 Data\Gossip\Gossip_6c.lua
 Data\Gossip\Gossip_73.lua
@@ -81,6 +82,7 @@ Data\Gossip\Gossip_c9.lua
 Data\Gossip\Gossip_ce.lua
 Data\Gossip\Gossip_d4.lua
 Data\Gossip\Gossip_de.lua
+Data\Gossip\Gossip_df.lua
 Data\Gossip\Gossip_e3.lua
 Data\Gossip\Gossip_e8.lua
 Data\Gossip\Gossip_e9.lua
