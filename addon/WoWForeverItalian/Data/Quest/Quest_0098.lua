@@ -4,6 +4,8 @@ WFI.Data.add("quest", {
   [98046] = { "La corona della terra", nil, nil, nil, nil, 0x6a9c354f, nil, nil, nil, nil, ".mmmm" },
   [98065] = { "La corona della terra", nil, nil, nil, nil, 0x6a9c354f, nil, nil, nil, nil, ".mmmm" },
   [98189] = { "Restituire la statuetta", nil, nil, nil, nil, 0x6359787c, nil, nil, nil, nil, ".mmmm" },
+  [98340] = { nil, "Parla con Dendrite Starblaze nel villaggio di Nighthaven, a Moonglade.", nil, nil, nil, nil, 0x127a78ca, nil, nil, nil, "m.mmm" },
   [98386] = { "L'Alther's Mill", nil, nil, nil, nil, 0xe7ba8f99, nil, nil, nil, nil, ".mmmm" },
+  [98393] = { nil, "Parla con Dendrite Starblaze nel villaggio di Nighthaven, a Moonglade.", nil, nil, nil, nil, 0x127a78ca, nil, nil, nil, "m.mmm" },
   [98403] = { "Odio contorto", nil, nil, nil, nil, 0x10738b8e, nil, nil, nil, nil, ".mmmm" },
 })

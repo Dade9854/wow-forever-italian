@@ -38,6 +38,7 @@ Data\Quest\Quest_0094.lua
 Data\Quest\Quest_0095.lua
 Data\Quest\Quest_0096.lua
 Data\Quest\Quest_0098.lua
+Data\Quest\Quest_0099.lua
 Data\Gossip\Gossip_01.lua
 Data\Gossip\Gossip_04.lua
 Data\Gossip\Gossip_12.lua
