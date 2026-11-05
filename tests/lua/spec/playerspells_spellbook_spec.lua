@@ -166,7 +166,6 @@ describe("spellbook on the Forever client", function()
       WFI.TextWatch.tick()
       assert.are.equal("Page 2/2", pageText():GetText())
       assert.is_false(WFI.TextWatch.watching(pageText()))
-      assert.are_not.equal(WFI.Font.PATH, (pageText():GetFont()))
     end)
 
     -- Blizzard measures an item's three lines when it refills the item (TrimTextSpace) and the page measures its
@@ -196,7 +195,6 @@ describe("spellbook on the Forever client", function()
           for _, fs in ipairs({ item.Name, item.SubName, item.RequiredLevel }) do
             assert.is_false(recorded(fs))
             assert.is_false(WFI.TextWatch.watching(fs))
-            assert.are_not.equal(WFI.Font.PATH, (fs:GetFont()))
           end
         end
         assert.are.equal(0, SS.count("spellbook"))

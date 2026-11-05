@@ -201,7 +201,6 @@ describe("UI/TooltipUnit: quest titles and line kinds", function()
       assert.is_true(WFI.TooltipUnit.init())
       hover({ BLOCK })
       assert.are.equal("|cffffffffInnkeeper Allison|r\n狼の毛皮\n|cffffffff- Young Nightsaberを倒す: 2/7", left(1))
-      assert.is_true(WFI.Font.dressed(_G.GameTooltipTextLeft1)) -- the Japanese face, outside any record
       WFI.TooltipUnit.release()
       assert.is_false(WFI.Font.dressed(_G.GameTooltipTextLeft1))
       Stub.keys.alt = true; WFI.Modifier.refresh()

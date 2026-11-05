@@ -242,19 +242,20 @@ describe("fillValues", function()
     A = ns.Align
   end)
 
-  it("a range the client prints is one value, filled as A～B", function()
+  it("a range the client prints is one value, filled as A-B", function()
     local live = "Hurls a fiery ball that causes 14 to 22 Fire damage and an additional 2 Fire damage over 4 sec."
-    assert.are.same({ "14～22", "2", "4" }, A.values(live))
-    local ja = "$N1のFireダメージを与え、さらに$N3秒かけて$N2のFireダメージを与えます。"
-    assert.are.equal("14～22のFireダメージを与え、さらに4秒かけて2のFireダメージを与えます。", A.fillValues(ja, live))
+    assert.are.same({ "14-22", "2", "4" }, A.values(live))
+    local ja = "Infligge $N1 danni da Fire e altri $N2 danni da Fire in $N3 sec."
+    local want = "Infligge 14-22 danni da Fire e altri 2 danni da Fire in 4 sec."
+    assert.are.equal(want, A.fillValues(ja, live))
     local ok, text = A.check(ja, { live })
-    assert.is_true(ok); assert.are.equal("14～22のFireダメージを与え、さらに4秒かけて2のFireダメージを与えます。", text)
+    assert.is_true(ok); assert.are.equal(want, text)
   end)
 
   it("Wrath: one slot takes the range or the single number; two slots around one range never fill", function()
     local ja = "対象に$N1のNature属性ダメージを\n与えます。"
     local ok, text = A.check(ja, { "Causes 14 to 16 Nature damage to the target." })
-    assert.is_true(ok); assert.are.equal("対象に14～16のNature属性ダメージを\n与えます。", text)
+    assert.is_true(ok); assert.are.equal("対象に14-16のNature属性ダメージを\n与えます。", text)
     ok, text = A.check(ja, { "Causes 15 Nature damage to the target." })
     assert.is_true(ok); assert.are.equal("対象に15のNature属性ダメージを\n与えます。", text)
     assert.is_false((A.check("対象に$N1-$N2のNature属性ダメージを\n与えます。",
@@ -263,12 +264,12 @@ describe("fillValues", function()
 
   it("fills from the live line without gating names or numbers", function()
     local live = "Collect 5 Lady's Tear Moss."
-    assert.are.equal("Lady's Tear Mossを5個集める。", A.fillValues("Lady's Tear Mossを$N1個集める。", live))
+    assert.are.equal("Raccogli 5 Lady's Tear Moss.", A.fillValues("Raccogli $N1 Lady's Tear Moss.", live))
     -- The difference from the gate: a name the OBJECTIVE line does not carry (the quest names Moonbrook in
     -- its description, not here) makes `check` refuse. `fillValues` does not check, because the offline
     -- check already read the whole quest's English (status.Scope), which this one line is not.
-    assert.are.equal("Moonbrookで5個集める。", A.fillValues("Moonbrookで$N1個集める。", live))
-    assert.is_false((A.check("Moonbrookで$N1個集める。", { live })))
+    assert.are.equal("Raccogline 5 a Moonbrook.", A.fillValues("Raccogline $N1 a Moonbrook.", live))
+    assert.is_false((A.check("Raccogline $N1 a Moonbrook.", { live })))
   end)
 
   it("leaves a line with no placeholder exactly as it is, and never calls it a failure", function()
@@ -386,16 +387,16 @@ describe("Core/Align: icons and branch variants (ADR-043)", function()
   end)
 
   it("checkVariants picks by name when the shapes are alike (the faction sign items)", function()
-    local signs = { "Orcish Tradeskill Signに加える。", "Dwarven Tradeskill Signに加える。" }
+    local signs = { "Aggiungila al tuo Orcish Tradeskill Sign.", "Aggiungila al tuo Dwarven Tradeskill Sign." }
     local ok, text = A.checkVariants(signs, { "0/0", "0/0" }, { "Add the sign to your Dwarven Tradeskill Sign toy." })
     assert.is_true(ok)
-    assert.are.equal("Dwarven Tradeskill Signに加える。", text)
+    assert.are.equal("Aggiungila al tuo Dwarven Tradeskill Sign.", text)
   end)
 
   it("checkVariants fails closed when none or several variants pass", function()
-    assert.is_false(A.checkVariants({ "攻撃する。", "防御する。" }, { "0/0", "0/0" }, { "Requires Cat Form." }))
+    assert.is_false(A.checkVariants({ "Attacca.", "Difende." }, { "0/0", "0/0" }, { "Requires Cat Form." }))
     assert.is_false(A.checkVariants(FIRE, SHAPES, { "Absorbs 165 Fire damage and 10% and 3 more." }))
-    assert.is_false(A.checkVariants({ "Stormwindへ。" }, { "0/0" }, { "Returns you to Orgrimmar." }))
+    assert.is_false(A.checkVariants({ "Ti riporta a Stormwind." }, { "0/0" }, { "Returns you to Orgrimmar." }))
     assert.is_false(A.checkVariants({}, {}, { "x" }))
     assert.is_false(A.checkVariants(FIRE, SHAPES, {}))
   end)
@@ -509,7 +510,7 @@ describe("Core/Align.variantKey and keyed variants", function()
   end)
 
   it("a slot without keys behaves exactly as before", function()
-    local V = { "攻撃する。", "防御する。" }
+    local V = { "Attacca.", "Difende." }
     assert.is_false(A.checkVariants(V, { "0/0", "0/0" }, { "Requires Cat Form." }))
     local one = { "$N1回復。" }
     local ok, text = A.checkVariants(one, { "1/0" }, { "Restores 5." })

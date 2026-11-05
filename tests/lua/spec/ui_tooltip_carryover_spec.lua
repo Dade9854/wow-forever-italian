@@ -104,7 +104,7 @@ describe("item tooltip carry-overs", function()
 
   it("an untranslated item hovered with the modifier held gets its Equip lines on release, never the marker",
     function()
-    assert.is_true(WFI.Settings.get("marker.missing")) -- the default
+    WFI.Settings.set("marker.missing", true) -- off by default in this fork: the case is the marker on
     Stub.keys.alt = true; WFI.Modifier.refresh()
     Stub.setItemTooltip(tt, "|Hitem:8000:0:0:0|h[Plain Ring]|h", { "Plain Ring", "Finger",
       "Equip: Increases spell power by 12.", "Use: Restores 500 health." })

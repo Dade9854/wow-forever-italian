@@ -149,9 +149,8 @@ describe("UI/IntroWindow, the window", function()
     local key = ("|cffffd200%s|r"):format(WFI.Options.keyName()) -- the key's name in gold
     return {
       { f.lead, T["intro.lead"].ja, T["intro.lead"].en }, -- the opening line has no bullet
-      { f.hold, "・" .. T["intro.hold"].ja:format(key), "• " .. T["intro.hold"].en:format(key) },
-      { f.readings, "・" .. T["intro.readings"].ja, "• " .. T["intro.readings"].en },
-      { f.minimap, "・" .. T["intro.minimap"].ja, "• " .. T["intro.minimap"].en },
+      { f.hold, "• " .. T["intro.hold"].ja:format(key), "• " .. T["intro.hold"].en:format(key) },
+      { f.minimap, "• " .. T["intro.minimap"].ja, "• " .. T["intro.minimap"].en },
     }
   end
   local function assertBoth(f)
@@ -163,7 +162,7 @@ describe("UI/IntroWindow, the window", function()
     end
   end
 
-  it("shows every line in Japanese and English at once, the reveal key named", function()
+  it("shows every line in Italian and English at once, the reveal key named", function()
     local f = IW.open()
     assert.is_true(f:IsShown())
     assert.are.equal("WoW Forever Italian", f.title:GetText())
@@ -184,53 +183,6 @@ describe("UI/IntroWindow, the window", function()
     WFI.State.setEnabled(false)
     assertBoth(f)
     WFI.State.setEnabled(true)
-  end)
-
-  it("shows the voice line and its address while no voice pack has loaded, and neither with one", function()
-    local f = IW.open()
-    assert.is_true(f.voice.ja:IsShown())
-    assert.is_true(f.voice.en:IsShown())
-    assert.are.equal(T["intro.voice"].ja, f.voice.ja:GetText()) -- its own section: no bullet
-    assert.are.equal(T["intro.voice"].en, f.voice.en:GetText())
-    assert.is_true(f.voiceTitle:IsShown())
-    assert.are.equal("日本語音声 / Japanese voice", f.voiceTitle:GetText())
-    assert.is_true(f.box:IsShown())
-    assert.are.equal(WFI.Options.VOICE_URL, f.box:GetText())
-    local tall = f.size[2]
-    IW.close()
-    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
-    IW.open()
-    assert.is_false(f.voice.ja:IsShown())
-    assert.is_false(f.voice.en:IsShown())
-    assert.is_false(f.box:IsShown())
-    assert.is_false(f.voiceTitle:IsShown())
-    assert.is_true(f.size[2] < tall)
-  end)
-
-  it("on a fresh launch, lays the lines out again once the bundled face is applied", function()
-    local ticks = {}
-    _G.C_Timer = { NewTicker = function(_, fn)
-      local t = { cancelled = false }
-      function t.Cancel() t.cancelled = true end
-      ticks[#ticks + 1] = { fn = fn, t = t }
-      return t
-    end }
-    Stub.fontSetFails = true -- the client refuses the bundled face until its file loads
-    local f = IW.open()
-    assert.are.equal(1, #ticks)
-    local before = f.size[2]
-    function f.lead.ja.GetStringHeight() return 40 end -- the face that lands wraps the line to more rows
-    ticks[1].fn(ticks[1].t)
-    assert.are.equal(before, f.size[2]) -- still refused: nothing measured again yet
-    assert.is_false(ticks[1].t.cancelled)
-    Stub.fontSetFails = false
-    WFI.Font.retryPending()
-    ticks[1].fn(ticks[1].t)
-    assert.is_true(f.size[2] > before)
-    assert.is_true(ticks[1].t.cancelled)
-    IW.open() -- nothing refused now: no second ticker
-    assert.are.equal(1, #ticks)
-    _G.C_Timer = nil
   end)
 
   -- C_Timer.After queued instead of run, and InCinematic() as the test sets it
@@ -340,20 +292,15 @@ describe("UI/IntroWindow, the window", function()
     assert.is_false(IW.frame:IsShown())
   end)
 
-  it("/wfi debug intro opens it, and novoice draws the voice line even with a pack loaded", function()
-    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
+  it("/wfi debug intro opens it", function()
     SlashCmdList.WFI("debug intro")
     assert.is_true(IW.frame:IsShown())
-    assert.is_false(IW.frame.voice.ja:IsShown())
-    SlashCmdList.WFI("debug intro novoice")
-    assert.is_true(IW.frame.voice.ja:IsShown())
-    assert.is_true(IW.frame.box:IsShown())
   end)
 
   it("one button labelled in both languages closes it, and Esc closes it", function()
     local f = IW.open()
     local caption = f.close.caption:GetText()
-    assert.is_truthy(caption:find("閉じる", 1, true))
+    assert.is_truthy(caption:find("Chiudi", 1, true))
     assert.is_truthy(caption:find("Close", 1, true))
     Stub.keys.alt = true
     WFI.Modifier.refresh()
@@ -374,11 +321,10 @@ describe("UI/OptionsText, the intro window's copy", function()
   setup(function() T = H.loadChunks({ "UI/OptionsText.lua" }).OptionsText.T end)
 
   it("every line is the addon's own copy in both languages, with no em dash", function()
-    for _, k in ipairs({ "intro.lead", "intro.hold", "intro.readings", "intro.minimap",
-        "intro.voiceTitle", "intro.voice", "intro.close" }) do
+    for _, k in ipairs({ "intro.lead", "intro.hold", "intro.minimap", "intro.close" }) do
       assert.is_string(T[k].en)
       assert.is_string(T[k].ja)
-      assert.is_truthy(T[k].ja:find("[\227-\233]"))
+      assert.are_not.equal(T[k].en, T[k].ja)
       assert.is_falsy(T[k].en:find("\226\128\148", 1, true))
       assert.is_falsy(T[k].ja:find("\226\128\148", 1, true))
     end

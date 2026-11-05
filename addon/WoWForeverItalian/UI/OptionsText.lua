@@ -144,7 +144,7 @@ Text.T = {
   },
   ["report.summary.other"] = {
     en = "Another addon (BugSack or similar) catches Lua errors: paste ours from it.",
-    ja = "Un altro addon (BugSack o simili) cattura gli errori Lua: copia da lì i nostri.",
+    ja = "Un altro addon (es. BugSack) cattura gli errori Lua: copia da lì i nostri.",
   },
   ["report.summary.idea"] = {
     en = "Ideas and code changes go to GitHub.",
@@ -156,7 +156,7 @@ Text.T = {
   },
   ["report.step2.paste"] = {
     en = "2. Copy this text (click, Ctrl+C) into the form's Lua errors box:",
-    ja = "2. Copia questo testo (clic, Ctrl+C) nel riquadro degli errori Lua del modulo:",
+    ja = "2. Copia questo testo (clic, Ctrl+C) nel campo errori Lua del modulo:",
   },
   ["report.step3"] = {
     en = "3. Write what happened, then submit the issue on GitHub.",
@@ -168,7 +168,7 @@ Text.T = {
   },
   ["report.marked"] = {
     en = "%s errors marked as sent. The next report holds only new ones.",
-    ja = "%s errori segnati come inviati. La prossima segnalazione conterrà solo quelli nuovi.",
+    ja = "%s errori segnati come inviati: la prossima volta solo quelli nuovi.",
   },
   ["about.bug"] = {
     en = "Something not working, or an idea? Send it from here.",

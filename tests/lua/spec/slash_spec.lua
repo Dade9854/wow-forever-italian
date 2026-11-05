@@ -60,9 +60,8 @@ describe("/wfi covers every setting", function()
         assert.is_true(found, d.id)
       end
     end
-    -- the original eight + collector.enabled + area.interface + area.books + readings.enabled + readings.glosses
-    -- + minimapButton + collector.remind
-    assert.are.equal(15, n)
+    -- the original eight + collector.enabled + area.interface + area.books + minimapButton + collector.remind
+    assert.are.equal(13, n)
   end)
 
   it("/wfi bug opens the report window on Bug; /wfi log ends with the Lua error count", function()
@@ -75,15 +74,6 @@ describe("/wfi covers every setting", function()
     Stub.prints = {}
     wfi("log")
     assert.are.equal("WFI: errors: 0 recorded, 0 not sent (/wfi bug)", Stub.prints[#Stub.prints])
-  end)
-
-  it("panel reset puts the voice panel back without saving anything new; other panel words get the help", function()
-    wfi("panel reset")
-    assert.are.equal("WFI: voice panel: back at the bottom centre", Stub.prints[#Stub.prints])
-    assert.is_nil(WFI_DB.voicePanel)
-    wfi("panel look 2")
-    assert.are.equal("WFI: panel: /wfi panel reset puts the voice panel back at the bottom centre",
-      Stub.prints[#Stub.prints])
   end)
 
   it("reads a setting when no value is given; rejects a bad value with the reason", function()
@@ -137,25 +127,20 @@ describe("/wfi covers every setting", function()
     local n = #H.vectors().cases
     assert.is_truthy(Stub.prints[#Stub.prints]:find(("hash vectors: %d/%d ok"):format(n, n), 1, true))
     Stub.prints = {}
-    wfi("debug quest 2")
+    wfi("debug quest 7")
     local out = table.concat(Stub.prints, "\n")
-    assert.is_truthy(out:find("quest.title: trusted (h1 d311f9a5)", 1, true))
-    assert.is_truthy(out:find("Sharptalon's Claw", 1, true)) -- the item name, in English letters
+    assert.is_truthy(out:find("quest.title: trusted (h1 ", 1, true))
+    assert.is_truthy(out:find("Ripulire il campo dei kobold", 1, true))
     assert.is_truthy(out:find("quest.progress:", 1, true))
     Stub.prints = {}
-    wfi("debug quest 5")
+    wfi("debug quest 511") -- a title shared with 3102, nothing else shipped
     out = table.concat(Stub.prints, "\n")
     assert.is_truthy(out:find("quest.progress: -", 1, true)) -- an unshipped field prints a dash
     Stub.prints = {}
     wfi("debug quest 999999")
     assert.is_truthy(Stub.prints[#Stub.prints]:find("quest 999999: not shipped", 1, true))
     Stub.prints = {}
-    wfi("debug item " .. tostring((next(WFI.Data.item))))
-    assert.is_truthy(Stub.prints[1]:find("item.description: unaligned", 1, true))
-    Stub.prints = {}
-    wfi("debug spell " .. tostring((next(WFI.Data.spell))))
-    assert.is_truthy(Stub.prints[1]:find("spell.description: unaligned", 1, true))
-    Stub.prints = {}
+ -- (item and spell tooltips ship in phase 3)
     -- a sectioned line (a heading with optional paragraphs) has no single Japanese text to print
     local get = WFI.Lookup.get
     WFI.Lookup.get = function(kind) -- luacheck: ignore 212
@@ -188,8 +173,7 @@ describe("/wfi covers every setting", function()
     Stub.prints = {}
     wfi("debug fonts")
     local out = table.concat(Stub.prints, "\n")
-    assert.is_truthy(out:find("fonts: no retry started", 1, true))
-    assert.is_truthy(out:find("fonts: records pending 0 → 0 after a retry now · own widgets pending 0", 1, true))
+    assert.is_truthy(out:find("fonts: records pending 0 → 0 after a retry now", 1, true))
   end)
 
   it("debug objective prints the objective index counts, area rows included", function()
@@ -204,27 +188,7 @@ describe("/wfi covers every setting", function()
       :format(c.shipped, c.byType.objective, c.byType.area, c.indexed, c.ambiguous), 1, true))
   end)
 
-  it("debug ui prints the UI index counts and the unresolved keys", function()
-    wfi("debug ui")
-    local out = table.concat(Stub.prints, "\n")
-    local n = WFI.Data.count("ui")
-    -- the stub client defines almost no UI globals: fingerprint rows are hashed, the rest unresolved (the tooltip
-    -- stub's ITEM_SPELL_TRIGGER_ONEQUIP is the one global-string key it holds)
-    local c = WFI.UIIndex.counts
-    -- `ambiguous` is part of the accounting, not assumed zero. Two shipped rows whose English the Forever import
-    -- made identical land there, and the index shows neither rather than guess between them, so the total only
-    -- balances when they are counted. `mismatched` stays a real number for the same reason.
-    assert.is_true(c.hashed > 0 and c.unresolved > 0)
-    assert.are.equal(n, c.indexed + c.hashed + c.unresolved + c.ambiguous + c.mismatched)
-    assert.is_truthy(out:find(("ui: shipped %d · indexed %d · hashed %d · mismatched %d · ambiguous %d · unresolved %d")
-      :format(n, c.indexed, c.hashed, c.mismatched, c.ambiguous, c.unresolved), 1, true))
-    assert.is_truthy(out:find(" · unsupported 0", 1, true))
-    assert.is_truthy(out:find("  unresolved: ", 1, true))
-    assert.is_truthy(out:find(" … +" .. (c.unresolved - 10), 1, true))
-    Stub.prints = {}
-    wfi("debug")
-    assert.is_truthy(table.concat(Stub.prints, "\n"):find("ui: shipped " .. n, 1, true))
-  end)
+  pending("debug ui prints the UI index counts and the unresolved keys — fase 3: l'interfaccia non è ancora tradotta")
 
   it("config opens the panel through Compat; debug prints without error", function()
     wfi("config")
@@ -425,13 +389,12 @@ describe("/wfi collector", function()
 end)
 
 describe("slash / options parity", function()
-  local WFI, S, now
+  local WFI, now
   before_each(function()
     Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI()
     WFI = Loader.load("WoWForeverItalian")
     Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
-    S = WFI.Settings
     now = 100
     _G.GetTime = function() return now end
     Stub.prints, Stub.bindingCalls = {}, {}
@@ -515,20 +478,6 @@ describe("slash / options parity", function()
     assert.are.equal("WFI: togglekey = W", last())
   end)
 
-  it("/wfi readings on|off sets readings.enabled; the long forms still work", function()
-    wfi("readings off")
-    assert.is_false(S.get("readings.enabled"))
-    assert.are.equal("WFI: readings off", last())
-    wfi("readings")
-    assert.are.equal("WFI: readings off", last())
-    wfi("readings ON")
-    assert.is_true(S.get("readings.enabled"))
-    wfi("readings enabled off")
-    assert.is_false(S.get("readings.enabled"))
-    wfi("readings glosses off")
-    assert.is_false(S.get("readings.glosses"))
-  end)
-
   it("collector clear asks first and clears on the repeat within 5 s", function()
     WFI.Collector.record("quest", 9999, "title", "A Forever Quest")
     wfi("collector clear")
@@ -560,7 +509,7 @@ describe("slash / options parity", function()
     assert.are.same({ kept = true }, WFI_Collector.entries.anything)
   end)
 
-  it("togglekey refuses + chords, made-up names, the wheel, a second word; readings names its own error", function()
+  it("togglekey refuses + chords, made-up names, the wheel, a second word; readings is unknown", function()
     for _, typed in ipairs({ "ctrl+j", "foo", "ctrl-foo", "mousewheelup", "-j", "f25" }) do
       wfi("togglekey " .. typed)
       assert.is_truthy(last():find("^WFI: togglekey: "), typed .. " → " .. last())
@@ -570,7 +519,7 @@ describe("slash / options parity", function()
     assert.are.equal("WFI: togglekey: one key, with - between its parts (ctrl-j)", last())
     assert.are.equal(0, sets())
     wfi("readings bogus")
-    assert.are.equal("WFI: readings: expected on|off", last())
+    assert.are.equal("WFI: unknown command 'readings' (try /wfi)", last()) -- no readings in this fork
   end)
 
   it("togglekey writes nothing when the client cannot report combat, and says so", function()

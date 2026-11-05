@@ -22,7 +22,7 @@ describe("UI/AddonListButton: Settings on this addon's AddOn List row", function
     local b = entry.wfiSettings
     assert.is_table(b)
     assert.is_true(b:IsShown())
-    assert.are.equal("設定", b.caption:GetText()) -- one language: Japanese unless the reveal key is held
+    assert.are.equal("Impostazioni", b.caption:GetText()) -- one language: Japanese unless the reveal key is held
     assert.are.equal(WFI.Font.PATH, (b.caption:GetFont()))
     assert.are.same({ "LEFT", entry.Title, "RIGHT", 70, 0 }, b.point)
     AddonList_InitAddon(entry, Stub.addonNode(1)) -- the same pooled entry, reused for another addon
@@ -48,7 +48,8 @@ describe("UI/AddonListButton: Settings on this addon's AddOn List row", function
     assert.are.same({}, Stub.panelCalls)
     assert.are.same({}, Stub.settingsCalls)
     entry.wfiSettings.scripts.OnEnter(entry.wfiSettings)
-    assert.are.equal("先にアドオンの変更を適用またはキャンセルしてください。", WFISettingsTooltip.text) -- one line, one language
+    -- one line, one language
+    assert.are.equal("Prima applica o annulla le modifiche agli AddOn.", WFISettingsTooltip.text)
     assert.are.equal(_G.UIParent, WFISettingsTooltip.parent) -- not the clipping ScrollBox row
   end)
 

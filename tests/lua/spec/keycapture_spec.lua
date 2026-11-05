@@ -27,7 +27,7 @@ describe("UI/KeyCapture: capturing a key on the settings page", function()
     b:click()
     assert.is_true(cap.active)
     assert.are.same({ true }, Stub.keyboardCalls)
-    assert.are.equal("キーを押す", b.caption:GetText()) -- one language
+    assert.are.equal("Premi un tasto", b.caption:GetText()) -- one language
     b:keyDown("LALT")
     assert.are.same({ "lalt" }, got)
     assert.is_false(cap.active)

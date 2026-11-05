@@ -117,11 +117,12 @@ describe("the report window", function()
     assert.are.equal(ours(2), RW.pack.sent[1].msg)
   end)
 
-  -- About 7 px per Latin character and 12 px per Japanese one at the window's 12 px font; the in-game checklist
+  -- About 7 px per Latin character (accented too) and 12 px per CJK one at the window's 12 px font; the in-game
+  -- checklist
   -- confirms it on the real font.
   local function width(s)
     local w = 0
-    for ch in s:gmatch("[%z\1-\127\194-\244][\128-\191]*") do w = w + (#ch == 1 and 7 or 12) end
+    for ch in s:gmatch("[%z\1-\127\194-\244][\128-\191]*") do w = w + (#ch == 3 and 12 or 7) end
     return w
   end
 

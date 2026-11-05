@@ -36,12 +36,12 @@ def test_fixture_round_trip(root, tmp_path: Path, monkeypatch, capsys):
     assert run(["english", "collector", str(fx)]) == 0
     english = Store(data, english=True)
     lines = {(t, ln["id"], ln["field"]): ln for t in ("quest", "item", "spell", "unit") for ln in english.load(t)}
-    assert len(lines) == 9  # quest 2's title and objectives ship with their English hash: known, never recorded
+    assert len(lines) == 11  # quest 2 is not translated in this fork: its title and objectives are recorded too
     for (t, _, _), ln in lines.items():
         assert ln["src"] == "collector@1.15.9.69722"
         assert ln["hash"] == key(normalize_v1(ln["en"]))
         assert validate_line(t, ln, english=True) == []
-    assert ("quest", 2, "objectives") not in lines and ("quest", 2, "title") not in lines
+    assert lines[("quest", 2, "title")]["en"] == "Sharptalon's Claw"
     assert lines[("unit", 3100, "name")]["en"] == "Senani Thunderheart"
     assert lines[("quest", 2, "completion")]["en"] == "$N, your aim is true. The $C of the $R is welcome."
     # paragraphs in pfQuest's form, so the completeness rule counts them the same way
@@ -49,14 +49,14 @@ def test_fixture_round_trip(root, tmp_path: Path, monkeypatch, capsys):
     assert count_english(lines[("item", 117, "description")]["en"]) == 2
     # two talk windows; the shared "Goodbye." carries both NPCs
     gossip_lines = {ln["en"]: ln for ln in english.load("gossip")}
-    assert len(gossip_lines) == 3  # one of the four ships Japanese
+    assert len(gossip_lines) == 4  # no gossip ships Italian yet: all four are recorded
     assert gossip_lines["Goodbye."]["npcs"] == [68, 295]
     assert gossip_lines["Welcome to the Lion's Pride, $N. Even a $C needs a warm bed."]["npcs"] == [295]
     for ln in gossip_lines.values():
         assert ln["id"] == ln["hash"] == key(normalize_v1(ln["en"]))
         assert validate_line("gossip", ln, english=True) == []
     out = capsys.readouterr().out
-    assert "rejected: none" in out and "12 entries" in out  # one gossip line ships, so it is not recorded
+    assert "rejected: none" in out and "15 entries" in out
     before = _snapshot(data)
     assert run(["english", "collector", str(fx)]) == 0  # re-import: byte no-op
     assert _snapshot(data) == before

@@ -111,7 +111,7 @@ describe("UI/ItemText: the book window", function()
     end)
 
   it("an unshipped page is exactly what the client wrote; the missing marker goes above it", function()
-    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- off by default; this test reads the text, not the marker
     Stub.openItemText({ PAGE2 })
     assert.are.same({ PAGE2 }, html.writes) -- the client's write only
     assert.are.equal(0, html.calls.SetFont)
@@ -184,40 +184,6 @@ describe("UI/ItemText: the book window", function()
     assert.are.equal(WFI.Font.PATH, (html:GetFont("H2")))
   end)
 
-  it("a refused font is read back (SimpleHTML SetFont returns nothing), counted, kept English-styled and retried",
-    function()
-      ship({ [PAGE_DATA] = PAGE_JA })
-      Stub.fontSetFails = true
-      Stub.openItemText({ PAGE_LIVE })
-      assert.are.equal(PAGE_JA, drawn())
-      assert.are.equal(1, WFI.Render.pendingFonts())
-      assert.are.equal(1, WFI.Render.fontFailures)
-      assertClientStyle()
-      Stub.fontSetFails = false
-      assert.are.equal(0, WFI.Render.retryFonts())
-      for _, t in ipairs(Client.TAGS) do assert.are.equal(WFI.Font.PATH, (html:GetFont(t)), t) end
-      Stub.keys.alt = true; WFI.Modifier.refresh()
-      assertClientStyle()
-      Stub.keys.alt = false; WFI.Modifier.refresh()
-    end)
-
-  it("turning pages shows each page's own text, never the previous page's", function()
-    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
-    ship({ [PAGE_DATA] = PAGE_JA })
-    Stub.openItemText({ PAGE_LIVE, PAGE2 })
-    assert.are.equal(PAGE_JA, drawn())
-    Stub.itemTextPage(2)
-    assert.are.equal(PAGE2, html.text)
-    assert.is_nil(drawn()) -- the client's write takes the page back from our FontString
-    assertClientStyle()
-    Stub.keys.alt = true; WFI.Modifier.refresh()
-    Stub.keys.alt = false; WFI.Modifier.refresh()
-    assert.are.equal(PAGE2, html.text)
-    Stub.itemTextPage(1)
-    assert.are.equal(PAGE_JA, drawn())
-    assert.are.equal(1, SS.count(IT.SURFACE))
-  end)
-
   it("another item opened while the window is shown starts from the client's styling", function()
     ship({ [PAGE_DATA] = PAGE_JA })
     Stub.openItemText({ PAGE_LIVE })
@@ -265,7 +231,6 @@ describe("UI/ItemText: the book window", function()
       assert.are.equal(PAGE_JA, drawn())
       local _, pSize = html:GetFont("P")
       local _, h1Size = html:GetFont("H1")
-      assert.are.equal(WFI.Font.PATH, (html:GetFont("H1")))
       assert.are.equal(pSize * 48 / Client.CLIENT_FONT.size, h1Size)
       assert.are.same({ Client.TITLE[1], Client.TITLE[2], Client.TITLE[3], 1 }, tag("H2").color)
       Stub.keys.alt = true; WFI.Modifier.refresh()
@@ -305,17 +270,6 @@ describe("UI/ItemText: the book window", function()
     Stub.openItemText({ en })
     assert.are.equal("この書を記した者：Tirion", drawn())
     assert.are.equal("", html.text)
-  end)
-
-  it("a font that takes late (retryFonts) re-sizes the scroll child for the drawn page", function()
-    ship({ [PAGE_DATA] = PAGE_JA })
-    Stub.fontSetFails = true
-    Stub.openItemText({ PAGE_LIVE })
-    local fs, child = IT.page.fs, _G.ItemTextScrollFrame:GetScrollChild()
-    function fs.GetStringHeight() return 600 end
-    Stub.fontSetFails = false
-    assert.are.equal(0, WFI.Render.retryFonts())
-    assert.are.equal(15 + 600 + 30, child.height)
   end)
 
   it("closing the window releases the surface", function()

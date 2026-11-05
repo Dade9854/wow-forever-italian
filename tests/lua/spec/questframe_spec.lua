@@ -119,7 +119,6 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     assert.are.equal("Sharptalonを倒せ", QuestInfoObjectivesText:GetText()) -- no inline marker: the banner has it
     assert.are.equal(WFI.MARKER.stale, QF.banner:GetText())
     assert.is_true(QF.banner:IsShown())
-    assert.are.same({ WFI.Font.PATH, 18, "" }, { QuestInfoTitleHeader:GetFont() })
     assert.are.same({ WFI.Font.PATH, 13, "" }, { QuestInfoDescriptionText:GetFont() })
     for _, key in ipairs({ "title", "description", "objectives" }) do
       local rec = SS.get(DETAIL, key)
@@ -165,7 +164,6 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     Stub.showProgress()
     assert.are.equal("Sharptalonの鉤爪", QuestProgressTitleText:GetText())
     assert.are.equal("まだか？", QuestProgressText:GetText())
-    assert.are.equal(WFI.Font.PATH, (QuestProgressTitleText:GetFont()))
     assert.are.equal(2, SS.count(PROGRESS))
     assert.is_true(QuestProgressScrollFrame.calls.UpdateScrollChildRect >= 1)
     assert.is_nil(Stub.hooks.QuestFrameProgressPanel_OnShow) -- never hooked as a global (XML-bound)
@@ -173,7 +171,6 @@ describe("UI/QuestFrame: accept / progress / turn-in windows", function()
     Stub.showReward()
     assert.are.equal("Sharptalonの鉤爪", QuestInfoTitleHeader:GetText())
     assert.are.equal("よくやった", QuestInfoRewardText:GetText())
-    assert.are.equal(WFI.Font.PATH, (QuestInfoTitleHeader:GetFont()))
     assert.are.equal(2, SS.count(REWARD))
     assert.is_true(QuestRewardScrollFrame.calls.UpdateScrollChildRect >= 1)
   end)
@@ -506,15 +503,15 @@ describe("UI/QuestFrame: player tokens in the quest window", function()
 
   it("renders the player's name and katakana class / race; Alt restores the English; release re-applies", function()
     Stub.showDetail()
-    assert.are.equal("ナイトエルフのハンターへ", QuestInfoTitleHeader:GetText())
-    assert.are.equal("御機嫌よう、Reyn。若きハンターよ、ナイトエルフの力を見せてくれ。", QuestInfoDescriptionText:GetText())
+    assert.are.equal("Elfo della notteのcacciatoreへ", QuestInfoTitleHeader:GetText())
+    assert.are.equal("御機嫌よう、Reyn。若きcacciatoreよ、elfo della notteの力を見せてくれ。", QuestInfoDescriptionText:GetText())
 
     Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("The Balance of Nature", QuestInfoTitleHeader:GetText())
     assert.are.equal(Stub.quest.description, QuestInfoDescriptionText:GetText())
 
     Stub.keys.alt = false; WFI.Modifier.refresh()
-    assert.are.equal("御機嫌よう、Reyn。若きハンターよ、ナイトエルフの力を見せてくれ。", QuestInfoDescriptionText:GetText())
+    assert.are.equal("御機嫌よう、Reyn。若きcacciatoreよ、elfo della notteの力を見せてくれ。", QuestInfoDescriptionText:GetText())
 
     local writes = QuestInfoDescriptionText.calls.SetText
     assert.are.equal(0, WFI.Render.refresh()) -- the expansion is deterministic: nothing to rewrite

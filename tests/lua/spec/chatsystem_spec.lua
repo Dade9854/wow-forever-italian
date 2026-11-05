@@ -211,12 +211,12 @@ describe("SYSTEM chat lines", function()
     alt(WFI, true)
     assert.are.equal("Your party is full.", top:GetText())
     assert.are.equal("Kobold Vermin slain: 1/10", bottom:GetText())
-    assert.are.equal(WFI.Font.PATH, top.font.path) -- every chat line wears the bundled face, English too
+    assert.are.equal("Fonts\\ARIALN.TTF", top.font.path) -- every chat line keeps the chat font
     f:Refresh() -- scrolling / a new line while held: still English
     assert.are.equal("Your party is full.", top:GetText())
     alt(WFI, false)
     assert.are.equal("パーティーがいっぱいです。", top:GetText())
-    assert.are.equal(WFI.Font.PATH, top.font.path)
+    assert.are.equal("Fonts\\ARIALN.TTF", top.font.path)
     assert.are.same(stamps, { f.history[1].timestamp, f.history[2].timestamp }) -- no faded line comes back
     assert.are.equal("パーティーがいっぱいです。", f.history[1].message)
     WFI.State.setEnabled(false)
@@ -287,82 +287,22 @@ describe("SYSTEM chat lines", function()
     assert.are.equal("パーティーがいっぱいです。", f:Last())
   end)
 
-  it("the bundled face goes on every visible line, our Japanese and any English, at the chat size", function()
+  it("every visible line keeps the chat font and size; a refresh sets no font", function()
     local f = _G.ChatFrame1
     system(f, "Your party is full.")
     system(f, "Welcome to the realm.")
     f:Refresh()
-    local ja, en = f.visibleLines[1], f.visibleLines[2]
-    assert.are.equal("パーティーがいっぱいです。", ja:GetText())
-    assert.are.equal(WFI.Font.PATH, ja.font.path)
-    assert.are.equal(14, ja.font.size)
-    assert.are.equal(WFI.Font.PATH, en.font.path) -- a player's Japanese would show here too
-    assert.are.equal(14, en.font.size)
-    -- a refresh that changes nothing sets no font again (busy chat refreshes many times a second)
-    local before = en.calls.SetFont or 0
-    f:Refresh()
-    assert.are.equal(before, en.calls.SetFont or 0)
-  end)
-
-  it("an English row keeps the bundled face at the chat size, and follows a later chat font size change",
-    function()
-      local f = _G.ChatFrame1
-      system(f, "Your party is full.")
-      f:Refresh()
-      local row = f.visibleLines[2]
-      f:AddMessage("Ostara says: hey", 1, 1, 1, SAY) -- the Japanese moves up a row; English takes this one
-      f:Refresh()
-      assert.are.equal("Ostara says: hey", row:GetText())
-      assert.are.equal(WFI.Font.PATH, row.font.path)
-      assert.are.equal(14, row.font.size)
-      f.fontObject.font.size = 18 -- the player picks a bigger chat font: the client changes the object
-      f:Refresh()
-      for _, line in ipairs(f.visibleLines) do
-        assert.are.equal(WFI.Font.PATH, line.font.path)
-        assert.are.equal(18, line.font.size)
-      end
-    end)
-
-  it("Alt shows the English in the bundled face at the chat size; release the Japanese at the chat size", function()
-    local f = _G.ChatFrame1
-    system(f, "Your party is full.")
-    f:Refresh()
-    local row = f.visibleLines[2]
-    row.font.size = 11 -- a size an earlier fit shrank it to
-    alt(WFI, true)
-    assert.are.equal("Your party is full.", row:GetText())
-    assert.are.equal(WFI.Font.PATH, row.font.path)
-    assert.are.equal(14, row.font.size)
-    alt(WFI, false)
-    assert.are.equal(WFI.Font.PATH, row.font.path)
-    assert.are.equal(14, row.font.size) -- from the frame's font, not the row's leftover size
-  end)
-
-  it("in game: a Japanese line that takes an extra line is made smaller; a refused font is never retried",
-    function()
-      local line = Stub.fontString("")
-      line.font = { path = "Fonts\\ARIALN.TTF", size = 14, flags = "" }
-      function line.GetHeight() return 14 end -- the height the frame laid the line out at
-      -- two lines (28 px) at 12 px and up, one line (14 px) below: shrinks until the extra line is gone
-      function line:GetStringHeight()
-        if self.font.path ~= WFI.Font.PATH then return 14 end
-        return self.font.size >= 12 and 28 or 14
-      end
-      assert.are.equal(11, WFI.ChatSystem.fit(line))
-      assert.are.equal(WFI.Font.PATH, line.font.path)
-      Stub.fontSetFails = true
-      local refused = Stub.fontString("")
-      assert.is_nil(WFI.ChatSystem.fit(refused))
-      Stub.fontSetFails = false
-      assert.are.equal(0, WFI.Font.retryPending()) -- nothing was left pending for a pooled line
-    end)
-
-  it("a one-line Japanese line a couple of pixels taller than its slot keeps its size", function()
+    local ours, en = f.visibleLines[1], f.visibleLines[2]
+    assert.are.equal("パーティーがいっぱいです。", ours:GetText())
+    for _, line in ipairs({ ours, en }) do
+      assert.are.equal("Fonts\\ARIALN.TTF", line.font.path)
+      assert.are.equal(14, line.font.size)
+      assert.are.equal(0, line.calls.SetFont or 0)
+    end
     local line = Stub.fontString("")
     line.font = { path = "Fonts\\ARIALN.TTF", size = 14, flags = "" }
-    function line.GetHeight() return 14 end
-    function line.GetStringHeight() return 16 end -- the bundled face's line is a little taller: not an extra line
     assert.are.equal(14, WFI.ChatSystem.fit(line))
+    assert.are.equal("Fonts\\ARIALN.TTF", line.font.path)
   end)
 
   it("all system chat: loot, XP, a stat word, the away message, each its own chat type", function()

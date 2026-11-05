@@ -137,31 +137,13 @@ C.suite(getfenv(1), {
         assert.are.equal(BOB .. " sneezed" .. AGO, log.history[3])
         log.history[3] = nil
         log:Refresh()
-        assert.are.equal(WFI.Font.PATH, log.visibleLines[1].font.path)
         C.alt(WFI, true)
         local moved = BOB .. " moved " .. LINEN .. " x 2 from Deposit to Tab 2" .. AGO
         assert.are.equal(moved, log.visibleLines[1]:GetText())
-        assert.are.equal("Fonts\\ARIALN.TTF", log.visibleLines[1].font.path)
         C.alt(WFI, false)
         assert.are.equal(log.history[2], log.visibleLines[1]:GetText())
-        log:AddMessage(BOB .. " sneezed" .. AGO) -- English on the row the Japanese had: the log's font again
+        log:AddMessage(BOB .. " sneezed" .. AGO) -- English on the row the Italian had
         log:Refresh()
-        assert.are.equal("Fonts\\ARIALN.TTF", log.visibleLines[1].font.path)
-        assert.are.equal(12, log.visibleLines[1].font.size)
-      end },
-    { "guildBankLog: a row given the log's font back follows a later change of the font's size", function(_, WFI)
-        local log = _G.GuildBankMessageFrame
-        log:Clear()
-        log:AddMessage(BOB .. " deposited " .. LINEN .. " x 3" .. AGO)
-        log:Refresh()
-        assert.are.equal(WFI.Font.PATH, log.visibleLines[1].font.path)
-        log:AddMessage(BOB .. " sneezed" .. AGO)
-        log:Refresh()
-        assert.are.equal(12, log.visibleLines[1].font.size)
-        log.fontObject.font.size = 15
-        log:Refresh()
-        assert.are.equal("Fonts\\ARIALN.TTF", log.visibleLines[1].font.path)
-        assert.are.equal(15, log.visibleLines[1].font.size)
       end },
     { "the buy-tab tooltip translates; a tab's name tooltip does not", function(frame)
       C.tooltip(frame.BankTabs[2].Button, { en("BUY_GUILDBANK_TAB") })

@@ -9,14 +9,19 @@ describe("UI/OptionsText: every page string in both languages", function()
     return n
   end
 
-  it("has non-empty English and Japanese with the same number of %s for every key", function()
+  -- the words Italian writes as English does (names, loanwords)
+  local SAME = { ["page.main"] = true, ["report.idea"] = true, ["report.bug"] = true, ["type.spell"] = true,
+    ["type.quest"] = true }
+
+  it("has non-empty English and Italian with the same number of %s for every key", function()
     local n = 0
     for key, t in pairs(Text.T) do
       n = n + 1
       assert.is_true(type(t.en) == "string" and #t.en > 0, key .. " en")
       assert.is_true(type(t.ja) == "string" and #t.ja > 0, key .. " ja")
       assert.are.equal(placeholders(t.en), placeholders(t.ja), key)
-      assert.is_truthy(t.ja:find("[\128-\255]"), key .. ": the Japanese has no Japanese in it")
+      assert.is_nil(t.ja:find("[\227-\233\239]"), key .. ": CJK in the Italian")
+      if not SAME[key] then assert.are_not.equal(t.en, t.ja, key .. ": the Italian is the English") end
     end
     assert.is_true(n > 30)
   end)
@@ -32,7 +37,7 @@ describe("UI/OptionsText: every page string in both languages", function()
   it("formats both languages and refuses a missing key", function()
     local en, ja = Text.get("warn.takeover", "Q", "Action Button 5", "Q")
     assert.are.equal('Q is used for "Action Button 5". While this addon is loaded, Q shows English instead.', en)
-    assert.is_truthy(ja:find("「Action Button 5」", 1, true))
+    assert.is_truthy(ja:find('"Action Button 5"', 1, true))
     assert.has_error(function() Text.get("no.such.key") end)
   end)
 end)
@@ -41,7 +46,7 @@ describe("UI/OptionsText.SLASH names every command", function()
   it("lists every top-level verb and every debug sub-verb", function()
     local Text = H.loadChunks({ "UI/OptionsText.lua" }).OptionsText
     local all = table.concat(Text.SLASH, "\n")
-    for _, verb in ipairs({ "on", "off", "toggle", "config", "debug", "glosses", "readings", "togglekey", "collector",
+    for _, verb in ipairs({ "on", "off", "toggle", "config", "debug", "togglekey", "collector",
         "version", "modifier", "area", "marker", "fix" }) do
       assert.is_truthy(all:find("/wfi " .. verb, 1, true) or all:find("| " .. verb, 1, true), verb)
     end

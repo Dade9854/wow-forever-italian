@@ -12,13 +12,13 @@ describe("Lookup.get / Lookup.gossip on the shipped data", function()
   end)
 
   it("returns the trusted quest title with its status code and h1", function()
-    assert.are.same({ ja = "Koboldキャンプの掃討", status = ".", h1 = 0x5d10a531 }, L.get("quest.title", 7))
+    assert.are.same({ ja = "Ripulire il campo dei kobold", status = ".", h1 = 0x5d10a531 }, L.get("quest.title", 7))
   end)
 
   it("returns nil for an unshipped field, an unknown id, and an unknown kind", function()
     -- never drafted: the objective is a bare label ("Log"), which ships as the client's English
     assert.is_nil(L.get("quest.objectives", 78307))
-    assert.is_nil(L.get("quest.progress", 5)) -- no progress English for this quest, so no Japanese ever ships
+    assert.is_nil(L.get("quest.progress", 5)) -- not a Northshire quest: nothing ships
     assert.is_nil(L.get("quest.title", 999999))
     assert.is_nil(L.get("unit", 1))
     assert.is_nil(L.get("quest.name", 2))
@@ -27,18 +27,8 @@ describe("Lookup.get / Lookup.gossip on the shipped data", function()
     assert.is_nil(L.get(42, 2))
   end)
 
-  it("items and spells ship unaligned (ADR-007) under their single-field kind", function()
-    local itemId = next(WFI.Data.item)
-    local spellId = next(WFI.Data.spell)
-    -- a bare "spell" names no single field, so the kind carries it
-    local item, spell = L.get("item", itemId), L.get("spell.description", spellId)
-    assert.are.equal("u", item.status)
-    assert.are.equal("u", spell.status)
-    assert.is_string(item.ja)
-    assert.is_number(item.h1)
-    assert.are.same(item, L.get("item.description", itemId))
-    assert.is_nil(L.get("spell", spellId))  -- ambiguous with two fields: refused, never guessed
-  end)
+  pending("items and spells ship unaligned (ADR-007) under their single-field kind"
+    .. " — fase 3: nessun tooltip tradotto ancora")
 
   it("a branch line's table slot comes back as variants and shapes, with no ja", function()
     local variants = { "$N1と$N2。", "$N1。", shape = { "2/0", "1/0" } }

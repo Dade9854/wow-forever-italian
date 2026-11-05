@@ -66,7 +66,7 @@ def test_decode_reads_every_fixture_entry(root):
     entries, builds = fixture_send(root)
     send = decode(pack(entries, builds, addon="0.1.0-alpha.5"))
     assert send.addon == "0.1.0-alpha.5" and send.source == "string"
-    assert len(send.dump.entries) == len(entries) == 12
+    assert len(send.dump.entries) == len(entries) == 15
     assert not send.dump.rejected
     goodbye = [en for en in send.dump.entries if en.en == "Goodbye."]
     assert goodbye and goodbye[0].npcs == (68, 295)
@@ -131,7 +131,7 @@ def test_check_counts_and_never_echoes_the_english(root):
     entries, builds = fixture_send(root)
     ok, text = collector.summary(body(pack(entries, builds, addon="0.1.0`@x")))
     assert ok
-    assert "**This send reads.**" in text and "| Entries | 12 |" in text and "| quest |" in text
+    assert "**This send reads.**" in text and "| Entries | 15 |" in text and "| quest |" in text
     assert "1.15.9.69722" in text and "`0.1.0'＠x`" in text
     for en in entries:
         assert en["e"] not in text
@@ -166,7 +166,7 @@ def test_check_reads_an_attached_zip(root):
     url = "https://github.com/user-attachments/files/123/WoWForeverItalian.zip"
     blob = _zip((root / FIXTURE).read_text(encoding="utf-8"))
     ok, text = collector.summary(body(f"[WoWForeverItalian.zip]({url})"), download=lambda u: blob)
-    assert ok and "the attached file" in text and "| Entries | 12 |" in text
+    assert ok and "the attached file" in text and "| Entries | 15 |" in text
 
 
 def test_only_github_attachments_are_downloaded():
@@ -217,7 +217,7 @@ def test_intake_imports_exactly_what_the_file_import_does(root, tmp_path: Path, 
     capsys.readouterr()
     assert collector.run(["intake", "--file", str(saved), "--number", "41"]) == 0
     out = capsys.readouterr().out
-    assert "english collector: issue #41 · 12 entries" in out and "rejected: none" in out
+    assert "english collector: issue #41 · 15 entries" in out and "rejected: none" in out
     assert _snapshot(data_b) == from_file
     assert collector.run(["intake", "--file", str(saved), "--number", "41"]) == 0  # again: byte no-op
     assert _snapshot(data_b) == from_file
@@ -275,7 +275,7 @@ def test_a_zipped_folder_reads_the_addon_file(root):
         z.writestr("__MACOSX/SavedVariables/._WoWForeverItalian.lua", "junk")
         z.writestr("SavedVariables/WoWForeverItalian.lua", (root / FIXTURE).read_text(encoding="utf-8"))
     ok, text = collector.summary(body(f"[x]({url})"), download=lambda u: buf.getvalue())
-    assert ok and "| Entries | 12 |" in text
+    assert ok and "| Entries | 15 |" in text
 
 
 def test_an_encrypted_or_broken_zip_is_a_broken_send():

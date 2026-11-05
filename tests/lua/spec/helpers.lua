@@ -6,9 +6,24 @@ H.ADDON_DIR = ROOT .. "/addon/WoWForeverItalian"
 
 -- Under `make coverage-lua` the generated data is loaded with the coverage hook paused: it is not code
 -- under test, and counting every line of its tables makes the run many times slower.
+-- The English collector ships off by default in this fork (Core/Collector.lua); the specs exercise it on, the way
+-- a player who turned it on runs it. `H.COLLECTOR_DEFAULT_ON = false` (collector_spec) checks the shipped default.
+H.COLLECTOR_DEFAULT_ON = true
+local function collectorOn(relpath, ns)
+  if relpath == "Core/Collector.lua" and H.COLLECTOR_DEFAULT_ON and type(ns) == "table" and ns.Settings then
+    for _, d in ipairs(ns.Settings.list()) do
+      if d.id == "collector.enabled" then d.default = true end
+    end
+  end
+end
+
 local function run(relpath, chunk, addonName, ns)
   local runner = package.loaded["luacov.runner"]
-  if not (runner and relpath:find("^Data/")) then return chunk(addonName or "WoWForeverItalian", ns) end
+  if not (runner and relpath:find("^Data/")) then
+    local result = chunk(addonName or "WoWForeverItalian", ns)
+    collectorOn(relpath, ns)
+    return result
+  end
   runner.pause()
   local ok, result = pcall(chunk, addonName or "WoWForeverItalian", ns)
   runner.resume()

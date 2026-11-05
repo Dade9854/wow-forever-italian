@@ -6,17 +6,13 @@ local Loader = require("tests.lua.spec.loader")
 local HEAD = { "Core/ErrorLog.lua", "Core/Const.lua", "Core/Compat.lua", "Core/Normalize.lua", "Core/Hash.lua",
   "Core/Data.lua" }
 local TAIL = {
-  "Core/Lookup.lua", "Core/Readings.lua", "Core/Glosses.lua", "Core/Align.lua", "Core/State.lua", "Core/Settings.lua",
-  "Core/Voice.lua", "Core/VoiceQueue.lua", "Core/Modifier.lua",
+  "Core/Lookup.lua", "Core/Align.lua", "Core/State.lua", "Core/Settings.lua", "Core/Modifier.lua",
   "Core/Placeholders.lua", "Core/Translator.lua", "Core/UIStringKeys.lua",
   "Core/UIStrings.lua", "Core/Objectives.lua", "Core/SurfaceState.lua",
   "Core/Collector.lua", "Core/CollectorSend.lua", "Core/CollectorRemind.lua", "Core/Intro.lua",
   "Core/RecentLines.lua", "Core/Reports.lua", "Core/ReportText.lua", "Core/Diag.lua", -- the fix reports, the log
   "Core/BugReport.lua",
-  "UI/Font.lua", "UI/Frames.lua", "UI/ReadingPopup.lua", "UI/Readings.lua", "UI/Render.lua",
-  "UI/VoicePlayer.lua", "UI/VoicePanelLooks.lua", "UI/VoicePanelHead.lua", "UI/VoicePanelText.lua",
-  "UI/VoicePanel.lua", "UI/VoiceQuestLog.lua",
-  "UI/VoiceErrors.lua", "UI/ButtonText.lua", "UI/Labels.lua", "UI/TextWatch.lua",
+  "UI/Font.lua", "UI/Frames.lua", "UI/Render.lua", "UI/ButtonText.lua", "UI/Labels.lua", "UI/TextWatch.lua",
   "UI/TaintWatch.lua",
   "UI/HtmlText.lua",
   "UI/LoadOnDemand.lua",
@@ -141,7 +137,7 @@ describe("addon loads in TOC order and answers /wfi version", function()
     assert.is_function(WFI.Hash.key)
     for _, m in ipairs({ "Compat", "Data", "Lookup", "Align", "Tooltip", "State", "Settings", "Modifier", "Translator",
       "SurfaceState", "Collector", "UIStrings", "ButtonText", "Labels", "GameMenu", "Gossip", "Scan",
-      "Font", "Render", "Voice", "VoicePlayer",
+      "Font", "Render",
       "QuestFrame", "Options", "Slash", "LoadOnDemand", "HelpTooltip", "Character",
       "Reputation", "Skills", "SpellBook", "Talents", "Trainer", "GossipChrome", "Merchant", "Bank", "Bags",
       "Mail", "Friends", "Raid", "MicroMenu", "ItemText",
@@ -159,12 +155,10 @@ describe("addon loads in TOC order and answers /wfi version", function()
     Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     _G.ACCEPT, _G.QUEST_LOG = nil, nil
     local c = ns.UIIndex.counts
+    -- this fork ships no UI dictionary yet (phase 3): the index is built, empty, and answers nothing
     assert.are.equal(ns.Data.count("ui"), c.shipped)
-    assert.are.equal(2, c.indexed) -- ACCEPT, and ITEM_SPELL_TRIGGER_ONEQUIP ("Equip:", set by the tooltip stub)
-    -- QUEST_LOG above, and the gossip stub's own GOSSIP_OPTION_PREPEND / QUEST_PREPEND globals, whose
-    -- placeholder English is not the client's: three keys the index refuses to answer for
-    assert.are.equal(3, c.mismatched)
-    assert.are.equal("ACCEPT", (ns.UIIndex:match("Accept")))
+    assert.are.equal(0, c.indexed)
+    assert.is_nil((ns.UIIndex:match("Accept")))
     assert.are.equal(1, #(Stub.hooks["GameMenuFrame:InitButtons"] or {}))
     meta = Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
@@ -223,44 +217,6 @@ describe("addon loads in TOC order and answers /wfi version", function()
     Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
   end)
 
-  it("fonts refused at load are retried after PLAYER_ENTERING_WORLD until none is pending", function()
-    Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
-    Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
-    local ticks = {}
-    _G.C_Timer = { NewTicker = function(_, fn)
-      local t = { cancelled = false }
-      function t.Cancel() t.cancelled = true end
-      ticks[#ticks + 1] = { fn = fn, t = t }
-      return t
-    end }
-    CreateFrame("Frame", "UIParent") -- the client always has it; the probe hangs off it
-    _G.WFI_DB = { schema = 1, settings = {} } -- not a first install: the intro window stays out of this test
-    local ns = Loader.load("WoWForeverItalian")
-    Stub.fontSetFails = true -- a fresh launch: the bundled font file is not loaded yet
-    Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
-    assert.is_true(ns.Render.pendingFonts() > 0 or ns.Font.retryPending() > 0)
-    -- the font retry is the one ticker started on entering the world
-    local before = #ticks
-    Stub.fireAll("PLAYER_ENTERING_WORLD", true, false)
-    assert.are.equal(before + 1, #ticks)
-    local font = ticks[before + 1]
-    local probe = ns.Font.startProbe() -- started by PLAYER_ENTERING_WORLD: one visible character asking for our font
-    assert.is_table(probe)
-    assert.are.equal("あ", probe:GetText())
-    font.fn(font.t)
-    assert.is_false(font.t.cancelled) -- still refused
-    Stub.fontSetFails = false
-    font.fn(font.t)
-    assert.is_true(font.t.cancelled)
-    assert.are.same({ ns.Font.PATH, 8, "" }, { probe:GetFont() })
-    assert.is_false(ns.Font.stopProbe()) -- already stopped when nothing was pending
-    assert.are.equal(0, ns.Render.pendingFonts())
-    assert.are.equal(0, ns.Font.retryPending())
-    Stub.fireAll("PLAYER_ENTERING_WORLD", false, false)
-    assert.are.equal(before + 1, #ticks) -- nothing pending: no second font ticker
-    _G.C_Timer = nil
-  end)
-
   it("keeps a problem log: a session on load, a blocked action naming this addon, /wfi log prints it", function()
     Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
@@ -304,6 +260,8 @@ describe("addon loads in TOC order and answers /wfi version", function()
   end)
 
   it("creates WFI_Collector on load and discloses once, on the first PLAYER_ENTERING_WORLD", function()
+    H.COLLECTOR_DEFAULT_ON = false
+    finally(function() H.COLLECTOR_DEFAULT_ON = true end)
     Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
     Loader.load("WoWForeverItalian")
@@ -311,8 +269,14 @@ describe("addon loads in TOC order and answers /wfi version", function()
     assert.are.same({ version = 1, disclosed = false, builds = {}, bytes = 0, capped = false, entries = {},
       sent = {} },
       WFI_Collector)
+    -- off by default in this fork: nothing is disclosed until the player turns it on
+    Stub.prints = {}
+    Stub.fireAll("PLAYER_ENTERING_WORLD")
+    assert.are.equal(0, #Stub.prints)
+    assert.is_false(WFI_Collector.disclosed)
     Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
+    _G.WFI_DB = { schema = 1, settings = { ["collector.enabled"] = true } }
     Loader.load("WoWForeverItalian")
     Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     Stub.prints = {}
@@ -327,6 +291,7 @@ describe("addon loads in TOC order and answers /wfi version", function()
     Stub.install(H.ADDON_DIR .. "/WoWForeverItalian.toc")
     Stub.installQuestAPI(); Stub.installTooltipAPI(); Stub.installGossipAPI(); Stub.installItemTextAPI()
     _G.WFI_Collector = saved
+    _G.WFI_DB = { schema = 1, settings = { ["collector.enabled"] = true } }
     Loader.load("WoWForeverItalian")
     Stub.fireAll("ADDON_LOADED", "WoWForeverItalian")
     Stub.prints = {}
@@ -362,26 +327,25 @@ describe("addon loads in TOC order and answers /wfi version", function()
     -- quest 7 (quest 2's title is the item name "Sharptalon's Claw", English letters by rule)
     local fs = Stub.fontString("Kobold Camp Cleanup", "Fonts\\FRIZQT__.TTF", 12, "")
     WFI.Render.show("quest", "title", fs, "Kobold Camp Cleanup", "quests", "quest.title", 7)
-    assert.are.equal("Koboldキャンプの掃討", fs:GetText())
+    assert.are.equal("Ripulire il campo dei kobold", fs:GetText())
     WFI.Render.release("quest")
     assert.are.equal("Kobold Camp Cleanup", fs:GetText())
-    local itemId = next(WFI.Data.item)
-    local action, payload = WFI.Translator.new({
-      enabled = function() return true end, areaEnabled = function() return true end,
-      modifierHeld = function() return false end, lookup = WFI.Lookup.get, marker = function() return false end,
-    }).resolve("items", "item", itemId)
-    assert.are.equal("none", action)
-    assert.are.equal("unaligned_ungated", payload.reason)
   end)
 
   it("Main's expand fills a real shipped line from the client's unit functions", function()
-    -- quest 791 completion: "実にいいね、{name}。あらゆる本物の{class}は…\n\nHordeの名の下に…" (the two-paragraph variant
-    -- ships: completeness is checked against VMaNGOS's two-paragraph reward text)
+    -- quest 7 progress: "Come va la caccia, {name}? …"; quest 783 description: "…, giovane {class}, …";
+    -- quest 15 progress: "Sei <andato/andata> alle miniere? …" (the stub's player: Reyn, a male Hunter)
     local fs = Stub.fontString("Good.", "Fonts\\FRIZQT__.TTF", 12, "")
-    WFI.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
-    assert.are.equal("実にいいね、Reyn。あらゆる本物のハンターは戦場でのこのバッグの使い方を知ってるものさ。\n\nHordeの名の下に戦わんとするお前の意志に敬礼！", fs:GetText())
+    WFI.Render.show("quest", "progress", fs, "Good.", "quests", "quest.progress", 7)
+    assert.are.equal("Come va la caccia, Reyn? Hai trovato e sconfitto quei parassiti?", fs:GetText())
     WFI.Render.release("quest")
     assert.are.equal("Good.", fs:GetText())
+    WFI.Render.show("quest", "description", fs, "Good.", "quests", "quest.description", 783)
+    assert.is_truthy(fs:GetText():find("giovane cacciatore, perché", 1, true))
+    WFI.Render.release("quest")
+    WFI.Render.show("quest", "progress", fs, "Good.", "quests", "quest.progress", 15)
+    assert.are.equal("Sei andato alle miniere? Sei pronto a fare rapporto?", fs:GetText())
+    WFI.Render.release("quest")
   end)
 
   it("a client without UnitSex / UnitClass still renders: tokens stay literal, token-free text is untouched",
@@ -392,12 +356,12 @@ describe("addon loads in TOC order and answers /wfi version", function()
     assert.has_no.errors(function()
       WFI.Render.show("quest", "title", title, "Kobold Camp Cleanup", "quests", "quest.title", 7)
     end)
-    assert.are.equal("Koboldキャンプの掃討", title:GetText())
+    assert.are.equal("Ripulire il campo dei kobold", title:GetText())
     local fs = Stub.fontString("Good.", "Fonts\\FRIZQT__.TTF", 12, "")
     assert.has_no.errors(function()
-      WFI.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
+      WFI.Render.show("quest", "description", fs, "Good.", "quests", "quest.description", 783)
     end)
-    assert.are.equal("実にいいね、Reyn。あらゆる本物の{class}は戦場でのこのバッグの使い方を知ってるものさ。\n\nHordeの名の下に戦わんとするお前の意志に敬礼！", fs:GetText())
+    assert.is_truthy(fs:GetText():find("giovane {class}, perché", 1, true))
     WFI.Render.release("quest")
     -- the collector reads the same guarded reader: a missing UnitClass is a refusal, not an error
     WFI.Settings.set("collector.enabled", true)
@@ -410,8 +374,8 @@ describe("addon loads in TOC order and answers /wfi version", function()
     local unknown = _G.UNKNOWNOBJECT
     _G.UNKNOWNOBJECT = "Reyn" -- the stub's player name plays the client's placeholder name
     local fs = Stub.fontString("Good.", "Fonts\\FRIZQT__.TTF", 12, "")
-    WFI.Render.show("quest", "completion", fs, "Good.", "quests", "quest.completion", 791)
-    assert.are.equal("実にいいね、{name}。あらゆる本物のハンターは戦場でのこのバッグの使い方を知ってるものさ。\n\nHordeの名の下に戦わんとするお前の意志に敬礼！", fs:GetText())
+    WFI.Render.show("quest", "progress", fs, "Good.", "quests", "quest.progress", 7)
+    assert.are.equal("Come va la caccia, {name}? Hai trovato e sconfitto quei parassiti?", fs:GetText())
     WFI.Render.release("quest")
     WFI.Settings.set("collector.enabled", true)
     assert.are.same({ "refused", "no_player" }, { WFI.Collector.record("quest", 8, "description", "Kill ten wolves.") })
@@ -436,44 +400,8 @@ describe("addon loads in TOC order and answers /wfi version", function()
     WFI.Lookup.keyed = keyed
   end)
 
-  it("fills an unaligned item's placeholders from the live tooltip, on the real shards", function()
-    local tt = _G.GameTooltip
-    -- The client's own duration strings, as the real one defines them. UIStrings admits a row only when the
-    -- client's English matches the English its Japanese was drafted against, so without these the duration
-    -- renderer has nothing and a `$D<k>` line fails closed to English. That is the right failure, and is
-    -- what every other spec in this file sees (ADR-028).
-    _G.INT_SPELL_DURATION_SEC, _G.INT_SPELL_DURATION_MIN = "%d sec", "%d min"
-    WFI.BuildUIIndex()
-    finally(function()
-      _G.INT_SPELL_DURATION_SEC, _G.INT_SPELL_DURATION_MIN = nil, nil
-      WFI.BuildUIIndex()
-    end)
-    -- item 117 Tough Jerky, with the value and the duration as placeholders:
-    --   "$D1かけて体力を$N1回復します。回復中は座っている必要があります。"
-    -- The value and the duration both come out of the line the client is showing, so ONE stored translation
-    -- serves every food item at any value, where the baked line it replaced only fitted this one.
-    Stub.setItemTooltip(tt, "|Hitem:117:0:0:0:0:0:0:0|h[Tough Jerky]|h",
-      { "Tough Jerky", "Use: Restores 61 health over 18 sec. Must remain seated while eating.", "Sell Price: 5c" })
-    assert.are.equal("18秒かけて体力を61回復します。回復中は座っている必要があります。",
-      _G.GameTooltipTextLeft2:GetText())
-    assert.are.equal("Tough Jerky", _G.GameTooltipTextLeft1:GetText())
-    assert.are.equal("Sell Price: 5c", _G.GameTooltipTextLeft3:GetText()) -- the stub client defines no SELL_PRICE
-    tt:Hide()
-    assert.are.equal("Use: Restores 61 health over 18 sec. Must remain seated while eating.",
-      _G.GameTooltipTextLeft2:GetText())
-    -- a different value is not a mismatch: it fills, so one stored line serves every value
-    Stub.setItemTooltip(tt, "|Hitem:117:0:0:0:0:0:0:0|h[Tough Jerky]|h",
-      { "Tough Jerky", "Use: Restores 70 health over 18 sec. Must remain seated while eating." })
-    assert.are.equal("18秒かけて体力を70回復します。回復中は座っている必要があります。",
-      _G.GameTooltipTextLeft2:GetText())
-    tt:Hide()
-    -- and a different UNIT follows the client, never the corpus (ADR-028)
-    Stub.setItemTooltip(tt, "|Hitem:117:0:0:0:0:0:0:0|h[Tough Jerky]|h",
-      { "Tough Jerky", "Use: Restores 70 health over 2 min. Must remain seated while eating." })
-    assert.are.equal("2分かけて体力を70回復します。回復中は座っている必要があります。",
-      _G.GameTooltipTextLeft2:GetText())
-    tt:Hide()
-  end)
+  pending("fills an unaligned item's placeholders from the live tooltip, on the real shards"
+    .. " — fase 3: nessun tooltip tradotto ancora")
 
   it("prints the TOC version on /wfi version", function()
     Stub.prints = {}

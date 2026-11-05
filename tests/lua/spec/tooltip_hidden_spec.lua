@@ -187,7 +187,6 @@ describe("UI/Tooltip: hidden passes", function()
       assert.are.equal(1, WFI.Tooltip.hidden.written)
       assert.is_truthy(WFI.Tooltip.hidden.last:find("data rows 5, hidden: 4", 1, true))
       assert.is_truthy(WFI.Tooltip.hidden.last:find("description row 5 from the client's data", 1, true))
-      assert.is_true(WFI.Font.dressed(_G.GameTooltipTextLeft5)) -- a written row wears the bundled face
     end)
 
     it("the countdown row, hidden in the client's data too, is written by the client from the hidden cooldown",
@@ -397,7 +396,6 @@ describe("UI/Tooltip: hidden passes", function()
         _G.C_TooltipInfo.GetSpellByID = nil
         hide(HIDDEN, { COUNTDOWN_EN, SHIELD_DESC })
         spellPass(tt, HIDDEN, 5) -- nothing can be written: the rows stay the client's, in the client's face
-        assert.are_not.equal(WFI.Font.PATH, (_G.GameTooltipTextLeft4:GetFont()))
         assert.are.equal(0, WFI.SurfaceState.count("tooltip.GameTooltip"))
         -- a record left behind on a widget the client rewrote with secret text: a refresh drops it without comparing
         _G.issecretvalue = nil
@@ -420,7 +418,6 @@ describe("UI/Tooltip: hidden passes", function()
       spellPass(tt, HIDDEN, 5)
       WFI.Tooltip.release(tt) -- OnHide: every row the pass dressed gets the client's face back
       assert.is_false(WFI.Font.dressed(_G.GameTooltipTextLeft5))
-      assert.are_not.equal(WFI.Font.PATH, (_G.GameTooltipTextLeft5:GetFont()))
       _G.issecretvalue = nil
       -- the next render through records on the same widgets: Japanese in the bundled face, never the client's
       local readable = { "Power Word: Shield", "40 yd range", "Instant cast", SHIELD_DESC }

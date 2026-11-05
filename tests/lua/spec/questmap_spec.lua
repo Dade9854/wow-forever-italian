@@ -100,6 +100,7 @@ describe("UI/QuestMap: the camelot quest log", function()
       local back = _G.QuestMapFrame.QuestsFrame.DetailsFrame.BackFrame.BackButton
       local parent = CreateFrame("Frame")
       back.GetParent = function() return parent end
+      WFI.Settings.set("marker.missing", true) -- off by default in this fork
       assert.is_true(QM.makeBanner())
       assert.is_false(QM.makeBanner()) -- once
       Q.showDetails(7)
@@ -388,7 +389,6 @@ describe("UI/QuestMap: the camelot quest log", function()
       assert.are.equal(ja + Q.OBJECTIVE_HEIGHT, block.laidOut)
       Stub.keys.alt = true; WFI.Modifier.refresh()
       local en = block.HeaderText:GetHeight()
-      assert.are_not.equal(ja, en) -- the bundled font measures differently
       assert.are.equal(en + Q.OBJECTIVE_HEIGHT, block.laidOut)
       Stub.keys.alt = false; WFI.Modifier.refresh()
       assert.are.equal(ja + Q.OBJECTIVE_HEIGHT, block.laidOut)

@@ -61,49 +61,6 @@ describe("Settings pages from the registry and PAGES", function()
     assert.is_nil(WFI.OptionsText.T["nav.main"]) -- and no copy left for them
   end)
 
-  it("the voice page exists only with a voice pack: built with the others, or added when the pack registers", function()
-    H.loadChunk("Core/Voice.lua", nil, WFI)
-    assert.is_nil(O.pages.voice) -- no pack when the pages were built
-    WFI.Compat.registerOptions(list)
-    assert.is_false(O.addPage("voice")) -- still no pack
-    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
-    assert.is_true(O.addPage("voice"))
-    local last = Stub.settingsCalls[#Stub.settingsCalls]
-    assert.are.equal("RegisterCanvasLayoutSubcategory", last[1])
-    assert.are.equal(O.pages.voice, last[3])
-    assert.are.equal("Voice", last[4])
-    assert.is_truthy(control("voice.enabled"))
-    assert.is_truthy(control("voice.greeting"))
-    assert.is_truthy(control("voice.books"))
-    assert.is_false(O.addPage("voice")) -- once
-    assert.is_true(O.addPage("voicepanel"))
-    assert.are.equal("Voice panel", Stub.settingsCalls[#Stub.settingsCalls][4])
-    local again = O.build() -- a pack present at build time: the pages are built with the others, after About
-    assert.are.same({ "main", "collector", "about", "voice", "voicepanel" },
-      { again[1].id, again[2].id, again[3].id, again[4].id, again[5].id })
-  end)
-
-  it("the voice panel page: Panel size and Panel style as dropdowns, then its switches", function()
-    H.loadChunk("Core/Voice.lua", nil, WFI)
-    WFI.Voice.register({ format = 1, folder = "WoWForeverItalian_Voice", lines = {} })
-    O.build()
-    local size, style = control("voice.panel.size"), control("voice.panel.style")
-    assert.are.equal("choice", size.kind)
-    local items = size.dropdown:menuItems()
-    assert.are.same({ "Off", "Full", "Compact strip" }, { items[1].text, items[2].text, items[3].text })
-    assert.is_true(items[2].isSelected()) -- Full by default
-    items[3].setSelected()
-    assert.are.equal("strip", S.get("voice.panel.size"))
-    local styles = style.dropdown:menuItems()
-    assert.are.same({ "Dark", "Parchment" }, { styles[1].text, styles[2].text })
-    assert.is_true(styles[2].isSelected()) -- Parchment by default
-    for _, id in ipairs({ "voice.panel.keep", "voice.panel.head", "voice.panel.hoverButtons", "voice.panel.fade",
-      "voice.panel.combatDim", "voice.panel.questLog", "voice.panel.lock" }) do
-      assert.are.equal("boolean", control(id).kind, id)
-    end
-    assert.is_nil(control("voice.panel.queueBox"))
-  end)
-
   it("our category starts expanded, so its sub-pages show in the list without a click", function()
     local expanded
     local real = _G.Settings.RegisterCanvasLayoutCategory
@@ -141,7 +98,7 @@ describe("Settings pages from the registry and PAGES", function()
     end
   end)
 
-  it("setting rows read in one language: Japanese, English with the reveal key or translation off",
+  it("setting rows read in one language: Italian, English with the reveal key or translation off",
     function()
     local function each(fn)
       for _, c in ipairs(O.controls) do
@@ -171,14 +128,6 @@ describe("Settings pages from the registry and PAGES", function()
     WFI.State.setEnabled(true)
     WFI.OptionsWidgets.relabelIfStale() -- the pages are hidden: the flip waits for one to show
     each(function(c, d) assert.are.equal(d.ja, c.widget.label.en:GetText()) end)
-    local checked = 0
-    for _, fs in ipairs(Stub.fontStrings) do
-      if WFI.OptionsWidgets.hasJapanese(fs:GetText()) then
-        checked = checked + 1
-        assert.are.equal(WFI.Font.PATH, (fs:GetFont()), fs:GetText())
-      end
-    end
-    assert.is_true(checked > 30)
   end)
 
   it("every page fits 640 × 560 without scrolling", function()
@@ -204,7 +153,7 @@ describe("Settings pages from the registry and PAGES", function()
 
   it("reflects values, a click sets the setting, and OnShow re-reads a slash-side change", function()
     assert.is_true(control("enabled").widget:GetChecked())
-    assert.is_true(control("marker.missing").widget:GetChecked()) -- on by default
+    assert.is_false(control("marker.missing").widget:GetChecked()) -- off by default in this fork
     control("enabled").widget:click()
     assert.is_false(S.get("enabled"))
     assert.is_false(WFI.State.enabled)
@@ -220,7 +169,7 @@ describe("Settings pages from the registry and PAGES", function()
 
   it("the page title is the addon's name, the same in both languages", function()
     local t = WFI.OptionsText.T["page.main"]
-    assert.are.equal("WoW Forever Italian (日本語化)", t.en)
+    assert.are.equal("WoW Forever Italian", t.en)
     assert.are.equal(t.en, t.ja)
   end)
 
@@ -232,21 +181,11 @@ describe("Settings pages from the registry and PAGES", function()
     assert.is_nil(text:find("vv", 1, true))
   end)
 
-  it("the meanings checkbox sits in the translation section and turns the meanings off and on", function()
+  it("the translation section holds the switch and the minimap button (no readings or meanings here)", function()
     local rows = O.PAGES[1].sections[1].rows
-    assert.are.same({ "enabled", "readings.enabled", "readings.glosses", "minimapButton" }, rows)
-    -- the areas moved to three columns to make room (the markers keep one column and their samples)
+    assert.are.same({ "enabled", "minimapButton" }, rows)
     assert.are.equal(3, O.PAGES[1].sections[3].columns)
     assert.is_nil(O.PAGES[1].sections[4].columns)
-    local fired = {}
-    WFI.State.on("glosses", function(v) fired[#fired + 1] = v end)
-    local c = control("readings.glosses")
-    assert.is_true(c.widget:GetChecked())
-    c.widget:click()
-    assert.is_false(S.get("readings.glosses"))
-    c.widget:click()
-    assert.is_true(S.get("readings.glosses"))
-    assert.are.same({ false, true }, fired)
   end)
 
   it("the modifier dropdown lists the presets, sets a side, lists a bound key only while set", function()
@@ -271,7 +210,7 @@ describe("Settings pages from the registry and PAGES", function()
     ctl.capture.button:keyDown("Q")
     assert.are.equal("Q", S.get("modifier"))
     assert.are.equal(ja("warn.takeover", "Q", "Action Button 5", "Q"), ctl.warning.en:GetText())
-    assert.is_truthy(ctl.warning.en:GetText():find("「Action Button 5」", 1, true))
+    assert.is_truthy(ctl.warning.en:GetText():find("\"Action Button 5\"", 1, true))
     Stub.bindings.J = "WFI_TOGGLE"
     assert.is_false(O.setModifier("J"))
     assert.are.equal(ja("warn.toggleConflict", "J"), ctl.warning.en:GetText())
@@ -344,7 +283,7 @@ describe("Settings pages from the registry and PAGES", function()
 
   it("on the page: toggle key set, a conflict asks to Replace, Unbind clears", function()
     local t = O.toggle
-    assert.are.equal("未設定", t.keyText:GetText())
+    assert.are.equal("Non impostato", t.keyText:GetText())
     assert.is_false(t.unbind:IsEnabled())
     O.proposeToggle("F7")
     assert.are.equal("F7", t.keyText:GetText())
@@ -353,10 +292,10 @@ describe("Settings pages from the registry and PAGES", function()
     O.proposeToggle("G")
     assert.are.same({}, Stub.bindingCalls)
     assert.are.equal(ja("warn.bindReplace", "G", "Move Forward"), t.warning.en:GetText())
-    assert.are.equal("置き換える", t.unbind.caption:GetText())
+    assert.are.equal("Sostituisci", t.unbind.caption:GetText())
     t.unbind:click()
     assert.are.equal("G", GetBindingKey("WFI_TOGGLE"))
-    assert.are.equal("解除", t.unbind.caption:GetText())
+    assert.are.equal("Rimuovi", t.unbind.caption:GetText())
     t.unbind:click()
     assert.is_nil(GetBindingKey("WFI_TOGGLE"))
     S.set("modifier", "q")
@@ -370,9 +309,10 @@ describe("Settings pages from the registry and PAGES", function()
     O.refresh()
     -- the status line in the page's language (the slash command keeps Collector.describe's English)
     local s, fb = WFI.Collector.status(), WFI.Collector.formatBytes
-    local line = ("%s・%s件・%s / %s"):format(s.enabled and "オン" or "オフ", s.entries, fb(s.bytes), fb(s.cap))
+    local line = ("%s · %s voci · %s di %s"):format(s.enabled and "attiva" or "disattivata", s.entries, fb(s.bytes),
+      fb(s.cap))
     if s.errors > 0 then line = line .. " · " .. ja("collector.errors", s.errors) end
-    assert.are.equal("状態: " .. line, O.collectorStatus:GetText())
+    assert.are.equal("Stato: " .. line, O.collectorStatus:GetText())
     local box = O.copyBoxes["collector.path"]
     assert.are.equal(WFI.Collector.path(), box:GetText())
     box:SetText("edited")
@@ -416,15 +356,15 @@ describe("Settings pages from the registry and PAGES", function()
     local about = O.pages.about
     about:Show()
     -- the shipped quest count
-    assert.is_truthy(about.subtitle.en:GetText():find("クエスト " .. shippedQuests(WFI), 1, true))
+    assert.is_truthy(about.subtitle.en:GetText():find(shippedQuests(WFI) .. " quest", 1, true))
     local texts = {}
     for _, fs in ipairs(about.children) do if fs.GetText then texts[#texts + 1] = fs:GetText() end end
     local all = table.concat(texts, "\n")
     assert.is_truthy(all:find(WFI.OptionsText.T["about.open"].ja, 1, true))
     -- the reveal key by name, and both markers as they show
-    assert.is_truthy(all:find("Altを押している間は", 1, true))
-    assert.is_truthy(all:find(WFI.MARKER.stale .. "　翻訳後に", 1, true))
-    assert.is_truthy(all:find(WFI.MARKER.missing .. "　まだ翻訳", 1, true))
+    assert.is_truthy(all:find("Tieni premuto Alt", 1, true))
+    assert.is_truthy(all:find(WFI.MARKER.stale .. "  l'inglese", 1, true))
+    assert.is_truthy(all:find(WFI.MARKER.missing .. "  questa riga", 1, true))
     assert.is_truthy(all:find("/wfi config [collector | about]", 1, true))
     assert.is_truthy(all:find("/wfi bug", 1, true))
     assert.is_truthy(all:find(WFI.OptionsText.T["about.bug"].ja, 1, true))
@@ -435,34 +375,6 @@ describe("Settings pages from the registry and PAGES", function()
     assert.are.equal(select(2, WFI.OptionsText.get("button.reportBug")), O.reportBug.caption:GetText())
     O.reportBug.scripts.OnClick(O.reportBug, "LeftButton")
     assert.is_true(opened)
-  end)
-
-  it("the about page's voice line: not installed with the Voice entry's address, else the packs that loaded", function()
-    local about = O.pages.about
-    about:Show()
-    -- no pack (Core/Voice not even loaded): the line and the copyable address
-    assert.are.equal(WFI.OptionsText.T["about.voice.none"].ja, O.aboutVoice.en:GetText())
-    local box = O.copyBoxes["about.voice"]
-    assert.are.equal("https://www.curseforge.com/wow/addons/wow-forever-italian-voice", box:GetText())
-    assert.is_true(box:IsShown())
-    box:SetText("edited")
-    box.scripts.OnTextChanged(box, true)
-    assert.are.equal(O.VOICE_URL, box:GetText()) -- snaps back
-    H.loadChunk("Core/Voice.lua", nil, WFI)
-    O.refresh()
-    assert.is_true(box:IsShown()) -- Voice loaded, still no pack
-    for _, folder in ipairs({ "WoWForeverItalian_VoiceOther", "WoWForeverItalian_VoiceLevels11to20",
-      "WoWForeverItalian_VoiceLevels1to10" }) do
-      WFI.Voice.register({ format = 2, folder = folder, lines = {} })
-    end
-    O.refresh()
-    assert.are.equal("日本語音声：レベル1-10、レベル11-20、その他", O.aboutVoice.en:GetText())
-    assert.are.equal("Japanese voice: Levels 1-10, Levels 11-20, Other", O.aboutVoice.pair[1])
-    assert.is_false(box:IsShown())
-    -- no voice setting on the About page: those stay on the voice page
-    for _, c in ipairs(O.controls) do assert.is_nil(c.id:match("^voice%."), c.id) end
-    assert.are.same({ "Levels 51-60", "レベル51-60", 51 }, { O.voicePackName("WoWForeverItalian_VoiceLevels51to60") })
-    assert.are.same({ "Voice", "音声" }, { O.voicePackName("WoWForeverItalian_Voice") })
   end)
 
   it("never takes keyboard input outside a capture: pages built hidden, no OnKeyDown until a capture starts", function()

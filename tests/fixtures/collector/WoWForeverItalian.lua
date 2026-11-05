@@ -11,10 +11,21 @@ WFI_Collector = {
 	["builds"] = {
 		"1.15.9.69722", -- [1]
 	},
-	["bytes"] = 2595,
+	["bytes"] = 3220,
 	["capped"] = false,
 	["disclosed"] = true,
 	["entries"] = {
+		["gossip:3360566d1f7995c8:text"] = {
+			["b"] = 1,
+			["e"] = "Make this inn your home.",
+			["f"] = "text",
+			["h"] = "3360566d1f7995c8",
+			["i"] = "3360566d1f7995c8",
+			["n"] = {
+				295, -- [1]
+			},
+			["t"] = "gossip",
+		},
 		["gossip:70f068541ce5e138:text"] = {
 			["b"] = 1,
 			["e"] = "Goodbye.",
@@ -83,11 +94,27 @@ WFI_Collector = {
 			["i"] = 2,
 			["t"] = "quest",
 		},
+		["quest:2:objectives"] = {
+			["b"] = 1,
+			["e"] = "Bring Sharptalon's Claw to Senani Thunderheart at Splintertree Post, Ashenvale.",
+			["f"] = "objectives",
+			["h"] = "0ed5211e4c49ad33",
+			["i"] = 2,
+			["t"] = "quest",
+		},
 		["quest:2:progress"] = {
 			["b"] = 1,
 			["e"] = "Have you slain the beast, $N?",
 			["f"] = "progress",
 			["h"] = "4ef4b016eb747fa3",
+			["i"] = 2,
+			["t"] = "quest",
+		},
+		["quest:2:title"] = {
+			["b"] = 1,
+			["e"] = "Sharptalon's Claw",
+			["f"] = "title",
+			["h"] = "d311f9a5c36057a2",
 			["i"] = 2,
 			["t"] = "quest",
 		},

@@ -307,7 +307,6 @@ describe("UI/Gossip: the NPC talk window", function()
     for _, f in ipairs(all) do
       if f.GreetingText or f.GetFontString then
         assert.is_false(isJapanese(textOf(f)), tostring(textOf(f)))
-        assert.are_not.equal(WFI.Font.PATH, fontOf(f)[1])
       end
     end
     assert.are.equal("Page two.", sb.frames[1].GreetingText:GetText())

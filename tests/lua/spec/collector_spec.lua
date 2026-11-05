@@ -52,6 +52,14 @@ describe("Core/Collector", function()
     assert.are.equal(4 * 1024 * 1024, C.CAP_BYTES)
   end)
 
+  it("ships off by default: the English this fork needs comes from the original project", function()
+    H.COLLECTOR_DEFAULT_ON = false
+    finally(function() H.COLLECTOR_DEFAULT_ON = true end)
+    local ns = H.loadChunks({ "Core/Const.lua", "Core/State.lua", "Core/Settings.lua", "Core/Collector.lua" })
+    assert.is_false(ns.Settings.get("collector.enabled"))
+    assert.is_true(ns.Settings.get("collector.remind"))
+  end)
+
   -- the quest live check's fingerprints are the h1 of the Collector.keys candidates.
   describe("fingerprints", function()
     local function h1OfKey(k) return tonumber(k:sub(1, 8), 16) end
@@ -273,12 +281,15 @@ describe("Core/Collector", function()
   end)
 
   describe("our own output is never English", function()
-    it("refuses kana, kanji-only and ideographic punctuation, marker messages anywhere, and bind-location text",
-    function()
+    it("refuses text the addon wrote, marker messages anywhere, and bind-location text", function()
       local db = C.load(nil, deps())
-      assert.are.same({ "refused", "own_text" }, { C.record("item", 117, "description", "18秒間でhealthを61回復。") })
-      assert.are.same({ "refused", "own_text" }, { C.record("item", 118, "description", "使用: 攻撃力 +10") })
-      assert.are.same({ "refused", "own_text" }, { C.record("item", 119, "description", "Use: Restores 5 health、") })
+      C.noteOwn("Ripristina 61 punti di health in 18 sec.")
+      C.noteOwn("Uso: potere d'attacco +10")
+      assert.are.same({ "refused", "own_text" },
+        { C.record("item", 117, "description", "Ripristina 61 punti di health in 18 sec.") })
+      assert.are.same({ "refused", "own_text" }, { C.record("item", 118, "description", "Uso: potere d'attacco +10") })
+      assert.are.equal("recorded", C.record("item", 119, "description", "Use: Restores 5 health."))
+      db.entries = {}
       for name, message in pairs(WFI.MARKER) do
         assert.are.same({ "refused", "own_text" },
           { C.record("quest", 2, "title", "|cffffd100" .. message .. "|r\nSharptalon's Claw") }, name)
@@ -344,8 +355,9 @@ describe("Core/Collector", function()
       C.load(nil, deps())
       assert.are.equal("recorded", C.record("quest", 2, "title", "A title"))
       assert.are.equal("seen", C.record("quest", 2, "title", "A title"))
-      assert.are.same({ "refused", "own_text" }, { C.record("quest", 3, "title", "日本語") })
-      assert.are.same({ "refused", "own_text" }, { C.record("quest", 3, "title", "日本語") })
+      C.noteOwn("Un titolo")
+      assert.are.same({ "refused", "own_text" }, { C.record("quest", 3, "title", "Un titolo") })
+      assert.are.same({ "refused", "own_text" }, { C.record("quest", 3, "title", "Un titolo") })
       assert.are.equal(1, #lookups)
       player = {}
       assert.are.same({ "refused", "no_player" }, { C.record("quest", 4, "title", "Later") })
@@ -614,7 +626,8 @@ describe("Core/Collector gossip kind", function()
   it("refuses as quest text does", function()
     C.load(nil, deps())
     assert.are.same({ "refused", "empty" }, { C.recordGossip("", INN) })
-    assert.are.same({ "refused", "own_text" }, { C.recordGossip("こんにちは", INN) })
+    C.noteOwn("Salve, viandante.")
+    assert.are.same({ "refused", "own_text" }, { C.recordGossip("Salve, viandante.", INN) })
     player = { name = "Reyn", class = nil, race = "Night Elf" }
     assert.are.same({ "refused", "no_player" }, { C.recordGossip("Hello there.", INN) })
     player = { name = "Al", class = "Hunter", race = "Night Elf" }

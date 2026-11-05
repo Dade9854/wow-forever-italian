@@ -7,8 +7,8 @@ local FILES = { "Core/Const.lua", "Core/State.lua", "Core/Settings.lua", "Core/M
 describe("Render: refresh on state, per-FontString font", function()
   local WFI, R, S
   local DATA = {
-    quest = { [1] = { ja = "クエスト1", status = "." }, [2] = { ja = "クエスト2", status = "s" } },
-    gossip = { g1 = { ja = "こんにちは", status = "." } },
+    quest = { [1] = { ja = "Testo della quest 1", status = "." }, [2] = { ja = "Testo della quest 2", status = "s" } },
+    gossip = { g1 = { ja = "Salve", status = "." } },
   }
 
   before_each(function()
@@ -34,8 +34,8 @@ describe("Render: refresh on state, per-FontString font", function()
     local g = Stub.fontString("Hello", "F.ttf", 12, "")
     assert.is_true(showQuest(q))
     assert.is_true(R.show("gossip", 1, g, "Hello", "gossip", "gossip", "g1"))
-    assert.are.equal("クエスト1", q:GetText())
-    assert.are.same({ WFI.Font.PATH, 14, "OUTLINE" }, { q:GetFont() })
+    assert.are.equal("Testo della quest 1", q:GetText())
+    assert.are.same({ "F.ttf", 14, "OUTLINE" }, { q:GetFont() }) -- the widget keeps its own font
 
     Stub.keys.alt = true; WFI.Modifier.refresh()
     assert.are.equal("Quest text", q:GetText())
@@ -43,18 +43,18 @@ describe("Render: refresh on state, per-FontString font", function()
     assert.are.equal("Hello", g:GetText())
 
     Stub.keys.alt = false; WFI.Modifier.refresh()
-    assert.are.equal("クエスト1", q:GetText())
-    assert.are.equal(WFI.Font.PATH, (q:GetFont()))
-    assert.are.equal("こんにちは", g:GetText())
+    assert.are.equal("Testo della quest 1", q:GetText())
+    assert.are.equal("F.ttf", (q:GetFont()))
+    assert.are.equal("Salve", g:GetText())
 
     S.set("enabled", false)
     assert.are.equal("Quest text", q:GetText()); assert.are.equal("Hello", g:GetText())
     S.set("enabled", true)
-    assert.are.equal("クエスト1", q:GetText())
+    assert.are.equal("Testo della quest 1", q:GetText())
 
     S.set("area.quests", false)
     assert.are.equal("Quest text", q:GetText())
-    assert.are.equal("こんにちは", g:GetText())
+    assert.are.equal("Salve", g:GetText())
   end)
 
   it("no flicker: with the modifier held, toggling the master writes nothing", function()
@@ -70,75 +70,36 @@ describe("Render: refresh on state, per-FontString font", function()
     assert.are.equal(n, q.calls.SetText)
   end)
 
-  it("applies the bundled font at the element's own size and flags; counts SetFont failures", function()
+  it("keeps the element's own font: Italian needs no other face, so nothing is set, refused or retried", function()
     local q = Stub.fontString("Quest text", "F.ttf", 16, "THICKOUTLINE")
+    Stub.fontSetFails = true
     showQuest(q)
-    assert.are.same({ WFI.Font.PATH, 16, "THICKOUTLINE" }, { q:GetFont() })
+    assert.are.equal("Testo della quest 1", q:GetText())
+    assert.are.same({ "F.ttf", 16, "THICKOUTLINE" }, { q:GetFont() })
     assert.are.equal(0, R.fontFailures)
-    Stub.fontSetFails = true
-    local q2 = Stub.fontString("Other")
-    R.show("quest", "objectives", q2, "Other", "quests", "quest", 1)
-    assert.are.equal(1, R.fontFailures)
-    -- where, for /wfi debug: per surface, the count and the first failing record's arguments
-    assert.are.same({ quest = { n = 1, key = "objectives", size = 13, flags = "" } }, R.fontFailureSurfaces)
-  end)
-
-  it("a refused font is pending and retried until it applies; a retry is not counted again", function()
-    Stub.fontSetFails = true
-    local q = Stub.fontString("Quest text", "F.ttf", 16, "")
-    showQuest(q)
-    assert.are.equal("クエスト1", q:GetText())
-    assert.are.equal(1, R.fontFailures)
-    assert.are.equal(1, R.pendingFonts())
-    assert.are.equal(1, R.retryFonts()) -- still refused: still pending, not counted twice
-    assert.are.equal(1, R.fontFailures)
-    Stub.fontSetFails = false
-    assert.are.equal(0, R.retryFonts())
-    assert.are.same({ WFI.Font.PATH, 16, "" }, { q:GetFont() })
     assert.are.equal(0, R.pendingFonts())
-    -- a record the client rewrote before the retry is dropped, never written over
-    Stub.fontSetFails = true
-    local q2 = Stub.fontString("Other", "F.ttf", 12, "")
-    R.show("quest", "objectives", q2, "Other", "quests", "quest", 1)
-    q2.text = "The client wrote this"
-    Stub.fontSetFails = false
     assert.are.equal(0, R.retryFonts())
-    assert.are.equal("The client wrote this", q2:GetText())
-  end)
-
-  it("Font.set remembers a refused font for the addon's own widgets; a later set replaces it", function()
-    local fs = Stub.fontString("x", "F.ttf", 12, "")
-    Stub.fontSetFails = true
-    assert.is_false(WFI.Font.set(fs, WFI.Font.PATH, 14, ""))
-    assert.are.equal(1, WFI.Font.retryPending())
-    Stub.fontSetFails = false
     assert.are.equal(0, WFI.Font.retryPending())
-    assert.are.same({ WFI.Font.PATH, 14, "" }, { fs:GetFont() })
-    Stub.fontSetFails = true
-    WFI.Font.set(fs, WFI.Font.PATH, 14, "")
     Stub.fontSetFails = false
-    WFI.Font.set(fs, "F.ttf", 12, "") -- the widget went back to its own font: nothing left to retry
-    assert.are.equal(0, WFI.Font.retryPending())
-    assert.are.same({ "F.ttf", 12, "" }, { fs:GetFont() })
   end)
 
   local function inl(name) return WFI.MARKER_INLINE_COLOR .. WFI.MARKER[name] .. "|r" end
 
   it("markers (no banner): stale message on its own line above a stale entry; missing message only when enabled",
   function()
-    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- off by default; this test reads the text, not the marker
     local q = Stub.fontString("Quest text")
     showQuest(q, 2)
-    assert.are.equal(inl("stale") .. "\nクエスト2", q:GetText())
+    assert.are.equal(inl("stale") .. "\nTesto della quest 2", q:GetText())
     S.set("marker.stale", false)
-    assert.are.equal("クエスト2", q:GetText())
+    assert.are.equal("Testo della quest 2", q:GetText())
 
     local u = Stub.fontString("Untranslated", "F.ttf", 12, "")
     assert.is_false(R.show("quest", "progress", u, "Untranslated", "quests", "quest", 999))
     assert.are.equal("Untranslated", u:GetText())
     S.set("marker.missing", true)
     assert.are.equal(inl("missing") .. "\nUntranslated", u:GetText())
-    assert.are.same({ WFI.Font.PATH, 12, "" }, { u:GetFont() }) -- bundled font while the message shows (kanji legible)
+    assert.are.same({ "F.ttf", 12, "" }, { u:GetFont() }) -- the message is Latin: the widget's own font
     S.set("marker.missing", false)
     assert.are.equal("Untranslated", u:GetText())
     assert.are.same({ "F.ttf", 12, "" }, { u:GetFont() }) -- and the original font comes back with it
@@ -148,7 +109,7 @@ describe("Render: refresh on state, per-FontString font", function()
     local q = Stub.fontString("Quest text")
     showQuest(q)
     local n = q.calls.SetText
-    assert.is_false(showQuest(q)) -- fs now holds our Japanese: echo
+    assert.is_false(showQuest(q)) -- fs now holds our Italian: echo
     assert.are.equal(n, q.calls.SetText)
   end)
 
@@ -169,10 +130,10 @@ describe("Render: refresh on state, per-FontString font", function()
 
   it("translated quest, then an untranslated one on the same FontString → live English, original font",
   function()
-    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- off by default; this test reads the text, not the marker
     local q = Stub.fontString("Quest A", "F.ttf", 14, "OUTLINE")
     showQuest(q, 1)
-    assert.are.equal("クエスト1", q:GetText())
+    assert.are.equal("Testo della quest 1", q:GetText())
     q.text = "Quest B" -- the client wrote the next quest's English (font still ours)
     R.show("quest", "description", q, "Quest B", "quests", "quest", 999)
     assert.are.equal("Quest B", q:GetText())
@@ -187,7 +148,7 @@ describe("Render: refresh on state, per-FontString font", function()
     R.setBanner("quest", b)
     local q = Stub.fontString("Quest text")
     showQuest(q, 2) -- stale entry
-    assert.are.equal("クエスト2", q:GetText())
+    assert.are.equal("Testo della quest 2", q:GetText())
     assert.are.equal(WFI.MARKER.stale, b:GetText())
     assert.is_true(b:IsShown())
 
@@ -315,7 +276,7 @@ describe("Render: companion records follow their primary", function()
   end)
 
   it("never writes the companion when the primary never applies", function()
-    WFI.Settings.set("marker.missing", false) -- on by default; this test reads the text, not the marker
+    WFI.Settings.set("marker.missing", false) -- off by default; this test reads the text, not the marker
     DATA["item.description"][117].ja = ""
     local use, quote = run()
     assert.are.equal("Use: Restores 61 health over 18 sec.", use:GetText())

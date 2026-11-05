@@ -436,31 +436,14 @@ function ChatSystem.onAddMessage(frame, message, _, _, _, typeId, _, _, _, event
   return 1
 end
 
--- The bundled face on one chat line, at the line's size: smaller when the Japanese would not fit the height the
--- frame laid the line out at (the layout measured it in the chat font, before this; in game a Japanese
--- line spilled over the next one). SetFont directly, never Font.set: a refused font must not be retried later; the
--- pooled line shows another message by then (in game: English lines turned small in the bundled face). → size set
-local MIN_SIZE = 8
--- `fontObject` (optional): the frame's own font, whose size a row starts from (a row may still hold a shrunk size)
+-- The size a chat line shows at: the frame's own chat font size (`fontObject`, optional). Italian is written in the
+-- chat font's own letters, so the line keeps its font and is never shrunk. → size, or nil when it cannot be read
 function ChatSystem.fit(line, fontObject)
-  local room = type(line.GetHeight) == "function" and line:GetHeight() or 0
-  local size = WFI.Font.bundle(line, fontObject)
-  if size == nil then return nil end
-  local _, _, flags = line:GetFont()
-  flags = flags or ""
-  if type(line.GetStringHeight) ~= "function" or room <= 0 then return size end
-  -- shrink only when the Japanese takes an extra line (its string height passes the room by more than half a line):
-  -- the bundled face's line is a few pixels taller than the chat font's, and shrinking for that alone made
-  -- one-line Japanese smaller than the English around it (seen in game)
-  while size > MIN_SIZE and line:GetStringHeight() > room + size * 0.5 do
-    size = size - 1
-    line:SetFont(WFI.Font.PATH, size, flags)
-  end
-  return size
+  return WFI.Font.bundle(line, fontObject)
 end
 
--- Each visible line in the bundled face. A line showing one of our Japanese strings: the Japanese (shrunk to fit,
--- ChatSystem.fit), or, while the modifier is held or the addon / UI area is off, the remembered English. Also the
+-- Each visible line in its own chat font. A line showing one of our translated strings: the translation, or,
+-- while the modifier is held or the addon / UI area is off, the remembered English. Also the
 -- display-refreshed callback. → lines set to our Japanese or its English
 function ChatSystem.show(frame)
   local lines = type(frame) == "table" and type(frame.visibleLines) == "table" and frame.visibleLines or {}
@@ -475,10 +458,6 @@ function ChatSystem.show(frame)
       ChatSystem.fit(line, fontObject)
     else
       if ours then line:SetText(jaToEn[ja]) end
-      -- every chat line wears the bundled face, English too, so a player's Japanese shows (the client's chat
-      -- font has no kana or kanji); at the frame's size, which follows a change of the chat font size. Setting
-      -- a font reads nothing from the line, so a secret line is dressed like any other
-      if type(line) == "table" and type(line.SetFont) == "function" then WFI.Font.bundle(line, fontObject) end
     end
     if ours then n = n + 1 end
   end

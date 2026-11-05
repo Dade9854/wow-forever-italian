@@ -135,7 +135,6 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
       assert.are.equal("Replying to Whispers", _G.TutorialFrameTitle:GetText())
       assert.are.equal(UI.TUTORIAL17[1], _G.TutorialFrameText:GetText())
       assert.are.equal("Close", _G.TutorialFrameOkayButton:GetText())
-      assert.are_not.equal(WFI.Font.PATH, (_G.TutorialFrameText:GetFont()))
     end
     local function japanese()
       assert.are.equal("ささやきへの返信", _G.TutorialFrameTitle:GetText())
@@ -170,7 +169,6 @@ describe("UI/Tutorial: the tutorial popup on Forever", function()
     _G.TutorialFrame_Update(28) -- Next: a tutorial whose body has no row
     assert.are.equal("水泳", _G.TutorialFrameTitle:GetText())
     assert.are.equal("Swimming is much like walking.", _G.TutorialFrameText:GetText())
-    assert.are_not.equal(WFI.Font.PATH, (_G.TutorialFrameText:GetFont())) -- the first tutorial's font is undone
     for key, rec in pairs(WFI.SurfaceState.records("tutorial")) do
       assert.are_not.equal(_G.TutorialFrameText, rec.fs, key) -- no body record: 28's body is English
       if key == "title" then assert.are.equal("水泳", rec.applied) end -- the title record is 28's own

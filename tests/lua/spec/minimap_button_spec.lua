@@ -107,9 +107,8 @@ describe("the minimap button", function()
     assert.are.equal("WoW Forever Italian", m.title:GetText())
     local texts = {}
     for i, row in ipairs(rows) do texts[i] = row.item.kind .. ":" .. row.text:GetText() end
-    assert.are.same({ "checkbox:翻訳オン", "button:翻訳を報告", "button:不具合・提案を報告", "button:設定",
-      "button:このボタンを隠す" }, texts)
-    for _, row in ipairs(rows) do assert.are.equal(WFI.Font.PATH, (row.text:GetFont())) end -- bundled font
+    assert.are.same({ "checkbox:Traduzione attiva", "button:Segnala una riga", "button:Segnala bug o idea",
+      "button:Impostazioni", "button:Nascondi questo pulsante" }, texts)
     assert.is_table(m.divider) -- a divider sets the switch apart from the actions
     b:click("RightButton") -- a second right-click closes it
     assert.is_false(m:IsShown())
@@ -167,11 +166,12 @@ describe("the minimap button", function()
     assert.is_false(_G.WFIMinimapButton:IsShown())
   end)
 
-  it("hover shows the tooltip in Japanese (English with the reveal key held); leaving hides it", function()
+  it("hover shows the tooltip in Italian (English with the reveal key held); leaving hides it", function()
     b.scripts.OnEnter(b)
     local tip = _G.WFIMinimapTooltip
     assert.is_true(tip:IsShown())
-    assert.are.same({ "バージョン " .. tostring(WFI.VERSION), "左クリック：翻訳を報告 ・ 右クリック：メニュー" }, tip.lines)
+    assert.are.same({ "Versione " .. tostring(WFI.VERSION), "Clic sinistro: segnala una riga · Clic destro: menu" },
+      tip.lines)
     b.scripts.OnLeave(b)
     Stub.keys.alt = true
     WFI.Modifier.refresh()
@@ -205,17 +205,18 @@ describe("the minimap menu's send entry", function()
 
   it("is absent with nothing unsent", function()
     C.load(nil, H.collectorDeps())
-    assert.are.same({ "翻訳オン", "翻訳を報告", "不具合・提案を報告", "設定", "このボタンを隠す" }, texts())
+    assert.are.same({ "Traduzione attiva", "Segnala una riga", "Segnala bug o idea", "Impostazioni",
+      "Nascondi questo pulsante" }, texts())
   end)
 
   it("shows the unsent count before the settings entry from one line up, and opens the send window", function()
     C.load(nil, H.collectorDeps())
     record(1)
-    assert.are.same({ "翻訳オン", "翻訳を報告", "不具合・提案を報告", "集めた英語を送る（1）", "設定",
-      "このボタンを隠す" }, texts())
+    assert.are.same({ "Traduzione attiva", "Segnala una riga", "Segnala bug o idea", "Invia l'inglese raccolto (1)",
+      "Impostazioni", "Nascondi questo pulsante" }, texts())
     record(11, 3000)
     local items = WFI.MinimapButton.items()
-    assert.are.equal("集めた英語を送る（12）", items[4].text)
+    assert.are.equal("Invia l'inglese raccolto (12)", items[4].text)
     local opened
     WFI.CollectorSendWindow = { open = function(all) opened = all end }
     items[4].action()
@@ -244,8 +245,9 @@ describe("the minimap menu's send entry", function()
     assert.are.equal(2, #tip.lines) -- nothing unsent: no count line
     record(3)
     b.scripts.OnEnter(b)
-    assert.are.same({ "バージョン " .. tostring(WFI.VERSION), "収集した英語のうち3行が翻訳に必要です。右クリックで送れます。",
-      "左クリック：翻訳を報告 ・ 右クリック：メニュー" }, tip.lines)
+    assert.are.same({ "Versione " .. tostring(WFI.VERSION),
+      "La raccolta ha 3 righe che ci servono. Clic destro per inviarle.",
+      "Clic sinistro: segnala una riga · Clic destro: menu" }, tip.lines)
     b.scripts.OnLeave(b)
   end)
 
