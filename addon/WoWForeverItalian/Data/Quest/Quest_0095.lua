@@ -2,6 +2,7 @@
 local _, WFI = ...
 WFI.Data.add("quest", {
   [95042] = { "In cerca della Kor Gem", "Porta una Kor Gem a Ulric Frostveil, ad Ashenvale.", "<Un/Una> <paladino/paladina> Forsaken... qui ad Ashenvale? Divertente.\n\nQuindi cerchi una Kor Gem? Non mi sorprende, visto che a volte i paladini dell'Alliance le usano per potenziare armi e strumenti magici. Perché <un/una> <paladino/paladina> <caduto/caduta> come te dovrebbe essere diverso?\n\nSe desideri davvero una di queste gemme, devi andare a nord, alle rovine note come Blackfathom Deeps. I naga che usano ancora le gemme sono laggiù. Non andarci da <solo/sola>, {class}.", "Le Kor gem possono essere usate per grandi atti di malvagità. Non sta a me giudicare se le tue intenzioni sono pure. Non m'importa.", "Noterai senza dubbio la corruzione che permea questa gemma. Per i tuoi scopi, la magia necessaria a dissipare il male che le streghe naga vi hanno infuso è piuttosto semplice. Un peccato davvero: si potrebbe imparare molto da simili poteri.\n\nImmagino che non saresti <disposto/disposta> ad abbandonare la missione che ti ha spinto a cercare questa gemma e a vendermela invece? Potrebbe rivelarsi preziosa per i miei... interessi accademici.", 0x5d353131, 0x653f65b8, 0x34bb9815, 0x3e8b8507, 0x8c1b448d, "....." },
+  [95161] = { "Ricorda che ti amo", nil, nil, nil, nil, 0x920a601f, nil, nil, nil, nil, ".mmmm" },
   [95494] = { nil, nil, nil, "Come va la caccia?", nil, nil, nil, nil, 0xe02b27bb, nil, "mmm.m" },
   [95999] = { nil, nil, nil, "Cos'hai lì, {race}?", nil, nil, nil, nil, 0x46dc827d, nil, "mmm.m" },
 })
