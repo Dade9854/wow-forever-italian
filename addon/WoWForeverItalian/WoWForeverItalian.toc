@@ -80,6 +80,7 @@ Data\Gossip\Gossip_3a.lua
 Data\Gossip\Gossip_3e.lua
 Data\Gossip\Gossip_40.lua
 Data\Gossip\Gossip_42.lua
+Data\Gossip\Gossip_45.lua
 Data\Gossip\Gossip_46.lua
 Data\Gossip\Gossip_48.lua
 Data\Gossip\Gossip_4c.lua
