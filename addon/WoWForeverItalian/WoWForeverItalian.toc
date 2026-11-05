@@ -38,16 +38,21 @@ Data\Quest\Quest_0096.lua
 Data\Quest\Quest_0098.lua
 Data\Gossip\Gossip_01.lua
 Data\Gossip\Gossip_12.lua
+Data\Gossip\Gossip_22.lua
+Data\Gossip\Gossip_24.lua
 Data\Gossip\Gossip_25.lua
 Data\Gossip\Gossip_46.lua
 Data\Gossip\Gossip_48.lua
 Data\Gossip\Gossip_4c.lua
 Data\Gossip\Gossip_52.lua
+Data\Gossip\Gossip_73.lua
 Data\Gossip\Gossip_78.lua
 Data\Gossip\Gossip_85.lua
+Data\Gossip\Gossip_9e.lua
 Data\Gossip\Gossip_a4.lua
 Data\Gossip\Gossip_ad.lua
 Data\Gossip\Gossip_b9.lua
+Data\Gossip\Gossip_ce.lua
 Data\Gossip\Gossip_e8.lua
 # >>>
 Core\Lookup.lua
