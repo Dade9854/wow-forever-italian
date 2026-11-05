@@ -2,5 +2,6 @@
 local _, WFI = ...
 WFI.Data.add("quest", {
   [95042] = { "In cerca della Kor Gem", nil, nil, nil, nil, 0x5d353131, nil, nil, nil, nil, ".mmmm" },
+  [95494] = { nil, nil, nil, "Come va la caccia?", nil, nil, nil, nil, 0xe02b27bb, nil, "mmm.m" },
   [95999] = { nil, nil, nil, "Cos'hai lì, {race}?", nil, nil, nil, nil, 0x46dc827d, nil, "mmm.m" },
 })
