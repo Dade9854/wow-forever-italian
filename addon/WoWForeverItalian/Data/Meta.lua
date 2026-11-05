@@ -3,6 +3,6 @@ local _, WFI = ...
 WFI.Data.meta = {
   schema = 1,
   english = { collector = "1.60.1.70374", vmangos = "13b49dc", wdb = "1.15.9.69722+1.60.1.70450+1.60.1.70532" },
-  counts = { quest = 167, item = 0, spell = 0, objective = 0, area = 0, gossip = 0, book = 0, ui = 0 },
+  counts = { quest = 227, item = 0, spell = 0, objective = 0, area = 0, gossip = 0, book = 0, ui = 0 },
   fields = { quest = { "title", "objectives", "description", "progress", "completion" }, item = { "description" }, spell = { "description", "aura" }, objective = { "text" }, area = { "text" } },
 }

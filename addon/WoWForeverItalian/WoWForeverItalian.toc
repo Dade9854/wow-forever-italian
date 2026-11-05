@@ -28,15 +28,21 @@ Data\Quest\Quest_0002.lua
 Data\Quest\Quest_0003.lua
 Data\Quest\Quest_0004.lua
 Data\Quest\Quest_0005.lua
+Data\Quest\Quest_0006.lua
 Data\Quest\Quest_0007.lua
 Data\Quest\Quest_0008.lua
 Data\Quest\Quest_0092.lua
 Data\Gossip\Gossip_01.lua
+Data\Gossip\Gossip_12.lua
 Data\Gossip\Gossip_25.lua
+Data\Gossip\Gossip_48.lua
 Data\Gossip\Gossip_4c.lua
+Data\Gossip\Gossip_52.lua
 Data\Gossip\Gossip_78.lua
 Data\Gossip\Gossip_85.lua
+Data\Gossip\Gossip_a4.lua
 Data\Gossip\Gossip_ad.lua
+Data\Gossip\Gossip_b9.lua
 # >>>
 Core\Lookup.lua
 Core\Align.lua
